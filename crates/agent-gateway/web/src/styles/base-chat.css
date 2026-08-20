@@ -29,7 +29,9 @@ html[data-liveagent-webui="gateway"] .composer-model-trigger,
 html[data-liveagent-webui="gateway"] .composer-model-label,
 html[data-liveagent-webui="gateway"] .model-selector-dropdown,
 html[data-liveagent-webui="gateway"] .model-selector-group-label,
-html[data-liveagent-webui="gateway"] .model-selector-item {
+html[data-liveagent-webui="gateway"] .model-selector-item,
+html[data-liveagent-webui="gateway"] .composer-safety-dropdown,
+html[data-liveagent-webui="gateway"] .composer-safety-item {
   font-family: var(--app-font-family);
 }
 
@@ -329,8 +331,7 @@ html[data-liveagent-webui="gateway"] .scroll-area-thumb:active {
 }
 
 html[data-liveagent-webui="gateway"] .tool-text-scroll,
-html[data-liveagent-webui="gateway"] .mention-popup-scroll,
-html[data-liveagent-webui="gateway"] .settings-provider-tabs-wrap {
+html[data-liveagent-webui="gateway"] .mention-popup-scroll {
   scrollbar-color: var(--gateway-scrollbar-thumb) transparent;
 }
 
@@ -344,10 +345,6 @@ html[data-liveagent-webui="gateway"] .upload-file-list::-webkit-scrollbar {
   display: none;
   width: 0;
   height: 0;
-}
-
-html[data-liveagent-webui="gateway"] .settings-provider-tabs-wrap::-webkit-scrollbar {
-  height: 8px;
 }
 
 html[data-liveagent-webui="gateway"] .tool-text-scroll::-webkit-scrollbar,
@@ -675,6 +672,9 @@ html[data-liveagent-webui="gateway"] [role="textbox"]:focus-visible {
   min-height: 0;
   flex: 1;
   overflow: hidden;
+  /* Container for transcript overlays (FloorNavRail) — keeps their cqw-based
+     clamping in sync with the desktop app's @container transcript root. */
+  container-type: inline-size;
 }
 
 .gateway-transcript-scroll-shell {

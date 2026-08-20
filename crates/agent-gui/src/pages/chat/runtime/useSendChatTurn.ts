@@ -44,7 +44,6 @@ import {
 import { createTurnCancellation } from "../../../lib/chat/conversation/turnCancellation";
 import type { ChatHistorySummary } from "../../../lib/chat/history/chatHistory";
 import type { MemoryExtractionStatusKey } from "../../../lib/chat/memory/extractionEngine";
-import { memoryTurnInjection } from "../../../lib/chat/memory/injectionController";
 import {
   BRANCH_CONVERSATION_DEFAULT_TITLE,
   buildFallbackConversationTitle,
@@ -54,12 +53,12 @@ import {
 } from "../../../lib/chat/page/chatPageHelpers";
 import { skillMentionInjection } from "../../../lib/chat/skills/mentionInjection";
 import { createStreamDebugLogger } from "../../../lib/debug/agentDebug";
-import { buildMemoryOverviewSection } from "../../../lib/memory/prompts/injection";
 import { createModelFromConfig, createProviderRuntimeConfig } from "../../../lib/providers/llm";
 import {
   type AppSettings,
   applyMcpOpsToAppSettings,
   type ChatRuntimeControls,
+  type CommandSafetyMode,
   type ExecutionMode,
   filterMcpSettingsForWorkspace,
   getSshProjectHostIds,
@@ -68,6 +67,7 @@ import {
   removeWorkspaceResourceReferences,
   resolveWorkspaceResources,
   type SelectedModel,
+  strictestCommandSafetyMode,
   updateMemorySettings,
   updateSkills,
   type WorkspaceProject,
@@ -98,6 +98,7 @@ import {
   buildTextFromComposerDraft,
   importPastedTextsAsFiles,
 } from "../composer/composerDraftText";
+import type { ConversationHydrationStore } from "../conversations/conversationHydrationStore";
 import {
   buildGatewayFinalProjectionEntries,
   buildGatewayRuntimeSnapshotEntries,
@@ -165,8 +166,7 @@ type UseSendChatTurnParams = {
   isImportingPastedTextRef: MutableRefObject<boolean>;
   setIsImportingPastedText: Dispatch<SetStateAction<boolean>>;
   setErrorMessage: Dispatch<SetStateAction<string | null>>;
-  hydratingConversationIdRef: MutableRefObject<string | null>;
-  hydrationFailedConversationIdRef: MutableRefObject<string | null>;
+  hydration: ConversationHydrationStore;
   currentConversationIdRef: ChatPageRuntimeStore["currentConversationIdRef"];
   conversationRuntimeCacheRef: ChatPageRuntimeStore["conversationRuntimeCacheRef"];
   buildRuntimeEntryFromVisibleState: ChatPageRuntimeStore["buildRuntimeEntryFromVisibleState"];
@@ -243,8 +243,7 @@ export function useSendChatTurn(params: UseSendChatTurnParams) {
     isImportingPastedTextRef,
     setIsImportingPastedText,
     setErrorMessage,
-    hydratingConversationIdRef,
-    hydrationFailedConversationIdRef,
+    hydration,
     currentConversationIdRef,
     conversationRuntimeCacheRef,
     buildRuntimeEntryFromVisibleState,
@@ -321,6 +320,7 @@ export function useSendChatTurn(params: UseSendChatTurnParams) {
     conversationIdOverride?: string;
     executionModeOverride?: ExecutionMode;
     workdirOverride?: string;
+    commandSafetyModeOverride?: CommandSafetyMode;
     runtimeControlsOverride?: ChatRuntimeControls;
     gatewayBridgeRequestOverride?: ActiveGatewayBridgeRequest | null;
     preserveComposerOnStart?: boolean;
@@ -345,6 +345,14 @@ export function useSendChatTurn(params: UseSendChatTurnParams) {
       overrides?.executionModeOverride ??
       gatewayBridgeRequest?.executionModeOverride ??
       settings.system.executionMode;
+    // 命令安全模式:远端 WebUI / 网关 / 排队快照带来的模式只能“收紧”,不能放宽
+    // (P3#9)。桌面端是工具唯一执行处,一份陈旧的浏览器快照不得把本地刻意选定的
+    // sandboxOffline 静默降级成 auto —— 故与本地 settings.system 取更严格者。
+    const requestedCommandSafetyMode =
+      overrides?.commandSafetyModeOverride ?? gatewayBridgeRequest?.commandSafetyModeOverride;
+    const effectiveCommandSafetyMode = requestedCommandSafetyMode
+      ? strictestCommandSafetyMode(requestedCommandSafetyMode, settings.system.commandSafetyMode)
+      : settings.system.commandSafetyMode;
     const effectiveIsAgentMode = isAgentExecutionMode(effectiveExecutionMode);
     const effectiveWorkdir = resolveEffectiveConversationWorkdir({
       isAgentMode: effectiveIsAgentMode,
@@ -436,13 +444,13 @@ export function useSendChatTurn(params: UseSendChatTurnParams) {
     if (isImportingPastedTextRef.current && typeof overrides?.textOverride !== "string") {
       return false;
     }
-    if (hydratingConversationIdRef.current === conversationId) {
+    if (hydration.isHydrating(conversationId)) {
       const message = "当前会话仍在加载，请稍候。";
       setConversationErrorState(message);
       gatewayBridgeEvents.emitError(message, conversationId);
       return false;
     }
-    if (hydrationFailedConversationIdRef.current === conversationId) {
+    if (hydration.isFailed(conversationId)) {
       const message = "当前会话加载失败，请重新打开该会话后再继续。";
       setConversationErrorState(message);
       gatewayBridgeEvents.emitError(message, conversationId);
@@ -1213,6 +1221,10 @@ export function useSendChatTurn(params: UseSendChatTurnParams) {
       return true;
     }
     acknowledgeGatewayRunStarted();
+    const [{ memoryTurnInjection }, { buildMemoryOverviewSection }] = await Promise.all([
+      import("../../../lib/chat/memory/injectionController"),
+      import("../../../lib/memory/prompts/injection"),
+    ]);
     let skillsPrompt = "";
     let memoryPrompt = "";
     /** 本轮 `/skill-name` 显式提及块;没有提及时恒为空串,不会挂出任何内容。 */
@@ -1674,6 +1686,7 @@ export function useSendChatTurn(params: UseSendChatTurnParams) {
             agentTemplates: settings.agents,
             getMcpSettings: getEffectiveMcpSettings,
             getToolPolicies,
+            commandSafetyMode: effectiveCommandSafetyMode,
             applyMcpOps: (ops) => {
               const removedIds = ops.filter((op) => op.kind === "remove").map((op) => op.serverId);
               setSettings((prev) =>
