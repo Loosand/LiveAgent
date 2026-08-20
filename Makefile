@@ -20,6 +20,10 @@ DESKTOP_LINUX_BUNDLES ?= appimage deb rpm
 DESKTOP_MACOS_APP_NAME ?= LiveAgent
 DESKTOP_MACOS_NOTARY_PROFILE ?= liveagent-notary
 DESKTOP_MACOS_TAURI_CONFIG ?= src-tauri/tauri.macos.conf.json
+DESKTOP_MACOS_DMG_SETTINGS ?= scripts/release/macos-dmg-settings.py
+DESKTOP_MACOS_DMG_BACKGROUND ?= $(AGENT_GUI_DIR)/src-tauri/dmg/background.png
+DESKTOP_MACOS_DMG_VOLUME_ICON ?= $(AGENT_GUI_DIR)/src-tauri/icons/icon.icns
+DESKTOP_MACOS_DMG_VERIFY ?= scripts/release/verify-macos-dmg.sh
 DESKTOP_WINDOWS_TAURI_CONFIG ?= src-tauri/tauri.windows.conf.json
 DESKTOP_RELEASE_TAURI_CONFIG ?= src-tauri/tauri.macos.release.conf.json
 DESKTOP_RELEASE_TAURI_CONFIG_FLAGS ?= --config $(DESKTOP_RELEASE_TAURI_CONFIG) $(if $(LIVEAGENT_TAURI_VERSION_CONFIG),--config $(LIVEAGENT_TAURI_VERSION_CONFIG))
@@ -55,11 +59,23 @@ desktop-build-macos-release: check-rust-target-$(DESKTOP_MACOS_TARGET) check-mac
 	dmg_path="$$(find "target/$(DESKTOP_MACOS_TARGET)/release/bundle/dmg" -maxdepth 1 -name '$(DESKTOP_MACOS_APP_NAME)_*.dmg' -print -quit)"; \
 	if [ ! -d "$$app_path" ]; then echo "macOS app not found: $$app_path"; exit 1; fi; \
 	if [ -z "$$dmg_path" ] || [ ! -f "$$dmg_path" ]; then echo "macOS dmg not found under target/$(DESKTOP_MACOS_TARGET)/release/bundle/dmg"; exit 1; fi; \
+	if ! command -v dmgbuild >/dev/null 2>&1; then echo "dmgbuild is required. Install dmgbuild==1.6.5 before building a macOS release."; exit 1; fi; \
 	codesign --verify --deep --strict --verbose=4 "$$app_path"; \
+	styled_dmg_path="$${dmg_path%.dmg}.styled.dmg"; \
+	trap 'rm -f "$$styled_dmg_path"' EXIT; \
+	dmgbuild \
+		-s "$(DESKTOP_MACOS_DMG_SETTINGS)" \
+		-D app="$$app_path" \
+		-D background="$(DESKTOP_MACOS_DMG_BACKGROUND)" \
+		-D volume_icon="$(DESKTOP_MACOS_DMG_VOLUME_ICON)" \
+		"$(DESKTOP_MACOS_APP_NAME)" "$$styled_dmg_path"; \
+	mv -f "$$styled_dmg_path" "$$dmg_path"; \
+	trap - EXIT; \
 	codesign --force --timestamp --sign "$(APPLE_SIGNING_IDENTITY)" "$$dmg_path"; \
 	xcrun notarytool submit "$$dmg_path" --keychain-profile "$(DESKTOP_MACOS_NOTARY_PROFILE)" --wait; \
 	xcrun stapler staple "$$dmg_path"; \
 	xcrun stapler validate -v "$$dmg_path"; \
+	bash "$(DESKTOP_MACOS_DMG_VERIFY)" "$$dmg_path"; \
 	spctl --assess --type execute --verbose=4 "$$app_path"; \
 	spctl --assess --type open --context context:primary-signature --verbose=4 "$$dmg_path"; \
 	echo "macOS release dmg is ready: $$dmg_path"
