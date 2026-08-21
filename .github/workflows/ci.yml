@@ -60,7 +60,7 @@ jobs:
           TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
         run: |
           pnpm install --frozen-lockfile --filter liveagent-workspace --filter @liveagent/gateway-webui...
-          pnpm exec turbo run build --filter=@liveagent/gateway-webui
+          pnpm exec turbo run build --filter=@liveagent/gateway-webui --output-logs=errors-only
 
       - name: Proto lint and breaking-change check
         run: make proto-check BUF_BREAKING_AGAINST='../../.git#branch=origin/main,subdir=crates/agent-gateway'
@@ -148,7 +148,7 @@ jobs:
         env:
           TURBO_TEAM: ${{ vars.TURBO_TEAM }}
           TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
-        run: pnpm exec turbo run build lint test --filter=@liveagent/gateway-webui
+        run: pnpm exec turbo run build lint test --filter=@liveagent/gateway-webui --concurrency=1 --output-logs=errors-only
 
   gui:
     name: GUI
@@ -181,14 +181,14 @@ jobs:
         env:
           TURBO_TEAM: ${{ vars.TURBO_TEAM }}
           TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
-        run: pnpm exec turbo run build lint test:frontend --filter=liveagent
+        run: pnpm exec turbo run build lint test:frontend --filter=liveagent --concurrency=1 --output-logs=errors-only
 
       - name: Test release scripts
         if: ${{ needs.changes.result != 'success' || needs.changes.outputs.gui == 'true' || needs.changes.outputs.release == 'true' }}
         env:
           TURBO_TEAM: ${{ vars.TURBO_TEAM }}
           TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
-        run: pnpm exec turbo run test:release --filter=liveagent
+        run: pnpm exec turbo run test:release --filter=liveagent --output-logs=errors-only
 
   changes:
     name: Detect Changes
@@ -343,12 +343,6 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
-      - uses: actions/cache@v5
-        with:
-          path: .turbo
-          key: turbo-${{ runner.os }}-ui-boundaries-${{ github.sha }}
-          restore-keys: turbo-${{ runner.os }}-ui-boundaries-
-
       - uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION }}
@@ -357,16 +351,13 @@ jobs:
         run: npm install -g pnpm@10.32.1
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile --filter liveagent-workspace --filter @liveagent/ui...
+        run: pnpm install --frozen-lockfile --filter @liveagent/ui...
 
       - name: Run check script tests
         run: pnpm check:script-tests
 
       - name: Check shared UI dependency boundaries
-        env:
-          TURBO_TEAM: ${{ vars.TURBO_TEAM }}
-          TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
-        run: pnpm exec turbo run check:boundaries --filter=@liveagent/ui
+        run: pnpm check:ui-boundaries
 
   whitespace:
     name: Diff Hygiene

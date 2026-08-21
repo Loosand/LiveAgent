@@ -4,7 +4,13 @@
     "build": {
       "dependsOn": ["^build"],
       "env": ["NODE_ENV", "RUNNER_ARCH", "RUNNER_OS", "VITE_*", "npm_config_proxy_api"],
-      "outputs": ["dist/**"]
+      "outputs": ["dist/**"],
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "$TURBO_ROOT$/crates/agent-ui/src/**",
+        "$TURBO_ROOT$/crates/agent-ui/package.json",
+        "$TURBO_ROOT$/crates/agent-ui/tsconfig.json"
+      ]
     },
     "lint": {
       "env": ["CI", "RUNNER_ARCH", "RUNNER_OS"]
@@ -17,6 +23,9 @@
       "inputs": [
         "$TURBO_DEFAULT$",
         "$TURBO_ROOT$/scripts/run-node-tests.mjs",
+        "$TURBO_ROOT$/crates/agent-ui/src/**",
+        "$TURBO_ROOT$/crates/agent-ui/package.json",
+        "$TURBO_ROOT$/crates/agent-ui/tsconfig.json",
         "$TURBO_ROOT$/crates/agent-gateway/test/helpers/**",
         "$TURBO_ROOT$/crates/agent-gateway/test/webui/**"
       ]
@@ -26,7 +35,13 @@
       "inputs": [
         "$TURBO_DEFAULT$",
         "$TURBO_ROOT$/scripts/run-node-tests.mjs",
+        "$TURBO_ROOT$/crates/agent-ui/src/**",
+        "$TURBO_ROOT$/crates/agent-ui/package.json",
+        "$TURBO_ROOT$/crates/agent-ui/tsconfig.json",
         "$TURBO_ROOT$/crates/agent-gateway/web/**",
+        "!$TURBO_ROOT$/crates/agent-gateway/web/.turbo/**",
+        "!$TURBO_ROOT$/crates/agent-gateway/web/dist/**",
+        "!$TURBO_ROOT$/crates/agent-gateway/web/node_modules/**",
         "$TURBO_ROOT$/crates/agent-gateway/test/helpers/**"
       ]
     },
@@ -38,16 +53,6 @@
         "$TURBO_ROOT$/scripts/release/**",
         "$TURBO_ROOT$/.github/workflows/desktop-release.yml",
         "$TURBO_ROOT$/Makefile"
-      ]
-    },
-    "check:boundaries": {
-      "env": ["CI", "RUNNER_ARCH", "RUNNER_OS"],
-      "inputs": [
-        "$TURBO_DEFAULT$",
-        "$TURBO_ROOT$/scripts/check-ui-boundaries.mjs",
-        "$TURBO_ROOT$/scripts/ui-boundary-declarations.mjs",
-        "$TURBO_ROOT$/crates/agent-gui/src/**",
-        "$TURBO_ROOT$/crates/agent-gateway/web/src/**"
       ]
     }
   }

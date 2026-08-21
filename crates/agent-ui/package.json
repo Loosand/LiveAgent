@@ -7,7 +7,6 @@
     "./*": "./src/*"
   },
   "scripts": {
-    "check:boundaries": "node ../../scripts/check-ui-boundaries.mjs",
     "lint": "biome check src/ --max-diagnostics=none",
     "typecheck": "tsc --noEmit -p tsconfig.json"
   },
