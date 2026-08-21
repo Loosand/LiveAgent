@@ -22,6 +22,9 @@
     "test:gui": "pnpm --filter liveagent test:frontend",
     "test:webui": "pnpm --filter @liveagent/gateway-webui test"
   },
+  "devDependencies": {
+    "turbo": "2.10.11"
+  },
   "pnpm": {
     "overrides": {
       "@base-ui/react": "1.6.0",

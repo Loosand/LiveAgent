@@ -11,16 +11,25 @@ permissions:
 
 env:
   NODE_VERSION: 22.19.0
+  TURBO_TELEMETRY_DISABLED: 1
 
 jobs:
   gateway:
     name: Gateway
     runs-on: ubuntu-latest
+    needs: changes
+    if: ${{ !cancelled() && (needs.changes.result != 'success' || needs.changes.outputs.gateway == 'true') }}
     steps:
       - uses: actions/checkout@v6
         with:
           # buf breaking 需要完整历史以对比 origin/main 的 proto 契约。
           fetch-depth: 0
+
+      - uses: actions/cache@v5
+        with:
+          path: .turbo
+          key: turbo-${{ runner.os }}-gateway-${{ github.sha }}
+          restore-keys: turbo-${{ runner.os }}-gateway-
 
       - uses: actions/setup-go@v5
         with:
@@ -46,9 +55,12 @@ jobs:
           echo "$(go env GOPATH)/bin" >> "$GITHUB_PATH"
 
       - name: Build embedded Gateway WebUI
+        env:
+          TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+          TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
         run: |
-          pnpm install --frozen-lockfile --filter @liveagent/gateway-webui...
-          pnpm --filter @liveagent/gateway-webui build
+          pnpm install --frozen-lockfile --filter liveagent-workspace --filter @liveagent/gateway-webui...
+          pnpm exec turbo run build --filter=@liveagent/gateway-webui
 
       - name: Proto lint and breaking-change check
         run: make proto-check BUF_BREAKING_AGAINST='../../.git#branch=origin/main,subdir=crates/agent-gateway'
@@ -71,6 +83,8 @@ jobs:
   gateway-docker:
     name: Gateway Docker Smoke
     runs-on: ubuntu-latest
+    needs: changes
+    if: ${{ !cancelled() && (needs.changes.result != 'success' || needs.changes.outputs.gateway_docker == 'true') }}
     steps:
       - uses: actions/checkout@v6
 
@@ -109,8 +123,16 @@ jobs:
   webui:
     name: Gateway WebUI
     runs-on: ubuntu-latest
+    needs: changes
+    if: ${{ !cancelled() && (needs.changes.result != 'success' || needs.changes.outputs.webui == 'true') }}
     steps:
       - uses: actions/checkout@v6
+
+      - uses: actions/cache@v5
+        with:
+          path: .turbo
+          key: turbo-${{ runner.os }}-webui-${{ github.sha }}
+          restore-keys: turbo-${{ runner.os }}-webui-
 
       - uses: actions/setup-node@v6
         with:
@@ -120,25 +142,27 @@ jobs:
         run: npm install -g pnpm@10.32.1
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile --filter @liveagent/gateway-webui...
+        run: pnpm install --frozen-lockfile --filter liveagent-workspace --filter @liveagent/gateway-webui...
 
-      - name: Build WebUI
-        working-directory: crates/agent-gateway/web
-        run: pnpm build
-
-      - name: Lint WebUI
-        working-directory: crates/agent-gateway/web
-        run: pnpm lint
-
-      - name: Test WebUI modules
-        working-directory: crates/agent-gateway/web
-        run: pnpm test
+      - name: Build, lint and test WebUI
+        env:
+          TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+          TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+        run: pnpm exec turbo run build lint test --filter=@liveagent/gateway-webui
 
   gui:
     name: GUI
     runs-on: ubuntu-latest
+    needs: changes
+    if: ${{ !cancelled() && (needs.changes.result != 'success' || needs.changes.outputs.gui == 'true' || needs.changes.outputs.release == 'true') }}
     steps:
       - uses: actions/checkout@v6
+
+      - uses: actions/cache@v5
+        with:
+          path: .turbo
+          key: turbo-${{ runner.os }}-gui-${{ github.sha }}
+          restore-keys: turbo-${{ runner.os }}-gui-
 
       - uses: actions/setup-node@v6
         with:
@@ -150,37 +174,97 @@ jobs:
       - name: Install dependencies
         # GUI frontend tests load shared Gateway WebUI modules (including STT adapters).
         # Install that workspace and its transitive dependencies in this isolated job.
-        run: pnpm install --frozen-lockfile --filter liveagent... --filter @liveagent/gateway-webui...
+        run: pnpm install --frozen-lockfile --filter liveagent-workspace --filter liveagent... --filter @liveagent/gateway-webui...
 
-      - name: Typecheck and build GUI frontend
-        working-directory: crates/agent-gui
-        run: pnpm build
-
-      - name: Lint GUI frontend
-        working-directory: crates/agent-gui
-        run: pnpm lint
-
-      - name: Test frontend modules
-        working-directory: crates/agent-gui
-        run: pnpm test:frontend
+      - name: Build, lint and test GUI frontend
+        if: ${{ needs.changes.result != 'success' || needs.changes.outputs.gui == 'true' }}
+        env:
+          TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+          TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+        run: pnpm exec turbo run build lint test:frontend --filter=liveagent
 
       - name: Test release scripts
-        working-directory: crates/agent-gui
-        run: pnpm test:release
+        if: ${{ needs.changes.result != 'success' || needs.changes.outputs.gui == 'true' || needs.changes.outputs.release == 'true' }}
+        env:
+          TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+          TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+        run: pnpm exec turbo run test:release --filter=liveagent
 
   changes:
     name: Detect Changes
     runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request'
     permissions:
+      contents: read
       pull-requests: read
     outputs:
+      gateway: ${{ steps.filter.outputs.gateway }}
+      gateway_docker: ${{ steps.filter.outputs.gateway_docker }}
+      gui: ${{ steps.filter.outputs.gui }}
+      release: ${{ steps.filter.outputs.release }}
       rust: ${{ steps.filter.outputs.rust }}
+      ui_boundaries: ${{ steps.filter.outputs.ui_boundaries }}
+      webui: ${{ steps.filter.outputs.webui }}
     steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
       - uses: dorny/paths-filter@v3
         id: filter
         with:
           filters: |
+            gateway:
+              - 'crates/agent-gateway/**'
+              - 'crates/agent-ui/**'
+              - 'package.json'
+              - 'pnpm-lock.yaml'
+              - 'pnpm-workspace.yaml'
+              - 'turbo.json'
+              - 'Makefile'
+              - '.github/workflows/ci.yml'
+            gateway_docker:
+              - 'crates/agent-gateway/**'
+              - 'crates/agent-ui/**'
+              - 'package.json'
+              - 'pnpm-lock.yaml'
+              - 'pnpm-workspace.yaml'
+              - 'turbo.json'
+              - 'Dockerfile'
+              - '.dockerignore'
+              - '.github/workflows/ci.yml'
+            webui:
+              - 'crates/agent-gateway/web/**'
+              - 'crates/agent-gateway/test/webui/**'
+              - 'crates/agent-gateway/test/helpers/**'
+              - 'crates/agent-ui/**'
+              - 'scripts/run-node-tests.mjs'
+              - 'package.json'
+              - 'pnpm-lock.yaml'
+              - 'pnpm-workspace.yaml'
+              - 'turbo.json'
+              - '.github/workflows/ci.yml'
+            gui:
+              - 'crates/agent-gui/*'
+              - 'crates/agent-gui/src/**'
+              - 'crates/agent-gui/test/**'
+              - 'crates/agent-gui/public/**'
+              - 'crates/agent-gateway/web/**'
+              - 'crates/agent-gateway/test/helpers/**'
+              - 'crates/agent-ui/**'
+              - 'scripts/run-node-tests.mjs'
+              - 'package.json'
+              - 'pnpm-lock.yaml'
+              - 'pnpm-workspace.yaml'
+              - 'turbo.json'
+              - '.github/workflows/ci.yml'
+            release:
+              - 'scripts/release/**'
+              - 'crates/agent-gui/test/backend/release-*.test.mjs'
+              - 'crates/agent-gui/package.json'
+              - 'scripts/run-node-tests.mjs'
+              - 'Makefile'
+              - '.github/workflows/desktop-release.yml'
+              - '.github/workflows/ci.yml'
             rust:
               - 'crates/agent-gui/src-tauri/**'
               - 'Cargo.toml'
@@ -189,14 +273,30 @@ jobs:
               - 'crates/agent-gateway/proto/**'
               - 'crates/agent-gui/package.json'
               - '.github/workflows/ci.yml'
+            ui_boundaries:
+              - 'crates/agent-ui/**'
+              - 'crates/agent-gui/src/**'
+              - 'crates/agent-gateway/web/src/**'
+              - 'scripts/check*.mjs'
+              - 'scripts/run-node-tests*.mjs'
+              - 'scripts/ui-boundary-declarations*.mjs'
+              - 'package.json'
+              - 'pnpm-lock.yaml'
+              - 'pnpm-workspace.yaml'
+              - 'turbo.json'
+              - '.github/workflows/ci.yml'
+
+      - name: Summarize affected jobs
+        env:
+          MATCHED_FILTERS: ${{ steps.filter.outputs.changes }}
+        run: echo "Affected filters:${MATCHED_FILTERS}" >> "$GITHUB_STEP_SUMMARY"
 
   tauri-rust:
     name: Tauri Rust Check
     runs-on: ubuntu-latest
     timeout-minutes: 30
     needs: changes
-    # push 到 main 时始终运行以持续更新共享缓存;PR 仅在 Rust 相关路径变更时运行。
-    if: ${{ !cancelled() && (github.event_name != 'pull_request' || needs.changes.outputs.rust == 'true') }}
+    if: ${{ !cancelled() && (needs.changes.result != 'success' || needs.changes.outputs.rust == 'true') }}
     env:
       # 行号级 debuginfo:显著降低 codegen 与链接开销,同时保留可读的失败回溯。
       CARGO_PROFILE_DEV_DEBUG: line-tables-only
@@ -238,8 +338,16 @@ jobs:
   ui-boundaries:
     name: Shared UI Boundaries
     runs-on: ubuntu-latest
+    needs: changes
+    if: ${{ !cancelled() && (needs.changes.result != 'success' || needs.changes.outputs.ui_boundaries == 'true') }}
     steps:
       - uses: actions/checkout@v6
+
+      - uses: actions/cache@v5
+        with:
+          path: .turbo
+          key: turbo-${{ runner.os }}-ui-boundaries-${{ github.sha }}
+          restore-keys: turbo-${{ runner.os }}-ui-boundaries-
 
       - uses: actions/setup-node@v6
         with:
@@ -249,13 +357,16 @@ jobs:
         run: npm install -g pnpm@10.32.1
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile --filter @liveagent/ui...
+        run: pnpm install --frozen-lockfile --filter liveagent-workspace --filter @liveagent/ui...
 
       - name: Run check script tests
         run: pnpm check:script-tests
 
       - name: Check shared UI dependency boundaries
-        run: pnpm check:ui-boundaries
+        env:
+          TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+          TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+        run: pnpm exec turbo run check:boundaries --filter=@liveagent/ui
 
   whitespace:
     name: Diff Hygiene

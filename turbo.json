@@ -1,0 +1,54 @@
+{
+  "$schema": "https://turborepo.dev/schema.json",
+  "tasks": {
+    "build": {
+      "dependsOn": ["^build"],
+      "env": ["NODE_ENV", "RUNNER_ARCH", "RUNNER_OS", "VITE_*", "npm_config_proxy_api"],
+      "outputs": ["dist/**"]
+    },
+    "lint": {
+      "env": ["CI", "RUNNER_ARCH", "RUNNER_OS"]
+    },
+    "typecheck": {
+      "env": ["CI", "RUNNER_ARCH", "RUNNER_OS"]
+    },
+    "test": {
+      "env": ["CI", "RUNNER_ARCH", "RUNNER_OS"],
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "$TURBO_ROOT$/scripts/run-node-tests.mjs",
+        "$TURBO_ROOT$/crates/agent-gateway/test/helpers/**",
+        "$TURBO_ROOT$/crates/agent-gateway/test/webui/**"
+      ]
+    },
+    "test:frontend": {
+      "env": ["CI", "RUNNER_ARCH", "RUNNER_OS"],
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "$TURBO_ROOT$/scripts/run-node-tests.mjs",
+        "$TURBO_ROOT$/crates/agent-gateway/web/**",
+        "$TURBO_ROOT$/crates/agent-gateway/test/helpers/**"
+      ]
+    },
+    "test:release": {
+      "env": ["CI", "RUNNER_ARCH", "RUNNER_OS"],
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "$TURBO_ROOT$/scripts/run-node-tests.mjs",
+        "$TURBO_ROOT$/scripts/release/**",
+        "$TURBO_ROOT$/.github/workflows/desktop-release.yml",
+        "$TURBO_ROOT$/Makefile"
+      ]
+    },
+    "check:boundaries": {
+      "env": ["CI", "RUNNER_ARCH", "RUNNER_OS"],
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "$TURBO_ROOT$/scripts/check-ui-boundaries.mjs",
+        "$TURBO_ROOT$/scripts/ui-boundary-declarations.mjs",
+        "$TURBO_ROOT$/crates/agent-gui/src/**",
+        "$TURBO_ROOT$/crates/agent-gateway/web/src/**"
+      ]
+    }
+  }
+}

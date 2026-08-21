@@ -43,6 +43,7 @@ chatroom
 *.sln
 *.sw?
 .pnpm-store
+.turbo
 workspace.zip
 
 # Debug symbols (MSVC)
