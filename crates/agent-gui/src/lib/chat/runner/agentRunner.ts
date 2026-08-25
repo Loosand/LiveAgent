@@ -35,6 +35,7 @@ import {
   resolveProviderCacheRetention,
   type StreamOptionsEx,
   streamSimpleByApi,
+  type ToolChoice,
   toSimpleStreamReasoning,
 } from "../../providers/llm";
 import {
@@ -475,6 +476,30 @@ export async function runAssistantWithTools(params: {
     toolCall: ToolCall,
     signal?: AbortSignal,
   ) => Promise<{ allow: true } | { allow: false; reason: string }>;
+  /**
+   * 请求层工具可见性谓词(MCP 懒加载):返回 false 的工具不进发给模型的请求,
+   * 但保留在执行层(loop 快照)——已发生的调用照常校验与执行。每轮请求前重新
+   * 评估,ToolSearch 激活后下一轮立即可见。与隐藏的 provider 原生搜索桥同机制。
+   */
+  requestToolFilter?: (toolName: string) => boolean;
+  /**
+   * 工具级终止谓词:某批调用里任一调用命中即在该批执行完后结束本轮 run,不再
+   * 跑后续模型轮(pi-agent-core afterToolCall terminate,批内全部标记 terminate
+   * 才生效,故谓词按批铺展——同批的并行调用照常执行,结果保留在历史)。计划
+   * 提交用它跳过无意义的"收尾话"轮——批准事实由卡片展示,执行由续轮承接。
+   */
+  resolveToolTermination?: (toolCall: ToolCall) => boolean;
+  /**
+   * 每轮出站请求的 tool_choice 裁决钩子(编排层策略,runner 不感知具体模式)。
+   * 返回 undefined 走缺省(有工具则 "auto")。定向强制({type:"tool"})只应
+   * 由调用方在有界场景使用——无界强制会剥夺模型的文本收尾能力,导致失控循环。
+   */
+  resolveToolChoice?: (round: number) => ToolChoice | undefined;
+  /**
+   * 模型轮数上限(含):达到后当前工具批执行完即优雅终止本轮 run(不抛错,
+   * 结果保留在历史),由编排层决定后续(如 plan mode 的补提交/兜底)。缺省无上限。
+   */
+  maxRounds?: number;
 }) {
   const modelId = params.model.trim();
   if (!modelId) throw new Error("No model selected");
@@ -795,7 +820,8 @@ export async function runAssistantWithTools(params: {
       tools?.filter(
         (tool) =>
           !hiddenProviderNativeWebSearchToolNames.has(tool.name) &&
-          !hiddenProviderNativeWebFetchToolNames.has(tool.name),
+          !hiddenProviderNativeWebFetchToolNames.has(tool.name) &&
+          (params.requestToolFilter?.(tool.name) ?? true),
       );
 
     const assistantVisibleAnswerText = (assistant: AssistantMessage) =>
@@ -1291,7 +1317,10 @@ export async function runAssistantWithTools(params: {
               target.runtime.promptCacheRetention,
             ),
           metadata: buildProviderRequestMetadata(target.providerId, params.sessionId),
-          toolChoice: options?.toolChoice ?? (effectiveContext.tools?.length ? "auto" : undefined),
+          toolChoice:
+            params.resolveToolChoice?.(round) ??
+            options?.toolChoice ??
+            (effectiveContext.tools?.length ? "auto" : undefined),
           reasoning: normalizeStreamReasoning(options?.reasoning) ?? fallbackReasoning,
           workdir: params.workdir,
           streamRetry: {
@@ -1483,9 +1512,22 @@ export async function runAssistantWithTools(params: {
       toolExecution: "sequential",
       afterToolCall: async ({ assistantMessage, toolCall }) => ({
         isError: toolResultErrorFlags.get(toolCall.id) ?? false,
-        // The batch only terminates when *every* call terminates, so a real
-        // local tool call mixed into the same message keeps the loop running.
-        terminate: await shouldTerminateBridgedProviderNativeToolCall(assistantMessage, toolCall),
+        // The batch only terminates when *every* call terminates. A terminating
+        // call (ExitPlanMode) can arrive batched with ordinary parallel calls,
+        // so the predicate must spread across the whole batch: every sibling
+        // still executes and keeps its result in history, then the run ends —
+        // otherwise one Read next to ExitPlanMode would silently void the
+        // "submitting ends this turn" guarantee and run a wrap-up round.
+        // maxRounds is the run-level circuit breaker: once the cap is reached
+        // the current batch finishes normally, then the run ends gracefully.
+        terminate:
+          (params.maxRounds !== undefined && currentRound >= params.maxRounds) ||
+          (params.resolveToolTermination
+            ? getAssistantToolCalls(assistantMessage).some((call) =>
+                params.resolveToolTermination?.(call),
+              )
+            : false) ||
+          (await shouldTerminateBridgedProviderNativeToolCall(assistantMessage, toolCall)),
       }),
       beforeToolCall: async ({ assistantMessage, toolCall }) => {
         const effectiveToolCall = normalizeToolCallNameForExecution(toolCall);

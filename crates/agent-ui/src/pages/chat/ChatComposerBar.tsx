@@ -23,18 +23,27 @@ import {
   ChevronDown,
   ChevronUp,
   Clock3,
+  Lightbulb,
   Loader2,
   Maximize2,
   Mic,
   Minimize2,
   Paperclip,
   Play,
+  Plus,
   Send,
   Square,
   SquarePen,
   Trash2,
 } from "@liveagent/ui/components/IconSet";
 import { Button } from "@liveagent/ui/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuTrigger,
+} from "@liveagent/ui/components/ui/dropdown-menu";
 import { LabelTooltip as RuntimeControlTooltip } from "@liveagent/ui/components/ui/label-tooltip";
 import { useLocale } from "@liveagent/ui/i18n/index";
 import type { GitClient } from "@liveagent/ui/lib/git/types";
@@ -292,7 +301,7 @@ export type ChatComposerBarProps = {
   onHeightChange?: (height: number) => void;
   /** 当前会话任务进度（存在时渲染在审批栏和队列面板之上）。 */
   taskProgressBar?: ReactNode;
-  /** 输入框上方的集中审批栏(待审批时由上层注入,渲染在队列面板之上)。 */
+  /** 待审批时替换输入卡片的集中审批面板。 */
   approvalBar?: ReactNode;
   /** 文件拖入命中输入框时显示的局部反馈层。 */
   fileDropOverlay?: ReactNode;
@@ -399,6 +408,9 @@ export const ChatComposerBar = memo(function ChatComposerBar(props: ChatComposer
   const uploadDisabled =
     isInputDisabled || stt.active || isUploadingFiles || !isAgentMode || !workdir;
   const controlsDisabled = isInputDisabled || stt.active;
+  // "+"菜单不只有上传:plan 开关不依赖 workdir/上传状态,菜单触发键只按
+  // 最宽松的可用项禁用,各菜单项再单独按自身前置条件禁用。
+  const composerAddMenuDisabled = isAgentMode ? controlsDisabled : uploadDisabled;
   const hasSendableDraft = !composerIsEmpty || pendingUploadedFiles.length > 0;
   const sendDisabled = isInputDisabled || stt.active || isUploadingFiles || !hasSendableDraft;
   const canQueueDraftWhileSending = isSending && !sendDisabled;
@@ -414,6 +426,10 @@ export const ChatComposerBar = memo(function ChatComposerBar(props: ChatComposer
       : !workdir
         ? t("chat.upload.requireWorkdir")
         : t("chat.upload.button");
+  // 菜单触发键的提示:菜单可用而上传不可用时用泛化"添加"文案,上传专属限制
+  // (需要工作目录等)只出现在上传菜单项自身的禁用态上。
+  const addMenuTooltip =
+    !composerAddMenuDisabled && uploadDisabled ? t("chat.upload.addSection") : uploadTooltip;
   const toggleQueueTooltip = queueCollapsed ? t("chat.queue.expand") : t("chat.queue.collapse");
   const toggleComposerExpandTooltip = isComposerExpanded
     ? t("chat.composer.collapse")
@@ -722,7 +738,6 @@ export const ChatComposerBar = memo(function ChatComposerBar(props: ChatComposer
         )}
       >
         {taskProgressBar}
-        {approvalBar}
         {queuedTurns.length > 0 ? (
           <div
             ref={queuePanelRef}
@@ -863,8 +878,10 @@ export const ChatComposerBar = memo(function ChatComposerBar(props: ChatComposer
           </div>
         ) : null}
 
+        {approvalBar}
         {/* biome-ignore lint/a11y/noStaticElementInteractions: Escape 捕获仅在展开态生效，焦点始终在内部 textbox 上，包装层不参与 Tab 序。 */}
         <div
+          hidden={approvalBar != null}
           ref={glassCardRef}
           data-file-upload-drop-zone=""
           data-file-upload-conversation-id={conversationId}
@@ -987,32 +1004,28 @@ export const ChatComposerBar = memo(function ChatComposerBar(props: ChatComposer
 
           <div className="relative flex items-center justify-between gap-2 px-3 pb-2 pt-1">
             <div className="flex min-w-0 flex-1 items-center gap-1">
-              <RuntimeControlTooltip label={uploadTooltip}>
-                <button
-                  type="button"
-                  disabled={uploadDisabled}
-                  onClick={onPickReadableFiles}
-                  aria-label={
-                    isUploadingFiles
-                      ? t("chat.upload.uploading")
-                      : !isAgentMode
-                        ? t("chat.upload.onlyInTools")
-                        : !workdir
-                          ? t("chat.upload.requireWorkdir")
-                          : t("chat.upload.selectFiles")
+              <DropdownMenu>
+                <DropdownMenuTrigger
+                  render={
+                    <button
+                      type="button"
+                      disabled={composerAddMenuDisabled}
+                      aria-label={addMenuTooltip}
+                      title={addMenuTooltip}
+                      className={cn(
+                        "composer-toolbar-action relative inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full outline-hidden transition-colors hover:bg-muted/60 focus-visible:bg-muted/60 data-[popup-open]:bg-muted/60",
+                        "disabled:pointer-events-none disabled:opacity-40",
+                        pendingUploadedFiles.length > 0
+                          ? "text-sky-600 hover:text-sky-700 dark:text-sky-300 dark:hover:text-sky-200"
+                          : "text-muted-foreground hover:text-foreground dark:hover:text-white",
+                      )}
+                    />
                   }
-                  className={cn(
-                    "composer-toolbar-action relative inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full outline-hidden transition-colors hover:bg-muted/60 focus-visible:bg-muted/60",
-                    "disabled:pointer-events-none disabled:opacity-40",
-                    pendingUploadedFiles.length > 0
-                      ? "text-sky-600 hover:text-sky-700 dark:text-sky-300 dark:hover:text-sky-200"
-                      : "text-muted-foreground hover:text-foreground dark:hover:text-white",
-                  )}
                 >
                   {isUploadingFiles ? (
                     <Loader2 className="h-4 w-4 animate-spin" />
                   ) : (
-                    <Paperclip className="h-4 w-4" />
+                    <Plus className="h-4 w-4" />
                   )}
                   {pendingUploadedFiles.length > 0 ? (
                     <span
@@ -1022,8 +1035,89 @@ export const ChatComposerBar = memo(function ChatComposerBar(props: ChatComposer
                       {pendingUploadedFiles.length}
                     </span>
                   ) : null}
+                </DropdownMenuTrigger>
+                <DropdownMenuContent
+                  className="composer-add-dropdown flex w-60 flex-col overflow-hidden p-1"
+                  side="top"
+                  align="start"
+                >
+                  <DropdownMenuLabel className="px-2 pb-1 pt-1.5 text-xs font-medium text-muted-foreground">
+                    {t("chat.upload.addSection")}
+                  </DropdownMenuLabel>
+                  <DropdownMenuItem
+                    onSelect={onPickReadableFiles}
+                    disabled={uploadDisabled}
+                    className="composer-safety-item items-center gap-2 rounded-md py-1.5 text-xs"
+                  >
+                    <Paperclip className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
+                    <span className="font-medium leading-5">
+                      {t("chat.upload.filesAndFolders")}
+                    </span>
+                  </DropdownMenuItem>
+                  {isAgentMode ? (
+                    // 计划模式开关行:整行即开关,右侧迷你 switch 呈现状态。
+                    // closeOnClick=false 让切换就地生效——开关动画可见,菜单
+                    // 不弹跳;行为说明降为 hover 提示,不再挤占行内小字。
+                    <DropdownMenuItem
+                      closeOnClick={false}
+                      role="menuitemcheckbox"
+                      aria-checked={chatRuntimeControls.planModeEnabled}
+                      title={t("chat.runtime.planModeHint")}
+                      onSelect={() =>
+                        onChatRuntimeControlsChange({
+                          planModeEnabled: !chatRuntimeControls.planModeEnabled,
+                        })
+                      }
+                      className="composer-safety-item items-center gap-2 rounded-md py-1.5 text-xs"
+                    >
+                      <Lightbulb
+                        className={cn(
+                          "h-3.5 w-3.5 shrink-0 transition-colors",
+                          chatRuntimeControls.planModeEnabled
+                            ? "text-sky-600 dark:text-sky-300"
+                            : "text-muted-foreground",
+                        )}
+                      />
+                      <span className="min-w-0 flex-1 truncate font-medium leading-5">
+                        {t("chat.runtime.planModeTitle")}
+                      </span>
+                      {/* 视觉开关(aria 由行上的 menuitemcheckbox 承担):与计划
+                          pill 同用 sky 色系,状态一眼可辨。 */}
+                      <span
+                        aria-hidden
+                        className={cn(
+                          "ml-auto inline-flex h-[18px] w-8 shrink-0 items-center rounded-full transition-colors",
+                          chatRuntimeControls.planModeEnabled
+                            ? "bg-sky-500 dark:bg-sky-400"
+                            : "bg-muted-foreground/25",
+                        )}
+                      >
+                        <span
+                          className={cn(
+                            "block h-3.5 w-3.5 translate-x-[2px] rounded-full bg-white shadow-sm transition-transform dark:bg-slate-100",
+                            chatRuntimeControls.planModeEnabled && "translate-x-4",
+                          )}
+                        />
+                      </span>
+                    </DropdownMenuItem>
+                  ) : null}
+                </DropdownMenuContent>
+              </DropdownMenu>
+
+              {/* 计划模式开启指示(Codex 风格 pill):一眼可见,点击即关。 */}
+              {isAgentMode && chatRuntimeControls.planModeEnabled ? (
+                <button
+                  type="button"
+                  disabled={controlsDisabled}
+                  onClick={() => onChatRuntimeControlsChange({ planModeEnabled: false })}
+                  title={t("chat.runtime.planModeSlashOff")}
+                  aria-label={t("chat.runtime.planModeSlashOff")}
+                  className="inline-flex h-8 shrink-0 items-center gap-1.5 rounded-full border border-sky-500/25 bg-sky-500/10 px-2.5 text-[11px] font-medium text-sky-700 outline-hidden transition-colors hover:bg-sky-500/15 focus-visible:ring-2 focus-visible:ring-primary/35 disabled:pointer-events-none disabled:opacity-40 dark:text-sky-300"
+                >
+                  <Lightbulb className="h-3.5 w-3.5 shrink-0" />
+                  <span className="truncate">{t("chat.runtime.planMode")}</span>
                 </button>
-              </RuntimeControlTooltip>
+              ) : null}
 
               {stt.available ? (
                 <RuntimeControlTooltip label={stt.active ? "停止语音输入" : "开始语音输入"}>

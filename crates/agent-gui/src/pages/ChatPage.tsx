@@ -113,6 +113,7 @@ import {
   isAgentExecutionMode,
   normalizeSelectedModelForProviders,
   parseSelectedModelJson,
+  resolveEffectivePromptSettings,
   resolveEffectiveTheme,
   resolveWorkspaceResources,
   updateExecutionModeFromChatSelection,
@@ -127,7 +128,15 @@ import { desktopSttTransport } from "../lib/stt/desktopSttTransport";
 import { createSubagentStoreManager } from "../lib/subagents";
 import { tauriTerminalClient } from "../lib/terminal/tauriTerminalClient";
 import { cancelPendingAskUserQuestionsForConversation } from "../lib/tools/askUserQuestionTools";
+import {
+  answerPlanDecision,
+  cancelPendingPlanDecisionsForConversation,
+  getPendingPlanForConversation,
+  isPlanApprovalMessage,
+  registerPlanDecisionHandlers,
+} from "../lib/tools/planModeTools";
 import { cancelPendingToolApprovalsForConversation } from "../lib/tools/toolApproval";
+import { clearMcpToolActivation } from "../lib/tools/toolSearchTools";
 import { buildTrayMenuModel, syncTrayMenu } from "../lib/tray/trayMenu";
 import { useTrayPrefs } from "../lib/tray/trayPrefs";
 import { createTauriTunnelClient } from "../lib/tunnels/tauriTunnelClient";
@@ -271,11 +280,8 @@ export function ChatPage(props: ChatPageProps) {
   const isAgentDevExecutionMode = isAgentDevMode(settings.system.executionMode);
   const workdir = settings.system.workdir.trim();
   const activeAgentPrompt = useMemo(() => {
-    const activeTemplate = settings.agents.find(
-      (template) => template.enabled && template.prompt.trim(),
-    );
-    return activeTemplate?.prompt.trim() ?? "";
-  }, [settings.agents]);
+    return resolveEffectivePromptSettings(settings, "").globalPrompt;
+  }, [settings]);
   // The sidebar store owns all sidebar domain state (conversation list,
   // workdirs, running set); ChatPage only issues imperative calls and keeps a
   // few narrow selector subscriptions.
@@ -510,9 +516,11 @@ export function ChatPage(props: ChatPageProps) {
     finishGatewayRunMirror,
   } = useGatewayRunMirrorCoordinator();
 
-  // 用量环读数：与 WebUI 同一把共享扫描器（deriveContextUsageTokens），
-  // 历史项 + 流式实时轮次（live store 每帧批量提交）联合倒扫。经订阅源
-  // 直达环组件，流式读数逐帧更新而不回流 ChatPage。
+  // 用量环读数：运行中直读 TokenLedger（消息落定即更新，不逐帧估算流式
+  // 文本，优先级与理由见 useContextUsageTokensSource 内注释）；账本无读数
+  // 或空闲时用与 WebUI 同源的 deriveContextUsageTokens 倒扫历史项（运行中
+  // 补上 live 尾部）。经订阅源直达环组件，读数变化只重渲染环本身而不回流
+  // ChatPage。
   const contextUsageRingRunning = isSending || compactionStatus.phase === "running";
   const contextUsageTokensSource = useContextUsageTokensSource({
     isRunning: contextUsageRingRunning,
@@ -894,6 +902,110 @@ export function ChatPage(props: ChatPageProps) {
   });
   stopConversationActionRef.current = stopConversation;
 
+  // 对话式计划审批(对齐 Codex):计划提交即终止规划 run,用户以消息或按钮
+  // 回应。批准 = 关 plan 开关 + 暂存执行续轮;退回 = 反馈暂存为普通用户消息。
+  // 两者都走"暂存 → run 消失后冲刷"路径:send 在会话恰在发送/加载时会拒绝
+  // (返回 false),直发会静默丢消息——冲刷按结果重新暂存,直到真正发出。
+  // 卡片按钮、输入框批准短语、WebUI plan_decision 三个入口共用这两条路径。
+  const pendingPlanContinuationsRef = useRef(new Map<string, string>());
+  const pendingPlanFeedbackRef = useRef(new Map<string, string>());
+  const planDecisionSendsInFlightRef = useRef(new Set<string>());
+  const planDecisionRetryCountsRef = useRef(new Map<string, number>());
+  // handleSend 点击时采样(该回调刻意不依赖 settings):短语批准只在 plan 开关
+  // 仍开着时生效,防止被弃置的陈旧待决计划之后被一句"好的/ok"意外复活。
+  const planModeEnabledRef = useRef(false);
+  planModeEnabledRef.current = settings.chatRuntimeControls.planModeEnabled === true;
+  const [planContinuationVersion, setPlanContinuationVersion] = useState(0);
+  useEffect(() => {
+    registerPlanDecisionHandlers({
+      onApprove: ({ conversationId }) => {
+        setSettings((prev) =>
+          prev.chatRuntimeControls.planModeEnabled
+            ? {
+                ...prev,
+                chatRuntimeControls: { ...prev.chatRuntimeControls, planModeEnabled: false },
+              }
+            : prev,
+        );
+        pendingPlanContinuationsRef.current.set(conversationId, t("chat.planMode.executePrompt"));
+        planDecisionRetryCountsRef.current.delete(conversationId);
+        setPlanContinuationVersion((version) => version + 1);
+      },
+      onReject: ({ conversationId, feedback }) => {
+        pendingPlanFeedbackRef.current.set(conversationId, feedback);
+        planDecisionRetryCountsRef.current.delete(conversationId);
+        setPlanContinuationVersion((version) => version + 1);
+      },
+    });
+    return () => registerPlanDecisionHandlers(null);
+  }, [setSettings, t]);
+  // 冲刷暂存的计划应答消息(规划 run 已"提交即终止",但打断/排队等场景下会话
+  // 可能仍在发送):
+  // - 退回反馈:会话空闲即发(模型留在 plan mode 修订);
+  // - 执行续轮:还需 plan 开关已关(settings 已 flush,避免续轮又被"只能收紧"
+  //   合并锁回只读)。
+  // send 返回 false / 抛错时重新暂存;运行集变化(run 结束)是主要重试信号,
+  // 另排一次短延迟兜底 bump(覆盖 hydrating 等与运行集无关的拒绝)。兜底限次:
+  // 永久性失败(会话加载失败等)不得退化成秒级重试死循环——超限后消息仍留在
+  // 暂存 map,由下一次运行集变化或新应答触发再试。in-flight 集防并发重复发送。
+  // biome-ignore lint/correctness/useExhaustiveDependencies: planContinuationVersion 是刻意的重跑触发器(应答写入 ref 后 bump)
+  useEffect(() => {
+    const scheduleFlushRetry = (conversationId: string) => {
+      const attempts = planDecisionRetryCountsRef.current.get(conversationId) ?? 0;
+      if (attempts >= 5) return;
+      planDecisionRetryCountsRef.current.set(conversationId, attempts + 1);
+      window.setTimeout(() => setPlanContinuationVersion((version) => version + 1), 1_000);
+    };
+    const flushPlanSends = (
+      store: Map<string, string>,
+      buildOverrides: (conversationId: string, text: string) => Parameters<SendChatAction>[0],
+    ) => {
+      for (const [conversationId, text] of store) {
+        if (runningConversationIds.has(conversationId)) continue;
+        if (planDecisionSendsInFlightRef.current.has(conversationId)) continue;
+        planDecisionSendsInFlightRef.current.add(conversationId);
+        store.delete(conversationId);
+        void sendActionRef
+          .current(buildOverrides(conversationId, text))
+          .then((accepted) => {
+            // 竞态失败(会话恰在发送/加载)时重新暂存并排一次兜底重试;期间若
+            // 有更新的同会话应答入了 map,保留新值。
+            if (accepted) {
+              planDecisionRetryCountsRef.current.delete(conversationId);
+            } else if (!store.has(conversationId)) {
+              store.set(conversationId, text);
+              scheduleFlushRetry(conversationId);
+            }
+          })
+          .catch((error) => {
+            console.warn("plan decision message send failed", error);
+            if (!store.has(conversationId)) {
+              store.set(conversationId, text);
+              scheduleFlushRetry(conversationId);
+            }
+          })
+          .finally(() => {
+            planDecisionSendsInFlightRef.current.delete(conversationId);
+          });
+      }
+    };
+    flushPlanSends(pendingPlanFeedbackRef.current, (conversationId, feedback) => ({
+      conversationIdOverride: conversationId,
+      textOverride: feedback,
+      preserveComposerOnStart: true,
+    }));
+    if (settings.chatRuntimeControls.planModeEnabled) return;
+    flushPlanSends(pendingPlanContinuationsRef.current, (conversationId, prompt) => ({
+      conversationIdOverride: conversationId,
+      textOverride: prompt,
+      preserveComposerOnStart: true,
+      runtimeControlsOverride: {
+        ...settings.chatRuntimeControls,
+        planModeEnabled: false,
+      },
+    }));
+  }, [planContinuationVersion, runningConversationIds, settings.chatRuntimeControls]);
+
   // Queue snapshots publish on queue mutation only; after a gateway
   // reconnect (new session) the gateway's in-memory queue view is empty, so
   // republish the current queue for every conversation that has one.
@@ -931,6 +1043,17 @@ export function ChatPage(props: ChatPageProps) {
     ],
   );
 
+  // 会话瞬态交互的统一 prune 清理:本页与 useConversationHistoryActions 两条
+  // prune 路径共用,保证生命周期裁决一致。计划审批刻意不在此列——待决计划的
+  // 设计就是跨 run 存活(规划 run 提交即终止),空闲运行时缓存被逐出不等于会话
+  // 销毁,回到会话后卡片必须仍可批准;真正删除会话时才连批准态一起清(见
+  // handleConversationDeleted)。MCP 激活集清了只损失一次重新检索,可清。
+  const cancelConversationTransientInteractions = useCallback((conversationId: string) => {
+    cancelPendingAskUserQuestionsForConversation(conversationId);
+    cancelPendingToolApprovalsForConversation(conversationId);
+    clearMcpToolActivation(conversationId);
+  }, []);
+
   // biome-ignore lint/correctness/useExhaustiveDependencies: Queue and runtime maps are mutable registries intentionally sampled at prune time through refs.
   const pruneIdleConversationCaches = useCallback(
     (extraKeepIds: Iterable<string> = []) => {
@@ -947,8 +1070,7 @@ export function ChatPage(props: ChatPageProps) {
         onPruneConversation: (conversationId) => {
           deleteConversationLocalCaches(conversationId);
           subagentStoresRef.current.dispose(conversationId);
-          cancelPendingAskUserQuestionsForConversation(conversationId);
-          cancelPendingToolApprovalsForConversation(conversationId);
+          cancelConversationTransientInteractions(conversationId);
         },
       });
     },
@@ -958,6 +1080,7 @@ export function ChatPage(props: ChatPageProps) {
       deleteConversationLocalCaches,
       isConversationRunning,
       conversationPersistenceCursorRef,
+      cancelConversationTransientInteractions,
     ],
   );
 
@@ -1018,6 +1141,13 @@ export function ChatPage(props: ChatPageProps) {
     deleteConversationArtifacts: deleteConversationLocalCaches,
     disposeSubagentsForConversation: (conversationId) => {
       subagentStoresRef.current.dispose(conversationId);
+    },
+    cancelConversationTransientInteractions,
+    cancelPlanDecisionsForConversation: (conversationId) => {
+      pendingPlanContinuationsRef.current.delete(conversationId);
+      pendingPlanFeedbackRef.current.delete(conversationId);
+      planDecisionRetryCountsRef.current.delete(conversationId);
+      cancelPendingPlanDecisionsForConversation(conversationId);
     },
     getDefaultNewConversationWorkdir: () =>
       isAgentMode ? activeWorkspaceProjectPath || undefined : undefined,
@@ -1358,7 +1488,6 @@ export function ChatPage(props: ChatPageProps) {
     availableSkills,
     skillsRootDir,
     refreshSkills,
-    activeAgentPrompt,
     ensureTunnelToolTab,
     ensureSshTunnelToolTab,
     persistConversation,
@@ -1377,9 +1506,10 @@ export function ChatPage(props: ChatPageProps) {
   const resolveManualCompactionPromptInputs = useCallback(
     async (input: { isCurrentConversation: boolean; workdir?: string }) => {
       if (!input.isCurrentConversation) {
-        return { skillsPrompt: "", memoryPrompt: "" };
+        return { activeAgentPrompt, skillsPrompt: "", memoryPrompt: "" };
       }
       const promptWorkdir = input.workdir?.trim() ?? "";
+      const effectivePrompt = resolveEffectivePromptSettings(settings, promptWorkdir).prompt;
       const resources = resolveWorkspaceResources(settings, promptWorkdir);
       let skillsPrompt = "";
       if (resources.skillsEnabled && isAgentMode && resources.skillNames.length > 0) {
@@ -1403,9 +1533,9 @@ export function ChatPage(props: ChatPageProps) {
           memoryPrompt = "";
         }
       }
-      return { skillsPrompt, memoryPrompt };
+      return { activeAgentPrompt: effectivePrompt, skillsPrompt, memoryPrompt };
     },
-    [availableSkills, isAgentMode, settings, skillsRootDir],
+    [activeAgentPrompt, availableSkills, isAgentMode, settings, skillsRootDir],
   );
 
   const handleManualCompact = useManualCompaction({
@@ -1432,7 +1562,6 @@ export function ChatPage(props: ChatPageProps) {
     finishGatewayRunMirror,
     persistConversation,
     setErrorMessage,
-    activeAgentPrompt,
     resolveManualCompactionPromptInputs,
   });
   manualCompactActionRef.current = handleManualCompact;
@@ -1791,12 +1920,40 @@ export function ChatPage(props: ChatPageProps) {
       }
       return;
     }
+    // 对话式计划审批:会话有待决计划时,纯批准短语("同意/开始/ok"等)即批准
+    // (等同点卡片按钮);其他输入就是普通消息(修改意见),照常发送——规划 run
+    // 已结束,消息直接开启新一轮 plan mode 修订,不经队列。
+    // 短语批准要求 plan 开关仍开着:正常流程中提交后开关保持开启(批准才关);
+    // 用户手动关掉 pill 即视为弃置当前计划,之后的"好的/ok"是普通消息,不得
+    // 把陈旧计划复活成执行续轮。显式批准仍可走卡片按钮(不受开关限制)。
+    if (conversationId && planModeEnabledRef.current) {
+      const pendingPlan = getPendingPlanForConversation(conversationId);
+      if (pendingPlan) {
+        const text = composerRef.current?.getText().trim() ?? "";
+        if (text && isPlanApprovalMessage(text)) {
+          const outcome = answerPlanDecision(
+            pendingPlan.toolCallId,
+            { decision: "approve" },
+            { conversationId },
+          );
+          if (outcome.ok) {
+            composerRef.current?.clear();
+            return;
+          }
+        }
+      }
+    }
     if (conversationId && (isConversationRunning(conversationId) || runtimeEntry?.isSending)) {
       enqueueCurrentComposerTurn("end");
       return;
     }
     void sendActionRef.current();
-  }, [enqueueCurrentComposerTurn, isConversationRunning, requestQueuedChatTurnProcessing]);
+  }, [
+    composerRef,
+    enqueueCurrentComposerTurn,
+    isConversationRunning,
+    requestQueuedChatTurnProcessing,
+  ]);
 
   const handleComposerBusyChange = useCallback((isBusy: boolean) => {
     composerBusyRef.current = isBusy;
@@ -3144,6 +3301,7 @@ export function ChatPage(props: ChatPageProps) {
       {/* ---- Left column: navigation/sidebar ---- */}
       <ChatSidebarContainer
         store={sidebarStore}
+        approvalStore={conversationRuntimeRegistry.approvals}
         currentConversationId={currentConversationId}
         isOpen={sidebarOpen}
         fontScale={settings.customSettings.fontScale.sidebar}

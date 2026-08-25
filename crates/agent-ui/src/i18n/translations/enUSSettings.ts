@@ -8,7 +8,7 @@ export const EN_US_SETTINGS_TRANSLATIONS = {
   "settings.toolPolicy.deny": "Deny",
   "settings.navProviders": "Providers",
   "settings.navHooks": "Hooks",
-  "settings.navAgents": "Prompt",
+  "settings.navAgents": "Prompt Templates",
   "settings.navSsh": "SSH",
   "settings.navCron": "Cron",
   "settings.navRemote": "Remote",
@@ -354,6 +354,15 @@ export const EN_US_SETTINGS_TRANSLATIONS = {
   "settings.builtinTool.send_message.desc": "Exchange messages with subagents",
   "settings.builtinTool.send_message.detail":
     "Relays messages between the main conversation and subagents to coordinate multi-agent work. Requires the subagent runtime; chat sessions only.",
+  "settings.builtinTool.tool_search.name": "Tool Search",
+  "settings.builtinTool.tool_search.desc": "Search and activate deferred MCP tools on demand",
+  "settings.builtinTool.tool_search.detail":
+    "Enabled automatically when the combined MCP tool schemas exceed a threshold: every tool stays registered for execution, but only tools matched by a search (or called directly) enter the model request, cutting context cost dramatically with many servers. Activation persists for the conversation. Chat sessions only.",
+  "settings.builtinTool.exit_plan_mode.name": "Plan Submission",
+  "settings.builtinTool.exit_plan_mode.desc":
+    "Present the implementation plan and wait for your approval",
+  "settings.builtinTool.exit_plan_mode.detail":
+    "In plan mode, the model submits its complete implementation plan as a card once research is done. Submitting ends that turn immediately; the plan stays pending until you respond. Approval starts execution automatically (full tools return next turn); replying with anything else sends your feedback back for another revision. Registered only in plan-mode chat sessions.",
   "settings.builtinTool.ask_user_question.name": "Ask User",
   "settings.builtinTool.ask_user_question.desc":
     "Ask you multiple-choice questions in a card and wait for your selections",
@@ -652,20 +661,32 @@ export const EN_US_SETTINGS_TRANSLATIONS = {
   "settings.failoverCooldownSeconds": "Cooldown (seconds)",
   "settings.failoverCooldownSecondsHint":
     "How long an open circuit skips the provider before allowing a probe request (5-3600 seconds).",
-  "settings.agentsTitle": "Prompt",
-  "settings.agentsDesc": "Manage reusable global prompt templates",
+  "settings.agentsTitle": "Prompt Templates",
+  "settings.agentsDesc": "Manage global templates and project-specific prompts in one place",
+  "settings.agentsGlobalTab": "Global templates",
+  "settings.agentsProjectsTab": "Project prompts",
+  "settings.agentsGlobalConfigTitle": "Global default prompts",
+  "settings.agentsGlobalConfigHint":
+    "Only one global template can be active; enabling another automatically disables the current one.",
+  "settings.agentsGlobalDefault": "Global default",
+  "settings.agentsProjectConfigured": "Configured",
+  "settings.agentsProjectUnconfigured": "Not configured",
+  "settings.agentsProjectAppend": "Append global",
+  "settings.agentsProjectReplace": "Replace global",
+  "settings.agentsProjectEdit": "Edit project prompt",
+  "settings.agentsNoProjects": "No projects to configure yet",
+  "settings.agentsNoProjectsHint": "Create or add a project from the chat sidebar first.",
   "settings.agentsAdd": "Add Template",
   "settings.agentsEdit": "Edit Template",
   "settings.agentsName": "Name",
   "settings.agentsNamePlaceholder": "e.g. Code Review Assistant",
   "settings.agentsDescription": "Description",
-  "settings.agentsDescriptionPlaceholder":
-    "Briefly describe what this global prompt template is for",
+  "settings.agentsDescriptionPlaceholder": "Briefly describe what this prompt template is for",
   "settings.agentsTemplateDetails": "Template details",
   "settings.agentsTemplateDetailsHint":
     "Use a clear name and description so this template is easy to identify and reuse.",
   "settings.agentsPrompt": "Prompt",
-  "settings.agentsPromptPlaceholder": "Enter the full global prompt content...",
+  "settings.agentsPromptPlaceholder": "Enter the full prompt content...",
   "settings.agentsPromptHint":
     "Define the context, role, and behavior rules the Agent should always follow.",
   "settings.agentsCharacters": "characters",
@@ -675,9 +696,9 @@ export const EN_US_SETTINGS_TRANSLATIONS = {
   "settings.agentsInactiveLabel": "Inactive",
   "settings.agentsStatus": "Status",
   "settings.agentsNoDescription": "No template description yet.",
-  "settings.agentsNoTemplates": "No global prompt templates yet",
+  "settings.agentsNoTemplates": "No global templates yet",
   "settings.agentsNoTemplatesHint":
-    "Create reusable prompt templates to quickly apply common Agent instructions in your chats",
+    "Create a template and make it a global default to reuse common Agent instructions",
   "settings.agentsShowPrompt": "View Prompt",
   "settings.agentsReady": "Ready to save",
   "settings.agentsRequired": "Name and Prompt are required",

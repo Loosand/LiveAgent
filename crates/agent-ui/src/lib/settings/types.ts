@@ -273,10 +273,14 @@ export type SystemSettings = {
 
 export type WorkspaceResourceSettingsMode = "inherit" | "custom" | "off";
 
+export type ProjectPromptStrategy = "append" | "replace";
+
 export type WorkspaceResourceSettings = {
   mode: WorkspaceResourceSettingsMode;
   skillNames: string[];
   mcpServerIds: string[];
+  projectPrompt: string;
+  projectPromptStrategy: ProjectPromptStrategy;
   stateVersion: number;
   writerId: string;
   updatedAt: number;
@@ -288,6 +292,14 @@ export type EffectiveWorkspaceResources = {
   skillNames: string[];
   mcpServerIds: string[];
   mcpServers: McpServerConfig[];
+};
+
+export type EffectivePromptSettings = {
+  globalTemplates: AgentPromptTemplate[];
+  globalPrompt: string;
+  projectPrompt: string;
+  projectPromptStrategy: ProjectPromptStrategy;
+  prompt: string;
 };
 
 export type WorkspaceProjectKind = "managed" | "folder" | "history";
@@ -336,6 +348,8 @@ export type ProviderModelConfig = {
 export type ChatRuntimeControls = {
   thinkingEnabled: boolean;
   nativeWebSearchEnabled: boolean;
+  /** Plan mode:本轮只注入只读工具,经 ExitPlanMode 批准后才进入执行。 */
+  planModeEnabled: boolean;
   reasoning: ReasoningLevel;
   reasoningByProvider: Partial<Record<ChatRuntimeReasoningProviderKey, ReasoningLevel>>;
 };
@@ -585,6 +599,7 @@ export const PROMPT_CACHE_HINT_MODES = [
 export const DEFAULT_CHAT_RUNTIME_CONTROLS: ChatRuntimeControls = {
   thinkingEnabled: true,
   nativeWebSearchEnabled: true,
+  planModeEnabled: false,
   reasoning: "high",
   reasoningByProvider: {
     claude_code: "high",
