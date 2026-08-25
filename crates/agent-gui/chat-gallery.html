@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="robots" content="noindex,nofollow" />
+    <link rel="icon" type="image/png" href="/src-tauri/icons/icon-simple.png" />
+    <title>LiveAgent Chat UI Gallery</title>
+    <script>
+      (() => {
+        window.addEventListener(
+          "error",
+          (event) => {
+            if (
+              event.message === "ResizeObserver loop limit exceeded" ||
+              event.message === "ResizeObserver loop completed with undelivered notifications."
+            ) {
+              event.preventDefault();
+              event.stopImmediatePropagation();
+            }
+          },
+          true,
+        );
+        const requestedTheme = new URLSearchParams(window.location.search).get("theme");
+        const dark =
+          requestedTheme === "dark" ||
+          (requestedTheme !== "light" &&
+            window.matchMedia("(prefers-color-scheme: dark)").matches);
+        document.documentElement.classList.toggle("dark", dark);
+      })();
+    </script>
+    <style>
+      html,
+      body,
+      #root {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+      }
+
+      body {
+        overflow: hidden;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/dev/chat-gallery/main.tsx"></script>
+  </body>
+</html>
