@@ -27,8 +27,22 @@ export type AssistantRowFooterProps = {
 };
 
 export function AssistantRowFooter(props: AssistantRowFooterProps) {
-  const { timestamp, replyText, usageEntries, usageContextWindow } = props;
+  const {
+    timestamp,
+    replyText,
+    usageEntries,
+    usageContextWindow,
+    retryTarget,
+    onResendFromEdit,
+    onBranchConversation,
+  } = props;
+  const { t } = useLocale();
   const { copied, markCopied } = useCopiedFlag();
+  const { isSending, branchPendingMessageId } = useRowInteraction();
+  const retryMessageRef = retryTarget?.messageRef;
+  const branchPending = branchPendingMessageId != null;
+  const isRowBranchPending =
+    branchPending && !!retryMessageRef && branchPendingMessageId === retryMessageRef.messageId;
 
   return (
     <TranscriptAssistantMessageActions
@@ -41,6 +55,18 @@ export function AssistantRowFooter(props: AssistantRowFooterProps) {
       }}
       usageEntries={usageEntries}
       usageContextWindow={usageContextWindow}
+      retryDisabled={isSending || !retryMessageRef}
+      retryTitle={retryMessageRef ? t("chat.retry") : "旧历史缺少稳定消息标识，无法重试"}
+      onRetry={() => {
+        if (!retryTarget || !retryMessageRef) return;
+        onResendFromEdit(retryMessageRef, retryTarget.text, retryTarget.attachments);
+      }}
+      branchDisabled={isSending || !retryMessageRef || !onBranchConversation || branchPending}
+      branchTitle={retryMessageRef ? t("chat.branch") : t("chat.branchUnavailable")}
+      branchPending={isRowBranchPending}
+      onBranch={() => {
+        if (retryMessageRef) onBranchConversation?.(retryMessageRef);
+      }}
     />
   );
 }

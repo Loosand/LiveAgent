@@ -1,6 +1,7 @@
 import {
   type GroupedRoundBlock,
   groupRoundBlocks,
+  resolveReasoningSearchWorkLayout,
 } from "@liveagent/ui/components/chat/assistant-bubble/assistantBubbleUtils";
 import { isTaskToolBlock } from "@liveagent/ui/lib/chat/taskProgress";
 import {
@@ -56,6 +57,14 @@ export type AssistantPlaceholderRenderUnit = {
   showFallbackStatus: boolean;
 };
 
+export type AssistantWorkTraceRenderUnit = {
+  kind: "work-trace";
+  blocks: GroupedRoundBlock[];
+  runningToolCallIds: string[];
+  thinkingOpen: boolean;
+  latestThinkingKey: string | null;
+};
+
 export type AssistantFooterRenderUnit = {
   kind: "footer";
   timestamp?: number;
@@ -71,6 +80,7 @@ export type AssistantStatusRenderUnit = {
 
 export type AssistantRenderUnit =
   | AssistantBlockRenderUnit
+  | AssistantWorkTraceRenderUnit
   | AssistantPlaceholderRenderUnit
   | AssistantStatusRenderUnit
   | AssistantFooterRenderUnit;
@@ -250,11 +260,26 @@ function canReuseLiveUnit(previous: AssistantUnitRow, next: AssistantUnitRow) {
     previous.renderMode !== next.renderMode ||
     previous.compacted !== next.compacted ||
     previous.showAvatar !== next.showAvatar ||
-    previous.unit.kind !== "block" ||
-    next.unit.kind !== "block"
+    previous.unit.kind !== next.unit.kind
   ) {
     return false;
   }
+
+  if (previous.unit.kind === "work-trace" && next.unit.kind === "work-trace") {
+    const nextWorkTrace = next.unit;
+    return (
+      previous.unit.blocks.length === nextWorkTrace.blocks.length &&
+      previous.unit.blocks.every((block, index) => {
+        const nextBlock = nextWorkTrace.blocks[index];
+        return nextBlock ? sameGroupedBlock(block, nextBlock) : false;
+      }) &&
+      sameStringArray(previous.unit.runningToolCallIds, nextWorkTrace.runningToolCallIds) &&
+      previous.unit.thinkingOpen === nextWorkTrace.thinkingOpen &&
+      previous.unit.latestThinkingKey === nextWorkTrace.latestThinkingKey
+    );
+  }
+
+  if (previous.unit.kind !== "block" || next.unit.kind !== "block") return false;
   return (
     sameGroupedBlock(previous.unit.block, next.unit.block) &&
     previous.unit.roundMeta === next.unit.roundMeta &&
@@ -333,8 +358,53 @@ function buildAssistantUnits(input: BuildAssistantUnitsInput): AssistantUnitRow[
         break;
       }
     }
+    const workTraceLayout = resolveReasoningSearchWorkLayout(groupedBlocks);
+    const workTraceIndexSet = new Set(workTraceLayout.indexes);
 
     groupedBlocks.forEach((block, blockIndex) => {
+      if (blockIndex === workTraceLayout.firstIndex) {
+        const workBlocks = workTraceLayout.indexes.flatMap((workIndex) => {
+          const workBlock = groupedBlocks[workIndex];
+          return workBlock ? [workBlock] : [];
+        });
+        const workMeasurements = workBlocks.map(measureBlockUnit);
+        rows.push({
+          kind: "assistant-unit",
+          key: `${replyKey}:round:${round.key}:work-trace`,
+          replyKey,
+          estimate: live
+            ? Math.min(
+                360,
+                42 +
+                  workMeasurements.reduce((total, measurement) => total + measurement.estimate, 0),
+              )
+            : 42,
+          renderCost: Math.min(
+            16,
+            Math.max(
+              1,
+              workMeasurements.reduce((total, measurement) => total + measurement.renderCost, 0),
+            ),
+          ),
+          gapAfter: ASSISTANT_UNIT_GAP_PX,
+          anchorUserKey,
+          live,
+          mutable: false,
+          renderMode,
+          compacted,
+          showAvatar: rows.length === 0,
+          unit: {
+            kind: "work-trace",
+            blocks: workBlocks,
+            runningToolCallIds,
+            thinkingOpen: "thinkingOpen" in round ? round.thinkingOpen : false,
+            latestThinkingKey,
+          },
+        });
+        return;
+      }
+      if (workTraceIndexSet.has(blockIndex)) return;
+
       const isRoundTail = blockIndex === groupedBlocks.length - 1;
       const measurement = measureBlockUnit(block);
       rows.push({

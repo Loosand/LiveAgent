@@ -342,16 +342,45 @@ const GatewayUserMessageRowBody = memo(function GatewayUserMessageRowBody(props:
   );
 });
 
-// Compact assistant footer: the reply stays uncluttered until the user asks
-// for usage details, while copy remains one click away.
+function findRetryTarget(rows: readonly TranscriptRow[], assistantIndex: number) {
+  for (let index = assistantIndex - 1; index >= 0; index -= 1) {
+    const row = rows[index];
+    if (row?.kind === "user") return row;
+  }
+  return null;
+}
+
+// Compact assistant footer: primary reply actions stay one click away while
+// detailed usage remains behind the info popover.
 const GatewayAssistantMessageActions = memo(function GatewayAssistantMessageActions(props: {
   row: Extract<TranscriptRow, { kind: "assistant" }>;
+  retryTarget: Extract<TranscriptRow, { kind: "user" }> | null;
+  isStreaming: boolean;
   showUsage?: boolean;
   usageContextWindow?: number;
   isCopied: boolean;
   setCopiedMessageId: Dispatch<SetStateAction<string | null>>;
+  onResendFromEdit?: (
+    messageRef: HistoryMessageRef,
+    text: string,
+    uploadedFiles: PendingUploadedFile[],
+  ) => void;
+  onBranchConversation?: (messageRef: HistoryMessageRef) => void;
+  branchPendingMessageId?: string | null;
 }) {
-  const { row, showUsage, usageContextWindow, isCopied, setCopiedMessageId } = props;
+  const {
+    row,
+    retryTarget,
+    isStreaming,
+    showUsage,
+    usageContextWindow,
+    isCopied,
+    setCopiedMessageId,
+    onResendFromEdit,
+    onBranchConversation,
+    branchPendingMessageId,
+  } = props;
+  const { locale, t } = useLocale();
   const replyText = row.rounds
     .map((round) => getRoundText(round).trim())
     .filter((text) => text.length > 0)
@@ -365,6 +394,18 @@ const GatewayAssistantMessageActions = memo(function GatewayAssistantMessageActi
         : undefined,
     [row.rounds, showUsage],
   );
+  const retryMessageRef = retryTarget?.messageRef;
+  const retryDisabled = isStreaming || !onResendFromEdit || !retryMessageRef;
+  const retryTitle = retryMessageRef
+    ? t("chat.retry")
+    : locale === "en-US"
+      ? "This reply cannot be retried because its prompt has no stable message identifier."
+      : "旧历史缺少稳定消息标识，无法重试";
+  const branchPending = branchPendingMessageId != null;
+  const isRowBranchPending =
+    branchPending && !!retryMessageRef && branchPendingMessageId === retryMessageRef.messageId;
+  const branchDisabled = isStreaming || !onBranchConversation || !retryMessageRef || branchPending;
+  const branchTitle = retryMessageRef ? t("chat.branch") : t("chat.branchUnavailable");
 
   return (
     <TranscriptAssistantMessageActions
@@ -381,6 +422,18 @@ const GatewayAssistantMessageActions = memo(function GatewayAssistantMessageActi
       }}
       usageEntries={usageEntries}
       usageContextWindow={showUsage ? usageContextWindow : undefined}
+      retryDisabled={retryDisabled}
+      retryTitle={retryTitle}
+      onRetry={() => {
+        if (!retryTarget || !retryMessageRef) return;
+        onResendFromEdit?.(retryMessageRef, retryTarget.text, retryTarget.attachments);
+      }}
+      branchDisabled={branchDisabled}
+      branchTitle={branchTitle}
+      branchPending={isRowBranchPending}
+      onBranch={() => {
+        if (retryMessageRef) onBranchConversation?.(retryMessageRef);
+      }}
       withAvatarSpacer
       alwaysShowActions
     />
@@ -469,6 +522,8 @@ const GatewayTranscriptListRegion = memo(function GatewayTranscriptListRegion(pr
     text: string,
     uploadedFiles: PendingUploadedFile[],
   ) => void;
+  onBranchConversation?: (messageRef: HistoryMessageRef) => void;
+  branchPendingMessageId?: string | null;
   toolStatus?: string | null;
   toolStatusIsCompaction: boolean;
   retryAttempts?: readonly RetryAttemptRecord[];
@@ -497,6 +552,8 @@ const GatewayTranscriptListRegion = memo(function GatewayTranscriptListRegion(pr
     onOpenFileLink,
     onLoadUploadedImagePreview,
     onResendFromEdit,
+    onBranchConversation,
+    branchPendingMessageId,
     toolStatus,
     toolStatusIsCompaction,
     retryAttempts,
@@ -897,10 +954,15 @@ const GatewayTranscriptListRegion = memo(function GatewayTranscriptListRegion(pr
                 {!readOnly && !isLatestLiveStreaming ? (
                   <GatewayAssistantMessageActions
                     row={row}
+                    retryTarget={findRetryTarget(rows, rowIndex)}
+                    isStreaming={isStreaming}
                     showUsage={showUsage}
                     usageContextWindow={usageContextWindow}
                     isCopied={copiedMessageId === row.key}
                     setCopiedMessageId={setCopiedMessageId}
+                    onResendFromEdit={onResendFromEdit}
+                    onBranchConversation={onBranchConversation}
+                    branchPendingMessageId={branchPendingMessageId}
                   />
                 ) : null}
               </div>
@@ -972,6 +1034,8 @@ export function GatewayTranscript({
   onOpenFileLink,
   onLoadUploadedImagePreview,
   onResendFromEdit,
+  onBranchConversation,
+  branchPendingMessageId,
   onSuggestionSelect,
   suggestionsDisabled = false,
   readOnly = false,
@@ -1050,6 +1114,8 @@ export function GatewayTranscript({
           onOpenFileLink={onOpenFileLink}
           onLoadUploadedImagePreview={onLoadUploadedImagePreview}
           onResendFromEdit={onResendFromEdit}
+          onBranchConversation={onBranchConversation}
+          branchPendingMessageId={branchPendingMessageId}
           toolStatus={toolStatus}
           toolStatusIsCompaction={toolStatusIsCompaction}
           retryAttempts={retryAttempts}

@@ -3,6 +3,7 @@ import {
   CompactingText,
   VibingText,
 } from "@liveagent/ui/components/chat/AssistantStatus";
+import { AssistantWorkTrace } from "@liveagent/ui/components/chat/AssistantWorkTrace";
 import { HostedSearchGroupView } from "@liveagent/ui/components/chat/HostedSearchGroupView";
 import { ThinkingActivity } from "@liveagent/ui/components/chat/ThinkingActivity";
 import { Markdown } from "@liveagent/ui/components/Markdown";
@@ -15,6 +16,7 @@ import {
   type GroupedRoundBlock,
   groupRoundBlocks,
   isBuiltinShareToolName,
+  resolveReasoningSearchWorkLayout,
 } from "./assistantBubbleUtils";
 import { MemoToolCallItem } from "./ToolCallItem";
 import { getNativeDisplayImagePayload, NativeDisplayImageBlock } from "./ToolImages";
@@ -49,7 +51,7 @@ export const RoundBlockContent = memo(function RoundBlockContent(props: {
     content = (
       <ThinkingActivity
         text={block.text}
-        open={isRunning}
+        open={isRunning || (!isLive && thinkingOpen)}
         isRunning={isRunning}
         renderMode={renderMode}
         workdir={workdir}
@@ -175,6 +177,23 @@ export const RoundContent = memo(function RoundContent(props: {
     return null;
   }, [visibleGroupedBlocks]);
   const autoOpenThinking = isLive ? Boolean(isActive && thinkingOpen) : false;
+  const workTraceLayout = useMemo(
+    () => resolveReasoningSearchWorkLayout(visibleGroupedBlocks),
+    [visibleGroupedBlocks],
+  );
+  const workTraceIndexSet = useMemo(
+    () => new Set(workTraceLayout.indexes),
+    [workTraceLayout.indexes],
+  );
+  const workTraceRunning = Boolean(isActive && isStreaming);
+  const latestWorkThinkingKey = useMemo(() => {
+    for (let index = workTraceLayout.indexes.length - 1; index >= 0; index -= 1) {
+      const blockIndex = workTraceLayout.indexes[index];
+      const block = blockIndex === undefined ? undefined : visibleGroupedBlocks[blockIndex];
+      if (block?.kind === "thinking") return block.key;
+    }
+    return null;
+  }, [visibleGroupedBlocks, workTraceLayout.indexes]);
 
   if (!hasContent) return null;
 
@@ -195,7 +214,36 @@ export const RoundContent = memo(function RoundContent(props: {
         </div>
       ) : null}
 
-      {visibleGroupedBlocks.map((block) => {
+      {visibleGroupedBlocks.map((block, blockIndex) => {
+        if (blockIndex === workTraceLayout.firstIndex) {
+          return (
+            <AssistantWorkTrace
+              key={`work-trace-${block.key}`}
+              hasDetails={workTraceLayout.indexes.length > 0}
+              running={workTraceRunning}
+            >
+              {workTraceLayout.indexes.map((workIndex) => {
+                const workBlock = visibleGroupedBlocks[workIndex];
+                if (!workBlock) return null;
+                return (
+                  <RoundBlockContent
+                    key={workBlock.key}
+                    block={workBlock}
+                    isLive={workTraceRunning}
+                    renderMode={renderMode ?? (isStreaming ? "streaming" : "static")}
+                    runningToolCallIds={runningToolCallIds ?? EMPTY_RUNNING_TOOL_CALL_IDS}
+                    thinkingOpen
+                    isLatestThinking={workBlock.key === latestWorkThinkingKey}
+                    workdir={workdir}
+                    onOpenFileLink={onOpenFileLink}
+                  />
+                );
+              })}
+            </AssistantWorkTrace>
+          );
+        }
+        if (workTraceIndexSet.has(blockIndex)) return null;
+
         if (block.kind === "thinking") {
           return (
             <ThinkingActivity

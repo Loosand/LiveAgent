@@ -57,6 +57,12 @@ function blockRows(snapshot) {
     .filter((row) => row.kind === "assistant-unit" && row.unit.kind === "block");
 }
 
+function workTraceRows(snapshot) {
+  return snapshot.rows
+    .flatMap((row) => (row.kind === "assistant-activity" ? row.units : [row]))
+    .filter((row) => row.kind === "assistant-unit" && row.unit.kind === "work-trace");
+}
+
 function footerRows(snapshot) {
   return snapshot.rows
     .flatMap((row) => (row.kind === "assistant-activity" ? row.units : [row]))
@@ -317,11 +323,15 @@ test("assistant rounds hide task tools while preserving grouped top-level render
   const snapshot = model.build([userItem("u1"), assistantItem("a1", rounds)], idleLive);
   assert.deepEqual(
     blockRows(snapshot).map((row) => row.unit.block.kind),
-    ["text", "thinking", "toolGroup", "hostedSearchGroup"],
+    ["toolGroup"],
+  );
+  assert.deepEqual(
+    workTraceRows(snapshot)[0].unit.blocks.map((block) => block.kind),
+    ["text", "thinking", "hostedSearchGroup"],
   );
   assert.equal(footerRows(snapshot).length, 1);
-  assert.equal(blockRows(snapshot)[0].showAvatar, true);
-  assert.ok(blockRows(snapshot).slice(1).every((row) => !row.showAvatar));
+  assert.equal(workTraceRows(snapshot)[0].showAvatar, true);
+  assert.ok(blockRows(snapshot).every((row) => !row.showAvatar));
 });
 
 test("Markdown text blocks stay whole instead of being string-sliced", () => {
@@ -354,17 +364,25 @@ test("one live activity is pinned while its completed prefix units keep stable k
     isSending: true,
     liveRounds: [liveRound],
   });
-  const units = blockRows(snapshot);
-  assert.equal(units.length, 3);
+  const workUnits = workTraceRows(snapshot);
+  const answerUnits = blockRows(snapshot);
+  assert.equal(workUnits.length, 1);
   assert.deepEqual(
-    units.map((row) => row.mutable),
-    [false, false, true],
+    workUnits[0].unit.blocks.map((block) => block.kind),
+    ["text", "thinking"],
   );
+  assert.equal(workUnits[0].mutable, false);
+  assert.equal(answerUnits.length, 1);
+  assert.equal(answerUnits[0].unit.block.kind, "text");
+  assert.equal(answerUnits[0].unit.block.text, "streaming tail");
+  assert.equal(answerUnits[0].mutable, true);
   const activity = snapshot.rows.find((row) => row.kind === "assistant-activity");
   assert.ok(activity);
   assert.deepEqual(
-    activity.units.filter((unit) => unit.unit.kind === "block").map((unit) => unit.key),
-    units.map((unit) => unit.key),
+    activity.units
+      .filter((unit) => unit.unit.kind === "work-trace" || unit.unit.kind === "block")
+      .map((unit) => unit.key),
+    [...workUnits, ...answerUnits].map((unit) => unit.key),
   );
   assert.equal(activity.units.at(-1).unit.kind, "status");
   assert.equal(snapshot.liveStartIndex, snapshot.rows.indexOf(activity));

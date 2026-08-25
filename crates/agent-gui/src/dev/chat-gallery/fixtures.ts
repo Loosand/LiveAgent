@@ -505,17 +505,33 @@ const THINKING_AND_SEARCH_MESSAGES: Message[] = [
             snippet: "Patterns and guidance for accessible web widgets.",
             sourceType: "source",
           },
+          {
+            url: "https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA",
+            title: "MDN: ARIA",
+            snippet: "Accessible Rich Internet Applications guidance.",
+            sourceType: "source",
+          },
+          {
+            url: "https://www.w3.org/WAI/WCAG22/Understanding/focus-order.html",
+            title: "WCAG: Focus order",
+            snippet: "Interactive content should receive focus in a meaningful sequence.",
+            sourceType: "source",
+          },
+          {
+            url: "https://react.dev/reference/react/useId",
+            title: "React: useId",
+            snippet: "Generate stable accessibility identifiers.",
+            sourceType: "source",
+          },
+          {
+            url: "https://elements.ai-sdk.dev/components/reasoning",
+            title: "AI Elements: Reasoning",
+            snippet: "A collapsible reasoning display for AI responses.",
+            sourceType: "source",
+          },
         ],
         updatedAt: at(21),
       }),
-      {
-        type: "text",
-        text: [
-          "综合来源后，建议让静态历史和流式状态共享稳定标识，并为交互卡片保留清晰焦点顺序。",
-          "",
-          "参考：[React keys](https://react.dev/learn/rendering-lists#keeping-list-items-in-order-with-key) 与 [ARIA APG](https://www.w3.org/WAI/ARIA/apg/)。",
-        ].join("\n"),
-      },
       hostedSearch({
         type: "hostedSearch",
         id: "gallery-search-failed",
@@ -525,6 +541,14 @@ const THINKING_AND_SEARCH_MESSAGES: Message[] = [
         sources: [],
         updatedAt: at(22),
       }),
+      {
+        type: "text",
+        text: [
+          "综合来源后，建议让静态历史和流式状态共享稳定标识，并为交互卡片保留清晰焦点顺序。",
+          "",
+          "参考：[React keys](https://react.dev/learn/rendering-lists#keeping-list-items-in-order-with-key) 与 [ARIA APG](https://www.w3.org/WAI/ARIA/apg/)。",
+        ].join("\n"),
+      },
     ],
   }),
 ];
