@@ -13,8 +13,8 @@ export const CHAT_GALLERY_SCENARIOS = [
     group: "conversation",
     title: { "zh-CN": "富文本回复", "en-US": "Rich assistant content" },
     description: {
-      "zh-CN": "Markdown、代码、表格、数学公式、链接与用量展示。",
-      "en-US": "Markdown, code, tables, math, links, and usage rendering.",
+      "zh-CN": "Markdown、代码、表格、数学公式、链接与用量详情。",
+      "en-US": "Markdown, code, tables, math, links, and usage details.",
     },
   },
   {

@@ -2,7 +2,6 @@ import { AssistantAvatar } from "@liveagent/ui/components/chat/AssistantAvatar";
 import { LiveAssistantStatus } from "@liveagent/ui/components/chat/AssistantStatus";
 import { RoundBlockContent } from "@liveagent/ui/components/chat/assistant-bubble/RoundContent";
 import { RetryDetailsBlock } from "@liveagent/ui/components/chat/RetryDetailsBlock";
-import { UsagePanel } from "@liveagent/ui/components/chat/UsagePanel";
 import type { ChatFileLink } from "@liveagent/ui/lib/chat/chatFileLinks";
 import { cn } from "@liveagent/ui/lib/shared/utils";
 import { memo } from "react";
@@ -13,8 +12,6 @@ export { AssistantAvatar } from "@liveagent/ui/components/chat/AssistantAvatar";
 
 export const AssistantBubbleUnit = memo(function AssistantBubbleUnit(props: {
   row: AssistantUnitRow;
-  showUsage?: boolean;
-  usageContextWindow?: number;
   isAgentMode: boolean;
   isCompactionRunning: boolean;
   toolStatus: string | null;
@@ -24,8 +21,6 @@ export const AssistantBubbleUnit = memo(function AssistantBubbleUnit(props: {
 }) {
   const {
     row,
-    showUsage,
-    usageContextWindow,
     isAgentMode,
     isCompactionRunning,
     toolStatus,
@@ -78,10 +73,6 @@ export const AssistantBubbleUnit = memo(function AssistantBubbleUnit(props: {
             workdir={workdir}
             onOpenFileLink={onOpenFileLink}
           />
-        ) : null}
-
-        {unit.kind === "block" && unit.isRoundTail && showUsage ? (
-          <UsagePanel usage={unit.roundMeta?.usage} contextWindow={usageContextWindow} />
         ) : null}
       </div>
     </div>

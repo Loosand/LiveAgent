@@ -23,8 +23,6 @@ export const AssistantBubble = memo(function AssistantBubble(props: {
     runningToolCallIds?: string[];
     thinkingOpen?: boolean;
   })[];
-  showUsage?: boolean;
-  usageContextWindow?: number;
   isLive?: boolean;
   // Whether the stream is actively receiving tokens. Defaults to `isLive` —
   // when the article is in the live snapshot after `done`, set this to `false`
@@ -45,8 +43,6 @@ export const AssistantBubble = memo(function AssistantBubble(props: {
 }) {
   const {
     rounds,
-    showUsage,
-    usageContextWindow,
     isLive,
     isStreaming = isLive,
     renderMode,
@@ -72,8 +68,6 @@ export const AssistantBubble = memo(function AssistantBubble(props: {
           <RoundContent
             key={"key" in round && round.key ? round.key : `round-${round.round}`}
             round={round}
-            showUsage={showUsage}
-            usageContextWindow={usageContextWindow}
             isLive={isLive}
             isStreaming={isStreaming}
             isActive={isLive && idx === rounds.length - 1}

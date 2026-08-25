@@ -512,7 +512,7 @@ test("assistant unit keys do not depend on the history-window-relative index", (
   );
 });
 
-test("usage stays on each round tail and changed files stay on the reply footer", () => {
+test("usage metadata stays available without reserving inline panel height", () => {
   const model = createTranscriptRowModel();
   const usage = {
     input: 10,
@@ -552,6 +552,20 @@ test("usage stays on each round tail and changed files stay on the reply footer"
     [false, true, true],
   );
   assert.equal(units[1].unit.roundMeta.usage, usage);
+  const withoutUsage = createTranscriptRowModel().build(
+    [
+      userItem("u1"),
+      assistantItem("a1", [
+        {
+          ...rounds[0],
+          meta: undefined,
+        },
+        rounds[1],
+      ]),
+    ],
+    idleLive,
+  );
+  assert.equal(units[1].estimate, blockRows(withoutUsage)[1].estimate);
   const footer = footerRows(snapshot)[0];
   assert.equal(footer.unit.hasChangedFilesCandidate, true);
   assert.equal(collectChangedFiles(footer.unit.rounds).files[0].path, "src/result.ts");

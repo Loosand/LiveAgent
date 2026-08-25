@@ -5,7 +5,6 @@ import {
 } from "@liveagent/ui/components/chat/AssistantStatus";
 import { HostedSearchGroupView } from "@liveagent/ui/components/chat/HostedSearchGroupView";
 import { ThinkingActivity } from "@liveagent/ui/components/chat/ThinkingActivity";
-import { UsagePanel } from "@liveagent/ui/components/chat/UsagePanel";
 import { Markdown } from "@liveagent/ui/components/Markdown";
 import type { UiRound } from "@liveagent/ui/lib/chat/assistantBubbleAdapter";
 import { normalizeLiveToolStatus, VIBING_STATUS } from "@liveagent/ui/lib/chat/assistantStatus";
@@ -105,8 +104,6 @@ export const RoundBlockContent = memo(function RoundBlockContent(props: {
 
 export const RoundContent = memo(function RoundContent(props: {
   round: UiRound;
-  showUsage?: boolean;
-  usageContextWindow?: number;
   isLive?: boolean;
   isStreaming?: boolean;
   isActive?: boolean;
@@ -122,8 +119,6 @@ export const RoundContent = memo(function RoundContent(props: {
 }) {
   const {
     round,
-    showUsage,
-    usageContextWindow,
     isLive,
     isStreaming = isLive,
     isActive,
@@ -292,10 +287,6 @@ export const RoundContent = memo(function RoundContent(props: {
           />
         );
       })}
-
-      {showUsage ? (
-        <UsagePanel usage={round.meta?.usage} contextWindow={usageContextWindow} />
-      ) : null}
     </div>
   );
 });

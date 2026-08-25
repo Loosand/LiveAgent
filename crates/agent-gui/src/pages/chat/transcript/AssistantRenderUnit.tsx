@@ -32,13 +32,32 @@ const AssistantFooterUnit = memo(function AssistantFooterUnit(props: {
   unit: AssistantFooterRenderUnit;
   showAvatar: boolean;
   compacted: boolean;
+  showUsage?: boolean;
+  usageContextWindow?: number;
   onResendFromEdit: AssistantRenderUnitProps["onResendFromEdit"];
   onBranchConversation?: AssistantRenderUnitProps["onBranchConversation"];
 }) {
-  const { unit, showAvatar, compacted, onResendFromEdit, onBranchConversation } = props;
+  const {
+    unit,
+    showAvatar,
+    compacted,
+    showUsage,
+    usageContextWindow,
+    onResendFromEdit,
+    onBranchConversation,
+  } = props;
   const changedFiles = useMemo(
     () => (unit.hasChangedFilesCandidate ? collectChangedFiles(unit.rounds) : null),
     [unit.hasChangedFilesCandidate, unit.rounds],
+  );
+  const usageEntries = useMemo(
+    () =>
+      showUsage
+        ? unit.rounds.flatMap((round) =>
+            round.meta?.usage ? [{ key: round.key, usage: round.meta.usage }] : [],
+          )
+        : undefined,
+    [showUsage, unit.rounds],
   );
 
   return (
@@ -63,6 +82,8 @@ const AssistantFooterUnit = memo(function AssistantFooterUnit(props: {
       <AssistantRowFooter
         timestamp={unit.timestamp}
         replyText={unit.replyText}
+        usageEntries={usageEntries}
+        usageContextWindow={showUsage ? usageContextWindow : undefined}
         retryTarget={unit.retryTarget}
         onResendFromEdit={onResendFromEdit}
         onBranchConversation={onBranchConversation}
@@ -95,6 +116,8 @@ export const AssistantRenderUnit = memo(function AssistantRenderUnit(
         unit={row.unit}
         showAvatar={row.showAvatar}
         compacted={row.compacted}
+        showUsage={showUsage}
+        usageContextWindow={usageContextWindow}
         onResendFromEdit={onResendFromEdit}
         onBranchConversation={onBranchConversation}
       />
@@ -105,8 +128,6 @@ export const AssistantRenderUnit = memo(function AssistantRenderUnit(
     <div className={cn("group/assistant w-full max-w-full", compactedClass)}>
       <AssistantBubbleUnit
         row={row}
-        showUsage={showUsage}
-        usageContextWindow={usageContextWindow}
         isAgentMode={isAgentMode}
         isCompactionRunning={isCompactionRunning}
         toolStatus={toolStatus}

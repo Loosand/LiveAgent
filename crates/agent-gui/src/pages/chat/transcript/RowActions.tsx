@@ -2,6 +2,7 @@ import {
   TranscriptAssistantMessageActions,
   TranscriptUserMessageActions,
 } from "@liveagent/ui/components/chat/TranscriptMessageActions";
+import type { UsageDetailEntry } from "@liveagent/ui/components/chat/UsagePanel";
 import { useLocale } from "@liveagent/ui/i18n/index";
 import type { PendingUploadedFile } from "@liveagent/ui/lib/chat/uploadedFiles";
 import type {
@@ -14,6 +15,8 @@ import { useCopiedFlag } from "./useCopiedFlag";
 export type AssistantRowFooterProps = {
   timestamp?: number;
   replyText: string;
+  usageEntries?: readonly UsageDetailEntry[];
+  usageContextWindow?: number;
   retryTarget: RenderUserMessage | null;
   onResendFromEdit: (
     messageRef: HistoryMessageRef,
@@ -24,14 +27,8 @@ export type AssistantRowFooterProps = {
 };
 
 export function AssistantRowFooter(props: AssistantRowFooterProps) {
-  const { timestamp, replyText, retryTarget, onResendFromEdit, onBranchConversation } = props;
-  const { t } = useLocale();
+  const { timestamp, replyText, usageEntries, usageContextWindow } = props;
   const { copied, markCopied } = useCopiedFlag();
-  const { isSending, branchPendingMessageId } = useRowInteraction();
-  const retryMessageRef = retryTarget?.messageRef;
-  const branchPending = branchPendingMessageId != null;
-  const isRowBranchPending =
-    branchPending && !!retryMessageRef && branchPendingMessageId === retryMessageRef.messageId;
 
   return (
     <TranscriptAssistantMessageActions
@@ -42,18 +39,8 @@ export function AssistantRowFooter(props: AssistantRowFooterProps) {
         void navigator.clipboard.writeText(replyText);
         markCopied();
       }}
-      retryDisabled={isSending || !retryMessageRef}
-      retryTitle={retryMessageRef ? t("chat.retry") : "旧历史缺少稳定消息标识，无法重试"}
-      onRetry={() => {
-        if (!retryTarget || !retryMessageRef) return;
-        onResendFromEdit(retryMessageRef, retryTarget.text, retryTarget.attachments);
-      }}
-      branchDisabled={isSending || !retryMessageRef || !onBranchConversation || branchPending}
-      branchTitle={retryMessageRef ? t("chat.branch") : t("chat.branchUnavailable")}
-      branchPending={isRowBranchPending}
-      onBranch={() => {
-        if (retryMessageRef) onBranchConversation?.(retryMessageRef);
-      }}
+      usageEntries={usageEntries}
+      usageContextWindow={usageContextWindow}
     />
   );
 }

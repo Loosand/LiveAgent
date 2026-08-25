@@ -162,7 +162,7 @@ function hasChangedFilesCandidate(rounds: (UiRound | LiveRound)[]) {
   );
 }
 
-function measureBlockUnit(block: GroupedRoundBlock, hasUsage: boolean) {
+function measureBlockUnit(block: GroupedRoundBlock) {
   let estimate: number;
   let renderCost: number;
   if (block.kind === "text") {
@@ -200,7 +200,7 @@ function measureBlockUnit(block: GroupedRoundBlock, hasUsage: boolean) {
     renderCost = 2;
   }
   return {
-    estimate: Math.max(36, estimate) + (hasUsage ? 112 : 0),
+    estimate: Math.max(36, estimate),
     renderCost,
   };
 }
@@ -336,7 +336,7 @@ function buildAssistantUnits(input: BuildAssistantUnitsInput): AssistantUnitRow[
 
     groupedBlocks.forEach((block, blockIndex) => {
       const isRoundTail = blockIndex === groupedBlocks.length - 1;
-      const measurement = measureBlockUnit(block, Boolean(isRoundTail && round.meta?.usage));
+      const measurement = measureBlockUnit(block);
       rows.push({
         kind: "assistant-unit",
         key: `${replyKey}:round:${round.key}:block:${block.key}`,
