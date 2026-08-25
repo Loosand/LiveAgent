@@ -327,7 +327,7 @@ export const ChatTranscript = memo(function ChatTranscript(props: ChatTranscript
 
           <div
             className={cn(
-              "select-text transition-opacity duration-150",
+              "select-text transition-opacity duration-150 motion-reduce:transition-none",
               isTranscriptSettling ? "opacity-0" : "opacity-100",
             )}
           >
