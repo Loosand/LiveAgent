@@ -17,6 +17,7 @@ export type AssistantRenderUnitProps = {
   isAgentMode: boolean;
   isCompactionRunning: boolean;
   toolStatus: string | null;
+  actionsVisible?: boolean;
   retryAttempts?: RetryAttemptRecord[];
   workdir?: string;
   onOpenFileLink?: (link: ChatFileLink) => void;
@@ -34,6 +35,7 @@ const AssistantFooterUnit = memo(function AssistantFooterUnit(props: {
   compacted: boolean;
   showUsage?: boolean;
   usageContextWindow?: number;
+  actionsVisible?: boolean;
   onResendFromEdit: AssistantRenderUnitProps["onResendFromEdit"];
   onBranchConversation?: AssistantRenderUnitProps["onBranchConversation"];
 }) {
@@ -43,6 +45,7 @@ const AssistantFooterUnit = memo(function AssistantFooterUnit(props: {
     compacted,
     showUsage,
     usageContextWindow,
+    actionsVisible,
     onResendFromEdit,
     onBranchConversation,
   } = props;
@@ -61,7 +64,10 @@ const AssistantFooterUnit = memo(function AssistantFooterUnit(props: {
   );
 
   return (
-    <div className={cn("group/assistant w-full max-w-full", compacted && "opacity-70")}>
+    <div
+      data-actions-visible={actionsVisible ? "true" : undefined}
+      className={cn("group/assistant w-full max-w-full", compacted && "opacity-70")}
+    >
       {changedFiles ? (
         <div className="flex w-full max-w-full items-start gap-3">
           {showAvatar ? (
@@ -102,6 +108,7 @@ export const AssistantRenderUnit = memo(function AssistantRenderUnit(
     isAgentMode,
     isCompactionRunning,
     toolStatus,
+    actionsVisible,
     retryAttempts,
     workdir,
     onOpenFileLink,
@@ -118,6 +125,7 @@ export const AssistantRenderUnit = memo(function AssistantRenderUnit(
         compacted={row.compacted}
         showUsage={showUsage}
         usageContextWindow={usageContextWindow}
+        actionsVisible={actionsVisible}
         onResendFromEdit={onResendFromEdit}
         onBranchConversation={onBranchConversation}
       />

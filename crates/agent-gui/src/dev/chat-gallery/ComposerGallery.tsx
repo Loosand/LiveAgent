@@ -35,23 +35,37 @@ type ComposerVariant =
   | "drop"
   | "overlays";
 
+function galleryModel(
+  providerId: string,
+  providerName: string,
+  providerType: ProviderId,
+  model: string,
+): SharedModelOption<ProviderId> {
+  return {
+    value: toModelValue(providerId, model),
+    label: model,
+    providerId,
+    providerName,
+    providerType,
+    model,
+  };
+}
+
 const MODEL_OPTIONS: SharedModelOption<ProviderId>[] = [
-  {
-    value: toModelValue("gallery-codex", "gpt-5.6"),
-    label: "GPT-5.6",
-    providerId: "gallery-codex",
-    providerName: "Gallery Codex",
-    providerType: "codex",
-    model: "gpt-5.6",
-  },
-  {
-    value: toModelValue("gallery-claude", "claude-sonnet-4.6"),
-    label: "Claude Sonnet 4.6",
-    providerId: "gallery-claude",
-    providerName: "Gallery Anthropic",
-    providerType: "claude_code",
-    model: "claude-sonnet-4.6",
-  },
+  galleryModel("gallery-codex", "Gallery Codex", "codex", "gpt-5.6"),
+  galleryModel("gallery-codex", "Gallery Codex", "codex", "gpt-5.6-sol"),
+  galleryModel("gallery-codex", "Gallery Codex", "codex", "gpt-5.6-terra"),
+  galleryModel("gallery-codex", "Gallery Codex", "codex", "gpt-5.6-luna"),
+  galleryModel("gallery-claude", "Gallery Anthropic", "claude_code", "claude-opus-4-6"),
+  galleryModel("gallery-claude", "Gallery Anthropic", "claude_code", "claude-sonnet-4-6"),
+  galleryModel("gallery-claude", "Gallery Anthropic", "claude_code", "claude-haiku-4-5"),
+  galleryModel("gallery-gemini", "Gallery Gemini", "gemini", "gemini-3.1-pro-preview"),
+  galleryModel("gallery-gemini", "Gallery Gemini", "gemini", "gemini-3-flash-preview"),
+  galleryModel("gallery-gemini", "Gallery Gemini", "gemini", "gemini-2.5-flash"),
+  galleryModel("gallery-xai", "Gallery xAI", "xai", "grok-4.20-0309-reasoning"),
+  galleryModel("gallery-xai", "Gallery xAI", "xai", "grok-4.20-0309-non-reasoning"),
+  galleryModel("gallery-deepseek", "Gallery DeepSeek", "deepseek", "deepseek-v4-pro"),
+  galleryModel("gallery-deepseek", "Gallery DeepSeek", "deepseek", "deepseek-v4-flash"),
 ];
 
 const ATTACHMENTS: PendingUploadedFile[] = [

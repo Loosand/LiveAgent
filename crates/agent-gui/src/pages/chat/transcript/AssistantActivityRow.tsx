@@ -13,6 +13,7 @@ export const AssistantActivityRow = memo(function AssistantActivityRow(props: {
   isAgentMode: boolean;
   isCompactionRunning: boolean;
   toolStatus: string | null;
+  actionsVisible?: boolean;
   retryAttempts?: RetryAttemptRecord[];
   workdir?: string;
   onOpenFileLink?: (link: ChatFileLink) => void;
@@ -30,6 +31,7 @@ export const AssistantActivityRow = memo(function AssistantActivityRow(props: {
     isAgentMode,
     isCompactionRunning,
     toolStatus,
+    actionsVisible,
     retryAttempts,
     workdir,
     onOpenFileLink,
@@ -48,6 +50,7 @@ export const AssistantActivityRow = memo(function AssistantActivityRow(props: {
             isAgentMode={isAgentMode}
             isCompactionRunning={unit.mutable ? isCompactionRunning : false}
             toolStatus={unit.mutable ? toolStatus : null}
+            actionsVisible={actionsVisible}
             retryAttempts={unit.mutable && unit.unit.kind === "status" ? retryAttempts : undefined}
             workdir={workdir}
             onOpenFileLink={onOpenFileLink}

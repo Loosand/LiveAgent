@@ -169,6 +169,7 @@ export const ConversationPaneHost = forwardRef<
   return (
     <ConversationSurface
       paneId={paneId}
+      contentWidth={transcript.contentWidth}
       controller={controller}
       renderContent={(snapshot) => {
         const runtime = snapshot.runtime;

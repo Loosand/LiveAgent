@@ -318,7 +318,9 @@ function TaskProgressGallery({ locale }: { locale: Locale }) {
       <GalleryComponentCard
         title={zh ? "运行中" : "Running"}
         description={
-          zh ? "悬停、聚焦或轻触可展开步骤。" : "Hover, focus, or tap to expand the steps."
+          zh
+            ? "进行中的任务默认展开，点击任一行可查看详情。"
+            : "The active task opens by default; click any row for details."
         }
         badge="2 / 3"
         tone="running"

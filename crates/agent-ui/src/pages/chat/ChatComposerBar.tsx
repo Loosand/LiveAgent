@@ -20,6 +20,7 @@ import {
 } from "@liveagent/ui/components/chat/MentionComposer";
 import { GitBranchSelector } from "@liveagent/ui/components/git/GitBranchSelector";
 import {
+  ArrowUp,
   ChevronDown,
   ChevronUp,
   Clock3,
@@ -31,7 +32,6 @@ import {
   Paperclip,
   Play,
   Plus,
-  Send,
   Square,
   SquarePen,
   Trash2,
@@ -715,7 +715,7 @@ export const ChatComposerBar = memo(function ChatComposerBar(props: ChatComposer
       ref={composerLayerRef}
       className={cn(
         surface === "desktop"
-          ? "pointer-events-none absolute inset-x-0 bottom-0 z-20 flex justify-center px-4 pb-4"
+          ? "pointer-events-none absolute inset-x-0 bottom-0 z-20 flex justify-center px-5 pb-4"
           : "gateway-composer-layer pointer-events-none absolute inset-x-0 bottom-0 z-20 flex justify-center",
         isComposerExpanded && (surface === "desktop" ? "top-14" : "top-0 pt-3"),
         hidden && "hidden",
@@ -728,10 +728,15 @@ export const ChatComposerBar = memo(function ChatComposerBar(props: ChatComposer
           style={{ height: "1rem" }}
         />
       ) : null}
+      {/* Desktop aligns to the assistant message body, not the avatar rail:
+          transcript px-5 + 28px avatar + 12px gap + px-5 = 80px removed;
+          the remaining body is right-shifted 20px inside the centered column.
+          The card extends 4px past the body's left edge so scrolling content
+          cannot peek around its rounded lower-left corner. */}
       <div
         className={cn(
           surface === "desktop"
-            ? "pointer-events-auto relative w-full max-w-[768px]"
+            ? "pointer-events-auto relative w-[calc(100%-2.25rem)] max-w-[calc(var(--chat-transcript-content-width,768px)-4.75rem)] translate-x-[18px]"
             : "gateway-chat-column pointer-events-auto relative",
           // justify-end：展开动画途中卡片被钳在中间高度时保持贴底，向上生长。
           isComposerExpanded && "flex min-h-0 flex-col justify-end",
@@ -741,7 +746,7 @@ export const ChatComposerBar = memo(function ChatComposerBar(props: ChatComposer
         {queuedTurns.length > 0 ? (
           <div
             ref={queuePanelRef}
-            className="relative z-30 mx-auto mb-[-1px] w-[calc(100%-1.5rem)] max-w-[720px]"
+            className="relative z-30 mx-auto mb-[-1px] w-[calc(100%-1.5rem)]"
           >
             <div
               aria-hidden={queueCollapsed}
@@ -900,7 +905,7 @@ export const ChatComposerBar = memo(function ChatComposerBar(props: ChatComposer
             // 展开态切换 flex-grow 时会被一并动画，导致卡片先跳顶再长满的闪动。
             // 常驻 flex-col：FLIP 动画把卡片钳在中间高度时，flex-1 的编辑器
             // 区吸收多余空间，工具栏才能始终贴住卡片底边。
-            "composer-glass-card @container relative flex flex-col overflow-hidden rounded-3xl border border-black/[0.055] bg-white/70 shadow-[0_12px_40px_-14px_rgba(15,23,42,0.22),0_2px_6px_-2px_rgba(15,23,42,0.08),inset_0_1px_0_rgba(255,255,255,0.74)] backdrop-blur-2xl backdrop-saturate-[165%] transition-[background-color,border-color,box-shadow] focus-within:border-black/[0.075] focus-within:bg-white/74 focus-within:shadow-[0_16px_46px_-14px_rgba(15,23,42,0.26),0_4px_12px_-4px_rgba(15,23,42,0.10),inset_0_1px_0_rgba(255,255,255,0.78)] dark:border-white/[0.10] dark:bg-white/[0.06] dark:shadow-[0_12px_40px_-14px_rgba(0,0,0,0.72),0_2px_6px_-2px_rgba(0,0,0,0.42),inset_0_1px_0_rgba(255,255,255,0.08)] dark:focus-within:border-white/[0.15] dark:focus-within:bg-white/[0.08]",
+            "composer-glass-card @container relative flex flex-col overflow-hidden rounded-[26px] border border-black/[0.065] bg-black/[0.035] shadow-[0_14px_42px_-16px_rgba(15,23,42,0.24),0_2px_7px_-2px_rgba(15,23,42,0.09),inset_0_1px_0_rgba(255,255,255,0.72)] backdrop-blur-2xl backdrop-saturate-[165%] transition-[border-color,box-shadow] focus-within:border-black/[0.09] focus-within:shadow-[0_18px_48px_-16px_rgba(15,23,42,0.28),0_4px_13px_-4px_rgba(15,23,42,0.11),inset_0_1px_0_rgba(255,255,255,0.78)] dark:border-white/[0.11] dark:bg-white/[0.055] dark:shadow-[0_14px_42px_-16px_rgba(0,0,0,0.74),0_2px_7px_-2px_rgba(0,0,0,0.44),inset_0_1px_0_rgba(255,255,255,0.08)] dark:focus-within:border-white/[0.16]",
             surface === "desktop" && "z-10",
             isComposerExpanded && "min-h-0 flex-1",
           )}
@@ -913,241 +918,291 @@ export const ChatComposerBar = memo(function ChatComposerBar(props: ChatComposer
           {/* subtle inner gloss gradient */}
           <div
             aria-hidden
-            className="pointer-events-none absolute inset-0 rounded-3xl bg-gradient-to-b from-white/18 to-transparent opacity-70 dark:from-white/[0.04] dark:opacity-100"
+            className="pointer-events-none absolute inset-0 rounded-[26px] bg-gradient-to-b from-white/18 to-transparent opacity-70 dark:from-white/[0.04] dark:opacity-100"
           />
 
-          {pendingUploadedFiles.length > 0 ? (
-            <div
-              ref={attachmentListRef}
-              className="upload-file-list relative z-10 flex shrink-0 items-center gap-1.5 overflow-x-auto overflow-y-hidden pb-1 pl-4 pr-12 pt-2"
-            >
-              {pendingUploadedFiles.map((file) => (
-                <PendingComposerAttachment
-                  key={`${file.relativePath}-${file.absolutePath ?? file.fileName}`}
-                  file={file}
-                  workdir={workdir}
-                  disabled={controlsDisabled}
-                  removeLabel={t("chat.upload.removeFile")}
-                  previewLabel={t("chat.upload.previewImage")}
-                  closePreviewLabel={t("chat.upload.closePreview")}
-                  imagePreviewLoader={onLoadUploadedImagePreview}
-                  onRemove={onRemovePendingUpload}
-                />
-              ))}
-            </div>
-          ) : null}
-
-          <button
-            type="button"
-            onClick={toggleComposerExpanded}
-            title={toggleComposerExpandTooltip}
-            aria-label={toggleComposerExpandTooltip}
-            aria-expanded={isComposerExpanded}
-            className="absolute right-3 top-2 z-20 inline-flex h-8 w-8 items-center justify-center rounded-full text-muted-foreground/70 outline-hidden transition-[background-color,color,scale] hover:bg-muted/60 hover:text-foreground active:scale-90 focus-visible:bg-muted/60"
-          >
-            {isComposerExpanded ? (
-              <Minimize2 className="h-4 w-4" />
-            ) : (
-              <Maximize2 className="h-4 w-4" />
+          <div
+            className={cn(
+              "composer-input-surface relative z-10 flex flex-col overflow-hidden rounded-3xl bg-white/76 shadow-[0_1px_0_rgba(255,255,255,0.75),0_8px_20px_-16px_rgba(15,23,42,0.4)] backdrop-blur-2xl dark:bg-zinc-900/72 dark:shadow-[0_1px_0_rgba(255,255,255,0.06),0_10px_24px_-16px_rgba(0,0,0,0.8)]",
+              isComposerExpanded && "min-h-0 flex-1",
             )}
-          </button>
+          >
+            {pendingUploadedFiles.length > 0 ? (
+              <div
+                ref={attachmentListRef}
+                className="upload-file-list relative z-10 flex shrink-0 items-center gap-1.5 overflow-x-auto overflow-y-hidden pb-1 pl-4 pr-12 pt-2"
+              >
+                {pendingUploadedFiles.map((file) => (
+                  <PendingComposerAttachment
+                    key={`${file.relativePath}-${file.absolutePath ?? file.fileName}`}
+                    file={file}
+                    workdir={workdir}
+                    disabled={controlsDisabled}
+                    removeLabel={t("chat.upload.removeFile")}
+                    previewLabel={t("chat.upload.previewImage")}
+                    closePreviewLabel={t("chat.upload.closePreview")}
+                    imagePreviewLoader={onLoadUploadedImagePreview}
+                    onRemove={onRemovePendingUpload}
+                  />
+                ))}
+              </div>
+            ) : null}
 
-          {/* 用量环位于卡片右侧控制列的垂直中心，保持在展开与发送按钮之间。 */}
-          <div className="absolute right-3 top-1/2 z-20 -translate-y-1/2">
-            <ComposerContextUsageRing
-              source={contextUsageTokensSource}
-              totalTokens={contextUsageTokens}
-              contextWindow={contextWindow}
-              disabled={controlsDisabled || isSending || manualCompactBlocked}
-              onConfirm={onManualCompactConfirm}
-            />
-          </div>
+            <button
+              type="button"
+              onClick={toggleComposerExpanded}
+              title={toggleComposerExpandTooltip}
+              aria-label={toggleComposerExpandTooltip}
+              aria-expanded={isComposerExpanded}
+              className="absolute right-3 top-2 z-20 inline-flex h-8 w-8 items-center justify-center rounded-full text-muted-foreground/70 outline-hidden transition-[background-color,color,scale] hover:bg-muted/60 hover:text-foreground active:scale-90 focus-visible:bg-muted/60"
+            >
+              {isComposerExpanded ? (
+                <Minimize2 className="h-4 w-4" />
+              ) : (
+                <Maximize2 className="h-4 w-4" />
+              )}
+            </button>
 
-          {/* 常驻 flex-1：动画把卡片钳在中间高度时由本区吸收伸缩，工具栏才能
+            {/* 常驻 flex-1：动画把卡片钳在中间高度时由本区吸收伸缩，工具栏才能
               全程贴住卡片底边。min-h-0 只在展开态加——折叠态靠自动最小高度
               (= 编辑器钳制高) 撑起卡片的固有高度，加了会塌缩。
 
-              pr-12 让出右侧控制列：展开/用量环/发送都是 right-3 + w-8，占据卡片
-              右缘 44px 宽的竖直轨道。让位必须做在本容器上，**不能只给编辑器加
+              pr-12 为右上角展开按钮让位。让位必须做在本容器上，**不能只给编辑器加
               pr-8**——padding 不改变滚动条位置（滚动条恒贴 border box 右缘），
-              只挡文字不挡滚动条，溢出时那条 6px 轨会直接压在环与展开图标上。
-              收窄编辑器 border box 才能把滚动条一并推到轨道左侧；48px = 44 轨道
-              + 4px 间隙，文本可用宽度与原先 px-4 + 编辑器 pr-8 完全一致。 */}
-          <div
-            className={cn(
-              "relative flex flex-1 pl-4 pr-12",
-              pendingUploadedFiles.length > 0 ? "pt-1.5" : "pt-3.5",
-              isComposerExpanded && "min-h-0",
-            )}
-            onFocusCapture={onPrepareChatRuntime}
-          >
-            <MentionComposer
-              ref={composerRef}
-              onSend={handleComposerSend}
-              onEmptyChange={setComposerIsEmpty}
-              onBusyChange={onComposerBusyChange}
-              onPasteFiles={onPasteFiles}
-              loadHistoryPrompts={loadHistoryPrompts}
-              placeholder={inputPlaceholder}
-              disabled={isInputDisabled || stt.active}
-              workdir={workdir}
-              enabledSkills={enabledSkills}
+              只挡文字不挡滚动条，溢出时那条 6px 轨会直接压在展开图标上。
+              收窄编辑器 border box 才能把滚动条一并推到按钮左侧。 */}
+            <div
               className={cn(
-                // 右让位由外层容器 pr-12 统一承担（见上），此处不再补 pr——
-                // 编辑器自身的右内距只会把文字推开、留下滚动条压在控制列上。
-                "px-0 py-0",
-                isComposerExpanded &&
-                  (surface === "desktop" ? "h-full max-h-none" : "h-full! max-h-none!"),
+                "relative flex flex-1 pl-4 pr-12",
+                pendingUploadedFiles.length > 0 ? "pt-1.5" : "pt-3.5",
+                isComposerExpanded && "min-h-0",
               )}
-            />
-          </div>
+              onFocusCapture={onPrepareChatRuntime}
+            >
+              <MentionComposer
+                ref={composerRef}
+                onSend={handleComposerSend}
+                onEmptyChange={setComposerIsEmpty}
+                onBusyChange={onComposerBusyChange}
+                onPasteFiles={onPasteFiles}
+                loadHistoryPrompts={loadHistoryPrompts}
+                placeholder={inputPlaceholder}
+                disabled={isInputDisabled || stt.active}
+                workdir={workdir}
+                enabledSkills={enabledSkills}
+                className={cn(
+                  // 右让位由外层容器 pr-12 统一承担（见上），此处不再补 pr——
+                  // 编辑器自身的右内距只会把文字推开、留下滚动条压在控制列上。
+                  "px-0 py-0",
+                  isComposerExpanded &&
+                    (surface === "desktop" ? "h-full max-h-none" : "h-full! max-h-none!"),
+                )}
+              />
+            </div>
 
-          <div className="relative flex items-center justify-between gap-2 px-3 pb-2 pt-1">
-            <div className="flex min-w-0 flex-1 items-center gap-1">
-              <DropdownMenu>
-                <DropdownMenuTrigger
-                  render={
-                    <button
-                      type="button"
-                      disabled={composerAddMenuDisabled}
-                      aria-label={addMenuTooltip}
-                      title={addMenuTooltip}
-                      className={cn(
-                        "composer-toolbar-action relative inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full outline-hidden transition-colors hover:bg-muted/60 focus-visible:bg-muted/60 data-[popup-open]:bg-muted/60",
-                        "disabled:pointer-events-none disabled:opacity-40",
-                        pendingUploadedFiles.length > 0
-                          ? "text-sky-600 hover:text-sky-700 dark:text-sky-300 dark:hover:text-sky-200"
-                          : "text-muted-foreground hover:text-foreground dark:hover:text-white",
-                      )}
-                    />
-                  }
-                >
-                  {isUploadingFiles ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                  ) : (
-                    <Plus className="h-4 w-4" />
-                  )}
-                  {pendingUploadedFiles.length > 0 ? (
-                    <span
-                      aria-hidden
-                      className="absolute -right-0.5 -top-0.5 flex h-[15px] min-w-[15px] items-center justify-center rounded-full bg-sky-500 px-[3px] text-[calc(9px*var(--zone-font-scale,1))] font-semibold leading-none text-white shadow-[0_0_0_1.5px_rgba(255,255,255,0.95)] dark:bg-sky-400 dark:text-slate-900 dark:shadow-[0_0_0_1.5px_rgba(20,22,28,0.9)]"
-                    >
-                      {pendingUploadedFiles.length}
-                    </span>
-                  ) : null}
-                </DropdownMenuTrigger>
-                <DropdownMenuContent
-                  className="composer-add-dropdown flex w-60 flex-col overflow-hidden p-1"
-                  side="top"
-                  align="start"
-                >
-                  <DropdownMenuLabel className="px-2 pb-1 pt-1.5 text-xs font-medium text-muted-foreground">
-                    {t("chat.upload.addSection")}
-                  </DropdownMenuLabel>
-                  <DropdownMenuItem
-                    onSelect={onPickReadableFiles}
-                    disabled={uploadDisabled}
-                    className="composer-safety-item items-center gap-2 rounded-md py-1.5 text-xs"
-                  >
-                    <Paperclip className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
-                    <span className="font-medium leading-5">
-                      {t("chat.upload.filesAndFolders")}
-                    </span>
-                  </DropdownMenuItem>
-                  {isAgentMode ? (
-                    // 计划模式开关行:整行即开关,右侧迷你 switch 呈现状态。
-                    // closeOnClick=false 让切换就地生效——开关动画可见,菜单
-                    // 不弹跳;行为说明降为 hover 提示,不再挤占行内小字。
-                    <DropdownMenuItem
-                      closeOnClick={false}
-                      role="menuitemcheckbox"
-                      aria-checked={chatRuntimeControls.planModeEnabled}
-                      title={t("chat.runtime.planModeHint")}
-                      onSelect={() =>
-                        onChatRuntimeControlsChange({
-                          planModeEnabled: !chatRuntimeControls.planModeEnabled,
-                        })
-                      }
-                      className="composer-safety-item items-center gap-2 rounded-md py-1.5 text-xs"
-                    >
-                      <Lightbulb
+            <div className="relative flex items-center justify-between gap-2 px-3 pb-2 pt-1">
+              <div className="flex min-w-0 flex-1 items-center gap-1">
+                <DropdownMenu>
+                  <DropdownMenuTrigger
+                    render={
+                      <button
+                        type="button"
+                        disabled={composerAddMenuDisabled}
+                        aria-label={addMenuTooltip}
+                        title={addMenuTooltip}
                         className={cn(
-                          "h-3.5 w-3.5 shrink-0 transition-colors",
-                          chatRuntimeControls.planModeEnabled
-                            ? "text-sky-600 dark:text-sky-300"
-                            : "text-muted-foreground",
+                          "composer-toolbar-action relative inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full outline-hidden transition-colors hover:bg-muted/60 focus-visible:bg-muted/60 data-[popup-open]:bg-muted/60",
+                          "disabled:pointer-events-none disabled:opacity-40",
+                          pendingUploadedFiles.length > 0
+                            ? "text-sky-600 hover:text-sky-700 dark:text-sky-300 dark:hover:text-sky-200"
+                            : "text-muted-foreground hover:text-foreground dark:hover:text-white",
                         )}
                       />
-                      <span className="min-w-0 flex-1 truncate font-medium leading-5">
-                        {t("chat.runtime.planModeTitle")}
-                      </span>
-                      {/* 视觉开关(aria 由行上的 menuitemcheckbox 承担):与计划
-                          pill 同用 sky 色系,状态一眼可辨。 */}
+                    }
+                  >
+                    {isUploadingFiles ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <Plus className="h-4 w-4" />
+                    )}
+                    {pendingUploadedFiles.length > 0 ? (
                       <span
                         aria-hidden
-                        className={cn(
-                          "ml-auto inline-flex h-[18px] w-8 shrink-0 items-center rounded-full transition-colors",
-                          chatRuntimeControls.planModeEnabled
-                            ? "bg-sky-500 dark:bg-sky-400"
-                            : "bg-muted-foreground/25",
-                        )}
+                        className="absolute -right-0.5 -top-0.5 flex h-[15px] min-w-[15px] items-center justify-center rounded-full bg-sky-500 px-[3px] text-[calc(9px*var(--zone-font-scale,1))] font-semibold leading-none text-white shadow-[0_0_0_1.5px_rgba(255,255,255,0.95)] dark:bg-sky-400 dark:text-slate-900 dark:shadow-[0_0_0_1.5px_rgba(20,22,28,0.9)]"
                       >
-                        <span
-                          className={cn(
-                            "block h-3.5 w-3.5 translate-x-[2px] rounded-full bg-white shadow-sm transition-transform dark:bg-slate-100",
-                            chatRuntimeControls.planModeEnabled && "translate-x-4",
-                          )}
-                        />
+                        {pendingUploadedFiles.length}
+                      </span>
+                    ) : null}
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent
+                    className="composer-add-dropdown flex w-60 flex-col overflow-hidden p-1"
+                    side="top"
+                    align="start"
+                  >
+                    <DropdownMenuLabel className="px-2 pb-1 pt-1.5 text-xs font-medium text-muted-foreground">
+                      {t("chat.upload.addSection")}
+                    </DropdownMenuLabel>
+                    <DropdownMenuItem
+                      onSelect={onPickReadableFiles}
+                      disabled={uploadDisabled}
+                      className="composer-safety-item items-center gap-2 rounded-md py-1.5 text-xs"
+                    >
+                      <Paperclip className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
+                      <span className="font-medium leading-5">
+                        {t("chat.upload.filesAndFolders")}
                       </span>
                     </DropdownMenuItem>
-                  ) : null}
-                </DropdownMenuContent>
-              </DropdownMenu>
+                    {isAgentMode ? (
+                      // 计划模式开关行:整行即开关,右侧迷你 switch 呈现状态。
+                      // closeOnClick=false 让切换就地生效——开关动画可见,菜单
+                      // 不弹跳;行为说明降为 hover 提示,不再挤占行内小字。
+                      <DropdownMenuItem
+                        closeOnClick={false}
+                        role="menuitemcheckbox"
+                        aria-checked={chatRuntimeControls.planModeEnabled}
+                        title={t("chat.runtime.planModeHint")}
+                        onSelect={() =>
+                          onChatRuntimeControlsChange({
+                            planModeEnabled: !chatRuntimeControls.planModeEnabled,
+                          })
+                        }
+                        className="composer-safety-item items-center gap-2 rounded-md py-1.5 text-xs"
+                      >
+                        <Lightbulb
+                          className={cn(
+                            "h-3.5 w-3.5 shrink-0 transition-colors",
+                            chatRuntimeControls.planModeEnabled
+                              ? "text-sky-600 dark:text-sky-300"
+                              : "text-muted-foreground",
+                          )}
+                        />
+                        <span className="min-w-0 flex-1 truncate font-medium leading-5">
+                          {t("chat.runtime.planModeTitle")}
+                        </span>
+                        {/* 视觉开关(aria 由行上的 menuitemcheckbox 承担):与计划
+                          pill 同用 sky 色系,状态一眼可辨。 */}
+                        <span
+                          aria-hidden
+                          className={cn(
+                            "ml-auto inline-flex h-[18px] w-8 shrink-0 items-center rounded-full transition-colors",
+                            chatRuntimeControls.planModeEnabled
+                              ? "bg-sky-500 dark:bg-sky-400"
+                              : "bg-muted-foreground/25",
+                          )}
+                        >
+                          <span
+                            className={cn(
+                              "block h-3.5 w-3.5 translate-x-[2px] rounded-full bg-white shadow-sm transition-transform dark:bg-slate-100",
+                              chatRuntimeControls.planModeEnabled && "translate-x-4",
+                            )}
+                          />
+                        </span>
+                      </DropdownMenuItem>
+                    ) : null}
+                  </DropdownMenuContent>
+                </DropdownMenu>
 
-              {/* 计划模式开启指示(Codex 风格 pill):一眼可见,点击即关。 */}
-              {isAgentMode && chatRuntimeControls.planModeEnabled ? (
-                <button
-                  type="button"
-                  disabled={controlsDisabled}
-                  onClick={() => onChatRuntimeControlsChange({ planModeEnabled: false })}
-                  title={t("chat.runtime.planModeSlashOff")}
-                  aria-label={t("chat.runtime.planModeSlashOff")}
-                  className="inline-flex h-8 shrink-0 items-center gap-1.5 rounded-full border border-sky-500/25 bg-sky-500/10 px-2.5 text-[11px] font-medium text-sky-700 outline-hidden transition-colors hover:bg-sky-500/15 focus-visible:ring-2 focus-visible:ring-primary/35 disabled:pointer-events-none disabled:opacity-40 dark:text-sky-300"
-                >
-                  <Lightbulb className="h-3.5 w-3.5 shrink-0" />
-                  <span className="truncate">{t("chat.runtime.planMode")}</span>
-                </button>
-              ) : null}
-
-              {stt.available ? (
-                <RuntimeControlTooltip label={stt.active ? "停止语音输入" : "开始语音输入"}>
+                {/* 计划模式开启指示(Codex 风格 pill):一眼可见,点击即关。 */}
+                {isAgentMode && chatRuntimeControls.planModeEnabled ? (
                   <button
                     type="button"
-                    disabled={isInputDisabled}
-                    onClick={stt.toggle}
-                    aria-label={stt.active ? "停止语音输入" : "开始语音输入"}
-                    aria-pressed={stt.active}
-                    className={cn(
-                      "composer-toolbar-action inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full outline-hidden transition-colors hover:bg-muted/60 focus-visible:bg-muted/60",
-                      "disabled:pointer-events-none disabled:opacity-40",
-                      stt.active
-                        ? "bg-red-500/10 text-red-600"
-                        : "text-muted-foreground hover:text-foreground",
-                    )}
+                    disabled={controlsDisabled}
+                    onClick={() => onChatRuntimeControlsChange({ planModeEnabled: false })}
+                    title={t("chat.runtime.planModeSlashOff")}
+                    aria-label={t("chat.runtime.planModeSlashOff")}
+                    className="inline-flex h-8 shrink-0 items-center gap-1.5 rounded-full border border-sky-500/25 bg-sky-500/10 px-2.5 text-[11px] font-medium text-sky-700 outline-hidden transition-colors hover:bg-sky-500/15 focus-visible:ring-2 focus-visible:ring-primary/35 disabled:pointer-events-none disabled:opacity-40 dark:text-sky-300"
                   >
-                    {stt.state === "requesting-permission" ||
-                    stt.state === "buffering" ||
-                    stt.state === "stopping" ? (
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                    ) : stt.active ? (
-                      <Square className="h-3.5 w-3.5 fill-current" />
-                    ) : (
-                      <Mic className="h-4 w-4" />
-                    )}
+                    <Lightbulb className="h-3.5 w-3.5 shrink-0" />
+                    <span className="truncate">{t("chat.runtime.planMode")}</span>
                   </button>
-                </RuntimeControlTooltip>
-              ) : null}
+                ) : null}
 
+                {stt.available ? (
+                  <RuntimeControlTooltip label={stt.active ? "停止语音输入" : "开始语音输入"}>
+                    <button
+                      type="button"
+                      disabled={isInputDisabled}
+                      onClick={stt.toggle}
+                      aria-label={stt.active ? "停止语音输入" : "开始语音输入"}
+                      aria-pressed={stt.active}
+                      className={cn(
+                        "composer-toolbar-action inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full outline-hidden transition-colors hover:bg-muted/60 focus-visible:bg-muted/60",
+                        "disabled:pointer-events-none disabled:opacity-40",
+                        stt.active
+                          ? "bg-red-500/10 text-red-600"
+                          : "text-muted-foreground hover:text-foreground",
+                      )}
+                    >
+                      {stt.state === "requesting-permission" ||
+                      stt.state === "buffering" ||
+                      stt.state === "stopping" ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : stt.active ? (
+                        <Square className="h-3.5 w-3.5 fill-current" />
+                      ) : (
+                        <Mic className="h-4 w-4" />
+                      )}
+                    </button>
+                  </RuntimeControlTooltip>
+                ) : null}
+              </div>
+
+              <div className="flex shrink-0 items-center gap-1">
+                <Button
+                  disabled={isSending ? false : sendDisabled}
+                  onClick={() => {
+                    if (canQueueDraftWhileSending) {
+                      handleComposerSend();
+                      return;
+                    }
+                    if (isSending) {
+                      onStop();
+                      return;
+                    }
+                    if (sendDisabled) return;
+                    handleComposerSend();
+                  }}
+                  size="sm"
+                  title={primaryActionTitle}
+                  aria-label={primaryActionTitle}
+                  style={
+                    canQueueDraftWhileSending
+                      ? {
+                          backgroundColor: "hsl(160 84% 39%)",
+                          backgroundImage: "none",
+                          color: "white",
+                        }
+                      : isSending
+                        ? {
+                            backgroundColor: "hsl(var(--destructive))",
+                            backgroundImage: "none",
+                            color: "hsl(var(--destructive-foreground))",
+                          }
+                        : undefined
+                  }
+                  className={cn(
+                    "h-8 w-8 shrink-0 rounded-full border-0 p-0 shadow-none transition-all [&_svg]:stroke-[2.25]",
+                    canQueueDraftWhileSending
+                      ? "hover:brightness-105 active:scale-95"
+                      : isSending
+                        ? "hover:opacity-90 active:scale-95"
+                        : "disabled:opacity-100 [&:not(:disabled)]:bg-foreground [&:not(:disabled)]:text-background [&:not(:disabled)]:hover:bg-foreground/85 [&:not(:disabled)]:active:scale-95 disabled:bg-muted/60 disabled:text-muted-foreground",
+                  )}
+                >
+                  {canQueueDraftWhileSending ? (
+                    <ArrowUp className="h-4 w-4" />
+                  ) : isSending ? (
+                    <Square className="h-3 w-3 fill-current" />
+                  ) : (
+                    <ArrowUp className="h-4 w-4" />
+                  )}
+                </Button>
+              </div>
+            </div>
+          </div>
+
+          <div className="composer-control-deck relative z-0 -mt-3 flex min-h-12 shrink-0 items-end justify-between gap-2 px-3 pb-2 pt-5">
+            <div className="flex min-w-0 flex-1 items-center gap-1 overflow-hidden">
               {isAgentMode && commandSafetyMode && onCommandSafetyModeChange ? (
                 <CommandSafetyModeSelector
                   value={commandSafetyMode}
@@ -1184,57 +1239,13 @@ export const ChatComposerBar = memo(function ChatComposerBar(props: ChatComposer
               />
             </div>
 
-            <div className="flex shrink-0 items-center gap-1">
-              <Button
-                disabled={isSending ? false : sendDisabled}
-                onClick={() => {
-                  if (canQueueDraftWhileSending) {
-                    handleComposerSend();
-                    return;
-                  }
-                  if (isSending) {
-                    onStop();
-                    return;
-                  }
-                  if (sendDisabled) return;
-                  handleComposerSend();
-                }}
-                size="sm"
-                title={primaryActionTitle}
-                aria-label={primaryActionTitle}
-                style={
-                  canQueueDraftWhileSending
-                    ? {
-                        backgroundColor: "hsl(160 84% 39%)",
-                        backgroundImage: "none",
-                        color: "white",
-                      }
-                    : isSending
-                      ? {
-                          backgroundColor: "hsl(var(--destructive))",
-                          backgroundImage: "none",
-                          color: "hsl(var(--destructive-foreground))",
-                        }
-                      : undefined
-                }
-                className={cn(
-                  "h-8 w-8 shrink-0 rounded-full border-0 p-0 shadow-none transition-all",
-                  canQueueDraftWhileSending
-                    ? "hover:brightness-105 active:scale-95"
-                    : isSending
-                      ? "hover:opacity-90 active:scale-95"
-                      : "disabled:opacity-100 [&:not(:disabled)]:bg-foreground [&:not(:disabled)]:text-background [&:not(:disabled)]:hover:bg-foreground/85 [&:not(:disabled)]:active:scale-95 disabled:bg-muted/60 disabled:text-muted-foreground",
-                )}
-              >
-                {canQueueDraftWhileSending ? (
-                  <Send className="h-4 w-4" />
-                ) : isSending ? (
-                  <Square className="h-3 w-3 fill-current" />
-                ) : (
-                  <Send className="h-4 w-4" />
-                )}
-              </Button>
-            </div>
+            <ComposerContextUsageRing
+              source={contextUsageTokensSource}
+              totalTokens={contextUsageTokens}
+              contextWindow={contextWindow}
+              disabled={controlsDisabled || isSending || manualCompactBlocked}
+              onConfirm={onManualCompactConfirm}
+            />
           </div>
           {fileDropOverlay}
         </div>

@@ -55,6 +55,10 @@ function createHookHarness(initialState = {}) {
       return factory();
     },
     useEffect() {},
+    useLayoutEffect() {},
+    useRef(initialValue) {
+      return { current: initialValue };
+    },
   };
 
   return {
@@ -79,6 +83,8 @@ function createCardHarness(initialState = {}) {
       },
       "@liveagent/ui/components/IconSet": {
         Check: (props) => ({ type: "Check", props }),
+        ChevronDown: (props) => ({ type: "ChevronDown", props }),
+        ChevronUp: (props) => ({ type: "ChevronUp", props }),
         Sparkles: (props) => ({ type: "Sparkles", props }),
       },
       "@liveagent/ui/lib/shared/utils": {
@@ -316,9 +322,12 @@ test("multi-question selection auto-advances and preserves a mixed custom payloa
     findAll(
       tree,
       (node) =>
-        node.type === "button" && ["One", "Two", "Three"].includes(treeText(node)),
+        node.type === "button" &&
+        ["chat.askUser.previousQuestion", "chat.askUser.nextQuestion"].includes(
+          node.props?.["aria-label"],
+        ),
     ).length,
-    3,
+    2,
   );
   findAll(tree, (node) => node.type === "button" && node.props?.role === "radio")[1].props.onClick();
 

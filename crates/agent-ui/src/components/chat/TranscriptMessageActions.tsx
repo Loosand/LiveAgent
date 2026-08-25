@@ -155,67 +155,76 @@ export function TranscriptAssistantMessageActions(
         !withAvatarSpacer && "pl-10",
       )}
     >
-      <button
-        type="button"
-        className="chat-assistant-action inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted/50 hover:text-foreground disabled:cursor-not-allowed disabled:opacity-40"
-        title={t("chat.copy")}
-        aria-label={t("chat.copy")}
-        disabled={copyDisabled}
-        onClick={onCopy}
-      >
-        {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
-      </button>
-      <ConfirmActionPopover
-        title={t("chat.retryConfirmTitle")}
-        description={t("chat.retryConfirmDescription")}
-        confirmLabel={t("chat.retry")}
-        align="start"
-        side="top"
-        onConfirm={onRetry}
-      >
-        {(open) => (
-          <button
-            type="button"
-            className="chat-assistant-action inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted/50 hover:text-foreground disabled:cursor-not-allowed disabled:opacity-40"
-            title={retryTitle}
-            aria-label={retryTitle}
-            disabled={retryDisabled}
-            onClick={open}
-          >
-            <RefreshCw className="h-3.5 w-3.5" />
-          </button>
+      <div
+        className={cn(
+          "pointer-events-none flex gap-0.5 opacity-0 transition-opacity duration-150 group-data-[actions-visible=true]/assistant:pointer-events-auto group-data-[actions-visible=true]/assistant:opacity-100 group-focus-within/assistant:pointer-events-auto group-focus-within/assistant:opacity-100 group-hover/assistant:pointer-events-auto group-hover/assistant:opacity-100 motion-reduce:transition-none",
+          alwaysShowActions &&
+            "[@media(hover:none)]:pointer-events-auto [@media(hover:none)]:opacity-100",
+          branchPending && "pointer-events-auto opacity-100",
         )}
-      </ConfirmActionPopover>
-      <ConfirmActionPopover
-        title={t("chat.branchConfirmTitle")}
-        description={t("chat.branchConfirmDescription")}
-        confirmLabel={t("chat.branch")}
-        tone="default"
-        align="start"
-        side="top"
-        onConfirm={onBranch}
       >
-        {(open) => (
-          <button
-            type="button"
-            className="chat-assistant-action inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted/50 hover:text-foreground disabled:cursor-not-allowed disabled:opacity-40"
-            title={branchTitle}
-            aria-label={branchTitle}
-            disabled={branchDisabled}
-            onClick={open}
-          >
-            {branchPending ? (
-              <Loader2 className="h-3.5 w-3.5 animate-spin" />
-            ) : (
-              <GitBranch className="h-3.5 w-3.5" />
-            )}
-          </button>
-        )}
-      </ConfirmActionPopover>
-      <UsageInfoPopover entries={usageEntries} contextWindow={usageContextWindow} />
+        <button
+          type="button"
+          className="chat-assistant-action inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted/50 hover:text-foreground disabled:cursor-not-allowed disabled:opacity-40"
+          title={t("chat.copy")}
+          aria-label={t("chat.copy")}
+          disabled={copyDisabled}
+          onClick={onCopy}
+        >
+          {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
+        </button>
+        <ConfirmActionPopover
+          title={t("chat.retryConfirmTitle")}
+          description={t("chat.retryConfirmDescription")}
+          confirmLabel={t("chat.retry")}
+          align="start"
+          side="top"
+          onConfirm={onRetry}
+        >
+          {(open) => (
+            <button
+              type="button"
+              className="chat-assistant-action inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted/50 hover:text-foreground disabled:cursor-not-allowed disabled:opacity-40"
+              title={retryTitle}
+              aria-label={retryTitle}
+              disabled={retryDisabled}
+              onClick={open}
+            >
+              <RefreshCw className="h-3.5 w-3.5" />
+            </button>
+          )}
+        </ConfirmActionPopover>
+        <ConfirmActionPopover
+          title={t("chat.branchConfirmTitle")}
+          description={t("chat.branchConfirmDescription")}
+          confirmLabel={t("chat.branch")}
+          tone="default"
+          align="start"
+          side="top"
+          onConfirm={onBranch}
+        >
+          {(open) => (
+            <button
+              type="button"
+              className="chat-assistant-action inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted/50 hover:text-foreground disabled:cursor-not-allowed disabled:opacity-40"
+              title={branchTitle}
+              aria-label={branchTitle}
+              disabled={branchDisabled}
+              onClick={open}
+            >
+              {branchPending ? (
+                <Loader2 className="h-3.5 w-3.5 animate-spin" />
+              ) : (
+                <GitBranch className="h-3.5 w-3.5" />
+              )}
+            </button>
+          )}
+        </ConfirmActionPopover>
+        <UsageInfoPopover entries={usageEntries} contextWindow={usageContextWindow} />
+      </div>
       <span
         className={cn(
-          "ml-1 select-none text-[calc(11px*var(--zone-font-scale,1))] tabular-nums text-muted-foreground/70 opacity-0 transition-opacity duration-150 group-focus-within/assistant:opacity-100 group-hover/assistant:opacity-100 motion-reduce:transition-none",
+          "ml-1 select-none text-[calc(11px*var(--zone-font-scale,1))] tabular-nums text-muted-foreground/70 opacity-0 transition-opacity duration-150 group-data-[actions-visible=true]/assistant:opacity-100 group-focus-within/assistant:opacity-100 group-hover/assistant:opacity-100 motion-reduce:transition-none",
           alwaysShowActions && "[@media(hover:none)]:opacity-100",
         )}
       >

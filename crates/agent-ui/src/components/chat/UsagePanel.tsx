@@ -1,4 +1,5 @@
 import { useLocale } from "../../i18n/index";
+import { formatTokenCount } from "../../lib/chat/formatTokenCount";
 import { cn } from "../../lib/shared/utils";
 import { Info } from "../IconSet";
 import { Popover, PopoverContent, PopoverTitle, PopoverTrigger } from "../ui/popover";
@@ -27,10 +28,6 @@ function hasDisplayableUsage(usage: UsagePanelUsage | undefined): usage is Usage
   );
 }
 
-function formatUsageNumber(value: number, locale: string) {
-  return new Intl.NumberFormat(locale, { maximumFractionDigits: 0 }).format(value);
-}
-
 function buildUsageStats(
   usage: UsagePanelUsage | undefined,
   contextWindow: number | undefined,
@@ -43,7 +40,7 @@ function buildUsageStats(
           {
             key: "context-window",
             label: t("chat.contextWindow"),
-            value: formatUsageNumber(contextWindow, locale),
+            value: formatTokenCount(contextWindow, locale),
           },
         ]
       : []),
@@ -52,24 +49,24 @@ function buildUsageStats(
           {
             key: "total",
             label: t("chat.usageTotal"),
-            value: formatUsageNumber(usage.totalTokens, locale),
+            value: formatTokenCount(usage.totalTokens, locale),
           },
           {
             key: "input",
             label: t("chat.usageInput"),
-            value: formatUsageNumber(usage.input, locale),
+            value: formatTokenCount(usage.input, locale),
           },
           {
             key: "output",
             label: t("chat.usageOutput"),
-            value: formatUsageNumber(usage.output, locale),
+            value: formatTokenCount(usage.output, locale),
           },
           ...(usage.cacheRead > 0
             ? [
                 {
                   key: "cache-read",
                   label: t("chat.usageCacheRead"),
-                  value: formatUsageNumber(usage.cacheRead, locale),
+                  value: formatTokenCount(usage.cacheRead, locale),
                 },
               ]
             : []),
@@ -78,7 +75,7 @@ function buildUsageStats(
                 {
                   key: "cache-write",
                   label: t("chat.usageCacheWrite"),
-                  value: formatUsageNumber(usage.cacheWrite, locale),
+                  value: formatTokenCount(usage.cacheWrite, locale),
                 },
               ]
             : []),

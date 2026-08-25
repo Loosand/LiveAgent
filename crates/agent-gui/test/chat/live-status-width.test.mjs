@@ -14,6 +14,10 @@ const sharedStatusSource = fs.readFileSync(
   new URL("../../../agent-ui/src/components/chat/AssistantStatus.tsx", import.meta.url),
   "utf8",
 );
+const workTraceSource = fs.readFileSync(
+  new URL("../../../agent-ui/src/components/chat/AssistantWorkTrace.tsx", import.meta.url),
+  "utf8",
+);
 
 test("desktop live status cannot widen the transcript", () => {
   assert.match(activitySource, /min-w-0 w-full max-w-full/);
@@ -32,5 +36,13 @@ test("desktop retry details render only in the stable live-status unit", () => {
   assert.match(
     bubbleSource,
     /@liveagent\/ui\/components\/chat\/RetryDetailsBlock/,
+  );
+});
+
+test("standalone work trace aligns its header with the assistant avatar", () => {
+  assert.match(workTraceSource, /className=\{cn\("my-3 text-muted-foreground", className\)\}/);
+  assert.match(
+    bubbleSource,
+    /<AssistantWorkTrace[\s\S]*?className="mb-3 mt-0"[\s\S]*?hasDetails=/,
   );
 });

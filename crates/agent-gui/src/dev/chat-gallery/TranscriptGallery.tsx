@@ -1,6 +1,14 @@
 import type { AssistantMessage, Message, ToolResultMessage } from "@liveagent/app/lib/agentTypes";
 import type { ScrollFollowHandle } from "@liveagent/ui/lib/chat-scroll/useScrollFollow";
-import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
+import { CHAT_TRANSCRIPT_WIDTH_CSS_VAR } from "@liveagent/ui/pages/chat/transcript/TranscriptWidthControls";
+import {
+  type CSSProperties,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  useSyncExternalStore,
+} from "react";
 import { flushSync } from "react-dom";
 import type { Locale } from "../../i18n/config";
 import {
@@ -157,7 +165,15 @@ function TranscriptStage(props: {
   const zh = locale === "zh-CN";
 
   return (
-    <div className="chat-gallery-transcript-stage">
+    <div
+      data-chat-width-owner=""
+      className="chat-gallery-transcript-stage"
+      style={
+        {
+          [CHAT_TRANSCRIPT_WIDTH_CSS_VAR]: `${contentWidth}px`,
+        } as CSSProperties
+      }
+    >
       <ChatTranscript
         conversationId={`chat-gallery-${scenarioKey}`}
         workspaceRoot="/workspace/liveagent"

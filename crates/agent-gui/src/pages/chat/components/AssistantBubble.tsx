@@ -77,7 +77,11 @@ export const AssistantBubbleUnit = memo(function AssistantBubbleUnit(props: {
         ) : null}
 
         {unit.kind === "work-trace" ? (
-          <AssistantWorkTrace hasDetails={unit.blocks.length > 0} running={row.live}>
+          <AssistantWorkTrace
+            className="mb-3 mt-0"
+            hasDetails={unit.blocks.length > 0}
+            running={row.live}
+          >
             {unit.blocks.map((block) => (
               <RoundBlockContent
                 key={block.key}

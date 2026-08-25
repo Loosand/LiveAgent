@@ -46,10 +46,12 @@ function WorkPixelGrid({ active }: { active: boolean }) {
 
 export function AssistantWorkTrace({
   children,
+  className,
   hasDetails,
   running,
 }: {
   children: ReactNode;
+  className?: string;
   hasDetails: boolean;
   running: boolean;
 }) {
@@ -81,7 +83,7 @@ export function AssistantWorkTrace({
 
   return (
     <section
-      className="my-3 text-muted-foreground"
+      className={cn("my-3 text-muted-foreground", className)}
       aria-label={t("chat.work.activity")}
       aria-busy={running}
       data-chat-work-trace=""

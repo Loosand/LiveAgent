@@ -6,12 +6,8 @@ import { BOTTOM_REATTACH_ZONE_PX } from "@liveagent/ui/lib/chat-scroll/scrollFol
 import { useScrollFollow } from "@liveagent/ui/lib/chat-scroll/useScrollFollow";
 import { cn } from "@liveagent/ui/lib/shared/utils";
 import { FloorNavRail } from "@liveagent/ui/pages/chat/transcript/FloorNavRail";
+import { TranscriptWidthControls } from "@liveagent/ui/pages/chat/transcript/TranscriptWidthControls";
 import {
-  CHAT_TRANSCRIPT_WIDTH_CSS_VAR,
-  TranscriptWidthControls,
-} from "@liveagent/ui/pages/chat/transcript/TranscriptWidthControls";
-import {
-  type CSSProperties,
   memo,
   type MouseEvent as ReactMouseEvent,
   useCallback,
@@ -287,14 +283,6 @@ export const ChatTranscript = memo(function ChatTranscript(props: ChatTranscript
       // pane, not the viewport — a narrow pane in a wide split window must
       // degrade like a narrow window.
       className="@container relative min-h-0 flex-1"
-      // Preferred (persisted) width, so a fresh mount paints at the user's
-      // width instead of the default. TranscriptWidthControls narrows this
-      // same variable to the stage in a layout effect — see its header.
-      style={
-        {
-          [CHAT_TRANSCRIPT_WIDTH_CSS_VAR]: `${contentWidth}px`,
-        } as CSSProperties
-      }
       onContextMenu={handleTranscriptContextMenu}
     >
       <div

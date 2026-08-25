@@ -19,6 +19,7 @@ import {
   type MutableRefObject,
   memo,
   type ReactNode,
+  type PointerEvent as ReactPointerEvent,
   useCallback,
   useEffect,
   useLayoutEffect,
@@ -44,6 +45,13 @@ const TRANSCRIPT_MEASUREMENT_LAYOUT_VERSION = "assistant-activity-v2";
 function buildVersionedTranscriptLayoutKey(viewportWidth: number, contentWidth: number) {
   const layoutKey = buildTranscriptLayoutKey(viewportWidth, contentWidth);
   return layoutKey ? `${layoutKey}:${TRANSCRIPT_MEASUREMENT_LAYOUT_VERSION}` : "";
+}
+
+function assistantReplyKeyFromEventTarget(target: EventTarget | null) {
+  if (!(target instanceof Element)) return null;
+  return (
+    target.closest<HTMLElement>("[data-assistant-reply-key]")?.dataset.assistantReplyKey ?? null
+  );
 }
 
 // Measured row heights survive conversation switches: saved on unmount,
@@ -174,6 +182,17 @@ export const TranscriptList = memo(function TranscriptList(props: TranscriptList
   );
 
   const [editingMessageKey, setEditingMessageKey] = useState<string | null>(null);
+  const [hoveredAssistantReplyKey, setHoveredAssistantReplyKey] = useState<string | null>(null);
+
+  const handleTranscriptPointerOver = useCallback((event: ReactPointerEvent<HTMLDivElement>) => {
+    const nextReplyKey = assistantReplyKeyFromEventTarget(event.target);
+    setHoveredAssistantReplyKey((currentReplyKey) =>
+      currentReplyKey === nextReplyKey ? currentReplyKey : nextReplyKey,
+    );
+  }, []);
+  const handleTranscriptPointerLeave = useCallback(() => {
+    setHoveredAssistantReplyKey(null);
+  }, []);
 
   useEffect(() => {
     if (!editingMessageKey) {
@@ -342,10 +361,19 @@ export const TranscriptList = memo(function TranscriptList(props: TranscriptList
   useEffect(() => () => saveMeasurementsRef.current(), []);
 
   return (
-    <div ref={virtualizer.containerRef} className="relative">
+    <div
+      ref={virtualizer.containerRef}
+      className="relative"
+      onPointerOver={handleTranscriptPointerOver}
+      onPointerLeave={handleTranscriptPointerLeave}
+    >
       {virtualizer.getVirtualItems().map((virtualRow) => {
         const row = rows[virtualRow.index];
         if (!row) return null;
+        const assistantReplyKey =
+          row.kind === "assistant-unit" || row.kind === "assistant-activity" ? row.replyKey : null;
+        const actionsVisible =
+          assistantReplyKey !== null && assistantReplyKey === hoveredAssistantReplyKey;
 
         let body: ReactNode;
         if (row.kind === "summary") {
@@ -375,6 +403,7 @@ export const TranscriptList = memo(function TranscriptList(props: TranscriptList
                 isAgentMode={isAgentMode}
                 isCompactionRunning={isCompactionRunning}
                 toolStatus={displayedToolStatus}
+                actionsVisible={actionsVisible}
                 retryAttempts={liveState.retryAttempts}
                 workdir={workspaceRoot}
                 onOpenFileLink={onOpenFileLink}
@@ -393,6 +422,7 @@ export const TranscriptList = memo(function TranscriptList(props: TranscriptList
                 isAgentMode={isAgentMode}
                 isCompactionRunning={row.mutable ? isCompactionRunning : false}
                 toolStatus={row.mutable ? displayedToolStatus : null}
+                actionsVisible={actionsVisible}
                 retryAttempts={row.mutable ? liveState.retryAttempts : undefined}
                 workdir={workspaceRoot}
                 onOpenFileLink={onOpenFileLink}
@@ -407,6 +437,7 @@ export const TranscriptList = memo(function TranscriptList(props: TranscriptList
           <div
             key={virtualRow.key}
             data-row-key={row.key}
+            data-assistant-reply-key={assistantReplyKey ?? undefined}
             data-index={virtualRow.index}
             ref={virtualizer.measureElement}
             className="absolute left-0 right-0 top-0"
