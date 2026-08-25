@@ -115,10 +115,28 @@ function ComposerApprovalBar({ locale }: { locale: Locale }) {
   );
 }
 
-function ComposerHarness(props: { variant: ComposerVariant; locale: Locale }) {
-  const { variant, locale } = props;
+export function GalleryComposerHarness(props: {
+  variant: ComposerVariant;
+  locale: Locale;
+  embedded?: boolean;
+  conversationId?: string;
+  hasModels?: boolean;
+  isSending?: boolean;
+  onHeightChange?: (height: number) => void;
+}) {
+  const {
+    variant,
+    locale,
+    embedded = false,
+    conversationId = `chat-gallery-${variant}`,
+    hasModels: hasModelsOverride,
+    isSending: isSendingOverride,
+    onHeightChange,
+  } = props;
   const composerRef = useRef<MentionComposerHandle | null>(null);
-  const [isSending, setIsSending] = useState(variant === "sending" || variant === "queued");
+  const [localIsSending, setLocalIsSending] = useState(
+    variant === "sending" || variant === "queued",
+  );
   const [runtimeControls, setRuntimeControls] = useState<ChatRuntimeControls>({
     ...DEFAULT_CHAT_RUNTIME_CONTROLS,
     planModeEnabled: variant === "prefilled",
@@ -131,8 +149,9 @@ function ComposerHarness(props: { variant: ComposerVariant; locale: Locale }) {
     variant === "queued" ? INITIAL_QUEUE : [],
   );
   const [dropActive, setDropActive] = useState(variant === "drop");
-  const hasModels = variant !== "disabled";
-  const isDisabled = variant === "disabled";
+  const hasModels = hasModelsOverride ?? variant !== "disabled";
+  const isSending = isSendingOverride ?? localIsSending;
+  const isDisabled = variant === "disabled" || !hasModels;
   const zh = locale === "zh-CN";
 
   useEffect(() => {
@@ -187,6 +206,98 @@ function ComposerHarness(props: { variant: ComposerVariant; locale: Locale }) {
     },
   ]);
 
+  const composer = (
+    <ChatComposerBar
+      surface="desktop"
+      conversationId={conversationId}
+      composerRef={composerRef}
+      isSending={isSending}
+      isUploadingFiles={variant === "uploading"}
+      isInputDisabled={isDisabled}
+      inputPlaceholder={
+        hasModels
+          ? zh
+            ? "发送消息，@ 引用文件，/ 引用技能"
+            : "Send a message, @ files, / skills"
+          : zh
+            ? "请先配置模型"
+            : "Configure a model first"
+      }
+      workdir="/workspace/liveagent"
+      enabledSkills={[
+        {
+          name: "ui-review",
+          description: "Review production UI states",
+          skillFile: "/workspace/liveagent/.agents/skills/ui-review/SKILL.md",
+          baseDir: "/workspace/liveagent/.agents/skills/ui-review",
+        },
+      ]}
+      executionMode="tools"
+      hasModels={hasModels}
+      currentModelLabel={hasModels ? "gpt-5.6" : zh ? "未选择模型" : "No model"}
+      modelOptions={hasModels ? MODEL_OPTIONS : []}
+      selectedValue={hasModels ? selectedValue : undefined}
+      chatRuntimeControls={runtimeControls}
+      commandSafetyMode="ask"
+      onCommandSafetyModeChange={() => undefined}
+      reasoningOptions={["low", "medium", "high", "xhigh"]}
+      thinkingAlwaysOn={false}
+      gitClient={null}
+      contextUsageTokens={variant === "queued" ? 92_400 : 18_200}
+      contextWindow={128_000}
+      onManualCompactConfirm={() => undefined}
+      manualCompactBlocked={variant === "uploading"}
+      onSend={() => setLocalIsSending(true)}
+      onStop={() => setLocalIsSending(false)}
+      onComposerBusyChange={() => undefined}
+      onSelectModel={(selection) => {
+        setSelectedValue(toModelValue(selection.customProviderId, selection.model));
+      }}
+      onSelectExecutionMode={() => undefined}
+      onOpenSettings={() => undefined}
+      onChatRuntimeControlsChange={(patch) => {
+        setRuntimeControls((current) => ({ ...current, ...patch }));
+      }}
+      onPickReadableFiles={() => undefined}
+      onPasteFiles={() => undefined}
+      pendingUploadedFiles={uploads}
+      onRemovePendingUpload={(relativePath) => {
+        setUploads((current) => current.filter((file) => file.relativePath !== relativePath));
+      }}
+      queuedTurns={queue}
+      onRunQueuedTurnNow={removeQueueItem}
+      onMoveQueuedTurnUp={moveQueuedTurnUp}
+      onEditQueuedTurn={(id) => {
+        const item = queue.find((entry) => entry.id === id);
+        if (item) composerRef.current?.setText(item.previewText);
+        removeQueueItem(id);
+      }}
+      onRemoveQueuedTurn={removeQueueItem}
+      onHeightChange={onHeightChange}
+      taskProgressBar={
+        variant === "overlays" ? (
+          <TaskProgressBar snapshot={taskSnapshot} isConversationRunning />
+        ) : undefined
+      }
+      approvalBar={variant === "overlays" ? <ComposerApprovalBar locale={locale} /> : undefined}
+      fileDropOverlay={
+        dropActive ? (
+          <FileDropOverlay
+            variant="composer"
+            canDropUpload
+            title={zh ? "松开即可添加到对话" : "Drop to attach"}
+            description={
+              zh ? "样例只展示界面，不会读取本地文件。" : "The gallery will not read local files."
+            }
+            limitHint={zh ? "最多 20 个文件" : "Up to 20 files"}
+          />
+        ) : undefined
+      }
+    />
+  );
+
+  if (embedded) return composer;
+
   return (
     <div className="relative h-[22rem] min-h-0 overflow-hidden bg-background">
       {variant === "drop" ? (
@@ -199,92 +310,7 @@ function ComposerHarness(props: { variant: ComposerVariant; locale: Locale }) {
           {dropActive ? (zh ? "结束拖放" : "End drag") : zh ? "模拟拖放" : "Simulate drag"}
         </button>
       ) : null}
-      <ChatComposerBar
-        surface="desktop"
-        conversationId={`chat-gallery-${variant}`}
-        composerRef={composerRef}
-        isSending={isSending}
-        isUploadingFiles={variant === "uploading"}
-        isInputDisabled={isDisabled}
-        inputPlaceholder={
-          hasModels
-            ? zh
-              ? "发送消息，@ 引用文件，/ 引用技能"
-              : "Send a message, @ files, / skills"
-            : zh
-              ? "请先配置模型"
-              : "Configure a model first"
-        }
-        workdir="/workspace/liveagent"
-        enabledSkills={[
-          {
-            name: "ui-review",
-            description: "Review production UI states",
-            skillFile: "/workspace/liveagent/.agents/skills/ui-review/SKILL.md",
-            baseDir: "/workspace/liveagent/.agents/skills/ui-review",
-          },
-        ]}
-        executionMode="tools"
-        hasModels={hasModels}
-        currentModelLabel={hasModels ? "gpt-5.6" : zh ? "未选择模型" : "No model"}
-        modelOptions={hasModels ? MODEL_OPTIONS : []}
-        selectedValue={hasModels ? selectedValue : undefined}
-        chatRuntimeControls={runtimeControls}
-        commandSafetyMode="ask"
-        onCommandSafetyModeChange={() => undefined}
-        reasoningOptions={["low", "medium", "high", "xhigh"]}
-        thinkingAlwaysOn={false}
-        gitClient={null}
-        contextUsageTokens={variant === "queued" ? 92_400 : 18_200}
-        contextWindow={128_000}
-        onManualCompactConfirm={() => undefined}
-        manualCompactBlocked={variant === "uploading"}
-        onSend={() => setIsSending(true)}
-        onStop={() => setIsSending(false)}
-        onComposerBusyChange={() => undefined}
-        onSelectModel={(selection) => {
-          setSelectedValue(toModelValue(selection.customProviderId, selection.model));
-        }}
-        onSelectExecutionMode={() => undefined}
-        onOpenSettings={() => undefined}
-        onChatRuntimeControlsChange={(patch) => {
-          setRuntimeControls((current) => ({ ...current, ...patch }));
-        }}
-        onPickReadableFiles={() => undefined}
-        onPasteFiles={() => undefined}
-        pendingUploadedFiles={uploads}
-        onRemovePendingUpload={(relativePath) => {
-          setUploads((current) => current.filter((file) => file.relativePath !== relativePath));
-        }}
-        queuedTurns={queue}
-        onRunQueuedTurnNow={removeQueueItem}
-        onMoveQueuedTurnUp={moveQueuedTurnUp}
-        onEditQueuedTurn={(id) => {
-          const item = queue.find((entry) => entry.id === id);
-          if (item) composerRef.current?.setText(item.previewText);
-          removeQueueItem(id);
-        }}
-        onRemoveQueuedTurn={removeQueueItem}
-        taskProgressBar={
-          variant === "overlays" ? (
-            <TaskProgressBar snapshot={taskSnapshot} isConversationRunning />
-          ) : undefined
-        }
-        approvalBar={variant === "overlays" ? <ComposerApprovalBar locale={locale} /> : undefined}
-        fileDropOverlay={
-          dropActive ? (
-            <FileDropOverlay
-              variant="composer"
-              canDropUpload
-              title={zh ? "松开即可添加到对话" : "Drop to attach"}
-              description={
-                zh ? "样例只展示界面，不会读取本地文件。" : "The gallery will not read local files."
-              }
-              limitHint={zh ? "最多 20 个文件" : "Up to 20 files"}
-            />
-          ) : undefined
-        }
-      />
+      {composer}
     </div>
   );
 }
@@ -309,7 +335,7 @@ function ComposerCard(props: {
       flush
       footer="ChatComposerBar · desktop surface · isolated callbacks"
     >
-      <ComposerHarness variant={variant} locale={locale} />
+      <GalleryComposerHarness variant={variant} locale={locale} />
     </GalleryComponentCard>
   );
 }

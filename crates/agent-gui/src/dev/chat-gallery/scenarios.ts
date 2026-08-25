@@ -18,6 +18,16 @@ export const CHAT_GALLERY_SCENARIOS = [
     },
   },
   {
+    id: "liveagent-overview",
+    group: "conversation",
+    title: { "zh-CN": "LiveAgent 项目介绍", "en-US": "LiveAgent project overview" },
+    description: {
+      "zh-CN": "参照桌面端阅读排版的项目介绍，集中核对标题、表格、代码、引用与列表。",
+      "en-US":
+        "A project overview for checking desktop typography, tables, code, quotes, and lists.",
+    },
+  },
+  {
     id: "user-attachments",
     group: "conversation",
     title: { "zh-CN": "用户附件", "en-US": "User attachments" },

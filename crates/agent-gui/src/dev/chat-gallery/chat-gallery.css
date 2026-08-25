@@ -377,7 +377,7 @@
 .chat-gallery-main {
   min-width: 0;
   min-height: 0;
-  overflow: auto;
+  overflow: hidden;
   overscroll-behavior: contain;
   scrollbar-gutter: stable;
 }
@@ -385,7 +385,8 @@
 .chat-gallery-preview {
   display: grid;
   min-width: 0;
-  min-height: 100%;
+  min-height: 0;
+  height: 100%;
   grid-template-rows: auto minmax(0, 1fr);
 }
 
@@ -462,7 +463,9 @@
   display: grid;
   min-width: 0;
   min-height: 0;
-  align-content: start;
+  height: 100%;
+  grid-template-rows: auto minmax(0, 1fr);
+  align-content: stretch;
   justify-items: center;
   gap: 1rem;
   padding: clamp(0.75rem, 2.4vw, 1.6rem);
@@ -528,7 +531,8 @@
 }
 
 .chat-gallery-viewport-frame[data-surface="transcript"] {
-  height: min(42rem, calc(100dvh - 12rem));
+  min-height: 0;
+  height: 100%;
 }
 
 .chat-gallery-viewport-frame[data-surface="components"] {
@@ -562,6 +566,7 @@
 }
 
 .chat-gallery-transcript-stage {
+  position: relative;
   display: flex;
   min-width: 0;
   min-height: inherit;
@@ -822,11 +827,20 @@
   }
 
   .chat-gallery-preview {
+    height: auto;
     min-height: 0;
+  }
+
+  .chat-gallery-canvas {
+    height: auto;
   }
 
   .chat-gallery-viewport-frame {
     min-height: min(39rem, calc(100dvh - 8rem));
+  }
+
+  .chat-gallery-viewport-frame[data-surface="transcript"] {
+    height: min(39rem, calc(100dvh - 8rem));
   }
 }
 

@@ -9,6 +9,7 @@ import {
 } from "../../lib/chat/conversation/conversationState";
 import { createLiveTranscriptStore } from "../../lib/chat/conversation/liveTranscriptStore";
 import { ChatTranscript } from "../../pages/chat/transcript/ChatTranscript";
+import { GalleryComposerHarness } from "./ComposerGallery";
 import { type ChatGalleryFixtureId, createChatGalleryFixture } from "./fixtures";
 import { createChatGalleryReplayController } from "./replay";
 import type { ChatGalleryScenarioId } from "./scenarios";
@@ -147,6 +148,7 @@ function TranscriptStage(props: {
   } = props;
   const followRef = useRef<ScrollFollowHandle | null>(null);
   const [contentWidth, setContentWidth] = useState(768);
+  const [composerOverlayHeight, setComposerOverlayHeight] = useState(0);
   const [notice, setNotice] = useState("");
   const projection = useMemo(
     () => projectMessages({ key: scenarioKey, messages, summary }),
@@ -172,7 +174,7 @@ function TranscriptStage(props: {
         usageContextWindow={128_000}
         liveTranscriptStore={liveTranscriptStore}
         isCompactionRunning={false}
-        bottomReservePx={0}
+        bottomReservePx={composerOverlayHeight}
         contentWidth={contentWidth}
         onContentWidthChange={setContentWidth}
         onOpenFileLink={(link) => {
@@ -194,6 +196,15 @@ function TranscriptStage(props: {
         onSuggestionSelect={(text) => {
           setNotice(`${zh ? "建议词" : "Suggestion"}: ${text}`);
         }}
+      />
+      <GalleryComposerHarness
+        variant="empty"
+        locale={locale}
+        embedded
+        conversationId={`chat-gallery-${scenarioKey}`}
+        hasModels={hasModels}
+        {...(isSending ? { isSending: true } : {})}
+        onHeightChange={setComposerOverlayHeight}
       />
       <p className="chat-gallery-sr-only" aria-live="polite">
         {notice}
@@ -364,6 +375,15 @@ export function TranscriptGallery(props: { scenarioId: ChatGalleryScenarioId; lo
   if (scenarioId === "rich-content") {
     return (
       <StaticTranscriptScenario fixtureId="richContent" scenarioKey={scenarioId} locale={locale} />
+    );
+  }
+  if (scenarioId === "liveagent-overview") {
+    return (
+      <StaticTranscriptScenario
+        fixtureId="liveAgentOverview"
+        scenarioKey={scenarioId}
+        locale={locale}
+      />
     );
   }
   if (scenarioId === "user-attachments") {
