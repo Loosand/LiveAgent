@@ -245,7 +245,7 @@ function ToolCallItem({
           <ChevronRight
             className={cn(
               "absolute h-3 w-3 opacity-0 transition-[opacity,transform] duration-150 group-hover/tool:opacity-100",
-              effectiveOpen ? "rotate-90 opacity-100" : "-rotate-90",
+              effectiveOpen ? "rotate-90 opacity-100" : "",
             )}
           />
         ) : null}
@@ -347,6 +347,55 @@ function ToolCallItem({
       </div>
     </>
   );
+  const resultContent =
+    result && (!isAskUser || !askDetails) && (!isPlanCard || !planDetails) ? (
+      <div className="space-y-1.5">
+        <ToolResultDisplay item={item} result={result} readOnly={readOnly} />
+
+        {(() => {
+          const resultText = toolResultMessageToText(result);
+          if (!/\S/.test(resultText)) return null;
+          if (builtinResultKind && builtinResultKind !== "read_image") return null;
+
+          if (isShellSessionTool || readOnly) {
+            return (
+              <ToolScrollablePre
+                className={cn(
+                  "max-h-56",
+                  isShellSessionTool
+                    ? "bg-zinc-950/85 text-zinc-300/90 dark:bg-zinc-900/80"
+                    : "bg-black/[0.02] dark:bg-white/[0.03]",
+                )}
+              >
+                {previewText(resultText, 6000)}
+              </ToolScrollablePre>
+            );
+          }
+
+          // Errors must be readable at a glance — never behind the
+          // collapsed "view return" toggle.
+          if (result.isError) {
+            return (
+              <ToolScrollablePre className="max-h-56 bg-red-500/[0.05] text-red-700/90 dark:bg-red-500/[0.08] dark:text-red-300/90">
+                {previewText(resultText, 6000)}
+              </ToolScrollablePre>
+            );
+          }
+
+          return (
+            <details className="group/result">
+              <summary className="flex cursor-pointer select-none items-center gap-1 text-[calc(10.5px*var(--zone-font-scale,1))] text-muted-foreground/50 transition-colors duration-150 hover:text-foreground/60">
+                <ChevronRight className="h-2.5 w-2.5 transition-transform duration-200 group-open/result:rotate-90" />
+                {t("chat.tool.viewReturn")}
+              </summary>
+              <ToolScrollablePre className="mt-1.5 max-h-56 bg-black/[0.02] dark:bg-white/[0.03]">
+                {previewText(resultText, 6000)}
+              </ToolScrollablePre>
+            </details>
+          );
+        })()}
+      </div>
+    ) : null;
   const body = (
     <LazyCollapse
       open={effectiveOpen}
@@ -355,11 +404,13 @@ function ToolCallItem({
       {() => (
         <div
           className={cn(
-            "space-y-3 pb-2 pt-1",
-            compactChip ? "mb-1 ml-2 border-l border-border/55 pl-3.5" : "pl-[22px]",
+            "pb-2 pt-1",
+            compactChip
+              ? "mb-1 ml-2 space-y-1.5 border-l border-border/55 pl-3.5"
+              : "space-y-3 pl-[22px]",
           )}
         >
-          {shouldShowArgs ? (
+          {shouldShowArgs && !compactChip ? (
             <ToolSection
               label={isBash || inlineCommand ? t("chat.tool.command") : t("chat.tool.args")}
             >
@@ -380,63 +431,22 @@ function ToolCallItem({
           ) : null}
 
           {/* 提问卡/计划卡自带应答态展示；仅参数校验失败（无 details）时回落默认错误区。 */}
-          {result && (!isAskUser || !askDetails) && (!isPlanCard || !planDetails) ? (
+          {resultContent && compactChip ? (
+            <div className="min-w-0 py-1 text-foreground/78 [&_.tool-text-scroll]:max-h-44 [&_.tool-text-scroll]:bg-foreground/[0.025]">
+              {resultContent}
+            </div>
+          ) : resultContent ? (
             <ToolSection
               label={t("chat.tool.return")}
               trailing={
-                result.isError ? (
+                result?.isError ? (
                   <span className="text-[calc(11px*var(--zone-font-scale,1))] font-medium text-red-500">
                     {t("chat.tool.error")}
                   </span>
                 ) : null
               }
             >
-              <div className="space-y-1.5">
-                <ToolResultDisplay item={item} result={result} readOnly={readOnly} />
-
-                {(() => {
-                  const resultText = toolResultMessageToText(result);
-                  if (!/\S/.test(resultText)) return null;
-                  if (builtinResultKind && builtinResultKind !== "read_image") return null;
-
-                  if (isShellSessionTool || readOnly) {
-                    return (
-                      <ToolScrollablePre
-                        className={cn(
-                          "max-h-56",
-                          isShellSessionTool
-                            ? "bg-zinc-950/85 text-zinc-300/90 dark:bg-zinc-900/80"
-                            : "bg-black/[0.02] dark:bg-white/[0.03]",
-                        )}
-                      >
-                        {previewText(resultText, 6000)}
-                      </ToolScrollablePre>
-                    );
-                  }
-
-                  // Errors must be readable at a glance — never behind the
-                  // collapsed "view return" toggle.
-                  if (result.isError) {
-                    return (
-                      <ToolScrollablePre className="max-h-56 bg-red-500/[0.05] text-red-700/90 dark:bg-red-500/[0.08] dark:text-red-300/90">
-                        {previewText(resultText, 6000)}
-                      </ToolScrollablePre>
-                    );
-                  }
-
-                  return (
-                    <details className="group/result">
-                      <summary className="flex cursor-pointer select-none items-center gap-1 text-[calc(10.5px*var(--zone-font-scale,1))] text-muted-foreground/50 transition-colors duration-150 hover:text-foreground/60">
-                        <ChevronRight className="h-2.5 w-2.5 transition-transform duration-200 group-open/result:rotate-90" />
-                        {t("chat.tool.viewReturn")}
-                      </summary>
-                      <ToolScrollablePre className="mt-1.5 max-h-56 bg-black/[0.02] dark:bg-white/[0.03]">
-                        {previewText(resultText, 6000)}
-                      </ToolScrollablePre>
-                    </details>
-                  );
-                })()}
-              </div>
+              {resultContent}
             </ToolSection>
           ) : null}
         </div>
