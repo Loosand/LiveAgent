@@ -1,23 +1,11 @@
-// AskUserQuestion 的聊天卡片：顶部 tabs 切换多个问题，每题单选、推荐项
-// 排在首位；纯展示组件，提交动作由调用方注入（GUI 直连工具挂起表，WebUI 走网关）。
+// AskUserQuestion 的聊天卡片：逐题切换、每题单选，推荐项排在首位；
+// 纯展示组件，提交动作由调用方注入（GUI 直连工具挂起表，WebUI 走网关）。
 // 两端直接复用本组件，端差异一律留在各端的 ToolCallItem。
 
-import {
-  Check,
-  ChevronDown,
-  ChevronUp,
-  Sparkles,
-} from "@liveagent/ui/components/IconSet";
+import { Check, ChevronDown, ChevronUp, Sparkles } from "@liveagent/ui/components/IconSet";
 
 import { useLocale } from "@liveagent/ui/i18n/index";
-import {
-  type CSSProperties,
-  useEffect,
-  useLayoutEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { type CSSProperties, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import {
   ASK_USER_QUESTION_CUSTOM_MAX_LENGTH,
   ASK_USER_QUESTION_TIMEOUT_MS,
@@ -87,6 +75,7 @@ function RollingDigits({ value }: { value: string }) {
         const previousCharacter = previousValue[index] ?? "";
         const nextCharacter = visibleValue[index] ?? "";
         if (!rolling || previousCharacter === nextCharacter) {
+          // biome-ignore lint/suspicious/noArrayIndexKey: Counter glyphs are positional animation cells.
           return <span key={`${index}-${nextCharacter}`}>{nextCharacter}</span>;
         }
         const top = direction === "down" ? nextCharacter : previousCharacter;
@@ -95,6 +84,7 @@ function RollingDigits({ value }: { value: string }) {
         const startingOffset = direction === "down" ? "-1em" : "0";
         return (
           <span
+            // biome-ignore lint/suspicious/noArrayIndexKey: Counter glyphs are positional animation cells.
             key={`${index}-${previousCharacter}-${nextCharacter}-${direction}`}
             className="relative inline-block h-[1em] overflow-hidden align-[-0.05em] leading-[1em]"
           >
@@ -235,7 +225,7 @@ export function AskUserQuestionCard({
     const observer = new ResizeObserver(updateMeasurements);
     observer.observe(activeItem);
     return () => observer.disconnect();
-  }, [safeActiveIndex, draftSelections, customSelected, customTexts, answers]);
+  }, [safeActiveIndex]);
 
   // 该题是否已作答：普通选项已选，或“其他”选中且文本非空。
   const isQuestionAnswered = (questionId: string) => {
@@ -373,9 +363,7 @@ export function AskUserQuestionCard({
                     aria-hidden={active ? undefined : true}
                     className={cn(
                       active && switchDirection === "forward" ? "ask-question-enter-forward" : "",
-                      active && switchDirection === "backward"
-                        ? "ask-question-enter-backward"
-                        : "",
+                      active && switchDirection === "backward" ? "ask-question-enter-backward" : "",
                     )}
                     style={questionStyle}
                   >
@@ -436,9 +424,7 @@ export function AskUserQuestionCard({
                                 <span
                                   className={cn(
                                     "text-[calc(12.5px*var(--zone-font-scale,1))] leading-[1.45]",
-                                    selected
-                                      ? "font-medium text-foreground"
-                                      : "text-foreground/78",
+                                    selected ? "font-medium text-foreground" : "text-foreground/78",
                                   )}
                                 >
                                   {option.label}
@@ -477,8 +463,7 @@ export function AskUserQuestionCard({
                             : active && canInteract
                               ? "hover:bg-foreground/[0.035] dark:hover:bg-white/[0.055]"
                               : "",
-                          !questionCustomSelected &&
-                            (isSettled || cancelled || countdownExpired)
+                          !questionCustomSelected && (isSettled || cancelled || countdownExpired)
                             ? "opacity-50"
                             : "",
                           active && canInteract ? "cursor-pointer" : "cursor-default",
@@ -640,7 +625,7 @@ export function AskUserQuestionCard({
                   if (safeActiveIndex === questions.length - 1) void submit();
                   else goToQuestion(safeActiveIndex + 1);
                 }}
-                className="inline-flex h-7 items-center justify-center gap-1.5 rounded-full bg-foreground px-3.5 text-[calc(11px*var(--zone-font-scale,1))] font-medium text-background transition-opacity hover:opacity-88 disabled:pointer-events-none disabled:opacity-35"
+                className="inline-flex h-7 items-center justify-center gap-1.5 rounded-full bg-foreground px-3.5 text-[calc(11px*var(--zone-font-scale,1))] font-medium text-background transition-opacity hover:opacity-90 disabled:pointer-events-none disabled:opacity-35"
               >
                 {submitting
                   ? t("chat.askUser.submitting")

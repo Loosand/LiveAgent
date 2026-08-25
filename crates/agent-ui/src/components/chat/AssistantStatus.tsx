@@ -1,5 +1,3 @@
-import { assistantStatusSpinnerClassName } from "@liveagent/adapters/assistantStatus";
-import { Loader2 } from "@liveagent/ui/components/IconSet";
 import type { ReactNode } from "react";
 import { useLocale } from "../../i18n/index";
 import { normalizeLiveToolStatus, VIBING_STATUS } from "../../lib/chat/assistantStatus";
@@ -33,11 +31,11 @@ export function LiveAssistantStatus(props: {
 export function AssistantStatus({
   children,
   className,
-  iconClassName,
   textClassName,
 }: {
   children: ReactNode;
   className?: string;
+  /** Kept for caller compatibility; text-only statuses intentionally render no loader icon. */
   iconClassName?: string;
   textClassName?: string;
 }) {
@@ -45,18 +43,10 @@ export function AssistantStatus({
     <span
       role="status"
       className={cn(
-        "inline-flex min-h-5 min-w-0 max-w-full items-center gap-2 text-[calc(13px*var(--zone-font-scale,1))] font-normal text-muted-foreground",
+        "inline-flex min-h-5 min-w-0 max-w-full items-center text-[calc(13px*var(--zone-font-scale,1))] font-normal text-muted-foreground",
         className,
       )}
     >
-      <Loader2
-        aria-hidden="true"
-        className={cn(
-          "h-3.5 w-3.5 shrink-0 animate-spin",
-          assistantStatusSpinnerClassName,
-          iconClassName,
-        )}
-      />
       <span className={cn("shimmer min-w-0 truncate whitespace-nowrap", textClassName)}>
         {children}
       </span>

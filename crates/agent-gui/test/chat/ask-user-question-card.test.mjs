@@ -173,7 +173,7 @@ test("expired countdown disables options, custom input, and submit before tool_r
   );
   assert.equal(optionButtons.length, 2);
   assert.equal(optionButtons.every((button) => button.props.disabled === true), true);
-  assert.equal(optionButtons.every((button) => button.props.className.includes("opacity-55")), true);
+  assert.equal(optionButtons.every((button) => button.props.className.includes("opacity-50")), true);
 
   const customOption = findAll(
     tree,

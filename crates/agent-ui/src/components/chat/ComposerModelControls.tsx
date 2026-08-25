@@ -142,9 +142,7 @@ function ReasoningEffortSlider(props: {
         disabled && "opacity-50",
       )}
     >
-      <span className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-background/65 text-foreground/65 ring-1 ring-border/40 dark:bg-background/35 dark:text-foreground/70">
-        <Brain className="size-3.5" />
-      </span>
+      <Brain className="size-4 shrink-0 text-foreground/60 dark:text-foreground/70" />
       <div className="group relative flex h-8 min-w-0 flex-1 items-center">
         <div
           aria-hidden="true"
