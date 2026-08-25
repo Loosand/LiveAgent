@@ -5,8 +5,8 @@ import { useLocale } from "@liveagent/ui/i18n/index";
 import type { ToolTraceItem } from "@liveagent/ui/lib/chat/assistantBubbleAdapter";
 import { cn } from "@liveagent/ui/lib/shared/utils";
 import { memo, useMemo, useState } from "react";
-import { ChevronRight, Terminal } from "../../IconSet";
-import { getToolDisplayName, getToolMeta, getToolTraceKey } from "./assistantBubbleUtils";
+import { ChevronRight } from "../../IconSet";
+import { getToolTraceKey } from "./assistantBubbleUtils";
 import { areToolTraceItemsEqual, MemoToolCallItem } from "./ToolCallItem";
 
 function getToolGroupCounts(items: ToolTraceItem[], runningToolCallIds: string[]) {
@@ -35,27 +35,6 @@ function getToolGroupCounts(items: ToolTraceItem[], runningToolCallIds: string[]
   return { running, failed, completed, waiting };
 }
 
-function getToolGroupComposition(items: ToolTraceItem[]) {
-  const counts = new Map<string, number>();
-  for (const item of items) {
-    const name = getToolDisplayName(item.toolCall.name);
-    counts.set(name, (counts.get(name) ?? 0) + 1);
-  }
-  return [...counts.entries()]
-    .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
-    .slice(0, 4)
-    .map(([name, count]) => `${name} ${count}`)
-    .join(" · ");
-}
-
-function getDominantToolName(items: ToolTraceItem[]) {
-  const counts = new Map<string, number>();
-  for (const item of items) {
-    counts.set(item.toolCall.name, (counts.get(item.toolCall.name) ?? 0) + 1);
-  }
-  return [...counts.entries()].sort((a, b) => b[1] - a[1])[0]?.[0] ?? "Tool";
-}
-
 function ToolTraceGroupInner(props: {
   items: ToolTraceItem[];
   runningToolCallIds?: string[];
@@ -68,15 +47,7 @@ function ToolTraceGroupInner(props: {
     () => getToolGroupCounts(items, runningToolCallIds),
     [items, runningToolCallIds],
   );
-  const composition = useMemo(() => getToolGroupComposition(items), [items]);
-  const dominantToolName = useMemo(() => getDominantToolName(items), [items]);
-  const allBash = useMemo(() => items.every((item) => item.toolCall.name === "Bash"), [items]);
-  const meta = useMemo(
-    () => (allBash ? getToolMeta("Bash") : getToolMeta(dominantToolName)),
-    [allBash, dominantToolName],
-  );
-  const ToolIcon = allBash ? Terminal : meta.Icon;
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(true);
 
   if (items.length === 1) {
     const item = items[0];
@@ -99,67 +70,55 @@ function ToolTraceGroupInner(props: {
           ? `${counts.waiting} ${t("chat.tool.waiting")}`
           : t("chat.tool.success");
 
-  const statusTextClass =
-    counts.failed > 0 ? "text-[hsl(var(--chat-error))]" : "text-muted-foreground/60";
-
-  const countLabel = `${items.length} tools`;
-  const title = allBash ? "Bash Batch" : "Tool Activity";
+  const countLabel = `${items.length} tool calls`;
+  const showStatus = counts.failed > 0 || counts.running > 0 || counts.waiting > 0;
 
   return (
-    <div className="group/tool-trace min-w-0 max-w-full">
+    <div className="group/tool-trace min-w-0 max-w-full pb-1">
       <button
         type="button"
         aria-expanded={open}
         aria-label={open ? t("chat.tool.collapseActivity") : t("chat.tool.expandActivity")}
-        className="grid w-full cursor-pointer select-none grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-2 py-1.5 text-left"
+        className="-mx-1.5 flex w-fit max-w-[calc(100%+0.75rem)] cursor-pointer select-none items-center gap-1.5 rounded-lg px-1.5 py-1 text-left text-[calc(12.5px*var(--zone-font-scale,1))] text-muted-foreground/75 transition-colors duration-150 hover:bg-foreground/[0.04] hover:text-foreground/80"
         onClick={() => setOpen((prev) => !prev)}
       >
-        <ToolIcon className="h-3.5 w-3.5 shrink-0 text-muted-foreground/60 group-hover/tool-trace:text-foreground/75" />
-
-        <div className="min-w-0 truncate text-[calc(11px*var(--zone-font-scale,1))] leading-5 text-muted-foreground/55">
-          <span className="font-sans text-[calc(13px*var(--zone-font-scale,1))] font-normal text-muted-foreground/80 group-hover/tool-trace:text-foreground">
-            {title}
-          </span>
-          <span className="ml-2">{countLabel}</span>
-          {composition ? <span className="ml-2 font-mono">{composition}</span> : null}
-        </div>
-
-        <div className="flex shrink-0 items-center gap-2">
-          {counts.running > 0 ? (
-            <AssistantStatus
-              className="min-h-0 gap-1.5 text-[calc(11px*var(--zone-font-scale,1))] text-muted-foreground/60"
-              iconClassName="h-3 w-3"
-            >
-              {statusLabel}
-            </AssistantStatus>
-          ) : (
-            <span className={cn("text-[calc(11px*var(--zone-font-scale,1))]", statusTextClass)}>
-              {statusLabel}
-            </span>
+        <ChevronRight
+          className={cn(
+            "h-3 w-3 shrink-0 text-muted-foreground/60 transition-transform duration-200 ease-out",
+            open ? "rotate-90" : "",
           )}
-          <ChevronRight
-            className={cn(
-              "h-3.5 w-3.5 text-muted-foreground/60 transition-transform duration-200 ease-out",
-              open ? "rotate-90" : "",
+        />
+        <span className="min-w-0 truncate tabular-nums">{countLabel}</span>
+        {showStatus ? (
+          <span className="shrink-0 text-[calc(10.5px*var(--zone-font-scale,1))] text-muted-foreground/50">
+            {counts.running > 0 ? (
+              <AssistantStatus className="min-h-0 text-[calc(10.5px*var(--zone-font-scale,1))] text-muted-foreground/50">
+                {statusLabel}
+              </AssistantStatus>
+            ) : (
+              statusLabel
             )}
-          />
-        </div>
+          </span>
+        ) : null}
       </button>
 
       <LazyCollapse open={open} retainWhileClosed={retainRunningToolContent && counts.running > 0}>
         {() => (
-          <div className="space-y-0.5 pb-2 pl-[22px] pt-1">
-            {items.map((item, index) => (
-              <MemoToolCallItem
-                key={getToolTraceKey(item, index)}
-                item={item}
-                readOnly={readOnly}
-                redactToolContent={redactToolContent}
-                isRunning={Boolean(
-                  item.toolCall.id && runningToolCallIds.includes(item.toolCall.id),
-                )}
-              />
-            ))}
+          <div className="-mx-1 overflow-hidden px-1.5 pb-1 pt-1">
+            <div className="flex flex-col gap-1">
+              {items.map((item, index) => (
+                <MemoToolCallItem
+                  key={getToolTraceKey(item, index)}
+                  item={item}
+                  readOnly={readOnly}
+                  redactToolContent={redactToolContent}
+                  compactChip
+                  isRunning={Boolean(
+                    item.toolCall.id && runningToolCallIds.includes(item.toolCall.id),
+                  )}
+                />
+              ))}
+            </div>
           </div>
         )}
       </LazyCollapse>

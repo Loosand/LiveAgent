@@ -66,11 +66,13 @@ function ToolCallItem({
   isRunning,
   readOnly = false,
   redactToolContent = false,
+  compactChip = false,
 }: {
   item: ToolTraceItem;
   isRunning?: boolean;
   readOnly?: boolean;
   redactToolContent?: boolean;
+  compactChip?: boolean;
 }) {
   const { t } = useLocale();
   const result = item.toolResult;
@@ -220,12 +222,70 @@ function ToolCallItem({
     !isPlanCard &&
     (shouldShowArgs || Boolean(result) || (isAskUser && askQuestions.length > 0));
   const effectiveOpen = canExpand && open;
+  const compactChipText = firstLinePreview
+    ? `$ ${firstLinePreview}`
+    : toolArgsSummary || title.action;
   const summaryClassName = cn(
-    "flex w-full select-none items-center gap-2 text-left",
+    "flex select-none items-center gap-2 text-left",
+    compactChip
+      ? "group/tool -mx-[3px] min-h-7 w-[calc(100%+6px)] rounded-lg px-[3px] py-1 transition-colors duration-150 hover:bg-foreground/[0.04]"
+      : "w-full py-1.5",
     canExpand ? "cursor-pointer" : "cursor-default",
-    "py-1.5",
   );
-  const summaryContent = (
+  const summaryContent = compactChip ? (
+    <>
+      <span className="relative flex h-4 w-4 shrink-0 items-center justify-center text-muted-foreground/60">
+        <ToolIcon
+          className={cn(
+            "h-3.5 w-3.5 transition-opacity duration-150 group-hover/tool:opacity-0",
+            effectiveOpen ? "opacity-0" : "",
+          )}
+        />
+        {canExpand ? (
+          <ChevronRight
+            className={cn(
+              "absolute h-3 w-3 opacity-0 transition-[opacity,transform] duration-150 group-hover/tool:opacity-100",
+              effectiveOpen ? "rotate-90 opacity-100" : "-rotate-90",
+            )}
+          />
+        ) : null}
+      </span>
+
+      <span className="shrink-0 text-[calc(12.5px*var(--zone-font-scale,1))] font-medium text-foreground/82">
+        {title.name}
+      </span>
+
+      {compactChipText || fileChangeStats ? (
+        <span className="inline-flex h-[22px] min-w-0 flex-1 items-center gap-2 rounded-md bg-foreground/[0.035] px-1.5 font-mono text-[calc(11.5px*var(--zone-font-scale,1))] text-muted-foreground/72 shadow-[inset_0_0_0_1px_rgba(15,23,42,0.055),0_1px_2px_rgba(15,23,42,0.035)] transition-colors duration-150 group-hover/tool:bg-foreground/[0.055] dark:shadow-[inset_0_0_0_1px_rgba(255,255,255,0.065)]">
+          {compactChipText ? (
+            <span
+              className="min-w-0 flex-1 truncate"
+              title={inlineCommandTitle || toolArgsSummary || undefined}
+            >
+              {compactChipText}
+            </span>
+          ) : null}
+          {fileChangeStats ? (
+            <FileChangeBadge
+              added={fileChangeStats.added}
+              removed={fileChangeStats.removed}
+              className="gap-1"
+            />
+          ) : null}
+        </span>
+      ) : (
+        <span className="min-w-0 flex-1" />
+      )}
+
+      {displayIsRunning || result?.isError || shellSessionFailed ? (
+        <span
+          className={cn("shrink-0 text-[calc(10.5px*var(--zone-font-scale,1))]", statusTextClass)}
+        >
+          {statusLabel}
+        </span>
+      ) : null}
+    </>
+  ) : (
     <>
       <ToolIcon className="h-3.5 w-3.5 shrink-0 text-muted-foreground/60 group-hover/tool:text-foreground/75" />
 
@@ -293,7 +353,12 @@ function ToolCallItem({
       retainWhileClosed={retainRunningToolContent && displayIsRunning}
     >
       {() => (
-        <div className="space-y-3 pb-2 pl-[22px] pt-1">
+        <div
+          className={cn(
+            "space-y-3 pb-2 pt-1",
+            compactChip ? "mb-1 ml-2 border-l border-border/55 pl-3.5" : "pl-[22px]",
+          )}
+        >
           {shouldShowArgs ? (
             <ToolSection
               label={isBash || inlineCommand ? t("chat.tool.command") : t("chat.tool.args")}
@@ -459,5 +524,6 @@ export const MemoToolCallItem = memo(
     previousProps.isRunning === nextProps.isRunning &&
     previousProps.readOnly === nextProps.readOnly &&
     previousProps.redactToolContent === nextProps.redactToolContent &&
+    previousProps.compactChip === nextProps.compactChip &&
     areToolTraceItemsEqual(previousProps.item, nextProps.item),
 );
