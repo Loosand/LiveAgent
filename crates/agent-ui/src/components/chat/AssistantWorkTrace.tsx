@@ -72,11 +72,14 @@ export function AssistantWorkTrace({
   const [expanded, setExpanded] = useState(running && hasDetails);
   const [elapsedMs, setElapsedMs] = useState(durationMs ?? 0);
   const wasRunningRef = useRef(running);
+  const userInteractedRef = useRef(false);
   const startedAtRef = useRef<number | null>(running ? Date.now() : null);
 
   useEffect(() => {
-    if (running && !wasRunningRef.current && hasDetails) setExpanded(true);
-    if (!running && wasRunningRef.current) setExpanded(false);
+    if (!userInteractedRef.current) {
+      if (running && !wasRunningRef.current && hasDetails) setExpanded(true);
+      if (!running && wasRunningRef.current) setExpanded(false);
+    }
     wasRunningRef.current = running;
   }, [hasDetails, running]);
 
@@ -132,7 +135,10 @@ export function AssistantWorkTrace({
           type="button"
           className="flex w-full items-center gap-2 rounded-lg py-1 text-[calc(13px*var(--zone-font-scale,1))] font-medium transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           aria-expanded={expanded}
-          onClick={() => setExpanded((current) => !current)}
+          onClick={() => {
+            userInteractedRef.current = true;
+            setExpanded((current) => !current);
+          }}
         >
           {header}
         </button>

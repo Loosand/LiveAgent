@@ -84,10 +84,13 @@ function ToolTraceGroupInner(props: {
   const active = counts.running > 0;
   const [open, setOpen] = useState(active);
   const wasActiveRef = useRef(active);
+  const userInteractedRef = useRef(false);
 
   useEffect(() => {
-    if (active && !wasActiveRef.current) setOpen(true);
-    if (!active && wasActiveRef.current) setOpen(false);
+    if (!userInteractedRef.current) {
+      if (active && !wasActiveRef.current) setOpen(true);
+      if (!active && wasActiveRef.current) setOpen(false);
+    }
     wasActiveRef.current = active;
   }, [active]);
 
@@ -113,7 +116,10 @@ function ToolTraceGroupInner(props: {
         aria-expanded={open}
         aria-label={open ? t("chat.tool.collapseActivity") : t("chat.tool.expandActivity")}
         className="-mx-1.5 flex w-fit max-w-[calc(100%+0.75rem)] cursor-pointer select-none items-center gap-1.5 rounded-lg px-1.5 py-1 text-left text-[calc(12.5px*var(--zone-font-scale,1))] text-muted-foreground/75 transition-colors duration-150 hover:bg-foreground/[0.04] hover:text-foreground/80"
-        onClick={() => setOpen((prev) => !prev)}
+        onClick={() => {
+          userInteractedRef.current = true;
+          setOpen((prev) => !prev);
+        }}
       >
         <BatchIcon className="h-3.5 w-3.5 shrink-0 text-muted-foreground/60" />
         <span className="min-w-0 truncate">{countLabel}</span>
