@@ -655,6 +655,7 @@ const MARKDOWN_EMBED_CLASSNAME = cn(
   "[&_thead]:bg-transparent [&_tbody]:bg-transparent [&_tr]:border-b [&_tr]:border-border/50 [&_tr]:bg-transparent [&_tbody_tr:last-child]:border-b-0",
   "[&_th]:border-0 [&_th]:px-0 [&_th]:py-2 [&_th]:pr-8 [&_th]:text-left [&_th]:align-bottom [&_th]:font-semibold [&_th]:tracking-[-0.01em] [&_th]:text-foreground",
   "[&_td]:border-0 [&_td]:px-0 [&_td]:py-1 [&_td]:pr-8 [&_td]:align-middle [&_td]:leading-8 [&_td]:text-foreground/90",
+  "[&_th:first-child]:min-w-[5rem] [&_th:first-child]:whitespace-nowrap [&_td:first-child]:min-w-[5rem] [&_td:first-child]:whitespace-nowrap",
   "[&_th:last-child]:pr-0 [&_td:last-child]:pr-0 [&_table_*]:outline-none [&_table_*]:ring-0",
   "[&_div:has(>table)]:rounded-none [&_div:has(>table)]:border-0 [&_div:has(>table)]:bg-transparent [&_div:has(>table)]:shadow-none [&_div:has(>table)]:outline-none [&_div:has(>table)]:ring-0",
   "[&_code:not(pre_code)]:whitespace-pre-wrap [&_code:not(pre_code)]:break-words [&_code:not(pre_code)]:rounded-md [&_code:not(pre_code)]:bg-foreground/[0.05] [&_code:not(pre_code)]:px-1.5 [&_code:not(pre_code)]:py-0.5 [&_code:not(pre_code)]:font-mono [&_code:not(pre_code)]:text-[0.92em] [&_code:not(pre_code)]:text-foreground [&_code:not(pre_code)]:[overflow-wrap:anywhere]",

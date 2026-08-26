@@ -1,0 +1,133 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="560" height="992" viewBox="0 0 560 992" font-family="system-ui, -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif">
+  <defs>
+    <filter id="s" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="10" stdDeviation="14" flood-color="#0f172a" flood-opacity="0.12"/>
+      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-color="#0f172a" flood-opacity="0.07"/>
+    </filter>
+  </defs>
+  <rect width="560" height="992" rx="24" fill="#eef0f3"/>
+
+  <!-- ============ 1) 等待回答 ============ -->
+  <text x="60" y="36" font-size="13" font-weight="600" fill="#111827">等待回答</text>
+  <rect x="452" y="22" width="50" height="20" rx="10" fill="#4f46e5" opacity="0.12"/>
+  <text x="477" y="35" font-size="10.5" font-weight="500" fill="#4338ca" text-anchor="middle">交互中</text>
+  <text x="60" y="54" font-size="11" fill="#6b7280">可完成两个问题并在当前卡片内落定。</text>
+
+  <g filter="url(#s)">
+    <rect x="60" y="66" width="440" height="268" rx="16" fill="#ffffff"/>
+    <text x="76" y="98" font-size="13.5" font-weight="500" fill="#101828">你希望用哪种方式承载聊天组件展厅？</text>
+
+    <!-- option 1 -->
+    <rect x="70" y="108" width="420" height="46" rx="8" fill="#f1f1f3"/>
+    <circle cx="86" cy="124" r="8" fill="#111827"/>
+    <circle cx="86" cy="124" r="3" fill="#ffffff"/>
+    <text x="102" y="128" font-size="12.5" fill="#111827">独立开发页面</text>
+    <rect x="172" y="115" width="30" height="17" rx="8.5" fill="#fef3c7"/>
+    <path d="M177 123.5 l1.1 3.4 3.4 1.1 -3.4 1.1 -1.1 3.4 -1.1 -3.4 -3.4 -1.1 3.4 -1.1 z" fill="#b45309"/>
+    <text x="183" y="127" font-size="9.5" font-weight="500" fill="#b45309">推荐</text>
+    <text x="102" y="145" font-size="11" fill="#6b7280">直接复用当前 Vite、生产 CSS 和宿主适配器。</text>
+
+    <!-- option 2 -->
+    <circle cx="86" cy="170" r="8" fill="none" stroke="#9ca3af" stroke-width="1.5"/>
+    <text x="102" y="174" font-size="12.5" fill="#3a3f47">Storybook</text>
+    <text x="102" y="191" font-size="11" fill="#6b7280">组件 controls 完整，但需要维护第二套构建配置。</text>
+
+    <!-- option 3 -->
+    <circle cx="86" cy="216" r="8" fill="none" stroke="#9ca3af" stroke-width="1.5"/>
+    <text x="102" y="220" font-size="12.5" fill="#3a3f47">正常聊天路由</text>
+    <text x="102" y="237" font-size="11" fill="#6b7280">最接近应用，但会绑定真实历史和运行时。</text>
+
+    <!-- custom -->
+    <circle cx="86" cy="262" r="8" fill="none" stroke="#9ca3af" stroke-width="1.5"/>
+    <text x="102" y="266" font-size="12.5" fill="#3a3f47">其他（自行输入）</text>
+
+    <!-- footer -->
+    <line x1="60" y1="290" x2="500" y2="290" stroke="#0f172a" stroke-opacity="0.055"/>
+    <path d="M78 301 l4 4 -4 4" fill="none" stroke="#9ca3af" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="91" y="306" font-size="11" font-weight="500" fill="#6b7280" style="font-variant-numeric: tabular-nums">1 / 2</text>
+    <path d="M108 305 l4 -4 4 4" fill="none" stroke="#9ca3af" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="122" y="306" font-size="10.5" fill="#9ca3af" style="font-variant-numeric: tabular-nums">· 2:59 后自动选择推荐项</text>
+
+    <text x="392" y="307" font-size="11" font-weight="500" fill="#6b7280">跳过</text>
+    <rect x="424" y="294" width="56" height="28" rx="14" fill="#111827"/>
+    <text x="452" y="313" font-size="11.5" font-weight="500" fill="#ffffff" text-anchor="middle">继续</text>
+  </g>
+
+  <!-- ============ 2) 已回答 ============ -->
+  <text x="60" y="372" font-size="13" font-weight="600" fill="#111827">已回答</text>
+  <rect x="452" y="358" width="50" height="20" rx="10" fill="#10b981" opacity="0.12"/>
+  <text x="477" y="371" font-size="10.5" font-weight="500" fill="#047857" text-anchor="middle">已落定</text>
+  <text x="60" y="390" font-size="11" fill="#6b7280">历史消息中的只读结果。</text>
+
+  <g filter="url(#s)">
+    <rect x="60" y="402" width="440" height="250" rx="16" fill="#ffffff"/>
+    <text x="76" y="434" font-size="13.5" font-weight="500" fill="#101828">你希望用哪种方式承载聊天组件展厅？</text>
+
+    <rect x="70" y="444" width="420" height="46" rx="8" fill="#f1f1f3"/>
+    <circle cx="86" cy="460" r="8" fill="#111827"/>
+    <circle cx="86" cy="460" r="3" fill="#ffffff"/>
+    <text x="102" y="464" font-size="12.5" font-weight="500" fill="#111827">独立开发页面</text>
+    <rect x="172" y="451" width="30" height="17" rx="8.5" fill="#fef3c7"/>
+    <path d="M177 459.5 l1.1 3.4 3.4 1.1 -3.4 1.1 -1.1 3.4 -1.1 -3.4 -3.4 -1.1 3.4 -1.1 z" fill="#b45309"/>
+    <text x="183" y="463" font-size="9.5" font-weight="500" fill="#b45309">推荐</text>
+    <text x="102" y="481" font-size="11" fill="#6b7280">直接复用当前 Vite、生产 CSS 和宿主适配器。</text>
+
+    <g opacity="0.5">
+      <circle cx="86" cy="506" r="8" fill="none" stroke="#9ca3af" stroke-width="1.5"/>
+      <text x="102" y="510" font-size="12.5" fill="#3a3f47">Storybook</text>
+      <text x="102" y="527" font-size="11" fill="#6b7280">组件 controls 完整，但需要维护第二套构建配置。</text>
+      <circle cx="86" cy="552" r="8" fill="none" stroke="#9ca3af" stroke-width="1.5"/>
+      <text x="102" y="556" font-size="12.5" fill="#3a3f47">正常聊天路由</text>
+      <text x="102" y="573" font-size="11" fill="#6b7280">最接近应用，但会绑定真实历史和运行时。</text>
+      <circle cx="86" cy="598" r="8" fill="none" stroke="#9ca3af" stroke-width="1.5"/>
+      <text x="102" y="602" font-size="12.5" fill="#3a3f47">其他（自行输入）</text>
+    </g>
+
+    <line x1="60" y1="626" x2="500" y2="626" stroke="#0f172a" stroke-opacity="0.055"/>
+    <path d="M78 637 l4 4 -4 4" fill="none" stroke="#9ca3af" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="91" y="642" font-size="11" font-weight="500" fill="#6b7280" style="font-variant-numeric: tabular-nums">1 / 2</text>
+    <path d="M108 641 l4 -4 4 4" fill="none" stroke="#9ca3af" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+
+    <rect x="376" y="630" width="112" height="22" rx="11" fill="#10b981" opacity="0.12"/>
+    <path d="M384 641 l3.4 3.4 6.4 -6.4" fill="none" stroke="#059669" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="398" y="644" font-size="10.5" font-weight="500" fill="#047857">已提交回答</text>
+  </g>
+
+  <!-- ============ 3) 超时 ============ -->
+  <text x="60" y="690" font-size="13" font-weight="600" fill="#111827">超时自动选择</text>
+  <rect x="452" y="676" width="50" height="20" rx="10" fill="#f59e0b" opacity="0.14"/>
+  <text x="477" y="689" font-size="10.5" font-weight="500" fill="#b45309" text-anchor="middle">超时</text>
+  <text x="60" y="708" font-size="11" fill="#6b7280">按推荐项自动落定的结果。</text>
+
+  <g filter="url(#s)">
+    <rect x="60" y="720" width="440" height="250" rx="16" fill="#ffffff"/>
+    <text x="76" y="752" font-size="13.5" font-weight="500" fill="#101828">你希望用哪种方式承载聊天组件展厅？</text>
+
+    <rect x="70" y="762" width="420" height="46" rx="8" fill="#f1f1f3"/>
+    <circle cx="86" cy="778" r="8" fill="#111827"/>
+    <circle cx="86" cy="778" r="3" fill="#ffffff"/>
+    <text x="102" y="782" font-size="12.5" font-weight="500" fill="#111827">独立开发页面</text>
+    <rect x="172" y="769" width="30" height="17" rx="8.5" fill="#fef3c7"/>
+    <path d="M177 777.5 l1.1 3.4 3.4 1.1 -3.4 1.1 -1.1 3.4 -1.1 -3.4 -3.4 -1.1 3.4 -1.1 z" fill="#b45309"/>
+    <text x="183" y="781" font-size="9.5" font-weight="500" fill="#b45309">推荐</text>
+    <text x="102" y="799" font-size="11" fill="#6b7280">直接复用当前 Vite、生产 CSS 和宿主适配器。</text>
+
+    <g opacity="0.5">
+      <circle cx="86" cy="824" r="8" fill="none" stroke="#9ca3af" stroke-width="1.5"/>
+      <text x="102" y="828" font-size="12.5" fill="#3a3f47">Storybook</text>
+      <text x="102" y="845" font-size="11" fill="#6b7280">组件 controls 完整，但需要维护第二套构建配置。</text>
+      <circle cx="86" cy="870" r="8" fill="none" stroke="#9ca3af" stroke-width="1.5"/>
+      <text x="102" y="874" font-size="12.5" fill="#3a3f47">正常聊天路由</text>
+      <text x="102" y="891" font-size="11" fill="#6b7280">最接近应用，但会绑定真实历史和运行时。</text>
+      <circle cx="86" cy="916" r="8" fill="none" stroke="#9ca3af" stroke-width="1.5"/>
+      <text x="102" y="920" font-size="12.5" fill="#3a3f47">其他（自行输入）</text>
+    </g>
+
+    <line x1="60" y1="944" x2="500" y2="944" stroke="#0f172a" stroke-opacity="0.055"/>
+    <path d="M78 955 l4 4 -4 4" fill="none" stroke="#9ca3af" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="91" y="960" font-size="11" font-weight="500" fill="#6b7280" style="font-variant-numeric: tabular-nums">1 / 2</text>
+    <path d="M108 959 l4 -4 4 4" fill="none" stroke="#9ca3af" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+
+    <text x="382" y="962" font-size="10.5" fill="#b45309">应答超时，已按推荐项继续执行</text>
+  </g>
+</svg>

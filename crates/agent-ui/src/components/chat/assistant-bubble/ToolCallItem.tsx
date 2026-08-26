@@ -8,10 +8,15 @@ import {
 } from "@liveagent/adapters/assistantBubble";
 import { AskUserQuestionCard } from "@liveagent/ui/components/chat/AskUserQuestionCard";
 import { AssistantStatus } from "@liveagent/ui/components/chat/AssistantStatus";
+import { useChangedFilesActions } from "@liveagent/ui/components/chat/ChangedFilesCard";
 import { FileChangeBadge } from "@liveagent/ui/components/chat/FileChangeBadge";
 import { LazyCollapse } from "@liveagent/ui/components/chat/LazyCollapse";
 import { PlanModeCard } from "@liveagent/ui/components/chat/PlanModeCard";
-import { ToolScrollablePre, ToolSection } from "@liveagent/ui/components/chat/ToolSurfaces";
+import {
+  PathDisplay,
+  ToolScrollablePre,
+  ToolSection,
+} from "@liveagent/ui/components/chat/ToolSurfaces";
 import { useLocale } from "@liveagent/ui/i18n/index";
 import {
   ASK_USER_QUESTION_TOOL_NAME,
@@ -54,6 +59,56 @@ import { ToolArgsDisplay, ToolResultDisplay } from "./ToolResultDisplay";
 // 省略仍由 CSS truncate 决定;仅防御超长单行命令(如内联脚本)把常驻 DOM
 // 与原生 title 撑爆。完整命令在展开区可查看。
 const INLINE_COMMAND_PREVIEW_MAX_CHARS = 600;
+const SUMMARY_ONLY_TOOL_NAMES = new Set(["List", "Glob", "Grep", "Read", "Write", "Edit"]);
+
+function readTrimmedString(value: unknown) {
+  return typeof value === "string" ? value.trim() : "";
+}
+
+function readResultDetails(result?: ToolResultMessage) {
+  const details = result?.details;
+  return details && typeof details === "object" && !Array.isArray(details)
+    ? (details as Record<string, unknown>)
+    : null;
+}
+
+function resolveToolPath(item: ToolTraceItem) {
+  const details = readResultDetails(item.toolResult);
+  return (
+    readTrimmedString(details?.displayPath) ||
+    readTrimmedString(details?.relativePath) ||
+    readTrimmedString(details?.path) ||
+    readTrimmedString(item.toolCall.arguments?.path)
+  );
+}
+
+function resolveActivityLabelKey(item: ToolTraceItem, running: boolean): string | null {
+  const suffix = running ? "running" : "done";
+  switch (item.toolCall.name) {
+    case "List":
+      return `chat.tool.activity.list.${suffix}`;
+    case "Glob":
+    case "Grep":
+      return `chat.tool.activity.search.${suffix}`;
+    case "Read":
+      return `chat.tool.activity.read.${suffix}`;
+    case "Bash":
+      return `chat.tool.activity.command.${suffix}`;
+    case "Write": {
+      if (running) return "chat.tool.activity.write.running";
+      const existedBefore = readResultDetails(item.toolResult)?.existedBefore;
+      return existedBefore === false
+        ? "chat.tool.activity.write.created"
+        : existedBefore === true
+          ? "chat.tool.activity.edit.done"
+          : "chat.tool.activity.write.done";
+    }
+    case "Edit":
+      return `chat.tool.activity.edit.${suffix}`;
+    default:
+      return null;
+  }
+}
 
 function capInlineCommandPreview(text: string) {
   return text.length > INLINE_COMMAND_PREVIEW_MAX_CHARS
@@ -75,6 +130,7 @@ function ToolCallItem({
   compactChip?: boolean;
 }) {
   const { t } = useLocale();
+  const changedFilesActions = useChangedFilesActions();
   const result = item.toolResult;
   const builtinResultKind = getBuiltinResultKind(result);
   const isBash = item.toolCall.name === "Bash";
@@ -85,6 +141,12 @@ function ToolCallItem({
   const shellSessionStatus = shellSessionDetails?.status;
   const shellSessionFailed = shellSessionStatus === "failed" || shellSessionStatus === "timed_out";
   const displayIsRunning = Boolean(isRunning);
+  const activityIsRunning = displayIsRunning || !result;
+  const activityLabelKey = resolveActivityLabelKey(item, activityIsRunning);
+  const summaryOnly = SUMMARY_ONLY_TOOL_NAMES.has(item.toolCall.name);
+  const linkedFilePath = ["Read", "Write", "Edit"].includes(item.toolCall.name)
+    ? resolveToolPath(item)
+    : "";
   const isRedactedToolContent = redactToolContent && isBuiltinShareToolName(item.toolCall.name);
   const isAskUser = !isRedactedToolContent && item.toolCall.name === ASK_USER_QUESTION_TOOL_NAME;
   const askDetails = isAskUser ? parseAskUserQuestionResultDetails(result?.details) : null;
@@ -152,6 +214,12 @@ function ToolCallItem({
   // 的上限,防止超长单行命令把常驻摘要行与悬浮提示撑到不可用。
   const firstLinePreview = capInlineCommandPreview(firstLine);
   const inlineCommandTitle = inlineCommand ? capInlineCommandPreview(inlineCommand) : "";
+  const activitySummary =
+    item.toolCall.name === "List"
+      ? readTrimmedString(item.toolCall.arguments?.path) || "."
+      : item.toolCall.name === "Glob" || item.toolCall.name === "Grep"
+        ? readTrimmedString(item.toolCall.arguments?.pattern)
+        : "";
   const toolArgsSummary =
     isRedactedToolContent || isBash || inlineCommand || isPlanCard
       ? ""
@@ -159,13 +227,15 @@ function ToolCallItem({
         ? (askQuestions[0]?.prompt ?? "")
         : isSubagentCard
           ? getSubagentInlineSummary(item)
-          : summarizeToolCall(item.toolCall, {
-              includeName: false,
-              includeManagerAction: false,
-            });
+          : activitySummary || linkedFilePath
+            ? activitySummary
+            : summarizeToolCall(item.toolCall, {
+                includeName: false,
+                includeManagerAction: false,
+              });
   const fileChangeStats = useMemo(
-    () => (isRedactedToolContent ? undefined : deriveFileChangeStats(item.toolCall)),
-    [isRedactedToolContent, item.toolCall],
+    () => (isRedactedToolContent || summaryOnly ? undefined : deriveFileChangeStats(item.toolCall)),
+    [isRedactedToolContent, item.toolCall, summaryOnly],
   );
   const meta = getToolMeta(item.toolCall.name);
   const ToolIcon = meta.Icon;
@@ -175,7 +245,9 @@ function ToolCallItem({
       ? { name: t("chat.planMode.cardTitle"), action: "" }
       : isRedactedToolContent
         ? { name: getToolDisplayName(item.toolCall.name), action: "" }
-        : getToolDisplayTitle(item.toolCall);
+        : activityLabelKey
+          ? { name: t(activityLabelKey), action: "" }
+          : getToolDisplayTitle(item.toolCall);
 
   const statusLabel = isApprovalPending
     ? t("chat.toolApproval.waitingStatus")
@@ -220,6 +292,7 @@ function ToolCallItem({
   const canExpand =
     !isRedactedToolContent &&
     !isPlanCard &&
+    !summaryOnly &&
     (shouldShowArgs || Boolean(result) || (isAskUser && askQuestions.length > 0));
   const effectiveOpen = canExpand && open;
   const compactChipText = firstLinePreview
@@ -232,6 +305,8 @@ function ToolCallItem({
       : "w-full py-1.5",
     canExpand ? "cursor-pointer" : "cursor-default",
   );
+  const showTrailingStatus =
+    !activityLabelKey || isApprovalPending || Boolean(result?.isError) || shellSessionFailed;
   const summaryContent = compactChip ? (
     <>
       <span className="relative flex h-4 w-4 shrink-0 items-center justify-center text-muted-foreground/60">
@@ -277,7 +352,7 @@ function ToolCallItem({
         <span className="min-w-0 flex-1" />
       )}
 
-      {displayIsRunning || result?.isError || shellSessionFailed ? (
+      {showTrailingStatus && (displayIsRunning || result?.isError || shellSessionFailed) ? (
         <span
           className={cn("shrink-0 text-[calc(10.5px*var(--zone-font-scale,1))]", statusTextClass)}
         >
@@ -313,6 +388,23 @@ function ToolCallItem({
             <span className="ml-1.5">
               <span className="text-muted-foreground/30">$</span> {firstLinePreview}
             </span>
+          ) : linkedFilePath ? (
+            changedFilesActions?.onOpenFile && !readOnly ? (
+              <button
+                type="button"
+                onClick={() => changedFilesActions.onOpenFile?.(linkedFilePath)}
+                title={`${t("chat.changedFiles.open")}: ${linkedFilePath}`}
+                aria-label={`${t("chat.changedFiles.open")}: ${linkedFilePath}`}
+                className="ml-1.5 inline-flex max-w-[min(70%,32rem)] align-baseline text-left text-blue-600 underline decoration-blue-500/35 underline-offset-2 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300"
+              >
+                <PathDisplay path={linkedFilePath} />
+              </button>
+            ) : (
+              <PathDisplay
+                path={linkedFilePath}
+                className="ml-1.5 max-w-[min(70%,32rem)] align-baseline"
+              />
+            )
           ) : toolArgsSummary ? (
             <span className="ml-1.5">{toolArgsSummary}</span>
           ) : null}
@@ -323,28 +415,37 @@ function ToolCallItem({
         ) : null}
       </div>
 
-      <div className="flex shrink-0 items-center gap-2">
-        {displayIsRunning ? (
-          <AssistantStatus
-            className="min-h-0 gap-1.5 text-[calc(11px*var(--zone-font-scale,1))] text-muted-foreground/60"
-            iconClassName="h-3 w-3"
-          >
-            {statusLabel}
-          </AssistantStatus>
-        ) : (
-          <span className={cn("text-[calc(11px*var(--zone-font-scale,1))]", statusTextClass)}>
-            {statusLabel}
-          </span>
-        )}
-        {canExpand ? (
-          <ChevronRight
-            className={cn(
-              "h-3.5 w-3.5 text-muted-foreground/60 transition-transform duration-200 ease-out",
-              effectiveOpen ? "rotate-90" : "",
-            )}
-          />
-        ) : null}
-      </div>
+      {showTrailingStatus ? (
+        <div className="flex shrink-0 items-center gap-2">
+          {displayIsRunning ? (
+            <AssistantStatus
+              className="min-h-0 gap-1.5 text-[calc(11px*var(--zone-font-scale,1))] text-muted-foreground/60"
+              iconClassName="h-3 w-3"
+            >
+              {statusLabel}
+            </AssistantStatus>
+          ) : (
+            <span className={cn("text-[calc(11px*var(--zone-font-scale,1))]", statusTextClass)}>
+              {statusLabel}
+            </span>
+          )}
+          {canExpand ? (
+            <ChevronRight
+              className={cn(
+                "h-3.5 w-3.5 text-muted-foreground/60 transition-transform duration-200 ease-out",
+                effectiveOpen ? "rotate-90" : "",
+              )}
+            />
+          ) : null}
+        </div>
+      ) : canExpand ? (
+        <ChevronRight
+          className={cn(
+            "h-3.5 w-3.5 shrink-0 text-muted-foreground/60 transition-transform duration-200 ease-out",
+            effectiveOpen ? "rotate-90" : "",
+          )}
+        />
+      ) : null}
     </>
   );
   const resultContent =
@@ -408,6 +509,8 @@ function ToolCallItem({
             compactChip
               ? "mb-1 ml-2 space-y-1.5 border-l border-border/55 pl-3.5"
               : "space-y-3 pl-[22px]",
+            (isShellSessionTool || isManagedProcess) &&
+              "max-h-64 overflow-y-auto overscroll-contain pr-1 [scrollbar-gutter:stable]",
           )}
         >
           {shouldShowArgs && !compactChip ? (

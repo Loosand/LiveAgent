@@ -180,48 +180,6 @@ export type GroupedRoundBlock =
       items: ToolTraceItem[];
     };
 
-function isReasoningOrSearchBlock(block: GroupedRoundBlock) {
-  return (
-    block.kind === "thinking" || block.kind === "hostedSearch" || block.kind === "hostedSearchGroup"
-  );
-}
-
-export function resolveReasoningSearchWorkLayout(blocks: GroupedRoundBlock[]) {
-  let lastWorkIndex = -1;
-  for (let index = blocks.length - 1; index >= 0; index -= 1) {
-    const block = blocks[index];
-    if (block && isReasoningOrSearchBlock(block)) {
-      lastWorkIndex = index;
-      break;
-    }
-  }
-  if (lastWorkIndex === -1) {
-    return { firstIndex: -1, indexes: [] as number[] };
-  }
-
-  const answerStartIndex = blocks.findIndex(
-    (block, index) =>
-      index > lastWorkIndex && block.kind === "text" && block.text.trim().length > 0,
-  );
-  const indexes: number[] = [];
-  for (let index = 0; index < blocks.length; index += 1) {
-    const block = blocks[index];
-    if (!block) continue;
-    if (isReasoningOrSearchBlock(block)) {
-      indexes.push(index);
-      continue;
-    }
-    if (
-      block.kind === "text" &&
-      block.text.trim().length > 0 &&
-      index < (answerStartIndex === -1 ? blocks.length : answerStartIndex)
-    ) {
-      indexes.push(index);
-    }
-  }
-  return { firstIndex: indexes[0] ?? -1, indexes };
-}
-
 const stableValueSignatureCache = new WeakMap<object, string>();
 
 export function getStableValueSignature(value: unknown) {

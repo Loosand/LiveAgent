@@ -14,8 +14,11 @@ const sharedStatusSource = fs.readFileSync(
   new URL("../../../agent-ui/src/components/chat/AssistantStatus.tsx", import.meta.url),
   "utf8",
 );
-const workTraceSource = fs.readFileSync(
-  new URL("../../../agent-ui/src/components/chat/AssistantWorkTrace.tsx", import.meta.url),
+const roundContentSource = fs.readFileSync(
+  new URL(
+    "../../../agent-ui/src/components/chat/assistant-bubble/RoundContent.tsx",
+    import.meta.url,
+  ),
   "utf8",
 );
 
@@ -39,10 +42,8 @@ test("desktop retry details render only in the stable live-status unit", () => {
   );
 });
 
-test("standalone work trace aligns its header with the assistant avatar", () => {
-  assert.match(workTraceSource, /className=\{cn\("my-3 text-muted-foreground", className\)\}/);
-  assert.match(
-    bubbleSource,
-    /<AssistantWorkTrace[\s\S]*?className="mb-3 mt-0"[\s\S]*?hasDetails=/,
-  );
+test("assistant activity has no reply-level work-process wrapper", () => {
+  assert.doesNotMatch(bubbleSource, /AssistantWorkTrace|work-trace/);
+  assert.doesNotMatch(roundContentSource, /AssistantWorkTrace|work-trace/);
+  assert.match(roundContentSource, /replyBlocks\.map\(\(entry\) =>/);
 });

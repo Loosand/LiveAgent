@@ -1,0 +1,88 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="560" height="820" viewBox="0 0 560 820" font-family="system-ui, -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif">
+  <defs>
+    <filter id="s" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#0f172a" flood-opacity="0.10"/>
+      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-color="#0f172a" flood-opacity="0.06"/>
+    </filter>
+  </defs>
+  <rect width="560" height="820" rx="24" fill="#eef0f3"/>
+
+  <!-- ============ 1) 待批准 ============ -->
+  <text x="60" y="36" font-size="13" font-weight="600" fill="#111827">待批准</text>
+  <rect x="452" y="22" width="50" height="20" rx="10" fill="#4f46e5" opacity="0.12"/>
+  <text x="477" y="35" font-size="10.5" font-weight="500" fill="#4338ca" text-anchor="middle">交互中</text>
+  <text x="60" y="54" font-size="11" fill="#6b7280">按钮仅改变当前样例的本地状态。</text>
+
+  <g filter="url(#s)">
+    <rect x="60" y="66" width="440" height="256" rx="12" fill="#ffffff"/>
+    <line x1="60" y1="106" x2="500" y2="106" stroke="#0f172a" stroke-opacity="0.09"/>
+
+    <g stroke="#0284c7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none">
+      <path d="M76 84 v12 M76 84 h8 M76 88 h5 M76 92 h7"/>
+      <path d="M84 78 h0"/>
+      <path d="M86 80 h8 v14 h-8 z"/>
+    </g>
+    <text x="94" y="90" font-size="12" font-weight="500" fill="#1f2937">实施计划</text>
+
+    <text x="86" y="132" font-size="14" font-weight="700" fill="#111827">实施计划</text>
+    <text x="86" y="156" font-size="13" fill="#374151">1. 增加一个仅在开发服务器使用的独立入口。</text>
+    <text x="86" y="178" font-size="13" fill="#374151">2. 用原始消息 fixture 经过生产投影渲染</text>
+    <text x="100" y="196" font-size="12.5" fill="#4b5563">ChatTranscript</text>
+    <text x="86" y="218" font-size="13" fill="#374151">3. 用真实 live store 回放流式状态，并隔离所有外部副作用。</text>
+    <text x="86" y="240" font-size="13" fill="#374151">4. 为主题、语言、视口和场景建立可分享的 URL。</text>
+
+    <line x1="60" y1="268" x2="500" y2="268" stroke="#0f172a" stroke-opacity="0.09"/>
+    <rect x="76" y="282" width="126" height="32" rx="8" fill="#4f46e5"/>
+    <path d="M90 298 l3.2 3.2 5.6 -5.6" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="103" y="302" font-size="12" font-weight="500" fill="#ffffff">批准并开始执行</text>
+    <text x="214" y="301" font-size="11" fill="#6b7280">输入"同意"即批准；输入其他内容即修改意见</text>
+  </g>
+
+  <!-- ============ 2) 已批准 ============ -->
+  <text x="60" y="368" font-size="13" font-weight="600" fill="#111827">已批准</text>
+  <rect x="452" y="354" width="50" height="20" rx="10" fill="#10b981" opacity="0.12"/>
+  <text x="477" y="367" font-size="10.5" font-weight="500" fill="#047857" text-anchor="middle">已批准</text>
+  <text x="60" y="386" font-size="11" fill="#6b7280">计划已落定并转入执行。</text>
+
+  <g filter="url(#s)">
+    <rect x="60" y="398" width="440" height="196" rx="12" fill="#ffffff"/>
+    <line x1="60" y1="438" x2="500" y2="438" stroke="#0f172a" stroke-opacity="0.09"/>
+
+    <g stroke="#0284c7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none">
+      <path d="M76 416 v12 M76 416 h8 M76 420 h5 M76 424 h7"/>
+      <path d="M86 412 h8 v14 h-8 z"/>
+    </g>
+    <text x="94" y="422" font-size="12" font-weight="500" fill="#1f2937">实施计划</text>
+    <path d="M462 414 l3.4 3.4 6.4 -6.4" fill="none" stroke="#059669" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="478" y="418" font-size="11" fill="#047857">已批准</text>
+
+    <text x="86" y="464" font-size="14" font-weight="700" fill="#111827">实施计划</text>
+    <text x="86" y="488" font-size="13" fill="#374151">1. 增加一个仅在开发服务器使用的独立入口。</text>
+    <text x="86" y="510" font-size="13" fill="#374151">2. 用原始消息 fixture 经过生产投影渲染</text>
+    <text x="100" y="528" font-size="12.5" fill="#4b5563">ChatTranscript</text>
+    <text x="86" y="550" font-size="13" fill="#374151">3. 用真实 live store 回放流式状态，并隔离所有外部副作用。</text>
+    <text x="86" y="572" font-size="13" fill="#374151">4. 为主题、语言、视口和场景建立可分享的 URL。</text>
+  </g>
+
+  <!-- ============ 3) 只读 ============ -->
+  <text x="60" y="636" font-size="13" font-weight="600" fill="#111827">只读</text>
+  <rect x="452" y="622" width="50" height="20" rx="10" fill="#6b7280" opacity="0.14"/>
+  <text x="477" y="635" font-size="10.5" font-weight="500" fill="#4b5563" text-anchor="middle">只读</text>
+  <text x="60" y="654" font-size="11" fill="#6b7280">轨迹或历史查看中的不可操作状态。</text>
+
+  <g filter="url(#s)" opacity="0.94">
+    <rect x="60" y="666" width="440" height="140" rx="12" fill="#ffffff"/>
+    <line x1="60" y1="706" x2="500" y2="706" stroke="#0f172a" stroke-opacity="0.09"/>
+
+    <g stroke="#0284c7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none" opacity="0.75">
+      <path d="M76 684 v12 M76 684 h8 M76 688 h5 M76 692 h7"/>
+      <path d="M86 680 h8 v14 h-8 z"/>
+    </g>
+    <text x="94" y="690" font-size="12" font-weight="500" fill="#374151">实施计划</text>
+
+    <text x="86" y="732" font-size="14" font-weight="700" fill="#1f2937">实施计划</text>
+    <text x="86" y="756" font-size="13" fill="#4b5563">1. 增加一个仅在开发服务器使用的独立入口。</text>
+    <text x="86" y="778" font-size="13" fill="#4b5563">2. 用原始消息 fixture 经过生产投影渲染</text>
+    <text x="100" y="794" font-size="12.5" fill="#6b7280">ChatTranscript</text>
+  </g>
+</svg>

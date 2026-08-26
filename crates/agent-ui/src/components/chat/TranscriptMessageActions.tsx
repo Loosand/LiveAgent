@@ -7,18 +7,110 @@ import {
   RefreshCw,
   Undo2,
 } from "@liveagent/ui/components/IconSet";
-import { useLocale } from "../../i18n/index";
+import { useSyncExternalStore } from "react";
+import { type Locale, useLocale } from "../../i18n/index";
 import { useCheckpointRewindAction } from "../../lib/chat/checkpointRewind";
 import { cn } from "../../lib/shared/utils";
 import { ConfirmActionPopover } from "../ui/confirm-action-popover";
+import { LabelTooltip } from "../ui/label-tooltip";
 import { type UsageDetailEntry, UsageInfoPopover } from "./UsagePanel";
 
-export function formatTranscriptMessageTimestamp(timestamp: number | undefined) {
+const MINUTE_MS = 60_000;
+const HOUR_MS = 3_600_000;
+const DAY_MS = 86_400_000;
+
+/** 相对时间标签："just now" / "8m ago" / "1h ago" / "1d ago" / "2mo ago" / "1y ago"。 */
+export function formatTranscriptMessageRelativeTime(
+  timestamp: number | undefined,
+  now: number = Date.now(),
+) {
   if (!timestamp || !Number.isFinite(timestamp)) return "";
   const date = new Date(timestamp);
   if (Number.isNaN(date.getTime())) return "";
+  const elapsed = Math.max(0, now - date.getTime());
+  if (elapsed < MINUTE_MS) return "just now";
+  if (elapsed < HOUR_MS) return `${Math.floor(elapsed / MINUTE_MS)}m ago`;
+  if (elapsed < DAY_MS) return `${Math.floor(elapsed / HOUR_MS)}h ago`;
+  const days = Math.floor(elapsed / DAY_MS);
+  if (days >= 365) return `${Math.floor(days / 365)}y ago`;
+  if (days >= 30) return `${Math.floor(days / 30)}mo ago`;
+  return `${days}d ago`;
+}
+
+const ZH_ABSOLUTE_TIME_FORMAT = new Intl.DateTimeFormat("zh-CN", {
+  hour: "numeric",
+  minute: "2-digit",
+  hour12: true,
+});
+const EN_ABSOLUTE_FORMAT = new Intl.DateTimeFormat("en-US", {
+  year: "numeric",
+  month: "short",
+  day: "numeric",
+  hour: "numeric",
+  minute: "2-digit",
+  hour12: true,
+});
+
+/** 悬停提示的完整时间：zh 为「2026年08月26日 下午3:43」，en 为「Aug 26, 2026, 3:43 PM」。 */
+export function formatTranscriptMessageAbsoluteTime(
+  timestamp: number | undefined,
+  locale: Locale,
+) {
+  if (!timestamp || !Number.isFinite(timestamp)) return "";
+  const date = new Date(timestamp);
+  if (Number.isNaN(date.getTime())) return "";
+  if (locale === "en-US") return EN_ABSOLUTE_FORMAT.format(date);
   const pad = (value: number) => String(value).padStart(2, "0");
-  return `${pad(date.getHours())}:${pad(date.getMinutes())}`;
+  const ymd = `${date.getFullYear()}年${pad(date.getMonth() + 1)}月${pad(date.getDate())}日`;
+  return `${ymd} ${ZH_ABSOLUTE_TIME_FORMAT.format(date)}`;
+}
+
+/* 所有消息行共享一个分钟级刷新源，让"xx ago"随时间推移保持准确，
+ * 而不是每行各挂一个定时器。无订阅者时定时器自动停止。 */
+const minuteTickListeners = new Set<() => void>();
+let minuteTickNow = Date.now();
+let minuteTickTimer: ReturnType<typeof setInterval> | undefined;
+
+function subscribeMinuteTick(listener: () => void) {
+  if (minuteTickListeners.size === 0) {
+    minuteTickNow = Date.now();
+    minuteTickTimer = setInterval(() => {
+      minuteTickNow = Date.now();
+      for (const notify of minuteTickListeners) notify();
+    }, MINUTE_MS);
+  }
+  minuteTickListeners.add(listener);
+  return () => {
+    minuteTickListeners.delete(listener);
+    if (minuteTickListeners.size === 0 && minuteTickTimer !== undefined) {
+      clearInterval(minuteTickTimer);
+      minuteTickTimer = undefined;
+    }
+  };
+}
+
+const getMinuteTickNow = () => minuteTickNow;
+
+function useMinuteTickNow() {
+  return useSyncExternalStore(subscribeMinuteTick, getMinuteTickNow, getMinuteTickNow);
+}
+
+function TranscriptMessageTimestamp({
+  timestamp,
+  className,
+}: {
+  timestamp: number | undefined;
+  className: string;
+}) {
+  const { locale } = useLocale();
+  const now = useMinuteTickNow();
+  const relative = formatTranscriptMessageRelativeTime(timestamp, now);
+  if (!relative) return null;
+  return (
+    <LabelTooltip label={formatTranscriptMessageAbsoluteTime(timestamp, locale)}>
+      <span className={className}>{relative}</span>
+    </LabelTooltip>
+  );
 }
 
 type SharedActionProps = {
@@ -103,14 +195,13 @@ export function TranscriptUserMessageActions(
           ) : null}
         </div>
       ) : null}
-      <span
+      <TranscriptMessageTimestamp
+        timestamp={timestamp}
         className={cn(
           "select-none text-[calc(11px*var(--zone-font-scale,1))] tabular-nums text-muted-foreground/70 opacity-0 transition-opacity duration-150 group-hover:opacity-100 group-focus-within:opacity-100 motion-reduce:transition-none",
           alwaysShowActions && "[@media(hover:none)]:opacity-100",
         )}
-      >
-        {formatTranscriptMessageTimestamp(timestamp)}
-      </span>
+      />
     </div>
   );
 }
@@ -222,14 +313,13 @@ export function TranscriptAssistantMessageActions(
         </ConfirmActionPopover>
         <UsageInfoPopover entries={usageEntries} contextWindow={usageContextWindow} />
       </div>
-      <span
+      <TranscriptMessageTimestamp
+        timestamp={timestamp}
         className={cn(
           "ml-1 select-none text-[calc(11px*var(--zone-font-scale,1))] tabular-nums text-muted-foreground/70 opacity-0 transition-opacity duration-150 group-data-[actions-visible=true]/assistant:opacity-100 group-focus-within/assistant:opacity-100 group-hover/assistant:opacity-100 motion-reduce:transition-none",
           alwaysShowActions && "[@media(hover:none)]:opacity-100",
         )}
-      >
-        {formatTranscriptMessageTimestamp(timestamp)}
-      </span>
+      />
     </div>
   );
 

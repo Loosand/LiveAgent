@@ -1,6 +1,5 @@
 import { AssistantAvatar } from "@liveagent/ui/components/chat/AssistantAvatar";
 import { LiveAssistantStatus } from "@liveagent/ui/components/chat/AssistantStatus";
-import { AssistantWorkTrace } from "@liveagent/ui/components/chat/AssistantWorkTrace";
 import { RoundBlockContent } from "@liveagent/ui/components/chat/assistant-bubble/RoundContent";
 import { RetryDetailsBlock } from "@liveagent/ui/components/chat/RetryDetailsBlock";
 import type { ChatFileLink } from "@liveagent/ui/lib/chat/chatFileLinks";
@@ -74,28 +73,6 @@ export const AssistantBubbleUnit = memo(function AssistantBubbleUnit(props: {
             workdir={workdir}
             onOpenFileLink={onOpenFileLink}
           />
-        ) : null}
-
-        {unit.kind === "work-trace" ? (
-          <AssistantWorkTrace
-            className="mb-3 mt-0"
-            hasDetails={unit.blocks.length > 0}
-            running={row.live}
-          >
-            {unit.blocks.map((block) => (
-              <RoundBlockContent
-                key={block.key}
-                block={block}
-                isLive={row.live}
-                renderMode={row.renderMode}
-                runningToolCallIds={unit.runningToolCallIds}
-                thinkingOpen={row.live ? unit.thinkingOpen : true}
-                isLatestThinking={block.key === unit.latestThinkingKey}
-                workdir={workdir}
-                onOpenFileLink={onOpenFileLink}
-              />
-            ))}
-          </AssistantWorkTrace>
         ) : null}
       </div>
     </div>

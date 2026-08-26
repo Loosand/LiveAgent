@@ -1,7 +1,6 @@
 import {
   type GroupedRoundBlock,
   groupRoundBlocks,
-  resolveReasoningSearchWorkLayout,
 } from "@liveagent/ui/components/chat/assistant-bubble/assistantBubbleUtils";
 import { isTaskToolBlock } from "@liveagent/ui/lib/chat/taskProgress";
 import {
@@ -57,14 +56,6 @@ export type AssistantPlaceholderRenderUnit = {
   showFallbackStatus: boolean;
 };
 
-export type AssistantWorkTraceRenderUnit = {
-  kind: "work-trace";
-  blocks: GroupedRoundBlock[];
-  runningToolCallIds: string[];
-  thinkingOpen: boolean;
-  latestThinkingKey: string | null;
-};
-
 export type AssistantFooterRenderUnit = {
   kind: "footer";
   timestamp?: number;
@@ -80,7 +71,6 @@ export type AssistantStatusRenderUnit = {
 
 export type AssistantRenderUnit =
   | AssistantBlockRenderUnit
-  | AssistantWorkTraceRenderUnit
   | AssistantPlaceholderRenderUnit
   | AssistantStatusRenderUnit
   | AssistantFooterRenderUnit;
@@ -199,7 +189,7 @@ function measureBlockUnit(block: GroupedRoundBlock) {
     estimate = 42;
     renderCost = 1;
   } else if (block.kind === "toolGroup") {
-    estimate = 64 + Math.min(48, block.items.length * 4);
+    estimate = 16 + Math.min(320, block.items.length * 34);
     renderCost = Math.min(6, 1 + Math.ceil(block.items.length / 4));
   } else if (block.kind === "hostedSearch" || block.kind === "hostedSearchGroup") {
     estimate = 96;
@@ -263,20 +253,6 @@ function canReuseLiveUnit(previous: AssistantUnitRow, next: AssistantUnitRow) {
     previous.unit.kind !== next.unit.kind
   ) {
     return false;
-  }
-
-  if (previous.unit.kind === "work-trace" && next.unit.kind === "work-trace") {
-    const nextWorkTrace = next.unit;
-    return (
-      previous.unit.blocks.length === nextWorkTrace.blocks.length &&
-      previous.unit.blocks.every((block, index) => {
-        const nextBlock = nextWorkTrace.blocks[index];
-        return nextBlock ? sameGroupedBlock(block, nextBlock) : false;
-      }) &&
-      sameStringArray(previous.unit.runningToolCallIds, nextWorkTrace.runningToolCallIds) &&
-      previous.unit.thinkingOpen === nextWorkTrace.thinkingOpen &&
-      previous.unit.latestThinkingKey === nextWorkTrace.latestThinkingKey
-    );
   }
 
   if (previous.unit.kind !== "block" || next.unit.kind !== "block") return false;
@@ -346,91 +322,55 @@ function buildAssistantUnits(input: BuildAssistantUnitsInput): AssistantUnitRow[
   } = input;
   const rows: AssistantUnitRow[] = [];
 
-  rounds.forEach((round) => {
+  const replyBlocks = rounds.flatMap((round) => {
     const groupedBlocks = groupRoundBlocks(round.blocks).filter(isVisibleGroupedBlock);
     const runningToolCallIds = "runningToolCallIds" in round ? round.runningToolCallIds : [];
     const roundHasRunningToolCall = hasRunningToolCall(groupedBlocks, runningToolCallIds);
-    let latestThinkingKey: string | null = null;
-    for (let blockIndex = groupedBlocks.length - 1; blockIndex >= 0; blockIndex -= 1) {
-      const block = groupedBlocks[blockIndex];
-      if (block?.kind === "thinking") {
-        latestThinkingKey = block.key;
-        break;
-      }
+    return groupedBlocks.map((block, blockIndex) => ({
+      block,
+      key: `${round.key}:${block.key}`,
+      round,
+      runningToolCallIds,
+      thinkingOpen: "thinkingOpen" in round ? round.thinkingOpen : false,
+      isRoundTail: blockIndex === groupedBlocks.length - 1,
+      roundHasRunningToolCall,
+    }));
+  });
+  let latestThinkingKey: string | null = null;
+  for (let index = replyBlocks.length - 1; index >= 0; index -= 1) {
+    const entry = replyBlocks[index];
+    if (entry?.block.kind === "thinking") {
+      latestThinkingKey = entry.key;
+      break;
     }
-    const workTraceLayout = resolveReasoningSearchWorkLayout(groupedBlocks);
-    const workTraceIndexSet = new Set(workTraceLayout.indexes);
+  }
 
-    groupedBlocks.forEach((block, blockIndex) => {
-      if (blockIndex === workTraceLayout.firstIndex) {
-        const workBlocks = workTraceLayout.indexes.flatMap((workIndex) => {
-          const workBlock = groupedBlocks[workIndex];
-          return workBlock ? [workBlock] : [];
-        });
-        const workMeasurements = workBlocks.map(measureBlockUnit);
-        rows.push({
-          kind: "assistant-unit",
-          key: `${replyKey}:round:${round.key}:work-trace`,
-          replyKey,
-          estimate: live
-            ? Math.min(
-                360,
-                42 +
-                  workMeasurements.reduce((total, measurement) => total + measurement.estimate, 0),
-              )
-            : 42,
-          renderCost: Math.min(
-            16,
-            Math.max(
-              1,
-              workMeasurements.reduce((total, measurement) => total + measurement.renderCost, 0),
-            ),
-          ),
-          gapAfter: ASSISTANT_UNIT_GAP_PX,
-          anchorUserKey,
-          live,
-          mutable: false,
-          renderMode,
-          compacted,
-          showAvatar: rows.length === 0,
-          unit: {
-            kind: "work-trace",
-            blocks: workBlocks,
-            runningToolCallIds,
-            thinkingOpen: "thinkingOpen" in round ? round.thinkingOpen : false,
-            latestThinkingKey,
-          },
-        });
-        return;
-      }
-      if (workTraceIndexSet.has(blockIndex)) return;
-
-      const isRoundTail = blockIndex === groupedBlocks.length - 1;
-      const measurement = measureBlockUnit(block);
-      rows.push({
-        kind: "assistant-unit",
-        key: `${replyKey}:round:${round.key}:block:${block.key}`,
-        replyKey,
-        estimate: measurement.estimate,
-        renderCost: measurement.renderCost,
-        gapAfter: ASSISTANT_UNIT_GAP_PX,
-        anchorUserKey,
-        live,
-        mutable: false,
-        renderMode,
-        compacted,
-        showAvatar: rows.length === 0,
-        unit: {
-          kind: "block",
-          block,
-          roundMeta: round.meta,
-          runningToolCallIds,
-          thinkingOpen: "thinkingOpen" in round ? round.thinkingOpen : false,
-          isLatestThinking: block.kind === "thinking" && block.key === latestThinkingKey,
-          isRoundTail,
-          hasRunningToolCall: roundHasRunningToolCall,
-        },
-      });
+  replyBlocks.forEach((entry) => {
+    const { block, round, runningToolCallIds, thinkingOpen } = entry;
+    const measurement = measureBlockUnit(block);
+    rows.push({
+      kind: "assistant-unit",
+      key: `${replyKey}:round:${round.key}:block:${block.key}`,
+      replyKey,
+      estimate: measurement.estimate,
+      renderCost: measurement.renderCost,
+      gapAfter: ASSISTANT_UNIT_GAP_PX,
+      anchorUserKey,
+      live,
+      mutable: false,
+      renderMode,
+      compacted,
+      showAvatar: rows.length === 0,
+      unit: {
+        kind: "block",
+        block,
+        roundMeta: round.meta,
+        runningToolCallIds,
+        thinkingOpen,
+        isLatestThinking: entry.key === latestThinkingKey,
+        isRoundTail: entry.isRoundTail,
+        hasRunningToolCall: entry.roundHasRunningToolCall,
+      },
     });
   });
 

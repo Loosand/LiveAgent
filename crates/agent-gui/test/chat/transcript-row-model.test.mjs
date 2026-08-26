@@ -57,12 +57,6 @@ function blockRows(snapshot) {
     .filter((row) => row.kind === "assistant-unit" && row.unit.kind === "block");
 }
 
-function workTraceRows(snapshot) {
-  return snapshot.rows
-    .flatMap((row) => (row.kind === "assistant-activity" ? row.units : [row]))
-    .filter((row) => row.kind === "assistant-unit" && row.unit.kind === "work-trace");
-}
-
 function footerRows(snapshot) {
   return snapshot.rows
     .flatMap((row) => (row.kind === "assistant-activity" ? row.units : [row]))
@@ -300,7 +294,7 @@ test("terminal settlement removes the live tail before sending clears", () => {
   assert.equal(nextPending.rows[2].units.at(-1).mutable, true);
 });
 
-test("assistant rounds hide task tools while preserving grouped top-level render units", () => {
+test("assistant rounds hide task tools while preserving the original block order", () => {
   const model = createTranscriptRowModel();
   const tool = (id, name = "Read") => ({
     kind: "tool",
@@ -323,15 +317,98 @@ test("assistant rounds hide task tools while preserving grouped top-level render
   const snapshot = model.build([userItem("u1"), assistantItem("a1", rounds)], idleLive);
   assert.deepEqual(
     blockRows(snapshot).map((row) => row.unit.block.kind),
-    ["toolGroup"],
-  );
-  assert.deepEqual(
-    workTraceRows(snapshot)[0].unit.blocks.map((block) => block.kind),
-    ["text", "thinking", "hostedSearchGroup"],
+    ["text", "thinking", "toolGroup", "hostedSearchGroup"],
   );
   assert.equal(footerRows(snapshot).length, 1);
-  assert.equal(workTraceRows(snapshot)[0].showAvatar, true);
-  assert.ok(blockRows(snapshot).every((row) => !row.showAvatar));
+  assert.equal(blockRows(snapshot)[0].showAvatar, true);
+  assert.ok(blockRows(snapshot).slice(1).every((row) => !row.showAvatar));
+});
+
+test("assistant text, thinking, and tools stay interleaved across model rounds", () => {
+  const model = createTranscriptRowModel();
+  const tool = (id) => ({
+    kind: "tool",
+    item: { toolCall: { type: "toolCall", id, name: "Bash", arguments: {} } },
+  });
+  const rounds = [
+    {
+      round: 1,
+      key: "r1",
+      blocks: [
+        { kind: "thinking", id: "thinking-1", text: "inspect" },
+        tool("call-1"),
+      ],
+    },
+    {
+      round: 2,
+      key: "r2",
+      blocks: [
+        { kind: "thinking", id: "thinking-1", text: "verify" },
+        tool("call-2"),
+      ],
+    },
+    {
+      round: 3,
+      key: "r3",
+      blocks: [
+        { kind: "thinking", id: "thinking-1", text: "summarize" },
+        { kind: "text", id: "text-1", text: "final answer" },
+      ],
+    },
+  ];
+  const snapshot = model.build([userItem("u1"), assistantItem("a1", rounds)], idleLive);
+  assert.deepEqual(
+    blockRows(snapshot).map((row) => row.unit.block.kind),
+    ["thinking", "toolGroup", "thinking", "toolGroup", "thinking", "text"],
+  );
+  assert.equal(blockRows(snapshot).at(-1).unit.block.text, "final answer");
+  assert.ok(snapshot.rows.every((row) => row.unit?.kind !== "work-trace"));
+});
+
+test("completed activity-row keys stay stable while a new model round is appended", () => {
+  const model = createTranscriptRowModel();
+  const history = [userItem("u1")];
+  const makeRound = (roundNumber) => ({
+    round: roundNumber,
+    key: `r${roundNumber}`,
+    blocks: [
+      { kind: "thinking", id: "thinking-1", text: `thought ${roundNumber}` },
+      {
+        kind: "tool",
+        item: {
+          toolCall: {
+            type: "toolCall",
+            id: `call-${roundNumber}`,
+            name: "Read",
+            arguments: {},
+          },
+        },
+      },
+    ],
+    runningToolCallIds: [`call-${roundNumber}`],
+    thinkingOpen: false,
+  });
+  const first = model.build(history, {
+    ...idleLive,
+    isSending: true,
+    liveRounds: [makeRound(1)],
+  });
+  const firstBlockKeys = blockRows(first).map((row) => row.key);
+
+  const grown = model.build(history, {
+    ...idleLive,
+    isSending: true,
+    liveRounds: [makeRound(1), makeRound(2)],
+  });
+  const grownBlocks = blockRows(grown);
+  assert.deepEqual(
+    grownBlocks.slice(0, firstBlockKeys.length).map((row) => row.key),
+    firstBlockKeys,
+  );
+  assert.deepEqual(
+    grownBlocks.map((row) => row.unit.block.kind),
+    ["thinking", "toolGroup", "thinking", "toolGroup"],
+  );
 });
 
 test("Markdown text blocks stay whole instead of being string-sliced", () => {
@@ -364,25 +441,20 @@ test("one live activity is pinned while its completed prefix units keep stable k
     isSending: true,
     liveRounds: [liveRound],
   });
-  const workUnits = workTraceRows(snapshot);
   const answerUnits = blockRows(snapshot);
-  assert.equal(workUnits.length, 1);
   assert.deepEqual(
-    workUnits[0].unit.blocks.map((block) => block.kind),
-    ["text", "thinking"],
+    answerUnits.map((row) => row.unit.block.kind),
+    ["text", "thinking", "text"],
   );
-  assert.equal(workUnits[0].mutable, false);
-  assert.equal(answerUnits.length, 1);
-  assert.equal(answerUnits[0].unit.block.kind, "text");
-  assert.equal(answerUnits[0].unit.block.text, "streaming tail");
-  assert.equal(answerUnits[0].mutable, true);
+  assert.equal(answerUnits[0].mutable, false);
+  assert.equal(answerUnits[1].mutable, false);
+  assert.equal(answerUnits[2].unit.block.text, "streaming tail");
+  assert.equal(answerUnits[2].mutable, true);
   const activity = snapshot.rows.find((row) => row.kind === "assistant-activity");
   assert.ok(activity);
   assert.deepEqual(
-    activity.units
-      .filter((unit) => unit.unit.kind === "work-trace" || unit.unit.kind === "block")
-      .map((unit) => unit.key),
-    [...workUnits, ...answerUnits].map((unit) => unit.key),
+    activity.units.filter((unit) => unit.unit.kind === "block").map((unit) => unit.key),
+    answerUnits.map((unit) => unit.key),
   );
   assert.equal(activity.units.at(-1).unit.kind, "status");
   assert.equal(snapshot.liveStartIndex, snapshot.rows.indexOf(activity));

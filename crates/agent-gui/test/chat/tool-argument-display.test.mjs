@@ -171,6 +171,11 @@ function createToolCallItemRenderer() {
           return jsxRuntime.jsx("span", { "data-running": "true", children });
         },
       },
+      "@liveagent/ui/components/chat/ChangedFilesCard": {
+        useChangedFilesActions() {
+          return { onOpenFile() {} };
+        },
+      },
       "@liveagent/ui/components/chat/FileChangeBadge": {
         FileChangeBadge: NullComponent,
       },
@@ -180,6 +185,9 @@ function createToolCallItemRenderer() {
         },
       },
       "@liveagent/ui/components/chat/ToolSurfaces": {
+        PathDisplay({ path }) {
+          return jsxRuntime.jsx("span", { children: path });
+        },
         ToolScrollablePre({ children }) {
           return jsxRuntime.jsx("pre", { children });
         },
@@ -604,4 +612,94 @@ test("Bash collapsed title carries the full multi-line command while the summary
   assert.ok(html.includes("line-one-alpha"));
   // The second line is reachable only through the hover title.
   assert.ok(html.includes("line-two-beta"));
+});
+
+test("read, list, and search tools are non-expandable activity rows", () => {
+  const renderToolCallItem = createToolCallItemRenderer();
+  const cases = [
+    ["Read", { path: "src/app.ts" }, "chat.tool.activity.read.done"],
+    ["List", { path: "src" }, "chat.tool.activity.list.done"],
+    ["Grep", { pattern: "needle", path: "src" }, "chat.tool.activity.search.done"],
+  ];
+
+  for (const [name, args, label] of cases) {
+    const html = renderToolCallItem(
+      { type: "toolCall", id: `call-${name}`, name, arguments: args },
+      {
+        result: {
+          role: "toolResult",
+          toolCallId: `call-${name}`,
+          toolName: name,
+          content: [{ type: "text", text: "hidden details" }],
+          details: name === "Read" ? { kind: "read_text", displayPath: "src/app.ts" } : {},
+          isError: false,
+        },
+      },
+    );
+    assert.match(html, new RegExp(label.replaceAll(".", "\\.")), name);
+    assert.doesNotMatch(html, /aria-expanded=/, name);
+    assert.doesNotMatch(html, /hidden details/, name);
+  }
+});
+
+test("read and changed-file activity rows expose clickable file paths", () => {
+  const renderToolCallItem = createToolCallItemRenderer();
+  const cases = [
+    ["Read", { kind: "read_text", displayPath: "src/read.ts" }, "src/read.ts"],
+    ["Edit", { kind: "edit", relativePath: "src/edit.ts" }, "src/edit.ts"],
+    ["Write", { kind: "write", displayPath: "src/new.ts", existedBefore: false }, "src/new.ts"],
+  ];
+
+  for (const [name, details, path] of cases) {
+    const html = renderToolCallItem(
+      { type: "toolCall", id: `file-${name}`, name, arguments: { path } },
+      {
+        result: {
+          role: "toolResult",
+          toolCallId: `file-${name}`,
+          toolName: name,
+          content: [],
+          details,
+          isError: false,
+        },
+      },
+    );
+    assert.match(html, /<button[^>]+chat\.changedFiles\.open/, name);
+    assert.ok(html.includes(path), name);
+    assert.doesNotMatch(html, /aria-expanded=/, name);
+  }
+});
+
+test("completed commands remain expandable while created files use a created label", () => {
+  const renderToolCallItem = createToolCallItemRenderer();
+  const commandHtml = renderToolCallItem(
+    { type: "toolCall", id: "bash-complete", name: "Bash", arguments: { command: "pwd" } },
+    {
+      result: {
+        role: "toolResult",
+        toolCallId: "bash-complete",
+        toolName: "Bash",
+        content: [],
+        details: { session_id: "session-1", status: "completed", duration_ms: 20 },
+        isError: false,
+      },
+    },
+  );
+  const createdHtml = renderToolCallItem(
+    { type: "toolCall", id: "write-new", name: "Write", arguments: { path: "src/new.ts" } },
+    {
+      result: {
+        role: "toolResult",
+        toolCallId: "write-new",
+        toolName: "Write",
+        content: [],
+        details: { kind: "write", displayPath: "src/new.ts", existedBefore: false },
+        isError: false,
+      },
+    },
+  );
+
+  assert.match(commandHtml, /chat\.tool\.activity\.command\.done/);
+  assert.match(commandHtml, /aria-expanded="false"/);
+  assert.match(createdHtml, /chat\.tool\.activity\.write\.created/);
 });

@@ -3,7 +3,6 @@ import {
   CompactingText,
   VibingText,
 } from "@liveagent/ui/components/chat/AssistantStatus";
-import { AssistantWorkTrace } from "@liveagent/ui/components/chat/AssistantWorkTrace";
 import { HostedSearchGroupView } from "@liveagent/ui/components/chat/HostedSearchGroupView";
 import { ThinkingActivity } from "@liveagent/ui/components/chat/ThinkingActivity";
 import { Markdown } from "@liveagent/ui/components/Markdown";
@@ -16,7 +15,6 @@ import {
   type GroupedRoundBlock,
   groupRoundBlocks,
   isBuiltinShareToolName,
-  resolveReasoningSearchWorkLayout,
 } from "./assistantBubbleUtils";
 import { MemoToolCallItem } from "./ToolCallItem";
 import { getNativeDisplayImagePayload, NativeDisplayImageBlock } from "./ToolImages";
@@ -31,6 +29,8 @@ export const RoundBlockContent = memo(function RoundBlockContent(props: {
   runningToolCallIds: string[];
   thinkingOpen: boolean;
   isLatestThinking: boolean;
+  readOnly?: boolean;
+  redactToolContent?: boolean;
   workdir?: string;
   onOpenFileLink?: (link: ChatFileLink) => void;
 }) {
@@ -41,6 +41,8 @@ export const RoundBlockContent = memo(function RoundBlockContent(props: {
     runningToolCallIds,
     thinkingOpen,
     isLatestThinking,
+    readOnly = false,
+    redactToolContent = false,
     workdir,
     onOpenFileLink,
   } = props;
@@ -59,15 +61,23 @@ export const RoundBlockContent = memo(function RoundBlockContent(props: {
       />
     );
   } else if (block.kind === "tool") {
+    const isRedactedToolContent =
+      redactToolContent && isBuiltinShareToolName(block.item.toolCall.name);
     const displayImagePayload = getNativeDisplayImagePayload(block.item);
-    if (displayImagePayload) {
-      content = <NativeDisplayImageBlock payload={displayImagePayload} />;
-    } else if (block.item.toolCall.name === "Image" && !block.item.toolResult?.isError) {
+    if (!isRedactedToolContent && displayImagePayload) {
+      content = <NativeDisplayImageBlock payload={displayImagePayload} readOnly={readOnly} />;
+    } else if (
+      !isRedactedToolContent &&
+      block.item.toolCall.name === "Image" &&
+      !block.item.toolResult?.isError
+    ) {
       content = null;
     } else {
       content = (
         <MemoToolCallItem
           item={block.item}
+          readOnly={readOnly}
+          redactToolContent={redactToolContent}
           isRunning={Boolean(
             isLive && block.item.toolCall.id && runningToolCallIds.includes(block.item.toolCall.id),
           )}
@@ -76,13 +86,19 @@ export const RoundBlockContent = memo(function RoundBlockContent(props: {
     }
   } else if (block.kind === "toolGroup") {
     content = (
-      <ToolTraceGroup items={block.items} runningToolCallIds={isLive ? runningToolCallIds : []} />
+      <ToolTraceGroup
+        items={block.items}
+        runningToolCallIds={isLive ? runningToolCallIds : []}
+        readOnly={readOnly}
+        redactToolContent={redactToolContent}
+      />
     );
   } else if (block.kind === "hostedSearch" || block.kind === "hostedSearchGroup") {
     content = (
       <HostedSearchGroupView
         items={block.kind === "hostedSearch" ? [block.item] : block.items}
         isLive={isLive}
+        readOnly={readOnly}
       />
     );
   } else if (block.text.trim()) {
@@ -91,6 +107,7 @@ export const RoundBlockContent = memo(function RoundBlockContent(props: {
         content={block.text}
         className="font-chat"
         renderMode={renderMode}
+        readOnly={readOnly}
         workdir={workdir}
         onOpenFileLink={onOpenFileLink}
       />
@@ -102,6 +119,119 @@ export const RoundBlockContent = memo(function RoundBlockContent(props: {
   if (!content) return null;
 
   return <div className={isLive ? undefined : "w-full"}>{content}</div>;
+});
+
+type ReplyRound = UiRound & {
+  key?: string;
+  runningToolCallIds?: string[];
+  thinkingOpen?: boolean;
+};
+
+export const AssistantReplyContent = memo(function AssistantReplyContent(props: {
+  rounds: ReplyRound[];
+  isLive?: boolean;
+  isStreaming?: boolean;
+  toolStatus?: string | null;
+  toolStatusVariant?: "default" | "compaction";
+  renderMode?: "streaming" | "static";
+  readOnly?: boolean;
+  redactToolContent?: boolean;
+  workdir?: string;
+  onOpenFileLink?: (link: ChatFileLink) => void;
+}) {
+  const {
+    rounds,
+    isLive = false,
+    isStreaming = isLive,
+    toolStatus,
+    toolStatusVariant,
+    renderMode = isStreaming ? "streaming" : "static",
+    readOnly = false,
+    redactToolContent = false,
+    workdir,
+    onOpenFileLink,
+  } = props;
+  const replyBlocks = useMemo(
+    () =>
+      rounds.flatMap((round, roundIndex) => {
+        const roundKey = round.key || `r${round.round || roundIndex + 1}`;
+        const runningToolCallIds = round.runningToolCallIds ?? EMPTY_RUNNING_TOOL_CALL_IDS;
+        return groupRoundBlocks(round.blocks)
+          .filter((block) => !isTaskToolBlock(block))
+          .filter((block) => {
+            if (block.kind === "text" || block.kind === "thinking") {
+              return block.text.trim().length > 0;
+            }
+            return true;
+          })
+          .map((block) => ({
+            block,
+            key: `${roundKey}:${block.key}`,
+            runningToolCallIds,
+            thinkingOpen: round.thinkingOpen ?? false,
+          }));
+      }),
+    [rounds],
+  );
+  const normalizedToolStatus = isLive ? normalizeLiveToolStatus(toolStatus ?? null) : null;
+  const isCompactionStatus = toolStatusVariant === "compaction";
+  const isVibingStatus = normalizedToolStatus === VIBING_STATUS;
+  const hasRunningToolCall = replyBlocks.some((entry) => {
+    const runningIds = new Set(entry.runningToolCallIds);
+    const { block } = entry;
+    if (block.kind === "tool") {
+      return Boolean(block.item.toolCall.id && runningIds.has(block.item.toolCall.id));
+    }
+    if (block.kind === "toolGroup") {
+      return block.items.some((item) =>
+        Boolean(item.toolCall.id && runningIds.has(item.toolCall.id)),
+      );
+    }
+    return false;
+  });
+  let latestThinkingKey: string | null = null;
+  for (let index = replyBlocks.length - 1; index >= 0; index -= 1) {
+    const entry = replyBlocks[index];
+    if (entry?.block.kind === "thinking") {
+      latestThinkingKey = entry.key;
+      break;
+    }
+  }
+  if (replyBlocks.length === 0 && !isLive) return null;
+
+  return (
+    <div className="space-y-2">
+      {isLive &&
+      normalizedToolStatus &&
+      (!hasRunningToolCall || isCompactionStatus || isVibingStatus) ? (
+        <div className="py-1.5">
+          {isCompactionStatus ? (
+            <CompactingText />
+          ) : isVibingStatus ? (
+            <VibingText />
+          ) : (
+            <AssistantStatus>{normalizedToolStatus}</AssistantStatus>
+          )}
+        </div>
+      ) : null}
+
+      {replyBlocks.map((entry) => (
+        <RoundBlockContent
+          key={entry.key}
+          block={entry.block}
+          isLive={isLive}
+          renderMode={renderMode}
+          runningToolCallIds={entry.runningToolCallIds}
+          thinkingOpen={entry.thinkingOpen}
+          isLatestThinking={entry.key === latestThinkingKey}
+          readOnly={readOnly}
+          redactToolContent={redactToolContent}
+          workdir={workdir}
+          onOpenFileLink={onOpenFileLink}
+        />
+      ))}
+    </div>
+  );
 });
 
 export const RoundContent = memo(function RoundContent(props: {
@@ -134,207 +264,25 @@ export const RoundContent = memo(function RoundContent(props: {
     workdir,
     onOpenFileLink,
   } = props;
-  const groupedBlocks = useMemo(() => groupRoundBlocks(round.blocks), [round.blocks]);
-  const visibleGroupedBlocks = useMemo(
-    () => groupedBlocks.filter((block) => !isTaskToolBlock(block)),
-    [groupedBlocks],
-  );
-  const hasContent =
-    visibleGroupedBlocks.some((block) => {
-      if (
-        block.kind === "tool" ||
-        block.kind === "toolGroup" ||
-        block.kind === "hostedSearch" ||
-        block.kind === "hostedSearchGroup"
-      ) {
-        return true;
-      }
-      return block.text.trim().length > 0;
-    }) ||
-    (isActive && isLive);
-  const normalizedToolStatus =
-    isActive && isLive ? normalizeLiveToolStatus(toolStatus ?? null) : null;
-  const isCompactionStatus = toolStatusVariant === "compaction";
-  const isVibingStatus = normalizedToolStatus === VIBING_STATUS;
-  const hasRunningToolCall = useMemo(() => {
-    const runningIds = new Set(runningToolCallIds ?? []);
-    return visibleGroupedBlocks.some((block) => {
-      if (block.kind === "tool")
-        return Boolean(block.item.toolCall.id && runningIds.has(block.item.toolCall.id));
-      if (block.kind === "toolGroup") {
-        return block.items.some((item) =>
-          Boolean(item.toolCall.id && runningIds.has(item.toolCall.id)),
-        );
-      }
-      return false;
-    });
-  }, [runningToolCallIds, visibleGroupedBlocks]);
-  const latestThinkingKey = useMemo(() => {
-    for (let index = visibleGroupedBlocks.length - 1; index >= 0; index -= 1) {
-      const block = visibleGroupedBlocks[index];
-      if (block?.kind === "thinking") return block.key;
-    }
-    return null;
-  }, [visibleGroupedBlocks]);
-  const autoOpenThinking = isLive ? Boolean(isActive && thinkingOpen) : false;
-  const workTraceLayout = useMemo(
-    () => resolveReasoningSearchWorkLayout(visibleGroupedBlocks),
-    [visibleGroupedBlocks],
-  );
-  const workTraceIndexSet = useMemo(
-    () => new Set(workTraceLayout.indexes),
-    [workTraceLayout.indexes],
-  );
-  const workTraceRunning = Boolean(isActive && isStreaming);
-  const latestWorkThinkingKey = useMemo(() => {
-    for (let index = workTraceLayout.indexes.length - 1; index >= 0; index -= 1) {
-      const blockIndex = workTraceLayout.indexes[index];
-      const block = blockIndex === undefined ? undefined : visibleGroupedBlocks[blockIndex];
-      if (block?.kind === "thinking") return block.key;
-    }
-    return null;
-  }, [visibleGroupedBlocks, workTraceLayout.indexes]);
-
-  if (!hasContent) return null;
-
   return (
-    <div className="space-y-2">
-      {isActive &&
-      isLive &&
-      normalizedToolStatus &&
-      (!hasRunningToolCall || isCompactionStatus || isVibingStatus) ? (
-        <div className="py-1.5">
-          {isCompactionStatus ? (
-            <CompactingText />
-          ) : isVibingStatus ? (
-            <VibingText />
-          ) : (
-            <AssistantStatus>{normalizedToolStatus}</AssistantStatus>
-          )}
-        </div>
-      ) : null}
-
-      {visibleGroupedBlocks.map((block, blockIndex) => {
-        if (blockIndex === workTraceLayout.firstIndex) {
-          return (
-            <AssistantWorkTrace
-              key={`work-trace-${block.key}`}
-              hasDetails={workTraceLayout.indexes.length > 0}
-              running={workTraceRunning}
-            >
-              {workTraceLayout.indexes.map((workIndex) => {
-                const workBlock = visibleGroupedBlocks[workIndex];
-                if (!workBlock) return null;
-                return (
-                  <RoundBlockContent
-                    key={workBlock.key}
-                    block={workBlock}
-                    isLive={workTraceRunning}
-                    renderMode={renderMode ?? (isStreaming ? "streaming" : "static")}
-                    runningToolCallIds={runningToolCallIds ?? EMPTY_RUNNING_TOOL_CALL_IDS}
-                    thinkingOpen
-                    isLatestThinking={workBlock.key === latestWorkThinkingKey}
-                    workdir={workdir}
-                    onOpenFileLink={onOpenFileLink}
-                  />
-                );
-              })}
-            </AssistantWorkTrace>
-          );
-        }
-        if (workTraceIndexSet.has(blockIndex)) return null;
-
-        if (block.kind === "thinking") {
-          return (
-            <ThinkingActivity
-              key={block.key}
-              text={block.text}
-              open={autoOpenThinking && block.key === latestThinkingKey}
-              isRunning={autoOpenThinking && block.key === latestThinkingKey}
-              renderMode={renderMode ?? (isStreaming ? "streaming" : "static")}
-              workdir={workdir}
-              onOpenFileLink={onOpenFileLink}
-            />
-          );
-        }
-
-        if (block.kind === "tool") {
-          const isRedactedToolContent =
-            redactToolContent && isBuiltinShareToolName(block.item.toolCall.name);
-          const displayImagePayload = getNativeDisplayImagePayload(block.item);
-          if (!isRedactedToolContent && displayImagePayload) {
-            return (
-              <NativeDisplayImageBlock
-                key={block.key}
-                payload={displayImagePayload}
-                readOnly={readOnly}
-              />
-            );
-          }
-
-          if (
-            !isRedactedToolContent &&
-            block.item.toolCall.name === "Image" &&
-            !block.item.toolResult?.isError
-          ) {
-            return null;
-          }
-
-          return (
-            <MemoToolCallItem
-              key={block.key}
-              item={block.item}
-              isRunning={Boolean(
-                isLive &&
-                  block.item.toolCall.id &&
-                  (runningToolCallIds || []).includes(block.item.toolCall.id),
-              )}
-              readOnly={readOnly}
-              redactToolContent={redactToolContent}
-            />
-          );
-        }
-
-        if (block.kind === "toolGroup") {
-          return (
-            <ToolTraceGroup
-              key={block.key}
-              items={block.items}
-              runningToolCallIds={
-                isLive
-                  ? (runningToolCallIds ?? EMPTY_RUNNING_TOOL_CALL_IDS)
-                  : EMPTY_RUNNING_TOOL_CALL_IDS
-              }
-              readOnly={readOnly}
-              redactToolContent={redactToolContent}
-            />
-          );
-        }
-
-        if (block.kind === "hostedSearch" || block.kind === "hostedSearchGroup") {
-          return (
-            <HostedSearchGroupView
-              key={block.key}
-              items={block.kind === "hostedSearch" ? [block.item] : block.items}
-              readOnly={readOnly}
-            />
-          );
-        }
-
-        if (!block.text.trim()) return null;
-
-        return (
-          <Markdown
-            key={block.key}
-            content={block.text}
-            className="font-chat"
-            renderMode={renderMode}
-            readOnly={readOnly}
-            workdir={workdir}
-            onOpenFileLink={onOpenFileLink}
-          />
-        );
-      })}
-    </div>
+    <AssistantReplyContent
+      rounds={[
+        {
+          ...round,
+          key: `r${round.round}`,
+          runningToolCallIds: runningToolCallIds ?? EMPTY_RUNNING_TOOL_CALL_IDS,
+          thinkingOpen: thinkingOpen ?? false,
+        },
+      ]}
+      isLive={Boolean(isLive && isActive !== false)}
+      isStreaming={isStreaming}
+      toolStatus={toolStatus}
+      toolStatusVariant={toolStatusVariant}
+      renderMode={renderMode}
+      readOnly={readOnly}
+      redactToolContent={redactToolContent}
+      workdir={workdir}
+      onOpenFileLink={onOpenFileLink}
+    />
   );
 });
