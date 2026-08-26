@@ -10,6 +10,7 @@ import {
   safeStringify,
   shouldDisplayToolTraceItem,
 } from "@liveagent/ui/lib/chat/assistantBubbleAdapter";
+import { isTaskToolBlock } from "@liveagent/ui/lib/chat/taskProgress";
 import type {
   SubagentCardDetails,
   SubagentReportDetails,
@@ -34,6 +35,47 @@ import {
   Trash2,
   Wrench,
 } from "../../IconSet";
+
+export type ToolActivityCategory =
+  | "read"
+  | "search"
+  | "edit"
+  | "command"
+  | "list"
+  | "agent"
+  | "other";
+
+export function getToolActivityCategory(name: string): ToolActivityCategory {
+  if (isTaskToolName(name)) return "other";
+  switch (name) {
+    case "Read":
+    case "Image":
+    case "SkillsManager":
+      return "read";
+    case "Glob":
+    case "Grep":
+    case "ToolSearch":
+      return "search";
+    case "Write":
+    case "Edit":
+    case "Delete":
+      return "edit";
+    case "Bash":
+    case "ManagedProcess":
+    case "ProcessWait":
+    case "ProcessStop":
+    case "SSHManager":
+    case "SshManager":
+      return "command";
+    case "List":
+      return "list";
+    case "Agent":
+    case "SendMessage":
+      return "agent";
+    default:
+      return "other";
+  }
+}
 
 export function getToolMeta(name: string): {
   Icon: IconComponent;
@@ -220,6 +262,172 @@ export function resolveReasoningSearchWorkLayout(blocks: GroupedRoundBlock[]) {
     }
   }
   return { firstIndex: indexes[0] ?? -1, indexes };
+}
+
+export type AssistantTurnLayoutEntry = {
+  key: string;
+  roundKey: string;
+  roundMeta?: UiRound["meta"];
+  block: GroupedRoundBlock;
+  runningToolCallIds: string[];
+  thinkingOpen: boolean;
+};
+
+export type AssistantTurnLayout = {
+  work: AssistantTurnLayoutEntry[];
+  answer: AssistantTurnLayoutEntry[];
+};
+
+type AssistantTurnRound = UiRound & {
+  key?: string;
+  runningToolCallIds?: string[];
+  thinkingOpen?: boolean;
+};
+
+function isVisibleTurnBlock(block: GroupedRoundBlock) {
+  if (block.kind === "text" || block.kind === "thinking") {
+    return block.text.trim().length > 0;
+  }
+  return !isTaskToolBlock(block);
+}
+
+function isTerminalStopReason(stopReason: string | undefined) {
+  return Boolean(stopReason && stopReason !== "toolUse");
+}
+
+function mergeRunningToolCallIds(left: string[], right: string[]) {
+  if (right.length === 0) return left;
+  if (left.length === 0) return right;
+  return Array.from(new Set([...left, ...right]));
+}
+
+/**
+ * Turn raw round-by-round activity into the stage-oriented trace used by the
+ * transcript. Provider rounds often alternate `thinking -> one tool` dozens
+ * of times; exposing that shape produces a repetitive log instead of a useful
+ * work summary. Keep one inspectable thinking disclosure for the whole turn,
+ * and merge neighboring tool/search activity until a visible progress note
+ * creates the next stage boundary.
+ */
+export function compactAssistantWorkEntries(
+  entries: readonly AssistantTurnLayoutEntry[],
+): AssistantTurnLayoutEntry[] {
+  const thinkingEntries = entries.filter((entry) => entry.block.kind === "thinking");
+  const firstThinking = thinkingEntries[0];
+  const combinedThinking = firstThinking
+    ? {
+        ...firstThinking,
+        key: `${firstThinking.key}:turn-thinking`,
+        block: {
+          ...firstThinking.block,
+          key: `${firstThinking.block.key}:turn-thinking`,
+          text: thinkingEntries
+            .map((entry) => (entry.block.kind === "thinking" ? entry.block.text.trim() : ""))
+            .filter(Boolean)
+            .join("\n\n"),
+        },
+        thinkingOpen: thinkingEntries.some((entry) => entry.thinkingOpen),
+      }
+    : null;
+
+  const compacted: AssistantTurnLayoutEntry[] = combinedThinking ? [combinedThinking] : [];
+
+  for (const entry of entries) {
+    if (entry.block.kind === "thinking") {
+      continue;
+    }
+
+    const previous = compacted.at(-1);
+    if (previous?.block.kind === "toolGroup" && entry.block.kind === "toolGroup") {
+      compacted[compacted.length - 1] = {
+        ...previous,
+        block: {
+          ...previous.block,
+          items: [...previous.block.items, ...entry.block.items],
+        },
+        runningToolCallIds: mergeRunningToolCallIds(
+          previous.runningToolCallIds,
+          entry.runningToolCallIds,
+        ),
+      };
+      continue;
+    }
+
+    if (previous?.block.kind === "hostedSearchGroup" && entry.block.kind === "hostedSearchGroup") {
+      compacted[compacted.length - 1] = {
+        ...previous,
+        block: {
+          ...previous.block,
+          items: [...previous.block.items, ...entry.block.items],
+        },
+      };
+      continue;
+    }
+
+    compacted.push(entry);
+  }
+
+  return compacted;
+}
+
+/**
+ * Project every model/tool round produced by one user request into the two
+ * visual layers used by the transcript:
+ *
+ * - `work` is the complete in-progress trace (thinking, progress notes,
+ *   searches and tool activity), shown inside one collapsible section.
+ * - `answer` is only the final trailing prose, rendered as the assistant's
+ *   durable response below that section.
+ *
+ * A live, non-terminal turn deliberately keeps trailing prose in `work`.
+ * Otherwise a progress note would jump in and out of the final-answer layer
+ * every time the model resumes with another tool call.
+ */
+export function resolveAssistantTurnLayout(
+  rounds: readonly AssistantTurnRound[],
+  options: { live: boolean },
+): AssistantTurnLayout {
+  const entries = rounds.flatMap((round) => {
+    const roundKey = round.key?.trim() || `r${round.round}`;
+    const runningToolCallIds = round.runningToolCallIds ?? [];
+    const thinkingOpen = round.thinkingOpen ?? false;
+    return groupRoundBlocks(round.blocks)
+      .filter(isVisibleTurnBlock)
+      .map((block) => ({
+        key: `${roundKey}:${block.key}`,
+        roundKey,
+        roundMeta: round.meta,
+        block,
+        runningToolCallIds,
+        thinkingOpen,
+      }));
+  });
+
+  if (entries.length === 0) return { work: [], answer: [] };
+
+  const lastRound = rounds.at(-1);
+  if (options.live && !isTerminalStopReason(lastRound?.meta?.stopReason)) {
+    return { work: compactAssistantWorkEntries(entries), answer: [] };
+  }
+
+  const lastEntry = entries.at(-1);
+  if (!lastEntry || lastEntry.block.kind !== "text") {
+    return { work: compactAssistantWorkEntries(entries), answer: [] };
+  }
+
+  let answerStart = entries.length - 1;
+  while (answerStart > 0) {
+    const previous = entries[answerStart - 1];
+    if (!previous || previous.roundKey !== lastEntry.roundKey || previous.block.kind !== "text") {
+      break;
+    }
+    answerStart -= 1;
+  }
+
+  return {
+    work: compactAssistantWorkEntries(entries.slice(0, answerStart)),
+    answer: entries.slice(answerStart),
+  };
 }
 
 const stableValueSignatureCache = new WeakMap<object, string>();

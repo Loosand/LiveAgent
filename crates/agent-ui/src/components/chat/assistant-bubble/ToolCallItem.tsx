@@ -42,6 +42,7 @@ import {
   getBuiltinResultKind,
   getShellSessionDisplayDetails,
   getSubagentInlineSummary,
+  getToolActivityCategory,
   getToolDisplayName,
   getToolDisplayTitle,
   getToolMeta,
@@ -169,13 +170,26 @@ function ToolCallItem({
   );
   const meta = getToolMeta(item.toolCall.name);
   const ToolIcon = meta.Icon;
+  const activityCategory = getToolActivityCategory(item.toolCall.name);
+  const activityPhase =
+    result?.isError || shellSessionFailed
+      ? "failed"
+      : isRunning || !result
+        ? "running"
+        : "completed";
+  const localizedActivityTitle =
+    activityCategory === "other"
+      ? null
+      : t(`chat.tool.activity.${activityCategory}.${activityPhase}`);
   const title = isAskUser
     ? { name: t("chat.tool.askUserTitle"), action: "" }
     : isPlanCard
       ? { name: t("chat.planMode.cardTitle"), action: "" }
       : isRedactedToolContent
         ? { name: getToolDisplayName(item.toolCall.name), action: "" }
-        : getToolDisplayTitle(item.toolCall);
+        : localizedActivityTitle
+          ? { name: localizedActivityTitle, action: "" }
+          : getToolDisplayTitle(item.toolCall);
 
   const statusLabel = isApprovalPending
     ? t("chat.toolApproval.waitingStatus")
@@ -251,12 +265,12 @@ function ToolCallItem({
         ) : null}
       </span>
 
-      <span className="shrink-0 text-[calc(12.5px*var(--zone-font-scale,1))] font-medium text-foreground/82">
+      <span className="shrink-0 text-[calc(12.5px*var(--zone-font-scale,1))] font-normal text-muted-foreground/85">
         {title.name}
       </span>
 
       {compactChipText || fileChangeStats ? (
-        <span className="inline-flex h-[22px] min-w-0 flex-1 items-center gap-2 rounded-md bg-foreground/[0.035] px-1.5 font-mono text-[calc(11.5px*var(--zone-font-scale,1))] text-muted-foreground/72 shadow-[inset_0_0_0_1px_rgba(15,23,42,0.055),0_1px_2px_rgba(15,23,42,0.035)] transition-colors duration-150 group-hover/tool:bg-foreground/[0.055] dark:shadow-[inset_0_0_0_1px_rgba(255,255,255,0.065)]">
+        <span className="inline-flex h-[22px] min-w-0 flex-1 items-center gap-2 font-mono text-[calc(11.5px*var(--zone-font-scale,1))] text-muted-foreground/60">
           {compactChipText ? (
             <span
               className="min-w-0 flex-1 truncate"

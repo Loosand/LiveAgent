@@ -233,6 +233,12 @@ function createToolCallItemRenderer() {
         areStableValuesEqual(left, right) {
           return JSON.stringify(left) === JSON.stringify(right);
         },
+        getToolActivityCategory(name) {
+          if (["Bash", "ManagedProcess", "ProcessWait", "ProcessStop"].includes(name)) {
+            return "command";
+          }
+          return "other";
+        },
         getBuiltinResultKind() {
           return null;
         },

@@ -43,19 +43,20 @@ test("keeps a renderable overlay inside an extremely narrow viewport", () => {
   assert.ok(placement.left + placement.width <= 8);
 });
 
-test("thinking details use inline collapse instead of a portal overlay", () => {
+test("thinking details use an inline disclosure instead of a portal overlay", () => {
   assert.match(componentSource, /open\?: boolean;/);
-  assert.match(componentSource, /<LazyCollapse open=\{isOpen\}>/);
+  assert.match(componentSource, /\{isOpen \? \(/);
   assert.match(componentSource, /userInteractedRef/);
   assert.doesNotMatch(componentSource, /createPortal/);
   assert.doesNotMatch(componentSource, /role="dialog"/);
   assert.doesNotMatch(componentSource, /thinkingOverlayModel/);
 });
 
-test("WebUI transcript forwards live thinking auto-open into the shared collapse", () => {
-  assert.match(roundContentSource, /const autoOpenThinking = isLive \? Boolean\(isActive && thinkingOpen\) : false;/);
+test("WebUI transcript keeps thinking nested in the work trace collapsed by default", () => {
+  assert.match(roundContentSource, /const isRunning = isLive && thinkingOpen && isLatestThinking;/);
   assert.match(
     roundContentSource,
-    /open=\{autoOpenThinking && block\.key === latestThinkingKey\}/,
+    /open=\{collapseThinking \? false : isRunning \|\| \(!isLive && thinkingOpen\)\}/,
   );
+  assert.match(roundContentSource, /collapseThinking=\{insideWorkTrace\}/);
 });

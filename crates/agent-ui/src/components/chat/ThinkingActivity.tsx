@@ -13,7 +13,7 @@ function getThinkingLabel(t: (key: string) => string, isRunning: boolean, elapse
   }
   return elapsedSeconds > 0
     ? `${t("chat.thoughtFor")} ${elapsedSeconds} ${t("chat.time.seconds")}`
-    : t("chat.thinkingComplete");
+    : t("chat.thinkingProcess");
 }
 
 export function ThinkingActivity(props: {

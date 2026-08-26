@@ -4,9 +4,23 @@ import { LazyCollapse } from "@liveagent/ui/components/chat/LazyCollapse";
 import { useLocale } from "@liveagent/ui/i18n/index";
 import type { ToolTraceItem } from "@liveagent/ui/lib/chat/assistantBubbleAdapter";
 import { cn } from "@liveagent/ui/lib/shared/utils";
-import { memo, useMemo, useState } from "react";
-import { ChevronRight } from "../../IconSet";
-import { getToolTraceKey } from "./assistantBubbleUtils";
+import { memo, useEffect, useMemo, useRef, useState } from "react";
+import {
+  Bot,
+  ChevronRight,
+  Eye,
+  FilePenLine,
+  FolderTree,
+  type IconComponent,
+  Search,
+  Terminal,
+  Wrench,
+} from "../../IconSet";
+import {
+  getToolActivityCategory,
+  getToolTraceKey,
+  type ToolActivityCategory,
+} from "./assistantBubbleUtils";
 import { areToolTraceItemsEqual, MemoToolCallItem } from "./ToolCallItem";
 
 function getToolGroupCounts(items: ToolTraceItem[], runningToolCallIds: string[]) {
@@ -35,6 +49,25 @@ function getToolGroupCounts(items: ToolTraceItem[], runningToolCallIds: string[]
   return { running, failed, completed, waiting };
 }
 
+export function getToolBatchCounts(items: ToolTraceItem[]) {
+  const counts = new Map<ToolActivityCategory, number>();
+  for (const item of items) {
+    const category = getToolActivityCategory(item.toolCall.name);
+    counts.set(category, (counts.get(category) ?? 0) + 1);
+  }
+  return Array.from(counts, ([category, count]) => ({ category, count }));
+}
+
+const TOOL_BATCH_ICONS: Record<ToolActivityCategory, IconComponent> = {
+  read: Eye,
+  search: Search,
+  edit: FilePenLine,
+  command: Terminal,
+  list: FolderTree,
+  agent: Bot,
+  other: Wrench,
+};
+
 function ToolTraceGroupInner(props: {
   items: ToolTraceItem[];
   runningToolCallIds?: string[];
@@ -47,19 +80,16 @@ function ToolTraceGroupInner(props: {
     () => getToolGroupCounts(items, runningToolCallIds),
     [items, runningToolCallIds],
   );
-  const [open, setOpen] = useState(true);
+  const batchCounts = useMemo(() => getToolBatchCounts(items), [items]);
+  const active = counts.running > 0;
+  const [open, setOpen] = useState(active);
+  const wasActiveRef = useRef(active);
 
-  if (items.length === 1) {
-    const item = items[0];
-    return item ? (
-      <MemoToolCallItem
-        item={item}
-        readOnly={readOnly}
-        redactToolContent={redactToolContent}
-        isRunning={Boolean(item.toolCall.id && runningToolCallIds.includes(item.toolCall.id))}
-      />
-    ) : null;
-  }
+  useEffect(() => {
+    if (active && !wasActiveRef.current) setOpen(true);
+    if (!active && wasActiveRef.current) setOpen(false);
+    wasActiveRef.current = active;
+  }, [active]);
 
   const statusLabel =
     counts.failed > 0
@@ -70,8 +100,11 @@ function ToolTraceGroupInner(props: {
           ? `${counts.waiting} ${t("chat.tool.waiting")}`
           : t("chat.tool.success");
 
-  const countLabel = `${items.length} tool calls`;
+  const countLabel = batchCounts
+    .map(({ category }) => t(`chat.tool.batch.${category}`))
+    .join(" · ");
   const showStatus = counts.failed > 0 || counts.running > 0 || counts.waiting > 0;
+  const BatchIcon = TOOL_BATCH_ICONS[batchCounts[0]?.category ?? "other"];
 
   return (
     <div className="group/tool-trace min-w-0 max-w-full pb-1">
@@ -82,13 +115,14 @@ function ToolTraceGroupInner(props: {
         className="-mx-1.5 flex w-fit max-w-[calc(100%+0.75rem)] cursor-pointer select-none items-center gap-1.5 rounded-lg px-1.5 py-1 text-left text-[calc(12.5px*var(--zone-font-scale,1))] text-muted-foreground/75 transition-colors duration-150 hover:bg-foreground/[0.04] hover:text-foreground/80"
         onClick={() => setOpen((prev) => !prev)}
       >
+        <BatchIcon className="h-3.5 w-3.5 shrink-0 text-muted-foreground/60" />
+        <span className="min-w-0 truncate">{countLabel}</span>
         <ChevronRight
           className={cn(
             "h-3 w-3 shrink-0 text-muted-foreground/60 transition-transform duration-200 ease-out",
             open ? "rotate-90" : "",
           )}
         />
-        <span className="min-w-0 truncate tabular-nums">{countLabel}</span>
         {showStatus ? (
           <span className="shrink-0 text-[calc(10.5px*var(--zone-font-scale,1))] text-muted-foreground/50">
             {counts.running > 0 ? (

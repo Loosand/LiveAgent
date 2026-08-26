@@ -14,7 +14,7 @@ import {
 import { UserAttachmentCards } from "@liveagent/ui/components/chat/UserAttachmentCards";
 import { Loader2 } from "@liveagent/ui/components/IconSet";
 import { useLocale } from "@liveagent/ui/i18n/LocaleContext";
-import { normalizeLiveToolStatus, VIBING_STATUS } from "@liveagent/ui/lib/chat/assistantStatus";
+import { normalizeLiveToolStatus } from "@liveagent/ui/lib/chat/assistantStatus";
 import type { ChatFileLink } from "@liveagent/ui/lib/chat/chatFileLinks";
 import {
   type PendingUploadedFile,
@@ -156,15 +156,6 @@ type GatewayTranscriptVirtualItem =
 
 function resolveNearestScrollViewport(element: HTMLElement | null) {
   return element?.closest("[data-scroll-viewport]") as HTMLDivElement | null;
-}
-
-function LiveStatusFooter(props: { status: string; isCompaction?: boolean }) {
-  const { status, isCompaction = false } = props;
-  return (
-    <div className="gateway-live-status-footer ml-9 min-w-0 overflow-hidden pt-1">
-      <LiveAssistantStatus status={status} isCompaction={isCompaction} className="w-full" />
-    </div>
-  );
 }
 
 function HistoryLoadingState(props: { title?: string }) {
@@ -917,6 +908,11 @@ const GatewayTranscriptListRegion = memo(function GatewayTranscriptListRegion(pr
           const rowIndex = virtualRow.index - leadingOffset;
           const isLatestLiveAssistant = rowIndex === liveAssistantIndex;
           const isLatestLiveStreaming = isStreaming && isLatestLiveAssistant;
+          const retryTarget = findRetryTarget(rows, rowIndex);
+          const durationMs =
+            row.timestamp !== undefined && retryTarget?.timestamp !== undefined
+              ? Math.max(0, row.timestamp - retryTarget.timestamp)
+              : undefined;
           return (
             <article
               key={virtualRow.key}
@@ -932,17 +928,14 @@ const GatewayTranscriptListRegion = memo(function GatewayTranscriptListRegion(pr
                   isLive={isLatestLiveAssistant}
                   isStreaming={isLatestLiveStreaming}
                   renderMode={rowRenderMode(row)}
+                  toolStatus={isLatestLiveStreaming ? displayedToolStatus : null}
+                  toolStatusVariant={displayedToolStatusIsCompaction ? "compaction" : "default"}
+                  durationMs={durationMs}
                   readOnly={readOnly}
                   redactToolContent={redactToolContent}
                   workdir={workspaceRoot}
                   onOpenFileLink={onOpenFileLink}
                 />
-                {isLatestLiveStreaming ? (
-                  <LiveStatusFooter
-                    status={displayedToolStatus ?? VIBING_STATUS}
-                    isCompaction={displayedToolStatusIsCompaction}
-                  />
-                ) : null}
                 {isLatestLiveStreaming &&
                 !shouldShowPendingLiveBubble &&
                 retryAttempts &&
@@ -954,7 +947,7 @@ const GatewayTranscriptListRegion = memo(function GatewayTranscriptListRegion(pr
                 {!readOnly && !isLatestLiveStreaming ? (
                   <GatewayAssistantMessageActions
                     row={row}
-                    retryTarget={findRetryTarget(rows, rowIndex)}
+                    retryTarget={retryTarget}
                     isStreaming={isStreaming}
                     showUsage={showUsage}
                     usageContextWindow={usageContextWindow}
