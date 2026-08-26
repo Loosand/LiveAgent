@@ -382,6 +382,7 @@ export const ChatComposerBar = memo(function ChatComposerBar(props: ChatComposer
     onError: onSttError,
   });
   const [isComposerExpanded, setIsComposerExpanded] = useState(false);
+  const [composerHasOverflow, setComposerHasOverflow] = useState(false);
   const isComposerExpandedRef = useRef(false);
   const glassCardRef = useRef<HTMLDivElement | null>(null);
   const attachmentListRef = useRef<HTMLDivElement | null>(null);
@@ -390,6 +391,7 @@ export const ChatComposerBar = memo(function ChatComposerBar(props: ChatComposer
   const expandFromHeightRef = useRef<number | null>(null);
   const expandAnimationRef = useRef<Animation | null>(null);
   const scheduleHeightMeasureRef = useRef<(() => void) | null>(null);
+  const scheduleComposerOverflowMeasureRef = useRef<(() => void) | null>(null);
   const composerLayerRef = useRef<HTMLDivElement | null>(null);
   const queuePanelRef = useRef<HTMLDivElement | null>(null);
   const queueListRef = useRef<HTMLUListElement | null>(null);
@@ -487,6 +489,7 @@ export const ChatComposerBar = memo(function ChatComposerBar(props: ChatComposer
       }
       // 还原方向的高度上报在动画期间被冻结，落定后补测一次。
       scheduleHeightMeasureRef.current?.();
+      scheduleComposerOverflowMeasureRef.current?.();
     };
     animation.onfinish = clear;
     animation.oncancel = clear;
@@ -504,6 +507,56 @@ export const ChatComposerBar = memo(function ChatComposerBar(props: ChatComposer
     setComposerExpanded(false);
     onSend();
   }, [onSend, setComposerExpanded]);
+
+  useEffect(() => {
+    const editor = glassCardRef.current?.querySelector<HTMLElement>(".mention-composer");
+    if (!editor) return;
+
+    let animationFrame: number | null = null;
+    const measureOverflow = () => {
+      animationFrame = null;
+      // 展开态的编辑区拥有更大的视口，不能用它覆盖常规态的溢出结果；
+      // 否则放大后按钮会立刻消失，用户将无法还原。
+      if (isComposerExpandedRef.current || expandAnimationRef.current) return;
+      const nextHasOverflow = editor.scrollHeight - editor.clientHeight > 1;
+      setComposerHasOverflow((current) =>
+        current === nextHasOverflow ? current : nextHasOverflow,
+      );
+    };
+    const scheduleMeasure = () => {
+      if (animationFrame !== null) return;
+      animationFrame = window.requestAnimationFrame(measureOverflow);
+    };
+
+    scheduleComposerOverflowMeasureRef.current = scheduleMeasure;
+    scheduleMeasure();
+    editor.addEventListener("input", scheduleMeasure);
+    window.addEventListener("resize", scheduleMeasure);
+
+    const resizeObserver =
+      typeof ResizeObserver === "undefined" ? null : new ResizeObserver(scheduleMeasure);
+    resizeObserver?.observe(editor);
+    const mutationObserver =
+      typeof MutationObserver === "undefined" ? null : new MutationObserver(scheduleMeasure);
+    mutationObserver?.observe(editor, {
+      characterData: true,
+      childList: true,
+      subtree: true,
+    });
+
+    return () => {
+      if (animationFrame !== null) window.cancelAnimationFrame(animationFrame);
+      if (scheduleComposerOverflowMeasureRef.current === scheduleMeasure) {
+        scheduleComposerOverflowMeasureRef.current = null;
+      }
+      editor.removeEventListener("input", scheduleMeasure);
+      window.removeEventListener("resize", scheduleMeasure);
+      resizeObserver?.disconnect();
+      mutationObserver?.disconnect();
+    };
+  }, []);
+
+  const showComposerExpandToggle = isComposerExpanded || composerHasOverflow;
 
   const shouldShowQueueScrollbar = !queueCollapsed && queuedTurns.length > 2;
 
@@ -948,20 +1001,22 @@ export const ChatComposerBar = memo(function ChatComposerBar(props: ChatComposer
               </div>
             ) : null}
 
-            <button
-              type="button"
-              onClick={toggleComposerExpanded}
-              title={toggleComposerExpandTooltip}
-              aria-label={toggleComposerExpandTooltip}
-              aria-expanded={isComposerExpanded}
-              className="absolute right-3 top-2 z-20 inline-flex h-8 w-8 items-center justify-center rounded-full text-muted-foreground/70 outline-hidden transition-[background-color,color,scale] hover:bg-muted/60 hover:text-foreground active:scale-90 focus-visible:bg-muted/60"
-            >
-              {isComposerExpanded ? (
-                <Minimize2 className="h-4 w-4" />
-              ) : (
-                <Maximize2 className="h-4 w-4" />
-              )}
-            </button>
+            {showComposerExpandToggle ? (
+              <button
+                type="button"
+                onClick={toggleComposerExpanded}
+                title={toggleComposerExpandTooltip}
+                aria-label={toggleComposerExpandTooltip}
+                aria-expanded={isComposerExpanded}
+                className="absolute right-3 top-2 z-20 inline-flex h-8 w-8 items-center justify-center rounded-full text-muted-foreground/70 outline-hidden transition-[background-color,color,scale] hover:bg-muted/60 hover:text-foreground active:scale-90 focus-visible:bg-muted/60"
+              >
+                {isComposerExpanded ? (
+                  <Minimize2 className="h-4 w-4" />
+                ) : (
+                  <Maximize2 className="h-4 w-4" />
+                )}
+              </button>
+            ) : null}
 
             {/* 常驻 flex-1：动画把卡片钳在中间高度时由本区吸收伸缩，工具栏才能
               全程贴住卡片底边。min-h-0 只在展开态加——折叠态靠自动最小高度
