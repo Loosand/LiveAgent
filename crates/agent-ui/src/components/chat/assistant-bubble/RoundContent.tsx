@@ -10,10 +10,12 @@ import { Markdown } from "@liveagent/ui/components/Markdown";
 import type { UiRound } from "@liveagent/ui/lib/chat/assistantBubbleAdapter";
 import { normalizeLiveToolStatus, VIBING_STATUS } from "@liveagent/ui/lib/chat/assistantStatus";
 import type { ChatFileLink } from "@liveagent/ui/lib/chat/chatFileLinks";
+import { cn } from "@liveagent/ui/lib/shared/utils";
 import { memo, type ReactNode, useMemo } from "react";
 import {
   type AssistantTurnLayoutEntry,
   type GroupedRoundBlock,
+  hasActiveUserInteraction,
   isBuiltinShareToolName,
   resolveAssistantTurnLayout,
 } from "./assistantBubbleUtils";
@@ -30,7 +32,6 @@ export const RoundBlockContent = memo(function RoundBlockContent(props: {
   runningToolCallIds: string[];
   thinkingOpen: boolean;
   isLatestThinking: boolean;
-  collapseThinking?: boolean;
   readOnly?: boolean;
   redactToolContent?: boolean;
   workdir?: string;
@@ -43,7 +44,6 @@ export const RoundBlockContent = memo(function RoundBlockContent(props: {
     runningToolCallIds,
     thinkingOpen,
     isLatestThinking,
-    collapseThinking = false,
     readOnly = false,
     redactToolContent = false,
     workdir,
@@ -53,16 +53,7 @@ export const RoundBlockContent = memo(function RoundBlockContent(props: {
   let content: ReactNode;
   if (block.kind === "thinking") {
     const isRunning = isLive && thinkingOpen && isLatestThinking;
-    content = (
-      <ThinkingActivity
-        text={block.text}
-        open={collapseThinking ? false : isRunning || (!isLive && thinkingOpen)}
-        isRunning={isRunning}
-        renderMode={renderMode}
-        workdir={workdir}
-        onOpenFileLink={onOpenFileLink}
-      />
-    );
+    content = isRunning ? <ThinkingActivity /> : null;
   } else if (block.kind === "tool") {
     const isRedactedToolContent =
       redactToolContent && isBuiltinShareToolName(block.item.toolCall.name);
@@ -84,6 +75,7 @@ export const RoundBlockContent = memo(function RoundBlockContent(props: {
           )}
           readOnly={readOnly}
           redactToolContent={redactToolContent}
+          onOpenFileLink={onOpenFileLink}
         />
       );
     }
@@ -94,6 +86,7 @@ export const RoundBlockContent = memo(function RoundBlockContent(props: {
         runningToolCallIds={isLive ? runningToolCallIds : []}
         readOnly={readOnly}
         redactToolContent={redactToolContent}
+        onOpenFileLink={onOpenFileLink}
       />
     );
   } else if (block.kind === "hostedSearch" || block.kind === "hostedSearchGroup") {
@@ -121,7 +114,15 @@ export const RoundBlockContent = memo(function RoundBlockContent(props: {
 
   if (!content) return null;
 
-  return <div className={isLive ? undefined : "w-full"}>{content}</div>;
+  const isOperationBlock = block.kind !== "text";
+  return (
+    <div
+      className={cn(!isLive && "w-full", isOperationBlock && "my-3")}
+      data-assistant-operation={isOperationBlock ? "" : undefined}
+    >
+      {content}
+    </div>
+  );
 });
 
 type AssistantTurnRound = UiRound & {
@@ -140,6 +141,18 @@ function hasRunningToolCall(entries: AssistantTurnLayoutEntry[]) {
       return entry.block.items.some((item) =>
         Boolean(item.toolCall.id && runningIds.has(item.toolCall.id)),
       );
+    }
+    return false;
+  });
+}
+
+function hasInteractionRequiringAttention(entries: AssistantTurnLayoutEntry[]) {
+  return entries.some((entry) => {
+    if (entry.block.kind === "tool") {
+      return hasActiveUserInteraction([entry.block.item], entry.runningToolCallIds);
+    }
+    if (entry.block.kind === "toolGroup") {
+      return hasActiveUserInteraction(entry.block.items, entry.runningToolCallIds);
     }
     return false;
   });
@@ -184,6 +197,7 @@ export const AssistantTurnContent = memo(function AssistantTurnContent(props: {
       (isCompactionStatus || isVibingStatus) &&
       !hasRunningToolCall(layout.work),
   );
+  const attentionRequired = running && hasInteractionRequiringAttention(layout.work);
   const latestThinkingKey = useMemo(() => {
     for (let index = layout.work.length - 1; index >= 0; index -= 1) {
       const entry = layout.work[index];
@@ -191,6 +205,14 @@ export const AssistantTurnContent = memo(function AssistantTurnContent(props: {
     }
     return null;
   }, [layout.work]);
+  const activeThinkingEntry = useMemo(
+    () => layout.work.find((entry) => entry.key === latestThinkingKey) ?? null,
+    [latestThinkingKey, layout.work],
+  );
+  const detailEntries = useMemo(
+    () => layout.work.filter((entry) => entry.block.kind !== "thinking"),
+    [layout.work],
+  );
   const showWorkTrace = running || layout.work.length > 0;
 
   if (!showWorkTrace && layout.answer.length === 0) return null;
@@ -204,7 +226,6 @@ export const AssistantTurnContent = memo(function AssistantTurnContent(props: {
       runningToolCallIds={entry.runningToolCallIds}
       thinkingOpen={insideWorkTrace ? (running ? entry.thinkingOpen : true) : false}
       isLatestThinking={insideWorkTrace && entry.key === latestThinkingKey}
-      collapseThinking={insideWorkTrace}
       readOnly={readOnly}
       redactToolContent={redactToolContent}
       workdir={workdir}
@@ -216,11 +237,13 @@ export const AssistantTurnContent = memo(function AssistantTurnContent(props: {
     <div className="space-y-2">
       {showWorkTrace ? (
         <AssistantWorkTrace
+          attentionRequired={attentionRequired}
           durationMs={durationMs}
-          hasDetails={layout.work.length > 0 || showDetailedStatus}
+          hasDetails={detailEntries.length > 0 || showDetailedStatus}
           running={running}
+          activeStatus={activeThinkingEntry ? renderEntry(activeThinkingEntry, true) : null}
         >
-          {layout.work.map((entry) => renderEntry(entry, true))}
+          {detailEntries.map((entry) => renderEntry(entry, true))}
           {showDetailedStatus ? (
             <div className="py-1.5">
               {isCompactionStatus ? (

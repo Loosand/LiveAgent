@@ -28,6 +28,7 @@ import {
   type ToolTraceItem,
   toolResultMessageToText,
 } from "@liveagent/ui/lib/chat/assistantBubbleAdapter";
+import type { ChatFileLink } from "@liveagent/ui/lib/chat/chatFileLinks";
 import {
   EXIT_PLAN_MODE_TOOL_NAME,
   type PlanDecisionAnswer,
@@ -35,11 +36,13 @@ import {
   sanitizePlanMarkdown,
 } from "@liveagent/ui/lib/chat/planMode";
 import { cn } from "@liveagent/ui/lib/shared/utils";
-import { memo, useCallback, useEffect, useMemo, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ChevronRight } from "../../IconSet";
 import {
   areStableValuesEqual,
+  type FileOperationDisplay,
   getBuiltinResultKind,
+  getFileOperationDisplay,
   getShellSessionDisplayDetails,
   getSubagentInlineSummary,
   getToolActivityCategory,
@@ -49,7 +52,7 @@ import {
   isBuiltinShareToolName,
   isSubagentCardToolCall,
 } from "./assistantBubbleUtils";
-import { ToolArgsDisplay, ToolResultDisplay } from "./ToolResultDisplay";
+import { ShellToolDisplay, ToolArgsDisplay, ToolResultDisplay } from "./ToolResultDisplay";
 
 // 折叠摘要里行内命令的展示上限:远超任何实际窗口一行可容纳的字符数,视觉
 // 省略仍由 CSS truncate 决定;仅防御超长单行命令(如内联脚本)把常驻 DOM
@@ -62,18 +65,52 @@ function capInlineCommandPreview(text: string) {
     : text;
 }
 
+function FileOperationTarget({
+  operation,
+  actionLabel,
+  onOpenFileLink,
+}: {
+  operation: FileOperationDisplay;
+  actionLabel: string;
+  onOpenFileLink?: (link: ChatFileLink) => void;
+}) {
+  const fileLink = operation.kind === "delete" ? null : operation.link;
+  if (!fileLink || !onOpenFileLink) {
+    return (
+      <span className="min-w-0 flex-1 truncate" title={operation.path}>
+        {operation.fileName}
+      </span>
+    );
+  }
+
+  return (
+    <button
+      type="button"
+      data-chat-file-link=""
+      className="min-w-0 flex-1 cursor-pointer truncate text-left underline decoration-foreground/20 underline-offset-[3px] transition-colors hover:text-foreground hover:decoration-foreground/45"
+      title={operation.path}
+      aria-label={`${actionLabel} ${operation.path}`}
+      onClick={() => onOpenFileLink(fileLink)}
+    >
+      {operation.fileName}
+    </button>
+  );
+}
+
 function ToolCallItem({
   item,
   isRunning,
   readOnly = false,
   redactToolContent = false,
   compactChip = false,
+  onOpenFileLink,
 }: {
   item: ToolTraceItem;
   isRunning?: boolean;
   readOnly?: boolean;
   redactToolContent?: boolean;
   compactChip?: boolean;
+  onOpenFileLink?: (link: ChatFileLink) => void;
 }) {
   const { t } = useLocale();
   const result = item.toolResult;
@@ -131,6 +168,7 @@ function ToolCallItem({
     !isRedactedToolContent &&
     (item.toolCall.name === "Image" || builtinResultKind === "display_image" || shouldKeepAskOpen);
   const [open, setOpen] = useState(readOnly || isRedactedToolContent ? false : shouldAutoOpen);
+  const userInteractedRef = useRef(false);
   const isSubagentCard = isSubagentCardToolCall(item.toolCall);
   const hasArgs = Object.keys(item.toolCall.arguments || {}).length > 0;
   const isStreamingFilePreviewTool = FILE_TOOL_TEXT_FIELDS[item.toolCall.name] !== undefined;
@@ -154,7 +192,7 @@ function ToolCallItem({
   const firstLinePreview = capInlineCommandPreview(firstLine);
   const inlineCommandTitle = inlineCommand ? capInlineCommandPreview(inlineCommand) : "";
   const toolArgsSummary =
-    isRedactedToolContent || isBash || inlineCommand || isPlanCard
+    isRedactedToolContent || isBash || isShellSessionControl || inlineCommand || isPlanCard
       ? ""
       : isAskUser
         ? (askQuestions[0]?.prompt ?? "")
@@ -168,6 +206,7 @@ function ToolCallItem({
     () => (isRedactedToolContent ? undefined : deriveFileChangeStats(item.toolCall)),
     [isRedactedToolContent, item.toolCall],
   );
+  const fileOperation = useMemo(() => getFileOperationDisplay(item), [item]);
   const meta = getToolMeta(item.toolCall.name);
   const ToolIcon = meta.Icon;
   const activityCategory = getToolActivityCategory(item.toolCall.name);
@@ -181,15 +220,26 @@ function ToolCallItem({
     activityCategory === "other"
       ? null
       : t(`chat.tool.activity.${activityCategory}.${activityPhase}`);
+  const localizedFileOperationTitle = fileOperation
+    ? t(`chat.tool.file.${fileOperation.kind}.${activityPhase}`)
+    : null;
   const title = isAskUser
     ? { name: t("chat.tool.askUserTitle"), action: "" }
     : isPlanCard
       ? { name: t("chat.planMode.cardTitle"), action: "" }
       : isRedactedToolContent
         ? { name: getToolDisplayName(item.toolCall.name), action: "" }
-        : localizedActivityTitle
-          ? { name: localizedActivityTitle, action: "" }
-          : getToolDisplayTitle(item.toolCall);
+        : localizedFileOperationTitle
+          ? { name: localizedFileOperationTitle, action: "" }
+          : localizedActivityTitle
+            ? { name: localizedActivityTitle, action: "" }
+            : getToolDisplayTitle(item.toolCall);
+
+  // Successful/running path-based file operations are deliberately a single
+  // IDE link row. Failed operations retain the disclosure so the error stays
+  // inspectable; Delete is concise but cannot link to a target that is gone.
+  const simpleFileOperation =
+    !isRedactedToolContent && fileOperation && !result?.isError ? fileOperation : null;
 
   const statusLabel = isApprovalPending
     ? t("chat.toolApproval.waitingStatus")
@@ -222,6 +272,7 @@ function ToolCallItem({
 
   useEffect(() => {
     if (readOnly || isRedactedToolContent) return;
+    if (userInteractedRef.current) return;
     if (shouldKeepAskOpen) {
       setOpen(true);
     } else if (shouldCloseAnsweredAsk) {
@@ -233,12 +284,17 @@ function ToolCallItem({
 
   const canExpand =
     !isRedactedToolContent &&
+    !simpleFileOperation &&
     !isPlanCard &&
     (shouldShowArgs || Boolean(result) || (isAskUser && askQuestions.length > 0));
   const effectiveOpen = canExpand && open;
-  const compactChipText = firstLinePreview
-    ? `$ ${firstLinePreview}`
-    : toolArgsSummary || title.action;
+  const summaryTitleName =
+    isBash && effectiveOpen ? t(`chat.tool.shell.${activityPhase}Title`) : title.name;
+  const compactChipText = simpleFileOperation
+    ? ""
+    : firstLinePreview
+      ? firstLinePreview
+      : toolArgsSummary || title.action;
   const summaryClassName = cn(
     "flex select-none items-center gap-2 text-left",
     compactChip
@@ -246,7 +302,43 @@ function ToolCallItem({
       : "w-full py-1.5",
     canExpand ? "cursor-pointer" : "cursor-default",
   );
-  const summaryContent = compactChip ? (
+  const summaryContent = simpleFileOperation ? (
+    <>
+      <ToolIcon className="h-3.5 w-3.5 shrink-0 text-muted-foreground/60" />
+      <span
+        className={cn(
+          "shrink-0 font-normal text-muted-foreground/85",
+          compactChip
+            ? "text-[calc(12.5px*var(--zone-font-scale,1))]"
+            : "text-[calc(13px*var(--zone-font-scale,1))]",
+          displayIsRunning && "animate-pulse",
+        )}
+      >
+        {summaryTitleName}
+      </span>
+      <span
+        className={cn(
+          "inline-flex min-w-0 flex-1 items-center gap-2 font-mono text-muted-foreground/65",
+          compactChip
+            ? "h-[22px] text-[calc(11.5px*var(--zone-font-scale,1))]"
+            : "text-[calc(11px*var(--zone-font-scale,1))]",
+        )}
+      >
+        <FileOperationTarget
+          operation={simpleFileOperation}
+          actionLabel={summaryTitleName}
+          onOpenFileLink={onOpenFileLink}
+        />
+        {fileChangeStats ? (
+          <FileChangeBadge
+            added={fileChangeStats.added}
+            removed={fileChangeStats.removed}
+            className={compactChip ? "gap-1" : undefined}
+          />
+        ) : null}
+      </span>
+    </>
+  ) : compactChip ? (
     <>
       <span className="relative flex h-4 w-4 shrink-0 items-center justify-center text-muted-foreground/60">
         <ToolIcon
@@ -266,7 +358,7 @@ function ToolCallItem({
       </span>
 
       <span className="shrink-0 text-[calc(12.5px*var(--zone-font-scale,1))] font-normal text-muted-foreground/85">
-        {title.name}
+        {summaryTitleName}
       </span>
 
       {compactChipText || fileChangeStats ? (
@@ -314,7 +406,7 @@ function ToolCallItem({
           title={inlineCommandTitle || toolArgsSummary || undefined}
         >
           <span className="font-sans text-[calc(13px*var(--zone-font-scale,1))] font-normal text-muted-foreground/80 group-hover/tool:text-foreground">
-            {title.name}
+            {summaryTitleName}
             {title.action ? (
               <span className="font-mono text-[calc(11px*var(--zone-font-scale,1))] font-normal text-muted-foreground/60">
                 {" · "}
@@ -324,9 +416,7 @@ function ToolCallItem({
           </span>
 
           {firstLinePreview ? (
-            <span className="ml-1.5">
-              <span className="text-muted-foreground/30">$</span> {firstLinePreview}
-            </span>
+            <span className="ml-1.5">{firstLinePreview}</span>
           ) : toolArgsSummary ? (
             <span className="ml-1.5">{toolArgsSummary}</span>
           ) : null}
@@ -362,7 +452,10 @@ function ToolCallItem({
     </>
   );
   const resultContent =
-    result && (!isAskUser || !askDetails) && (!isPlanCard || !planDetails) ? (
+    result &&
+    !isShellSessionTool &&
+    (!isAskUser || !askDetails) &&
+    (!isPlanCard || !planDetails) ? (
       <div className="space-y-1.5">
         <ToolResultDisplay item={item} result={result} readOnly={readOnly} />
 
@@ -371,16 +464,9 @@ function ToolCallItem({
           if (!/\S/.test(resultText)) return null;
           if (builtinResultKind && builtinResultKind !== "read_image") return null;
 
-          if (isShellSessionTool || readOnly) {
+          if (readOnly) {
             return (
-              <ToolScrollablePre
-                className={cn(
-                  "max-h-56",
-                  isShellSessionTool
-                    ? "bg-zinc-950/85 text-zinc-300/90 dark:bg-zinc-900/80"
-                    : "bg-black/[0.02] dark:bg-white/[0.03]",
-                )}
-              >
+              <ToolScrollablePre className="max-h-56 bg-black/[0.02] dark:bg-white/[0.03]">
                 {previewText(resultText, 6000)}
               </ToolScrollablePre>
             );
@@ -424,7 +510,9 @@ function ToolCallItem({
               : "space-y-3 pl-[22px]",
           )}
         >
-          {shouldShowArgs && !compactChip ? (
+          {isShellSessionTool ? <ShellToolDisplay item={item} result={result} /> : null}
+
+          {!isShellSessionTool && shouldShowArgs && !compactChip ? (
             <ToolSection
               label={isBash || inlineCommand ? t("chat.tool.command") : t("chat.tool.args")}
             >
@@ -501,7 +589,10 @@ function ToolCallItem({
         type="button"
         aria-expanded={effectiveOpen}
         className={summaryClassName}
-        onClick={() => setOpen((prev) => !prev)}
+        onClick={() => {
+          userInteractedRef.current = true;
+          setOpen((prev) => !prev);
+        }}
       >
         {summaryContent}
       </button>
@@ -549,5 +640,6 @@ export const MemoToolCallItem = memo(
     previousProps.readOnly === nextProps.readOnly &&
     previousProps.redactToolContent === nextProps.redactToolContent &&
     previousProps.compactChip === nextProps.compactChip &&
+    previousProps.onOpenFileLink === nextProps.onOpenFileLink &&
     areToolTraceItemsEqual(previousProps.item, nextProps.item),
 );

@@ -1,4 +1,4 @@
-import { type ReactNode, useState } from "react";
+import { type ReactNode, useRef } from "react";
 import { cn } from "../../lib/shared/utils";
 
 // 内容首次展开时才挂载；运行中的内容可在折叠后保留状态，结束后则立即释放。
@@ -9,11 +9,9 @@ export function LazyCollapse(props: {
   children: () => ReactNode;
 }) {
   const { open, retainWhileClosed = false, className, children } = props;
-  const [mounted, setMounted] = useState(open);
-  if (open && !mounted) {
-    setMounted(true);
-  }
-  const shouldRenderBody = open || (mounted && retainWhileClosed);
+  const hasMountedRef = useRef(open);
+  if (open) hasMountedRef.current = true;
+  const shouldRenderBody = open || (hasMountedRef.current && retainWhileClosed);
 
   return (
     <div

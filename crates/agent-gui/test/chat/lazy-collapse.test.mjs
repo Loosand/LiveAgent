@@ -4,13 +4,12 @@ import test from "node:test";
 import { createTsModuleLoader } from "../helpers/load-ts-module.mjs";
 
 let mountedState = false;
-let stateWrites = [];
 
 const loader = createTsModuleLoader({
   mocks: {
     react: {
-      useState() {
-        return [mountedState, (value) => stateWrites.push(value)];
+      useRef(initialValue) {
+        return { current: mountedState || initialValue };
       },
     },
     "@liveagent/ui/lib/shared/utils": {
@@ -23,7 +22,6 @@ const { LazyCollapse } = loader.loadModule("@liveagent/ui/components/chat/LazyCo
 
 function renderCollapse({ open, retainWhileClosed, mounted }) {
   mountedState = mounted;
-  stateWrites = [];
   let childRenders = 0;
   const rendered = LazyCollapse({
     open,
@@ -33,7 +31,7 @@ function renderCollapse({ open, retainWhileClosed, mounted }) {
       return { type: "HeavyBody", props: {} };
     },
   });
-  return { childRenders, rendered, stateWrites };
+  return { childRenders, rendered };
 }
 
 test("collapsed-from-birth content stays unmounted even while active", () => {
@@ -55,5 +53,4 @@ test("settled content releases a previously mounted body when closed", () => {
 test("opening mounts the body in the same render", () => {
   const result = renderCollapse({ open: true, retainWhileClosed: false, mounted: false });
   assert.equal(result.childRenders, 1);
-  assert.deepEqual(result.stateWrites, [true]);
 });

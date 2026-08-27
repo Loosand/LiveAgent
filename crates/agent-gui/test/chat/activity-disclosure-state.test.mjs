@@ -22,7 +22,14 @@ const env = await createDomTestEnv({
     },
     "@liveagent/ui/components/IconSet": { ChevronDown: EmptyIcon },
     "@liveagent/ui/i18n/index": {
-      useLocale: () => ({ t: (key) => key }),
+      useLocale: () => ({
+        locale: "zh-CN",
+        t: (key) =>
+          ({
+            "chat.tool.batch.read": "读取了文件",
+            "chat.tool.batch.command": "运行了命令",
+          })[key] ?? key,
+      }),
     },
     "@liveagent/ui/lib/shared/utils": {
       cn: (...values) => values.filter(Boolean).join(" "),
@@ -38,8 +45,15 @@ const env = await createDomTestEnv({
       Wrench: EmptyIcon,
     },
     "./assistantBubbleUtils": {
-      getToolActivityCategory: () => "read",
+      getToolActivityCategory: (name) => (name === "Bash" ? "command" : "read"),
       getToolTraceKey: (item, index) => item.toolCall.id ?? String(index),
+      hasActiveUserInteraction: (items, runningToolCallIds) =>
+        items.some(
+          (item) =>
+            !item.toolResult &&
+            ["AskUserQuestion", "ExitPlanMode"].includes(item.toolCall.name) &&
+            runningToolCallIds.includes(item.toolCall.id),
+        ),
     },
     "./ToolCallItem": {
       MemoToolCallItem: () => null,
@@ -60,11 +74,12 @@ function click(element) {
   act(() => element.dispatchEvent(new MouseEvent("click", { bubbles: true })));
 }
 
-function renderWorkTrace(root, running) {
+function renderWorkTrace(root, running, attentionRequired = false) {
   act(() => {
     root.render(
       React.createElement(AssistantWorkTrace, {
         hasDetails: true,
+        attentionRequired,
         running,
         children: React.createElement("div", { "data-testid": "work-details" }),
       }),
@@ -77,12 +92,12 @@ const toolItem = {
   toolResult: { isError: false },
 };
 
-function renderToolTrace(root, running) {
+function renderToolTrace(root, running, items = [toolItem]) {
   act(() => {
     root.render(
       React.createElement(ToolTraceGroup, {
-        items: [toolItem],
-        runningToolCallIds: running ? ["tool-1"] : [],
+        items,
+        runningToolCallIds: running ? items.map((item) => item.toolCall.id) : [],
       }),
     );
   });
@@ -94,19 +109,45 @@ test("manual work-trace disclosure survives running state transitions", () => {
 
   renderWorkTrace(root, true);
   const button = container.querySelector("button");
-  assert.equal(button.getAttribute("aria-expanded"), "true");
+  assert.equal(button.getAttribute("aria-expanded"), "false");
 
   click(button);
-  assert.equal(button.getAttribute("aria-expanded"), "false");
+  assert.equal(button.getAttribute("aria-expanded"), "true");
 
   renderWorkTrace(root, false);
-  assert.equal(button.getAttribute("aria-expanded"), "false");
+  assert.equal(button.getAttribute("aria-expanded"), "true");
   renderWorkTrace(root, true);
-  assert.equal(button.getAttribute("aria-expanded"), "false");
+  assert.equal(button.getAttribute("aria-expanded"), "true");
 
   click(button);
-  assert.equal(button.getAttribute("aria-expanded"), "true");
+  assert.equal(button.getAttribute("aria-expanded"), "false");
   renderWorkTrace(root, false);
+  assert.equal(button.getAttribute("aria-expanded"), "false");
+
+  act(() => root.unmount());
+});
+
+test("a new blocking interaction opens the work trace once without stealing later control", () => {
+  const container = document.createElement("div");
+  const root = createRoot(container);
+
+  renderWorkTrace(root, true, false);
+  const button = container.querySelector("button");
+  assert.equal(button.getAttribute("aria-expanded"), "false");
+
+  renderWorkTrace(root, true, true);
+  assert.equal(button.getAttribute("aria-expanded"), "true");
+
+  click(button);
+  assert.equal(button.getAttribute("aria-expanded"), "false");
+  renderWorkTrace(root, true, true);
+  assert.equal(button.getAttribute("aria-expanded"), "false");
+
+  renderWorkTrace(root, true, false);
+  assert.equal(button.getAttribute("aria-expanded"), "false");
+  renderWorkTrace(root, true, true);
+  assert.equal(button.getAttribute("aria-expanded"), "true");
+  renderWorkTrace(root, true, false);
   assert.equal(button.getAttribute("aria-expanded"), "true");
 
   act(() => root.unmount());
@@ -118,20 +159,65 @@ test("manual tool-batch disclosure survives tool completion and restart", () => 
 
   renderToolTrace(root, true);
   const button = container.querySelector("button");
-  assert.equal(button.getAttribute("aria-expanded"), "true");
+  assert.equal(button.getAttribute("aria-expanded"), "false");
 
   click(button);
-  assert.equal(button.getAttribute("aria-expanded"), "false");
+  assert.equal(button.getAttribute("aria-expanded"), "true");
 
   renderToolTrace(root, false);
-  assert.equal(button.getAttribute("aria-expanded"), "false");
+  assert.equal(button.getAttribute("aria-expanded"), "true");
   renderToolTrace(root, true);
-  assert.equal(button.getAttribute("aria-expanded"), "false");
+  assert.equal(button.getAttribute("aria-expanded"), "true");
 
   click(button);
-  assert.equal(button.getAttribute("aria-expanded"), "true");
+  assert.equal(button.getAttribute("aria-expanded"), "false");
   renderToolTrace(root, false);
+  assert.equal(button.getAttribute("aria-expanded"), "false");
+
+  act(() => root.unmount());
+});
+
+test("a tool batch opens when a pending user interaction appears inside it", () => {
+  const container = document.createElement("div");
+  const root = createRoot(container);
+  const interactionItem = {
+    toolCall: { id: "interaction-1", name: "ExitPlanMode", arguments: { plan: "Plan" } },
+  };
+
+  renderToolTrace(root, false, [interactionItem]);
+  const button = container.querySelector("button");
+  assert.equal(button.getAttribute("aria-expanded"), "false");
+
+  renderToolTrace(root, true, [interactionItem]);
   assert.equal(button.getAttribute("aria-expanded"), "true");
+
+  click(button);
+  assert.equal(button.getAttribute("aria-expanded"), "false");
+  renderToolTrace(root, true, [interactionItem]);
+  assert.equal(button.getAttribute("aria-expanded"), "false");
+
+  act(() => root.unmount());
+});
+
+test("mixed tool batch labels are contiguous without dot separators", () => {
+  const container = document.createElement("div");
+  const root = createRoot(container);
+  const commandItem = {
+    toolCall: { id: "tool-2", name: "Bash", arguments: { command: "pnpm test" } },
+    toolResult: { isError: false },
+  };
+
+  act(() => {
+    root.render(
+      React.createElement(ToolTraceGroup, {
+        items: [toolItem, commandItem],
+      }),
+    );
+  });
+
+  const label = container.querySelector("button").textContent;
+  assert.equal(label, "读取了文件运行了命令");
+  assert.doesNotMatch(label, /[·•]/);
 
   act(() => root.unmount());
 });

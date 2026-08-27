@@ -22,6 +22,7 @@ const VIEWPORT_OPTIONS: Array<{ value: GalleryViewport; label: string }> = [
 
 const GROUP_LABELS: Record<ChatGalleryScenarioGroup, Record<Locale, string>> = {
   conversation: { "zh-CN": "会话与消息", "en-US": "Conversation & messages" },
+  tooling: { "zh-CN": "工具与操作", "en-US": "Tools & operations" },
   interactive: { "zh-CN": "交互决策", "en-US": "Interactive decisions" },
   composer: { "zh-CN": "输入区组合", "en-US": "Composer combinations" },
 };
@@ -186,7 +187,7 @@ export function ChatGalleryPage() {
               </label>
             </div>
             <nav className="chat-gallery-sidebar-scroll">
-              {(["conversation", "interactive", "composer"] as const).map((group) => {
+              {(["conversation", "tooling", "interactive", "composer"] as const).map((group) => {
                 const scenarios = filteredScenarios.filter((scenario) => scenario.group === group);
                 if (scenarios.length === 0) return null;
                 return (

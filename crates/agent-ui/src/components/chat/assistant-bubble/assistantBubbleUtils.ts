@@ -10,6 +10,7 @@ import {
   safeStringify,
   shouldDisplayToolTraceItem,
 } from "@liveagent/ui/lib/chat/assistantBubbleAdapter";
+import { type ChatFileLink, parseChatFileLink } from "@liveagent/ui/lib/chat/chatFileLinks";
 import { isTaskToolBlock } from "@liveagent/ui/lib/chat/taskProgress";
 import type {
   SubagentCardDetails,
@@ -75,6 +76,19 @@ export function getToolActivityCategory(name: string): ToolActivityCategory {
     default:
       return "other";
   }
+}
+
+const ATTENTION_TOOL_NAMES = new Set(["AskUserQuestion", "ExitPlanMode"]);
+
+export function hasActiveUserInteraction(items: ToolTraceItem[], runningToolCallIds: string[]) {
+  if (items.length === 0 || runningToolCallIds.length === 0) return false;
+  const runningIds = new Set(runningToolCallIds);
+  return items.some(
+    (item) =>
+      !item.toolResult &&
+      ATTENTION_TOOL_NAMES.has(item.toolCall.name) &&
+      Boolean(item.toolCall.id && runningIds.has(item.toolCall.id)),
+  );
 }
 
 export function getToolMeta(name: string): {
@@ -305,35 +319,39 @@ function mergeRunningToolCallIds(left: string[], right: string[]) {
  * Turn raw round-by-round activity into the stage-oriented trace used by the
  * transcript. Provider rounds often alternate `thinking -> one tool` dozens
  * of times; exposing that shape produces a repetitive log instead of a useful
- * work summary. Keep one inspectable thinking disclosure for the whole turn,
- * and merge neighboring tool/search activity until a visible progress note
- * creates the next stage boundary.
+ * work summary. Completed thinking text is deliberately omitted from the
+ * transcript: concatenating every reasoning delta into one ever-growing
+ * Markdown payload made long agent turns progressively more expensive to
+ * reconcile and render. Only the latest actively-thinking phase survives as a
+ * text-free status marker; merge neighboring tool/search activity until a
+ * visible progress note creates the next stage boundary.
  */
 export function compactAssistantWorkEntries(
   entries: readonly AssistantTurnLayoutEntry[],
+  options: { showActiveThinking: boolean },
 ): AssistantTurnLayoutEntry[] {
-  const thinkingEntries = entries.filter((entry) => entry.block.kind === "thinking");
-  const firstThinking = thinkingEntries[0];
-  const combinedThinking = firstThinking
-    ? {
-        ...firstThinking,
-        key: `${firstThinking.key}:turn-thinking`,
-        block: {
-          ...firstThinking.block,
-          key: `${firstThinking.block.key}:turn-thinking`,
-          text: thinkingEntries
-            .map((entry) => (entry.block.kind === "thinking" ? entry.block.text.trim() : ""))
-            .filter(Boolean)
-            .join("\n\n"),
-        },
-        thinkingOpen: thinkingEntries.some((entry) => entry.thinkingOpen),
+  const compacted: AssistantTurnLayoutEntry[] = [];
+  let activeThinkingKey: string | null = null;
+  if (options.showActiveThinking) {
+    for (let index = entries.length - 1; index >= 0; index -= 1) {
+      const entry = entries[index];
+      if (entry?.block.kind === "thinking" && entry.thinkingOpen) {
+        activeThinkingKey = entry.key;
+        break;
       }
-    : null;
-
-  const compacted: AssistantTurnLayoutEntry[] = combinedThinking ? [combinedThinking] : [];
+    }
+  }
 
   for (const entry of entries) {
     if (entry.block.kind === "thinking") {
+      if (entry.key === activeThinkingKey) {
+        // The UI only needs a transient phase marker. Never retain or pass the
+        // accumulated reasoning text into React's visible tree.
+        compacted.push({
+          ...entry,
+          block: { ...entry.block, text: "" },
+        });
+      }
       continue;
     }
 
@@ -407,12 +425,18 @@ export function resolveAssistantTurnLayout(
 
   const lastRound = rounds.at(-1);
   if (options.live && !isTerminalStopReason(lastRound?.meta?.stopReason)) {
-    return { work: compactAssistantWorkEntries(entries), answer: [] };
+    return {
+      work: compactAssistantWorkEntries(entries, { showActiveThinking: true }),
+      answer: [],
+    };
   }
 
   const lastEntry = entries.at(-1);
   if (!lastEntry || lastEntry.block.kind !== "text") {
-    return { work: compactAssistantWorkEntries(entries), answer: [] };
+    return {
+      work: compactAssistantWorkEntries(entries, { showActiveThinking: false }),
+      answer: [],
+    };
   }
 
   let answerStart = entries.length - 1;
@@ -425,7 +449,9 @@ export function resolveAssistantTurnLayout(
   }
 
   return {
-    work: compactAssistantWorkEntries(entries.slice(0, answerStart)),
+    work: compactAssistantWorkEntries(entries.slice(0, answerStart), {
+      showActiveThinking: false,
+    }),
     answer: entries.slice(answerStart),
   };
 }
@@ -473,6 +499,81 @@ function asRecord(value: unknown): Record<string, unknown> | null {
   return value && typeof value === "object" && !Array.isArray(value)
     ? (value as Record<string, unknown>)
     : null;
+}
+
+export type FileOperationKind = "read" | "create" | "edit" | "delete";
+
+export type FileOperationDisplay = {
+  kind: FileOperationKind;
+  path: string;
+  fileName: string;
+  link: ChatFileLink | null;
+};
+
+function getFileOperationKind(item: ToolTraceItem): FileOperationKind | null {
+  switch (item.toolCall.name) {
+    case "Read":
+      return "read";
+    case "Write": {
+      const details = asRecord(item.toolResult?.details);
+      return details?.existedBefore === true ? "edit" : "create";
+    }
+    case "Edit":
+      return "edit";
+    case "Delete":
+      return "delete";
+    default:
+      return null;
+  }
+}
+
+function fileNameFromPath(path: string) {
+  const normalized = path.replace(/\\/g, "/").replace(/\/+$/, "");
+  return normalized.slice(normalized.lastIndexOf("/") + 1) || normalized;
+}
+
+/**
+ * Extract the concise, IDE-addressable target used by successful file-tool rows.
+ * Result metadata wins because it carries the host-resolved absolute path; the
+ * original argument remains the streaming and legacy-history fallback.
+ */
+export function getFileOperationDisplay(item: ToolTraceItem): FileOperationDisplay | null {
+  const kind = getFileOperationKind(item);
+  if (!kind) return null;
+
+  const details = asRecord(item.toolResult?.details);
+  const args = item.toolCall.arguments || {};
+  const displayPath =
+    displayString(details?.displayPath) ||
+    displayString(details?.relativePath) ||
+    displayString(details?.path) ||
+    displayString(args.path) ||
+    displayString(args.notebook_path);
+  if (!displayPath) return null;
+
+  const linkPath =
+    displayString(details?.absolutePath) ||
+    displayString(details?.relativePath) ||
+    displayString(details?.path) ||
+    displayString(args.path) ||
+    displayString(args.notebook_path);
+  const parsedLink = linkPath ? parseChatFileLink(linkPath) : null;
+  const startLine = args.start_line;
+  const link =
+    parsedLink &&
+    parsedLink.line === undefined &&
+    typeof startLine === "number" &&
+    Number.isSafeInteger(startLine) &&
+    startLine > 0
+      ? { ...parsedLink, line: startLine }
+      : parsedLink;
+
+  return {
+    kind,
+    path: displayPath,
+    fileName: fileNameFromPath(displayPath),
+    link,
+  };
 }
 
 export function getShellSessionDisplayDetails(

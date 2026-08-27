@@ -2,6 +2,7 @@ import { ChevronDown } from "@liveagent/ui/components/IconSet";
 import { useLocale } from "@liveagent/ui/i18n/index";
 import { cn } from "@liveagent/ui/lib/shared/utils";
 import { type CSSProperties, type ReactNode, useEffect, useRef, useState } from "react";
+import { useAttentionDisclosure } from "./useAttentionDisclosure";
 
 const PIXEL_KEYS = [
   "top-start",
@@ -57,31 +58,25 @@ function formatElapsedTime(elapsedMs: number) {
 
 export function AssistantWorkTrace({
   children,
+  activeStatus,
   className,
   durationMs,
   hasDetails,
+  attentionRequired = false,
   running,
 }: {
   children: ReactNode;
+  activeStatus?: ReactNode;
   className?: string;
   durationMs?: number;
   hasDetails: boolean;
+  attentionRequired?: boolean;
   running: boolean;
 }) {
   const { t } = useLocale();
-  const [expanded, setExpanded] = useState(running && hasDetails);
+  const [expanded, setExpanded] = useAttentionDisclosure(attentionRequired);
   const [elapsedMs, setElapsedMs] = useState(durationMs ?? 0);
-  const wasRunningRef = useRef(running);
-  const userInteractedRef = useRef(false);
   const startedAtRef = useRef<number | null>(running ? Date.now() : null);
-
-  useEffect(() => {
-    if (!userInteractedRef.current) {
-      if (running && !wasRunningRef.current && hasDetails) setExpanded(true);
-      if (!running && wasRunningRef.current) setExpanded(false);
-    }
-    wasRunningRef.current = running;
-  }, [hasDetails, running]);
 
   useEffect(() => {
     if (!running) {
@@ -135,10 +130,7 @@ export function AssistantWorkTrace({
           type="button"
           className="flex w-full items-center gap-2 rounded-lg py-1 text-[calc(13px*var(--zone-font-scale,1))] font-medium transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           aria-expanded={expanded}
-          onClick={() => {
-            userInteractedRef.current = true;
-            setExpanded((current) => !current);
-          }}
+          onClick={() => setExpanded((current) => !current)}
         >
           {header}
         </button>
@@ -149,6 +141,7 @@ export function AssistantWorkTrace({
       )}
 
       {hasDetails && expanded ? <div className="mt-1">{children}</div> : null}
+      {activeStatus}
     </section>
   );
 }

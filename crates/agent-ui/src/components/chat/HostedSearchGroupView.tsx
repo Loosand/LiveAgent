@@ -118,7 +118,7 @@ export function HostedSearchGroupView({
   readOnly?: boolean;
 }) {
   const { locale, t } = useLocale();
-  const [expanded, setExpanded] = useState(true);
+  const [expanded, setExpanded] = useState(false);
   const [showAll, setShowAll] = useState(false);
   const queries = useMemo(() => getUniqueQueries(items), [items]);
   const sources = useMemo(() => getUniqueSources(items), [items]);
@@ -140,7 +140,7 @@ export function HostedSearchGroupView({
 
   return (
     <section
-      className="my-3 max-w-2xl text-muted-foreground"
+      className="max-w-2xl text-muted-foreground"
       aria-busy={active}
       data-hosted-search-trace=""
     >

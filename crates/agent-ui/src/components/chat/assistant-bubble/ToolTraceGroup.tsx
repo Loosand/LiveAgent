@@ -1,10 +1,12 @@
 import { retainRunningToolContent } from "@liveagent/adapters/assistantBubble";
 import { AssistantStatus } from "@liveagent/ui/components/chat/AssistantStatus";
 import { LazyCollapse } from "@liveagent/ui/components/chat/LazyCollapse";
+import { useAttentionDisclosure } from "@liveagent/ui/components/chat/useAttentionDisclosure";
 import { useLocale } from "@liveagent/ui/i18n/index";
 import type { ToolTraceItem } from "@liveagent/ui/lib/chat/assistantBubbleAdapter";
+import type { ChatFileLink } from "@liveagent/ui/lib/chat/chatFileLinks";
 import { cn } from "@liveagent/ui/lib/shared/utils";
-import { memo, useEffect, useMemo, useRef, useState } from "react";
+import { memo, useMemo } from "react";
 import {
   Bot,
   ChevronRight,
@@ -19,6 +21,7 @@ import {
 import {
   getToolActivityCategory,
   getToolTraceKey,
+  hasActiveUserInteraction,
   type ToolActivityCategory,
 } from "./assistantBubbleUtils";
 import { areToolTraceItemsEqual, MemoToolCallItem } from "./ToolCallItem";
@@ -73,26 +76,26 @@ function ToolTraceGroupInner(props: {
   runningToolCallIds?: string[];
   readOnly?: boolean;
   redactToolContent?: boolean;
+  onOpenFileLink?: (link: ChatFileLink) => void;
 }) {
-  const { items, runningToolCallIds = [], readOnly = false, redactToolContent = false } = props;
-  const { t } = useLocale();
+  const {
+    items,
+    runningToolCallIds = [],
+    readOnly = false,
+    redactToolContent = false,
+    onOpenFileLink,
+  } = props;
+  const { locale, t } = useLocale();
   const counts = useMemo(
     () => getToolGroupCounts(items, runningToolCallIds),
     [items, runningToolCallIds],
   );
   const batchCounts = useMemo(() => getToolBatchCounts(items), [items]);
-  const active = counts.running > 0;
-  const [open, setOpen] = useState(active);
-  const wasActiveRef = useRef(active);
-  const userInteractedRef = useRef(false);
-
-  useEffect(() => {
-    if (!userInteractedRef.current) {
-      if (active && !wasActiveRef.current) setOpen(true);
-      if (!active && wasActiveRef.current) setOpen(false);
-    }
-    wasActiveRef.current = active;
-  }, [active]);
+  const attentionRequired = useMemo(
+    () => hasActiveUserInteraction(items, runningToolCallIds),
+    [items, runningToolCallIds],
+  );
+  const [open, setOpen] = useAttentionDisclosure(attentionRequired);
 
   const statusLabel =
     counts.failed > 0
@@ -105,7 +108,7 @@ function ToolTraceGroupInner(props: {
 
   const countLabel = batchCounts
     .map(({ category }) => t(`chat.tool.batch.${category}`))
-    .join(" · ");
+    .join(locale === "zh-CN" ? "" : " ");
   const showStatus = counts.failed > 0 || counts.running > 0 || counts.waiting > 0;
   const BatchIcon = TOOL_BATCH_ICONS[batchCounts[0]?.category ?? "other"];
 
@@ -116,10 +119,7 @@ function ToolTraceGroupInner(props: {
         aria-expanded={open}
         aria-label={open ? t("chat.tool.collapseActivity") : t("chat.tool.expandActivity")}
         className="-mx-1.5 flex w-fit max-w-[calc(100%+0.75rem)] cursor-pointer select-none items-center gap-1.5 rounded-lg px-1.5 py-1 text-left text-[calc(12.5px*var(--zone-font-scale,1))] text-muted-foreground/75 transition-colors duration-150 hover:bg-foreground/[0.04] hover:text-foreground/80"
-        onClick={() => {
-          userInteractedRef.current = true;
-          setOpen((prev) => !prev);
-        }}
+        onClick={() => setOpen((prev) => !prev)}
       >
         <BatchIcon className="h-3.5 w-3.5 shrink-0 text-muted-foreground/60" />
         <span className="min-w-0 truncate">{countLabel}</span>
@@ -152,6 +152,7 @@ function ToolTraceGroupInner(props: {
                   item={item}
                   readOnly={readOnly}
                   redactToolContent={redactToolContent}
+                  onOpenFileLink={onOpenFileLink}
                   compactChip
                   isRunning={Boolean(
                     item.toolCall.id && runningToolCallIds.includes(item.toolCall.id),
@@ -180,6 +181,7 @@ export const ToolTraceGroup = memo(
   (previous, next) =>
     previous.readOnly === next.readOnly &&
     previous.redactToolContent === next.redactToolContent &&
+    previous.onOpenFileLink === next.onOpenFileLink &&
     previous.items.length === next.items.length &&
     previous.items.every(
       (item, index) =>

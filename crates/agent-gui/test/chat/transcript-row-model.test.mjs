@@ -353,7 +353,7 @@ test("assistant rounds hide task tools while preserving grouped top-level render
   assert.equal(blockRows(snapshot).length, 0);
   assert.deepEqual(
     workTraceRows(snapshot)[0].unit.entries.map((entry) => entry.block.kind),
-    ["thinking", "text", "toolGroup", "hostedSearchGroup"],
+    ["text", "toolGroup", "hostedSearchGroup"],
   );
   assert.equal(footerRows(snapshot).length, 1);
   assert.equal(workTraceRows(snapshot)[0].showAvatar, true);
@@ -386,7 +386,7 @@ test("turn layout keeps every intermediate round in one trace and exposes only f
   const settled = resolveAssistantTurnLayout(rounds, { live: false });
   assert.deepEqual(
     settled.work.map((entry) => entry.block.kind),
-    ["thinking", "toolGroup", "text", "toolGroup"],
+    ["toolGroup", "text", "toolGroup"],
   );
   assert.deepEqual(
     settled.answer.map((entry) => entry.block.kind),
@@ -405,7 +405,7 @@ test("turn layout keeps every intermediate round in one trace and exposes only f
   );
 });
 
-test("turn layout merges round-level thought and tool fragments into readable stages", () => {
+test("turn layout omits reasoning text and merges tool fragments into readable stages", () => {
   const layout = resolveAssistantTurnLayout(
     [
       {
@@ -444,20 +444,51 @@ test("turn layout merges round-level thought and tool fragments into readable st
 
   assert.deepEqual(
     layout.work.map((entry) => entry.block.kind),
-    ["thinking", "toolGroup", "text", "toolGroup"],
+    ["toolGroup", "text", "toolGroup"],
   );
-  assert.equal(layout.work.filter((entry) => entry.block.kind === "thinking").length, 1);
-  assert.match(layout.work[0].block.text, /find the entry point/);
-  assert.match(layout.work[0].block.text, /follow the component tree/);
-  assert.match(layout.work[0].block.text, /verify the result/);
+  assert.equal(layout.work.some((entry) => entry.block.kind === "thinking"), false);
   assert.deepEqual(
-    layout.work[1].block.items.map((item) => item.toolCall.name),
+    layout.work[0].block.items.map((item) => item.toolCall.name),
     ["Read", "Grep", "List"],
   );
   assert.deepEqual(
-    layout.work[3].block.items.map((item) => item.toolCall.name),
+    layout.work[2].block.items.map((item) => item.toolCall.name),
     ["Bash"],
   );
+});
+
+test("live turn keeps only a text-free marker for the active thinking phase", () => {
+  const layout = resolveAssistantTurnLayout(
+    [
+      {
+        round: 1,
+        key: "r1",
+        thinkingOpen: true,
+        blocks: [
+          { kind: "thinking", id: "thinking-1", text: "a very long private reasoning stream" },
+        ],
+      },
+    ],
+    { live: true },
+  );
+
+  assert.equal(layout.work.length, 1);
+  assert.equal(layout.work[0].block.kind, "thinking");
+  assert.equal(layout.work[0].block.text, "");
+
+  const settled = resolveAssistantTurnLayout(
+    [
+      {
+        round: 1,
+        key: "r1",
+        thinkingOpen: false,
+        blocks: [{ kind: "thinking", id: "thinking-1", text: "finished reasoning" }],
+        meta: { stopReason: "stop" },
+      },
+    ],
+    { live: false },
+  );
+  assert.equal(settled.work.length, 0);
 });
 
 test("failed operations stay inspectable in the trace while the failure summary remains outside", () => {
@@ -480,12 +511,18 @@ test("failed operations stay inspectable in the trace while the failure summary 
   assert.equal(layout.answer[0].block.kind, "text");
 });
 
-test("tool activity categories match the compact read/search/edit/command taxonomy", () => {
-  assert.equal(getToolActivityCategory("Read"), "read");
-  assert.equal(getToolActivityCategory("Grep"), "search");
-  assert.equal(getToolActivityCategory("Edit"), "edit");
-  assert.equal(getToolActivityCategory("Bash"), "command");
-  assert.equal(getToolActivityCategory("Agent"), "agent");
+test("tool activity taxonomy exposes all seven gallery categories", () => {
+  const categories = [
+    getToolActivityCategory("Read"),
+    getToolActivityCategory("Grep"),
+    getToolActivityCategory("Edit"),
+    getToolActivityCategory("Bash"),
+    getToolActivityCategory("List"),
+    getToolActivityCategory("Agent"),
+    getToolActivityCategory("mcp_github_search_issues"),
+  ];
+  assert.deepEqual(categories, ["read", "search", "edit", "command", "list", "agent", "other"]);
+  assert.equal(new Set(categories).size, 7);
 });
 
 test("Markdown text blocks stay whole instead of being string-sliced", () => {
@@ -523,7 +560,7 @@ test("one live activity is pinned while its completed prefix units keep stable k
   assert.equal(workUnits.length, 1);
   assert.deepEqual(
     workUnits[0].unit.entries.map((entry) => entry.block.kind),
-    ["thinking", "text", "text"],
+    ["text", "text"],
   );
   assert.equal(workUnits[0].mutable, true);
   assert.equal(answerUnits.length, 0);

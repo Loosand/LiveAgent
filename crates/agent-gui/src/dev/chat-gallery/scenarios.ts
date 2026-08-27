@@ -55,6 +55,15 @@ export const CHAT_GALLERY_SCENARIOS = [
     },
   },
   {
+    id: "tool-categories",
+    group: "tooling",
+    title: { "zh-CN": "工具种类总览", "en-US": "Tool category catalog" },
+    description: {
+      "zh-CN": "集中展示 7 类工具活动标签、代表工具及其可展开结果。",
+      "en-US": "All seven tool activity labels with representative expandable results.",
+    },
+  },
+  {
     id: "streaming-run",
     group: "conversation",
     title: { "zh-CN": "流式运行", "en-US": "Streaming run" },

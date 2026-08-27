@@ -31,6 +31,14 @@ export const AssistantBubbleUnit = memo(function AssistantBubbleUnit(props: {
   } = props;
   const { unit } = row;
   if (unit.kind === "footer") return null;
+  const workTraceDetailEntries =
+    unit.kind === "work-trace"
+      ? unit.entries.filter((entry) => entry.block.kind !== "thinking")
+      : [];
+  const activeThinkingEntry =
+    unit.kind === "work-trace"
+      ? (unit.entries.find((entry) => entry.key === unit.latestThinkingKey) ?? null)
+      : null;
 
   // 只有仍在直播的状态单元才渲染转圈状态行。落定交接阶段的同一单元
   // (live:false) 若继续渲染，会在底部留下一个永远旋转的 spinner——运行早已
@@ -80,10 +88,24 @@ export const AssistantBubbleUnit = memo(function AssistantBubbleUnit(props: {
           <AssistantWorkTrace
             className="mb-3 mt-0"
             durationMs={unit.durationMs}
-            hasDetails={unit.entries.length > 0 || isCompactionRunning}
+            hasDetails={workTraceDetailEntries.length > 0 || isCompactionRunning}
             running={row.live}
+            activeStatus={
+              activeThinkingEntry ? (
+                <RoundBlockContent
+                  block={activeThinkingEntry.block}
+                  isLive={row.live}
+                  renderMode={row.renderMode}
+                  runningToolCallIds={activeThinkingEntry.runningToolCallIds}
+                  thinkingOpen={activeThinkingEntry.thinkingOpen}
+                  isLatestThinking
+                  workdir={workdir}
+                  onOpenFileLink={onOpenFileLink}
+                />
+              ) : null
+            }
           >
-            {unit.entries.map((entry) => (
+            {workTraceDetailEntries.map((entry) => (
               <RoundBlockContent
                 key={entry.key}
                 block={entry.block}
@@ -92,7 +114,6 @@ export const AssistantBubbleUnit = memo(function AssistantBubbleUnit(props: {
                 runningToolCallIds={entry.runningToolCallIds}
                 thinkingOpen={row.live ? entry.thinkingOpen : true}
                 isLatestThinking={entry.key === unit.latestThinkingKey}
-                collapseThinking
                 workdir={workdir}
                 onOpenFileLink={onOpenFileLink}
               />

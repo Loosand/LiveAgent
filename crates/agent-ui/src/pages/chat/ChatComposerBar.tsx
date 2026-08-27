@@ -958,25 +958,14 @@ export const ChatComposerBar = memo(function ChatComposerBar(props: ChatComposer
             // 展开态切换 flex-grow 时会被一并动画，导致卡片先跳顶再长满的闪动。
             // 常驻 flex-col：FLIP 动画把卡片钳在中间高度时，flex-1 的编辑器
             // 区吸收多余空间，工具栏才能始终贴住卡片底边。
-            "composer-glass-card @container relative flex flex-col overflow-hidden rounded-[26px] border border-black/[0.065] bg-black/[0.035] shadow-[0_14px_42px_-16px_rgba(15,23,42,0.24),0_2px_7px_-2px_rgba(15,23,42,0.09),inset_0_1px_0_rgba(255,255,255,0.72)] backdrop-blur-2xl backdrop-saturate-[165%] transition-[border-color,box-shadow] focus-within:border-black/[0.09] focus-within:shadow-[0_18px_48px_-16px_rgba(15,23,42,0.28),0_4px_13px_-4px_rgba(15,23,42,0.11),inset_0_1px_0_rgba(255,255,255,0.78)] dark:border-white/[0.11] dark:bg-white/[0.055] dark:shadow-[0_14px_42px_-16px_rgba(0,0,0,0.74),0_2px_7px_-2px_rgba(0,0,0,0.44),inset_0_1px_0_rgba(255,255,255,0.08)] dark:focus-within:border-white/[0.16]",
+            "composer-glass-card @container relative flex flex-col overflow-hidden rounded-[25px] border border-border/65 bg-muted shadow-[0_18px_44px_-34px_color-mix(in_oklch,var(--foreground)_42%,transparent)] transition-[border-color,box-shadow] focus-within:border-border focus-within:shadow-[0_20px_48px_-34px_color-mix(in_oklch,var(--foreground)_48%,transparent)]",
             surface === "desktop" && "z-10",
             isComposerExpanded && "min-h-0 flex-1",
           )}
         >
-          {/* macOS material rim-light */}
-          <div
-            aria-hidden
-            className="pointer-events-none absolute inset-x-5 top-0 h-px rounded-full bg-gradient-to-r from-transparent via-white/85 to-transparent dark:via-white/15"
-          />
-          {/* subtle inner gloss gradient */}
-          <div
-            aria-hidden
-            className="pointer-events-none absolute inset-0 rounded-[26px] bg-gradient-to-b from-white/18 to-transparent opacity-70 dark:from-white/[0.04] dark:opacity-100"
-          />
-
           <div
             className={cn(
-              "composer-input-surface relative z-10 flex flex-col overflow-hidden rounded-3xl bg-white/76 shadow-[0_1px_0_rgba(255,255,255,0.75),0_8px_20px_-16px_rgba(15,23,42,0.4)] backdrop-blur-2xl dark:bg-zinc-900/72 dark:shadow-[0_1px_0_rgba(255,255,255,0.06),0_10px_24px_-16px_rgba(0,0,0,0.8)]",
+              "composer-input-surface relative z-10 flex flex-col overflow-hidden rounded-[24px] bg-background",
               isComposerExpanded && "min-h-0 flex-1",
             )}
           >
@@ -1029,7 +1018,7 @@ export const ChatComposerBar = memo(function ChatComposerBar(props: ChatComposer
             <div
               className={cn(
                 "relative flex flex-1 pl-4 pr-12",
-                pendingUploadedFiles.length > 0 ? "pt-1.5" : "pt-3.5",
+                pendingUploadedFiles.length > 0 ? "pt-1.5" : "pt-3",
                 isComposerExpanded && "min-h-0",
               )}
               onFocusCapture={onPrepareChatRuntime}
@@ -1055,7 +1044,7 @@ export const ChatComposerBar = memo(function ChatComposerBar(props: ChatComposer
               />
             </div>
 
-            <div className="relative flex items-center justify-between gap-2 px-3 pb-2 pt-1">
+            <div className="relative flex items-center justify-between gap-2 px-3 pb-2 pt-0.5">
               <div className="flex min-w-0 flex-1 items-center gap-1">
                 <DropdownMenu>
                   <DropdownMenuTrigger
@@ -1256,7 +1245,7 @@ export const ChatComposerBar = memo(function ChatComposerBar(props: ChatComposer
             </div>
           </div>
 
-          <div className="composer-control-deck relative z-0 -mt-3 flex min-h-12 shrink-0 items-end justify-between gap-2 px-3 pb-2 pt-5">
+          <div className="composer-control-deck relative z-0 flex min-h-9 shrink-0 items-center justify-between gap-2 bg-muted px-3 py-1">
             <div className="flex min-w-0 flex-1 items-center gap-1 overflow-hidden">
               {isAgentMode && commandSafetyMode && onCommandSafetyModeChange ? (
                 <CommandSafetyModeSelector

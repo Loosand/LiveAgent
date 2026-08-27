@@ -11,6 +11,10 @@ const chatComposerBarSource = readFileSync(
   new URL("../../../agent-ui/src/pages/chat/ChatComposerBar.tsx", import.meta.url),
   "utf8",
 );
+const mentionComposerSource = readFileSync(
+  new URL("../../../agent-ui/src/components/chat/MentionComposer.tsx", import.meta.url),
+  "utf8",
+);
 const chatTurnQueueSource = readFileSync(
   new URL("../../src/pages/chat/queue/useChatTurnQueue.ts", import.meta.url),
   "utf8",
@@ -111,6 +115,21 @@ test("composer editor row reserves the right rail so the scrollbar clears expand
   assert.match(chatComposerBarSource, /"relative flex flex-1 pl-4 pr-12"/);
   assert.doesNotMatch(chatComposerBarSource, /"relative flex flex-1 px-4"/);
   assert.doesNotMatch(chatComposerBarSource, /"px-0 py-0 pr-8"/);
+});
+
+test("composer uses the opaque Tessera surface and a compact idle height", () => {
+  assert.match(
+    chatComposerBarSource,
+    /composer-glass-card[^\n]+rounded-\[25px\][^\n]+border-border\/65 bg-muted/,
+  );
+  assert.match(
+    chatComposerBarSource,
+    /composer-input-surface[^\n]+rounded-\[24px\] bg-background/,
+  );
+  assert.match(chatComposerBarSource, /composer-control-deck[^\n]+min-h-9[^\n]+bg-muted/);
+  assert.doesNotMatch(chatComposerBarSource, /composer-input-surface[^\n]+bg-white\/76/);
+  assert.doesNotMatch(chatComposerBarSource, /composer-glass-card[^\n]+bg-black\/\[0\.035\]/);
+  assert.match(mentionComposerSource, /mention-composer min-h-10 max-h-\[160px\]/);
 });
 
 test("composer expand toggle appears only after the editor overflows", () => {
