@@ -161,9 +161,15 @@ function treeText(node) {
 }
 
 function readIndicator(tree) {
+  const allButtons = findAll(tree, (node) => node.type === "button");
+  const panelToggle = allButtons.find(
+    (button) => button.props?.["data-task-progress-toggle"] === "",
+  );
   return {
     root: tree,
-    buttons: findAll(tree, (node) => node.type === "button"),
+    buttons: allButtons.filter((button) => button !== panelToggle),
+    panel: findAll(tree, (node) => node.props?.["data-task-progress-panel"] === "")[0],
+    panelToggle,
     details: findAll(
       tree,
       (node) =>
@@ -178,7 +184,9 @@ function readIndicator(tree) {
 
 test("web renders real task rows with progress semantics and reduced-motion transitions", () => {
   const indicator = createIndicatorHarness();
-  const { root, buttons, details, progress, rows } = readIndicator(indicator.render());
+  const { root, buttons, details, panel, panelToggle, progress, rows } = readIndicator(
+    indicator.render(),
+  );
 
   assert.equal(root.type, "fieldset");
   assert.match(root.props.className, /\bmb-4\b/);
@@ -191,6 +199,8 @@ test("web renders real task rows with progress semantics and reduced-motion tran
   assert.equal(rows.length, 3);
   assert.equal(buttons.length, 3);
   assert.equal(details.length, 3);
+  assert.equal(panelToggle.props["aria-expanded"], true);
+  assert.equal(panel.props.hidden, false);
   assert.equal(buttons[0].props["aria-expanded"], false);
   assert.equal(buttons[1].props["aria-expanded"], true);
   assert.equal(buttons[1].props["aria-controls"], details[1].props.id);
@@ -290,7 +300,7 @@ test("web clicks independently toggle row details and expansion resets at the ru
   );
 });
 
-test("web shows pending, paused, and completed states without auto-dismissing completion", () => {
+test("web shows pending and paused states, then collapses a completed plan", () => {
   const indicator = createIndicatorHarness();
   const pausedView = readIndicator(indicator.render({ isConversationRunning: false }));
   const pausedRing = findAll(
@@ -347,6 +357,35 @@ test("web shows pending, paused, and completed states without auto-dismissing co
   const completedView = readIndicator(indicator.render({ snapshot: completed }));
   assert.match(completedView.progress.props["aria-label"], /All completed/);
   assert.match(treeText(completedView.root), /Completed/);
+  assert.equal(completedView.panelToggle.props["aria-expanded"], false);
+  assert.equal(completedView.panel.props.hidden, true);
+
+  completedView.panelToggle.props.onClick();
+  const reopenedView = readIndicator(indicator.render({ snapshot: completed }));
+  assert.equal(reopenedView.panelToggle.props["aria-expanded"], true);
+  assert.equal(reopenedView.panel.props.hidden, false);
+});
+
+test("web manual whole-plan collapse survives completion and resets for a new run", () => {
+  const indicator = createIndicatorHarness();
+  let view = readIndicator(indicator.render());
+  assert.equal(view.panelToggle.props["aria-expanded"], true);
+
+  view.panelToggle.props.onClick();
+  view = readIndicator(indicator.render());
+  assert.equal(view.panelToggle.props["aria-expanded"], false);
+
+  const completed = createSnapshot({
+    tasks: createSnapshot().tasks.map((task) => ({ ...task, status: "completed" })),
+    completedCount: 3,
+    currentStep: 3,
+    state: "completed",
+  });
+  view = readIndicator(indicator.render({ snapshot: completed }));
+  assert.equal(view.panelToggle.props["aria-expanded"], false);
+
+  view = readIndicator(indicator.render({ snapshot: createSnapshot({ runId: "run-2" }) }));
+  assert.equal(view.panelToggle.props["aria-expanded"], true);
 });
 
 test("web uses the shared localized task progress bar", () => {

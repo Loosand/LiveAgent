@@ -79,22 +79,27 @@ export const AssistantBubbleUnit = memo(function AssistantBubbleUnit(props: {
         {unit.kind === "work-trace" ? (
           <AssistantWorkTrace
             className="mb-3 mt-0"
-            hasDetails={unit.blocks.length > 0}
+            durationMs={unit.durationMs}
+            hasDetails={unit.entries.length > 0 || isCompactionRunning}
             running={row.live}
           >
-            {unit.blocks.map((block) => (
+            {unit.entries.map((entry) => (
               <RoundBlockContent
-                key={block.key}
-                block={block}
+                key={entry.key}
+                block={entry.block}
                 isLive={row.live}
                 renderMode={row.renderMode}
-                runningToolCallIds={unit.runningToolCallIds}
-                thinkingOpen={row.live ? unit.thinkingOpen : true}
-                isLatestThinking={block.key === unit.latestThinkingKey}
+                runningToolCallIds={entry.runningToolCallIds}
+                thinkingOpen={row.live ? entry.thinkingOpen : true}
+                isLatestThinking={entry.key === unit.latestThinkingKey}
+                collapseThinking
                 workdir={workdir}
                 onOpenFileLink={onOpenFileLink}
               />
             ))}
+            {isCompactionRunning ? (
+              <LiveAssistantStatus status={toolStatus} isCompaction className="w-full py-1.5" />
+            ) : null}
           </AssistantWorkTrace>
         ) : null}
       </div>

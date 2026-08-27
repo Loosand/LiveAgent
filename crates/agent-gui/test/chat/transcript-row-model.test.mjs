@@ -5,6 +5,9 @@ import { createTsModuleLoader } from "../helpers/load-ts-module.mjs";
 
 const loader = createTsModuleLoader();
 const { createTranscriptRowModel } = loader.loadModule("src/pages/chat/transcript/rowModel.ts");
+const { getToolActivityCategory, resolveAssistantTurnLayout } = loader.loadModule(
+  "@liveagent/ui/components/chat/assistant-bubble/assistantBubbleUtils.ts",
+);
 const { createLiveTranscriptStore } = loader.loadModule(
   "src/lib/chat/conversation/liveTranscriptStore.ts",
 );
@@ -51,6 +54,25 @@ function round(key, text) {
   };
 }
 
+function toolBlock(id, name, result) {
+  return {
+    kind: "tool",
+    item: {
+      toolCall: { type: "toolCall", id, name, arguments: {} },
+      ...(result === undefined
+        ? {}
+        : {
+            toolResult: {
+              role: "toolResult",
+              toolCallId: id,
+              isError: result === "error",
+              content: [],
+            },
+          }),
+    },
+  };
+}
+
 function blockRows(snapshot) {
   return snapshot.rows
     .flatMap((row) => (row.kind === "assistant-activity" ? row.units : [row]))
@@ -78,7 +100,7 @@ const idleLive = {
   isSettled: false,
 };
 
-test("settling a live turn preserves every block-unit key and adds one footer unit", () => {
+test("settling a live turn promotes trailing prose out of the work trace", () => {
   const model = createTranscriptRowModel();
   const history = [userItem("u1")];
 
@@ -88,24 +110,29 @@ test("settling a live turn preserves every block-unit key and adds one footer un
     liveRounds: [{ ...round("r1", "partial"), runningToolCallIds: [], thinkingOpen: false }],
   });
   assert.equal(streaming.liveStartIndex, 1);
-  const liveBlockKey = blockRows(streaming)[0].key;
-  assert.match(liveBlockKey, /^live-turn-/);
-  assert.equal(blockRows(streaming)[0].renderMode, "streaming");
+  const liveWorkKey = workTraceRows(streaming)[0].key;
+  assert.match(liveWorkKey, /^live-turn-/);
+  assert.deepEqual(
+    workTraceRows(streaming)[0].unit.entries.map((entry) => entry.block.kind),
+    ["text"],
+  );
+  assert.equal(blockRows(streaming).length, 0);
 
   const settledHistory = [userItem("u1"), assistantItem("a1", [round("r1", "full reply")])];
   const settled = model.build(settledHistory, idleLive);
   assert.equal(settled.liveStartIndex, -1);
   assert.equal(settled.rows.length, 2);
-  assert.equal(blockRows(settled)[0].key, liveBlockKey);
+  assert.ok(blockRows(settled)[0].key.startsWith(liveWorkKey.split(":work-trace")[0]));
   assert.equal(blockRows(settled)[0].renderMode, "streaming");
   assert.equal(footerRows(settled).length, 1);
-  assert.ok(footerRows(settled)[0].key.startsWith(liveBlockKey.split(":round:")[0]));
+  assert.ok(footerRows(settled)[0].key.startsWith(liveWorkKey.split(":work-trace")[0]));
+  assert.equal(workTraceRows(settled).length, 0);
 
   const rebuilt = model.build(
     [userItem("u1"), assistantItem("a1", [round("r1", "full reply")])],
     idleLive,
   );
-  assert.equal(blockRows(rebuilt)[0].key, liveBlockKey);
+  assert.equal(blockRows(rebuilt)[0].key, blockRows(settled)[0].key);
 });
 
 test("persist lag: block-unit aliases still land one build later", () => {
@@ -116,23 +143,23 @@ test("persist lag: block-unit aliases still land one build later", () => {
     isSending: true,
     liveRounds: [{ ...round("r1", "partial"), runningToolCallIds: [], thinkingOpen: false }],
   });
-  const liveBlockKey = blockRows(streaming)[0].key;
+  const liveWorkKey = workTraceRows(streaming)[0].key;
 
   const waitingForHistory = model.build(history, idleLive);
   assert.equal(waitingForHistory.rows.length, 2, "the live activity must not disappear while persistence lags");
-  assert.equal(blockRows(waitingForHistory)[0].key, liveBlockKey);
+  assert.equal(workTraceRows(waitingForHistory)[0].key, liveWorkKey);
   assert.equal(waitingForHistory.rows.at(-1).kind, "assistant-activity");
   assert.equal(waitingForHistory.rows.at(-1).live, false);
   assert.deepEqual(
     waitingForHistory.rows.at(-1).units.map((unit) => unit.unit.kind),
-    ["block"],
-    "the settling activity must not retain an empty status row",
+    ["work-trace"],
+    "the settling activity retains only the processing trace",
   );
   const settled = model.build(
     [userItem("u1"), assistantItem("a1", [round("r1", "full reply")])],
     idleLive,
   );
-  assert.equal(blockRows(settled)[0].key, liveBlockKey);
+  assert.ok(blockRows(settled)[0].key.startsWith(liveWorkKey.split(":work-trace")[0]));
 });
 
 test("a new turn supersedes an unresolved settle so aliases never cross turns", () => {
@@ -144,17 +171,17 @@ test("a new turn supersedes an unresolved settle so aliases never cross turns", 
   };
 
   const firstStreaming = model.build([userItem("u1")], sendingLive);
-  const firstLiveBlockKey = blockRows(firstStreaming).at(-1).key;
+  const firstLiveWorkKey = workTraceRows(firstStreaming).at(-1).key;
   model.build([userItem("u1")], idleLive);
   const secondStreaming = model.build([userItem("u1"), userItem("u2")], sendingLive);
-  const secondLiveBlockKey = blockRows(secondStreaming).at(-1).key;
+  const secondLiveWorkKey = workTraceRows(secondStreaming).at(-1).key;
 
   const delayedFirstTwin = model.build(
     [userItem("u1"), assistantItem("a1", [round("r1", "reply 1")]), userItem("u2")],
     sendingLive,
   );
-  assert.equal(blockRows(delayedFirstTwin)[0].key, firstLiveBlockKey);
-  assert.equal(blockRows(delayedFirstTwin).at(-1).key, secondLiveBlockKey);
+  assert.ok(blockRows(delayedFirstTwin)[0].key.startsWith(firstLiveWorkKey.split(":work-trace")[0]));
+  assert.equal(workTraceRows(delayedFirstTwin).at(-1).key, secondLiveWorkKey);
 
   const settled = model.build(
     [
@@ -165,21 +192,22 @@ test("a new turn supersedes an unresolved settle so aliases never cross turns", 
     ],
     idleLive,
   );
-  assert.equal(blockRows(settled)[0].key, firstLiveBlockKey);
-  assert.equal(blockRows(settled).at(-1).key, secondLiveBlockKey);
+  assert.ok(blockRows(settled)[0].key.startsWith(firstLiveWorkKey.split(":work-trace")[0]));
+  assert.ok(blockRows(settled).at(-1).key.startsWith(secondLiveWorkKey.split(":work-trace")[0]));
 });
 
-test("draft text becomes one complete text render unit", () => {
+test("draft text stays inside the live processing trace until the turn is terminal", () => {
   const model = createTranscriptRowModel();
   const streaming = model.build([userItem("u1")], {
     ...idleLive,
     isSending: true,
     draftAssistantText: "hello",
   });
-  const liveBlock = blockRows(streaming)[0];
-  assert.equal(liveBlock.unit.block.kind, "text");
-  assert.equal(liveBlock.unit.block.key, "text-1");
-  assert.equal(liveBlock.unit.block.text, "hello");
+  const entry = workTraceRows(streaming)[0].unit.entries[0];
+  assert.equal(entry.block.kind, "text");
+  assert.equal(entry.block.key, "text-1");
+  assert.equal(entry.block.text, "hello");
+  assert.equal(blockRows(streaming).length, 0);
 });
 
 test("settled units reuse identities across live-store emits", () => {
@@ -260,12 +288,13 @@ test("a committed twin that races persistence is re-keyed at settle", () => {
   model.build([userItem("u1")], sendingLive);
   const midRun = [userItem("u1"), assistantItem("a1", [round("r1", "full reply")])];
   const racing = model.build(midRun, sendingLive);
-  const liveBlockKey = blockRows(racing).at(-1).key;
-  assert.equal(blockRows(racing)[0].key, "a1:round:r1:block:text-1");
+  const racingBlockKey = blockRows(racing).at(-1).key;
+  assert.equal(racingBlockKey, "a1:round:r1:block:text-1");
 
   const settled = model.build(midRun, idleLive);
   assert.equal(settled.rows.length, 2);
-  assert.equal(blockRows(settled)[0].key, liveBlockKey);
+  assert.ok(blockRows(settled)[0].key.startsWith("live-turn-1:"));
+  assert.notEqual(blockRows(settled)[0].key, racingBlockKey);
 });
 
 test("terminal settlement removes the live tail before sending clears", () => {
@@ -278,7 +307,7 @@ test("terminal settlement removes the live tail before sending clears", () => {
     { ...round("r1", "full reply"), runningToolCallIds: [], thinkingOpen: false },
   ]);
   const streaming = model.build(history, { ...store.getSnapshot(), isSending: true });
-  const liveBlockKey = blockRows(streaming)[0].key;
+  const liveWorkKey = workTraceRows(streaming)[0].key;
 
   store.settle();
   const committed = [userItem("u1"), assistantItem("a1", [round("r1", "full reply")])];
@@ -286,7 +315,7 @@ test("terminal settlement removes the live tail before sending clears", () => {
 
   assert.equal(finalizing.rows.length, 2);
   assert.equal(finalizing.liveStartIndex, -1);
-  assert.equal(blockRows(finalizing)[0].key, liveBlockKey);
+  assert.ok(blockRows(finalizing)[0].key.startsWith(liveWorkKey.split(":work-trace")[0]));
   assert.equal(blockRows(finalizing)[0].live, false);
 
   const released = model.build(committed, { ...store.getSnapshot(), isSending: false });
@@ -321,17 +350,142 @@ test("assistant rounds hide task tools while preserving grouped top-level render
     },
   ];
   const snapshot = model.build([userItem("u1"), assistantItem("a1", rounds)], idleLive);
+  assert.equal(blockRows(snapshot).length, 0);
   assert.deepEqual(
-    blockRows(snapshot).map((row) => row.unit.block.kind),
-    ["toolGroup"],
-  );
-  assert.deepEqual(
-    workTraceRows(snapshot)[0].unit.blocks.map((block) => block.kind),
-    ["text", "thinking", "hostedSearchGroup"],
+    workTraceRows(snapshot)[0].unit.entries.map((entry) => entry.block.kind),
+    ["thinking", "text", "toolGroup", "hostedSearchGroup"],
   );
   assert.equal(footerRows(snapshot).length, 1);
   assert.equal(workTraceRows(snapshot)[0].showAvatar, true);
   assert.ok(blockRows(snapshot).every((row) => !row.showAvatar));
+});
+
+test("turn layout keeps every intermediate round in one trace and exposes only final prose", () => {
+  const rounds = [
+    {
+      round: 1,
+      key: "r1",
+      blocks: [
+        { kind: "thinking", id: "thinking-1", text: "inspect" },
+        toolBlock("read-1", "Read", "ok"),
+        { kind: "text", id: "progress-1", text: "I found the relevant component." },
+      ],
+      meta: { stopReason: "toolUse" },
+    },
+    {
+      round: 2,
+      key: "r2",
+      blocks: [
+        toolBlock("edit-1", "Edit", "ok"),
+        { kind: "text", id: "answer-1", text: "Implemented and verified." },
+      ],
+      meta: { stopReason: "stop" },
+    },
+  ];
+
+  const settled = resolveAssistantTurnLayout(rounds, { live: false });
+  assert.deepEqual(
+    settled.work.map((entry) => entry.block.kind),
+    ["thinking", "toolGroup", "text", "toolGroup"],
+  );
+  assert.deepEqual(
+    settled.answer.map((entry) => entry.block.kind),
+    ["text"],
+  );
+  assert.equal(settled.answer[0].block.text, "Implemented and verified.");
+
+  const streaming = resolveAssistantTurnLayout(
+    [{ ...rounds[1], meta: undefined, runningToolCallIds: ["edit-1"] }],
+    { live: true },
+  );
+  assert.equal(streaming.answer.length, 0);
+  assert.deepEqual(
+    streaming.work.map((entry) => entry.block.kind),
+    ["toolGroup", "text"],
+  );
+});
+
+test("turn layout merges round-level thought and tool fragments into readable stages", () => {
+  const layout = resolveAssistantTurnLayout(
+    [
+      {
+        round: 1,
+        key: "r1",
+        blocks: [
+          { kind: "thinking", id: "thinking-1", text: "find the entry point" },
+          toolBlock("read-1", "Read", "ok"),
+        ],
+        meta: { stopReason: "toolUse" },
+      },
+      {
+        round: 2,
+        key: "r2",
+        blocks: [
+          { kind: "thinking", id: "thinking-2", text: "follow the component tree" },
+          toolBlock("grep-1", "Grep", "ok"),
+          toolBlock("list-1", "List", "ok"),
+          { kind: "text", id: "progress-1", text: "I found the relevant UI path." },
+        ],
+        meta: { stopReason: "toolUse" },
+      },
+      {
+        round: 3,
+        key: "r3",
+        blocks: [
+          { kind: "thinking", id: "thinking-3", text: "verify the result" },
+          toolBlock("bash-1", "Bash", "ok"),
+          { kind: "text", id: "answer-1", text: "Implemented and verified." },
+        ],
+        meta: { stopReason: "stop" },
+      },
+    ],
+    { live: false },
+  );
+
+  assert.deepEqual(
+    layout.work.map((entry) => entry.block.kind),
+    ["thinking", "toolGroup", "text", "toolGroup"],
+  );
+  assert.equal(layout.work.filter((entry) => entry.block.kind === "thinking").length, 1);
+  assert.match(layout.work[0].block.text, /find the entry point/);
+  assert.match(layout.work[0].block.text, /follow the component tree/);
+  assert.match(layout.work[0].block.text, /verify the result/);
+  assert.deepEqual(
+    layout.work[1].block.items.map((item) => item.toolCall.name),
+    ["Read", "Grep", "List"],
+  );
+  assert.deepEqual(
+    layout.work[3].block.items.map((item) => item.toolCall.name),
+    ["Bash"],
+  );
+});
+
+test("failed operations stay inspectable in the trace while the failure summary remains outside", () => {
+  const layout = resolveAssistantTurnLayout(
+    [
+      {
+        round: 1,
+        key: "r1",
+        blocks: [
+          toolBlock("bash-1", "Bash", "error"),
+          { kind: "text", id: "failure", text: "The command failed; no files were changed." },
+        ],
+        meta: { stopReason: "error" },
+      },
+    ],
+    { live: false },
+  );
+  assert.equal(layout.work[0].block.kind, "toolGroup");
+  assert.equal(layout.work[0].block.items[0].toolResult.isError, true);
+  assert.equal(layout.answer[0].block.kind, "text");
+});
+
+test("tool activity categories match the compact read/search/edit/command taxonomy", () => {
+  assert.equal(getToolActivityCategory("Read"), "read");
+  assert.equal(getToolActivityCategory("Grep"), "search");
+  assert.equal(getToolActivityCategory("Edit"), "edit");
+  assert.equal(getToolActivityCategory("Bash"), "command");
+  assert.equal(getToolActivityCategory("Agent"), "agent");
 });
 
 test("Markdown text blocks stay whole instead of being string-sliced", () => {
@@ -368,23 +522,20 @@ test("one live activity is pinned while its completed prefix units keep stable k
   const answerUnits = blockRows(snapshot);
   assert.equal(workUnits.length, 1);
   assert.deepEqual(
-    workUnits[0].unit.blocks.map((block) => block.kind),
-    ["text", "thinking"],
+    workUnits[0].unit.entries.map((entry) => entry.block.kind),
+    ["thinking", "text", "text"],
   );
-  assert.equal(workUnits[0].mutable, false);
-  assert.equal(answerUnits.length, 1);
-  assert.equal(answerUnits[0].unit.block.kind, "text");
-  assert.equal(answerUnits[0].unit.block.text, "streaming tail");
-  assert.equal(answerUnits[0].mutable, true);
+  assert.equal(workUnits[0].mutable, true);
+  assert.equal(answerUnits.length, 0);
   const activity = snapshot.rows.find((row) => row.kind === "assistant-activity");
   assert.ok(activity);
   assert.deepEqual(
     activity.units
       .filter((unit) => unit.unit.kind === "work-trace" || unit.unit.kind === "block")
       .map((unit) => unit.key),
-    [...workUnits, ...answerUnits].map((unit) => unit.key),
+    workUnits.map((unit) => unit.key),
   );
-  assert.equal(activity.units.at(-1).unit.kind, "status");
+  assert.equal(activity.units.at(-1).unit.kind, "work-trace");
   assert.equal(snapshot.liveStartIndex, snapshot.rows.indexOf(activity));
   assert.equal(snapshot.liveStartIndex, snapshot.rows.length - 1);
 });
@@ -407,8 +558,8 @@ test("the active assistant turn stays one outer activity row through growth and 
   const firstActivity = first.rows.find((row) => row.kind === "assistant-activity");
   assert.ok(firstActivity);
   assert.equal(first.rows.filter((row) => row.kind === "assistant-activity").length, 1);
-  const stableStatusKey = firstActivity.units.at(-1).key;
-  assert.equal(firstActivity.units.at(-1).unit.kind, "status");
+  const stableWorkKey = firstActivity.units.at(-1).key;
+  assert.equal(firstActivity.units.at(-1).unit.kind, "work-trace");
 
   const toolItem = {
     toolCall: { type: "toolCall", id: "call-1", name: "Bash", arguments: { command: "pwd" } },
@@ -428,15 +579,8 @@ test("the active assistant turn stays one outer activity row through growth and 
   assert.ok(grownActivity);
   assert.equal(grownActivity.key, firstActivity.key);
   assert.equal(grown.liveStartIndex, grown.rows.indexOf(grownActivity));
-  assert.equal(grownActivity.units.at(-1).key, stableStatusKey);
-  assert.equal(grownActivity.units.at(-1).unit.kind, "status");
-  assert.deepEqual(
-    grownActivity.units
-      .filter((unit) => unit.unit.kind !== "status")
-      .slice(0, firstActivity.units.length - 1)
-      .map((unit) => unit.key),
-    firstActivity.units.filter((unit) => unit.unit.kind !== "status").map((unit) => unit.key),
-  );
+  assert.equal(grownActivity.units.at(-1).key, stableWorkKey);
+  assert.equal(grownActivity.units.at(-1).unit.kind, "work-trace");
 
   const settledHistory = [
     userItem("u1"),
@@ -448,14 +592,9 @@ test("the active assistant turn stays one outer activity row through growth and 
   const settledActivity = settled.rows.find((row) => row.kind === "assistant-activity");
   assert.ok(settledActivity);
   assert.equal(settledActivity.key, firstActivity.key);
-  assert.equal(settledActivity.units.at(-1).key, stableStatusKey);
+  assert.equal(settledActivity.units[0].key, stableWorkKey);
   assert.equal(settledActivity.units.at(-1).unit.kind, "footer");
-  assert.deepEqual(
-    settledActivity.units
-      .filter((unit) => unit.unit.kind === "block")
-      .map((unit) => unit.key),
-    grownActivity.units.filter((unit) => unit.unit.kind === "block").map((unit) => unit.key),
-  );
+  assert.equal(settledActivity.units[0].unit.kind, "work-trace");
 });
 
 test("one outer activity row stays stable across one hundred appended tools", () => {
@@ -491,9 +630,11 @@ test("one outer activity row stays stable across one hundred appended tools", ()
     });
     const activity = snapshot.rows.find((row) => row.kind === "assistant-activity");
     assert.ok(activity);
-    const groupedTool = activity.units.find(
-      (unit) => unit.unit.kind === "block" && unit.unit.block.kind === "toolGroup",
+    const workTrace = activity.units.find((unit) => unit.unit.kind === "work-trace");
+    const groupedTool = workTrace?.unit.entries.find(
+      (entry) => entry.block.kind === "toolGroup",
     );
+    assert.ok(workTrace);
     assert.ok(groupedTool);
     if (count === 1) {
       outerKey = activity.key;
@@ -564,12 +705,12 @@ test("usage metadata stays available without reserving inline panel height", () 
     { round: 2, key: "r2", blocks: [writeTool] },
   ];
   const snapshot = model.build([userItem("u1"), assistantItem("a1", rounds)], idleLive);
-  const units = blockRows(snapshot);
+  const entries = workTraceRows(snapshot)[0].unit.entries;
   assert.deepEqual(
-    units.map((row) => row.unit.isRoundTail),
-    [false, true, true],
+    entries.map((entry) => entry.block.kind),
+    ["text", "text", "toolGroup"],
   );
-  assert.equal(units[1].unit.roundMeta.usage, usage);
+  assert.equal(entries[1].roundMeta.usage, usage);
   const withoutUsage = createTranscriptRowModel().build(
     [
       userItem("u1"),
@@ -583,7 +724,7 @@ test("usage metadata stays available without reserving inline panel height", () 
     ],
     idleLive,
   );
-  assert.equal(units[1].estimate, blockRows(withoutUsage)[1].estimate);
+  assert.equal(workTraceRows(snapshot)[0].estimate, workTraceRows(withoutUsage)[0].estimate);
   const footer = footerRows(snapshot)[0];
   assert.equal(footer.unit.hasChangedFilesCandidate, true);
   assert.equal(collectChangedFiles(footer.unit.rounds).files[0].path, "src/result.ts");
@@ -645,7 +786,7 @@ test("a status-only live tail (idle manual compaction) closes without a stranded
   const compactingTail = compacting.rows.at(-1);
   assert.equal(compactingTail.kind, "assistant-activity");
   assert.equal(compactingTail.units.length, 1);
-  assert.equal(compactingTail.units[0].unit.kind, "status");
+  assert.equal(compactingTail.units[0].unit.kind, "work-trace");
 
   // 压缩落定：历史被重排成检查点卡片（没有可收养的 assistant 孪生项）。
   // 无内容的 live 轮必须直接收尾，不能留下冻结的 settling 状态行。

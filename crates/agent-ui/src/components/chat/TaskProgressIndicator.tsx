@@ -107,6 +107,10 @@ export function TaskProgressIndicator({
     runId: string;
     tasks: Record<string, boolean>;
   }>(() => ({ runId: snapshot.runId, tasks: {} }));
+  const [panelExpansionOverride, setPanelExpansionOverride] = useState<{
+    runId: string;
+    open: boolean;
+  } | null>(null);
   const expansionOverrides = expansion.runId === snapshot.runId ? expansion.tasks : {};
   const displayState: DisplayState =
     snapshot.state === "completed"
@@ -119,6 +123,11 @@ export function TaskProgressIndicator({
   const summaryText = [labels.title, labels.step, labels.completedCount, labels[displayState]].join(
     " · ",
   );
+  const panelOpen =
+    panelExpansionOverride?.runId === snapshot.runId
+      ? panelExpansionOverride.open
+      : snapshot.state !== "completed";
+  const panelId = `${instanceId}-tasks`;
 
   return (
     <fieldset
@@ -135,118 +144,171 @@ export function TaskProgressIndicator({
         role="progressbar"
       />
 
-      <div className="flex max-h-[min(264px,40vh)] flex-col gap-2 overflow-y-auto overscroll-contain p-px">
-        {snapshot.tasks.map((task, index) => {
-          const taskDisplayState = getTaskDisplayState(task, isConversationRunning);
-          const isOpen = expansionOverrides[task.id] ?? task.status === "in_progress";
-          const detailId = `${instanceId}-task-${task.id}`;
-          const statusText =
-            taskDisplayState === "completed"
-              ? labels.taskCompleted
-              : taskDisplayState === "paused"
-                ? labels.taskPaused
-                : labels[taskDisplayState];
-          const isActive = task.status === "in_progress";
+      <button
+        aria-controls={panelId}
+        aria-expanded={panelOpen}
+        aria-label={summaryText}
+        className="mb-2 flex h-10 w-full items-center gap-2 rounded-[20px] bg-background/92 px-3 text-left text-[12px] text-muted-foreground shadow-[0_0_0_1px_rgba(0,0,0,0.07),0_1px_2px_-1px_rgba(0,0,0,0.08),0_8px_24px_-16px_rgba(15,23,42,0.38)] outline-none backdrop-blur-xl backdrop-saturate-150 transition-[background-color,box-shadow] hover:bg-background focus-visible:ring-2 focus-visible:ring-ring/55 dark:shadow-[0_0_0_1px_rgba(255,255,255,0.12),0_8px_24px_-16px_rgba(0,0,0,0.72)]"
+        data-task-progress-toggle=""
+        onClick={() => {
+          setPanelExpansionOverride({ runId: snapshot.runId, open: !panelOpen });
+        }}
+        type="button"
+      >
+        <span
+          aria-hidden="true"
+          className={cn(
+            "size-2 shrink-0 rounded-full",
+            displayState === "completed" && "bg-[hsl(var(--chat-success))]",
+            displayState === "running" &&
+              "animate-pulse bg-[hsl(var(--tool-list-accent))] motion-reduce:animate-none",
+            displayState === "paused" && "bg-amber-500",
+            displayState === "pending" && "bg-muted-foreground/50",
+          )}
+        />
+        <span className="min-w-0 flex-1 truncate font-medium text-foreground/85">
+          {labels.title}
+        </span>
+        <span className="shrink-0 tabular-nums">{labels.completedCount}</span>
+        <span
+          className={cn(
+            "shrink-0 rounded-full px-2 py-0.5 font-medium",
+            displayState === "completed" &&
+              "bg-[hsl(var(--chat-success)/0.10)] text-[hsl(var(--chat-success))]",
+            displayState === "running" && "text-[hsl(var(--tool-list-accent))]",
+            displayState === "paused" && "bg-amber-500/10 text-amber-700 dark:text-amber-300",
+          )}
+        >
+          {labels[displayState]}
+        </span>
+        <ChevronDown
+          aria-hidden="true"
+          className={cn(
+            "size-3.5 shrink-0 transition-transform duration-300 ease-out motion-reduce:transition-none",
+            panelOpen && "rotate-180",
+          )}
+        />
+      </button>
 
-          return (
-            <div
-              aria-current={isActive ? "step" : undefined}
-              className={cn(
-                "animate-in shrink-0 overflow-hidden bg-background/92 text-foreground shadow-[0_0_0_1px_rgba(0,0,0,0.07),0_1px_2px_-1px_rgba(0,0,0,0.08),0_8px_24px_-16px_rgba(15,23,42,0.38)] fade-in-0 slide-in-from-bottom-1 backdrop-blur-xl backdrop-saturate-150 transition-[border-radius,background-color,box-shadow] duration-300 ease-out motion-reduce:animate-none motion-reduce:transition-none dark:shadow-[0_0_0_1px_rgba(255,255,255,0.12),0_8px_24px_-16px_rgba(0,0,0,0.72)]",
-                isOpen ? "rounded-[14px]" : "rounded-[22px]",
-                isActive && "bg-background/96",
-              )}
-              data-task-status={task.status}
-              key={task.id}
-              style={{ animationDelay: `${index * 80}ms` }}
-            >
-              <button
-                aria-controls={detailId}
-                aria-expanded={isOpen}
-                aria-label={`${task.subject} · ${statusText}`}
-                className="flex h-11 w-full items-center gap-2.5 px-2.5 text-left outline-none transition-colors duration-200 hover:bg-muted/35 focus-visible:bg-muted/35 focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring/55 motion-reduce:transition-none"
-                onClick={() => {
-                  setExpansion((current) => ({
-                    runId: snapshot.runId,
-                    tasks: {
-                      ...(current.runId === snapshot.runId ? current.tasks : {}),
-                      [task.id]: !isOpen,
-                    },
-                  }));
-                }}
-                type="button"
-              >
-                <span className="flex size-6 shrink-0 items-center justify-center">
-                  {task.status === "completed" ? (
-                    <CompletedBadge />
-                  ) : (
-                    <TaskStepRing
-                      active={taskDisplayState === "running"}
-                      paused={taskDisplayState === "paused"}
-                      step={index + 1}
-                    />
-                  )}
-                </span>
-                <span
-                  className={cn(
-                    "min-w-0 flex-1 truncate text-[13px] font-medium",
-                    task.status === "completed" && "text-muted-foreground",
-                  )}
-                >
-                  {task.subject}
-                </span>
-                <span
-                  className={cn(
-                    "shrink-0 whitespace-nowrap text-[11.5px] font-medium tabular-nums",
-                    taskDisplayState === "completed" &&
-                      "rounded-full bg-[hsl(var(--chat-success)/0.10)] px-2 py-0.5 text-[hsl(var(--chat-success))]",
-                    taskDisplayState === "running" && "text-[hsl(var(--tool-list-accent))]",
-                    taskDisplayState === "paused" &&
-                      "rounded-full bg-amber-500/10 px-2 py-0.5 text-amber-700 dark:text-amber-300",
-                    taskDisplayState === "pending" && "text-muted-foreground",
-                  )}
-                >
-                  {statusText}
-                </span>
-                <span
-                  aria-hidden="true"
-                  className="-ml-1.5 flex size-7 shrink-0 items-center justify-center rounded-full text-muted-foreground"
-                >
-                  <ChevronDown
-                    className={cn(
-                      "size-3.5 transition-transform duration-300 ease-out motion-reduce:transition-none",
-                      isOpen && "rotate-180",
-                    )}
-                  />
-                </span>
-              </button>
+      <div
+        data-task-progress-panel=""
+        hidden={!panelOpen}
+        id={panelId}
+        className="max-h-[min(264px,40vh)] overflow-y-auto overscroll-contain p-px"
+      >
+        <div className="flex flex-col gap-2">
+          {snapshot.tasks.map((task, index) => {
+            const taskDisplayState = getTaskDisplayState(task, isConversationRunning);
+            const isOpen = expansionOverrides[task.id] ?? task.status === "in_progress";
+            const detailId = `${instanceId}-task-${task.id}`;
+            const statusText =
+              taskDisplayState === "completed"
+                ? labels.taskCompleted
+                : taskDisplayState === "paused"
+                  ? labels.taskPaused
+                  : labels[taskDisplayState];
+            const isActive = task.status === "in_progress";
 
+            return (
               <div
-                aria-hidden={!isOpen}
-                className="grid transition-[grid-template-rows,opacity] duration-300 ease-out motion-reduce:transition-none"
-                id={detailId}
-                style={{
-                  gridTemplateRows: isOpen ? "1fr" : "0fr",
-                  opacity: isOpen ? 1 : 0,
-                }}
+                aria-current={isActive ? "step" : undefined}
+                className={cn(
+                  "animate-in shrink-0 overflow-hidden bg-background/92 text-foreground shadow-[0_0_0_1px_rgba(0,0,0,0.07),0_1px_2px_-1px_rgba(0,0,0,0.08),0_8px_24px_-16px_rgba(15,23,42,0.38)] fade-in-0 slide-in-from-bottom-1 backdrop-blur-xl backdrop-saturate-150 transition-[border-radius,background-color,box-shadow] duration-300 ease-out motion-reduce:animate-none motion-reduce:transition-none dark:shadow-[0_0_0_1px_rgba(255,255,255,0.12),0_8px_24px_-16px_rgba(0,0,0,0.72)]",
+                  isOpen ? "rounded-[14px]" : "rounded-[22px]",
+                  isActive && "bg-background/96",
+                )}
+                data-task-status={task.status}
+                key={task.id}
+                style={{ animationDelay: `${index * 80}ms` }}
               >
-                <div className="overflow-hidden">
-                  <div className="mb-2.5 grid grid-cols-[24px_minmax(0,1fr)] gap-2.5 px-2.5">
-                    <span aria-hidden="true" className="mx-auto h-full w-px bg-border" />
-                    <div className="flex min-w-0 items-start justify-between gap-3 py-0.5">
-                      <span className="min-w-0 text-pretty text-xs leading-5 text-muted-foreground">
-                        {task.description}
-                      </span>
-                      <span className="shrink-0 pt-0.5 font-mono text-[11px] text-muted-foreground/70 tabular-nums">
-                        {index + 1}/{snapshot.totalCount}
-                      </span>
+                <button
+                  aria-controls={detailId}
+                  aria-expanded={isOpen}
+                  aria-label={`${task.subject} · ${statusText}`}
+                  className="flex h-11 w-full items-center gap-2.5 px-2.5 text-left outline-none transition-colors duration-200 hover:bg-muted/35 focus-visible:bg-muted/35 focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring/55 motion-reduce:transition-none"
+                  onClick={() => {
+                    setExpansion((current) => ({
+                      runId: snapshot.runId,
+                      tasks: {
+                        ...(current.runId === snapshot.runId ? current.tasks : {}),
+                        [task.id]: !isOpen,
+                      },
+                    }));
+                  }}
+                  type="button"
+                >
+                  <span className="flex size-6 shrink-0 items-center justify-center">
+                    {task.status === "completed" ? (
+                      <CompletedBadge />
+                    ) : (
+                      <TaskStepRing
+                        active={taskDisplayState === "running"}
+                        paused={taskDisplayState === "paused"}
+                        step={index + 1}
+                      />
+                    )}
+                  </span>
+                  <span
+                    className={cn(
+                      "min-w-0 flex-1 truncate text-[13px] font-medium",
+                      task.status === "completed" && "text-muted-foreground",
+                    )}
+                  >
+                    {task.subject}
+                  </span>
+                  <span
+                    className={cn(
+                      "shrink-0 whitespace-nowrap text-[11.5px] font-medium tabular-nums",
+                      taskDisplayState === "completed" &&
+                        "rounded-full bg-[hsl(var(--chat-success)/0.10)] px-2 py-0.5 text-[hsl(var(--chat-success))]",
+                      taskDisplayState === "running" && "text-[hsl(var(--tool-list-accent))]",
+                      taskDisplayState === "paused" &&
+                        "rounded-full bg-amber-500/10 px-2 py-0.5 text-amber-700 dark:text-amber-300",
+                      taskDisplayState === "pending" && "text-muted-foreground",
+                    )}
+                  >
+                    {statusText}
+                  </span>
+                  <span
+                    aria-hidden="true"
+                    className="-ml-1.5 flex size-7 shrink-0 items-center justify-center rounded-full text-muted-foreground"
+                  >
+                    <ChevronDown
+                      className={cn(
+                        "size-3.5 transition-transform duration-300 ease-out motion-reduce:transition-none",
+                        isOpen && "rotate-180",
+                      )}
+                    />
+                  </span>
+                </button>
+
+                <div
+                  aria-hidden={!isOpen}
+                  className="grid transition-[grid-template-rows,opacity] duration-300 ease-out motion-reduce:transition-none"
+                  id={detailId}
+                  style={{
+                    gridTemplateRows: isOpen ? "1fr" : "0fr",
+                    opacity: isOpen ? 1 : 0,
+                  }}
+                >
+                  <div className="overflow-hidden">
+                    <div className="mb-2.5 grid grid-cols-[24px_minmax(0,1fr)] gap-2.5 px-2.5">
+                      <span aria-hidden="true" className="mx-auto h-full w-px bg-border" />
+                      <div className="flex min-w-0 items-start justify-between gap-3 py-0.5">
+                        <span className="min-w-0 text-pretty text-xs leading-5 text-muted-foreground">
+                          {task.description}
+                        </span>
+                        <span className="shrink-0 pt-0.5 font-mono text-[11px] text-muted-foreground/70 tabular-nums">
+                          {index + 1}/{snapshot.totalCount}
+                        </span>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
-          );
-        })}
+            );
+          })}
+        </div>
       </div>
     </fieldset>
   );

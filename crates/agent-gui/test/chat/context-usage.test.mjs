@@ -113,6 +113,23 @@ test("composer editor row reserves the right rail so the scrollbar clears expand
   assert.doesNotMatch(chatComposerBarSource, /"px-0 py-0 pr-8"/);
 });
 
+test("composer expand toggle appears only after the editor overflows", () => {
+  assert.match(
+    chatComposerBarSource,
+    /const \[composerHasOverflow, setComposerHasOverflow\] = useState\(false\)/,
+  );
+  assert.match(
+    chatComposerBarSource,
+    /editor\.scrollHeight - editor\.clientHeight > 1/,
+  );
+  assert.match(chatComposerBarSource, /new MutationObserver\(scheduleMeasure\)/);
+  assert.match(
+    chatComposerBarSource,
+    /const showComposerExpandToggle = isComposerExpanded \|\| composerHasOverflow/,
+  );
+  assert.match(chatComposerBarSource, /\{showComposerExpandToggle \? \(\s*<button/);
+});
+
 test("context usage ring resets a stale confirm popover when compaction flips unavailable", () => {
   // 可压缩分支翻回纯展示时（他端压缩/发消息置 disabled、压缩后占用掉回阈值
   // 下），confirmOpen 必须渲染期归位：否则恢复可压缩后确认弹层会无操作自动

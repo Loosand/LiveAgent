@@ -1,9 +1,8 @@
 import {
+  type AssistantTurnLayoutEntry,
   type GroupedRoundBlock,
-  groupRoundBlocks,
-  resolveReasoningSearchWorkLayout,
+  resolveAssistantTurnLayout,
 } from "@liveagent/ui/components/chat/assistant-bubble/assistantBubbleUtils";
-import { isTaskToolBlock } from "@liveagent/ui/lib/chat/taskProgress";
 import {
   CHECKPOINT_ROW_ESTIMATE_PX,
   estimateAssistantRowHeight,
@@ -59,9 +58,8 @@ export type AssistantPlaceholderRenderUnit = {
 
 export type AssistantWorkTraceRenderUnit = {
   kind: "work-trace";
-  blocks: GroupedRoundBlock[];
-  runningToolCallIds: string[];
-  thinkingOpen: boolean;
+  durationMs?: number;
+  entries: AssistantTurnLayoutEntry[];
   latestThinkingKey: string | null;
 };
 
@@ -130,17 +128,15 @@ export type LiveTailInput = LiveTranscriptState & {
 };
 
 function buildReplyText(rounds: (UiRound | LiveRound)[]): string {
+  const finalAnswer = resolveAssistantTurnLayout(rounds, { live: false })
+    .answer.flatMap((entry) => (entry.block.kind === "text" ? [entry.block.text.trim()] : []))
+    .filter((text) => text.length > 0)
+    .join("\n\n");
+  if (finalAnswer) return finalAnswer;
   return rounds
     .map((round) => getRoundText(round).trim())
     .filter((text) => text.length > 0)
     .join("\n\n");
-}
-
-function isVisibleGroupedBlock(block: GroupedRoundBlock) {
-  if (block.kind === "text" || block.kind === "thinking") {
-    return block.text.trim().length > 0;
-  }
-  return !isTaskToolBlock(block);
 }
 
 function hasRunningToolCall(blocks: GroupedRoundBlock[], runningToolCallIds: string[]) {
@@ -268,13 +264,20 @@ function canReuseLiveUnit(previous: AssistantUnitRow, next: AssistantUnitRow) {
   if (previous.unit.kind === "work-trace" && next.unit.kind === "work-trace") {
     const nextWorkTrace = next.unit;
     return (
-      previous.unit.blocks.length === nextWorkTrace.blocks.length &&
-      previous.unit.blocks.every((block, index) => {
-        const nextBlock = nextWorkTrace.blocks[index];
-        return nextBlock ? sameGroupedBlock(block, nextBlock) : false;
+      previous.unit.entries.length === nextWorkTrace.entries.length &&
+      previous.unit.durationMs === nextWorkTrace.durationMs &&
+      previous.unit.entries.every((entry, index) => {
+        const nextEntry = nextWorkTrace.entries[index];
+        return Boolean(
+          nextEntry &&
+            entry.key === nextEntry.key &&
+            entry.roundKey === nextEntry.roundKey &&
+            entry.roundMeta === nextEntry.roundMeta &&
+            entry.thinkingOpen === nextEntry.thinkingOpen &&
+            sameStringArray(entry.runningToolCallIds, nextEntry.runningToolCallIds) &&
+            sameGroupedBlock(entry.block, nextEntry.block),
+        );
       }) &&
-      sameStringArray(previous.unit.runningToolCallIds, nextWorkTrace.runningToolCallIds) &&
-      previous.unit.thinkingOpen === nextWorkTrace.thinkingOpen &&
       previous.unit.latestThinkingKey === nextWorkTrace.latestThinkingKey
     );
   }
@@ -345,94 +348,85 @@ function buildAssistantUnits(input: BuildAssistantUnitsInput): AssistantUnitRow[
     liveUnitCache,
   } = input;
   const rows: AssistantUnitRow[] = [];
+  const layout = resolveAssistantTurnLayout(rounds, { live });
+  const visibleEntries = [...layout.work, ...layout.answer];
+  const roundTailKeys = new Map<string, string>();
+  for (const entry of visibleEntries) roundTailKeys.set(entry.roundKey, entry.key);
 
-  rounds.forEach((round) => {
-    const groupedBlocks = groupRoundBlocks(round.blocks).filter(isVisibleGroupedBlock);
-    const runningToolCallIds = "runningToolCallIds" in round ? round.runningToolCallIds : [];
-    const roundHasRunningToolCall = hasRunningToolCall(groupedBlocks, runningToolCallIds);
-    let latestThinkingKey: string | null = null;
-    for (let blockIndex = groupedBlocks.length - 1; blockIndex >= 0; blockIndex -= 1) {
-      const block = groupedBlocks[blockIndex];
-      if (block?.kind === "thinking") {
-        latestThinkingKey = block.key;
-        break;
-      }
+  let latestThinkingKey: string | null = null;
+  for (let index = layout.work.length - 1; index >= 0; index -= 1) {
+    const entry = layout.work[index];
+    if (entry?.block.kind === "thinking") {
+      latestThinkingKey = entry.key;
+      break;
     }
-    const workTraceLayout = resolveReasoningSearchWorkLayout(groupedBlocks);
-    const workTraceIndexSet = new Set(workTraceLayout.indexes);
+  }
 
-    groupedBlocks.forEach((block, blockIndex) => {
-      if (blockIndex === workTraceLayout.firstIndex) {
-        const workBlocks = workTraceLayout.indexes.flatMap((workIndex) => {
-          const workBlock = groupedBlocks[workIndex];
-          return workBlock ? [workBlock] : [];
-        });
-        const workMeasurements = workBlocks.map(measureBlockUnit);
-        rows.push({
-          kind: "assistant-unit",
-          key: `${replyKey}:round:${round.key}:work-trace`,
-          replyKey,
-          estimate: live
-            ? Math.min(
-                360,
-                42 +
-                  workMeasurements.reduce((total, measurement) => total + measurement.estimate, 0),
-              )
-            : 42,
-          renderCost: Math.min(
-            16,
-            Math.max(
-              1,
-              workMeasurements.reduce((total, measurement) => total + measurement.renderCost, 0),
-            ),
-          ),
-          gapAfter: ASSISTANT_UNIT_GAP_PX,
-          anchorUserKey,
-          live,
-          mutable: false,
-          renderMode,
-          compacted,
-          showAvatar: rows.length === 0,
-          unit: {
-            kind: "work-trace",
-            blocks: workBlocks,
-            runningToolCallIds,
-            thinkingOpen: "thinkingOpen" in round ? round.thinkingOpen : false,
-            latestThinkingKey,
-          },
-        });
-        return;
-      }
-      if (workTraceIndexSet.has(blockIndex)) return;
-
-      const isRoundTail = blockIndex === groupedBlocks.length - 1;
-      const measurement = measureBlockUnit(block);
-      rows.push({
-        kind: "assistant-unit",
-        key: `${replyKey}:round:${round.key}:block:${block.key}`,
-        replyKey,
-        estimate: measurement.estimate,
-        renderCost: measurement.renderCost,
-        gapAfter: ASSISTANT_UNIT_GAP_PX,
-        anchorUserKey,
-        live,
-        mutable: false,
-        renderMode,
-        compacted,
-        showAvatar: rows.length === 0,
-        unit: {
-          kind: "block",
-          block,
-          roundMeta: round.meta,
-          runningToolCallIds,
-          thinkingOpen: "thinkingOpen" in round ? round.thinkingOpen : false,
-          isLatestThinking: block.kind === "thinking" && block.key === latestThinkingKey,
-          isRoundTail,
-          hasRunningToolCall: roundHasRunningToolCall,
-        },
-      });
+  if (layout.work.length > 0 || live) {
+    const workMeasurements = layout.work.map((entry) => measureBlockUnit(entry.block));
+    rows.push({
+      kind: "assistant-unit",
+      key: `${replyKey}:work-trace`,
+      replyKey,
+      estimate: live
+        ? Math.min(
+            480,
+            42 + workMeasurements.reduce((total, measurement) => total + measurement.estimate, 0),
+          )
+        : 42,
+      renderCost: Math.min(
+        16,
+        Math.max(
+          1,
+          workMeasurements.reduce((total, measurement) => total + measurement.renderCost, 0),
+        ),
+      ),
+      gapAfter: ASSISTANT_UNIT_GAP_PX,
+      anchorUserKey,
+      live,
+      mutable: false,
+      renderMode,
+      compacted,
+      showAvatar: true,
+      unit: {
+        kind: "work-trace",
+        durationMs:
+          !live && timestamp !== undefined && retryTarget?.timestamp !== undefined
+            ? Math.max(0, timestamp - retryTarget.timestamp)
+            : undefined,
+        entries: layout.work,
+        latestThinkingKey,
+      },
     });
-  });
+  }
+
+  for (const entry of layout.answer) {
+    const measurement = measureBlockUnit(entry.block);
+    rows.push({
+      kind: "assistant-unit",
+      key: `${replyKey}:round:${entry.roundKey}:block:${entry.block.key}`,
+      replyKey,
+      estimate: measurement.estimate,
+      renderCost: measurement.renderCost,
+      gapAfter: ASSISTANT_UNIT_GAP_PX,
+      anchorUserKey,
+      live,
+      mutable: false,
+      renderMode,
+      compacted,
+      showAvatar: rows.length === 0,
+      unit: {
+        kind: "block",
+        block: entry.block,
+        roundMeta: entry.roundMeta,
+        runningToolCallIds: entry.runningToolCallIds,
+        thinkingOpen: entry.thinkingOpen,
+        isLatestThinking: false,
+        isRoundTail: roundTailKeys.get(entry.roundKey) === entry.key,
+        hasRunningToolCall: hasRunningToolCall([entry.block], entry.runningToolCallIds),
+      },
+    });
+  }
 
   if (live) {
     const contentTailIndex = rows.length - 1;
@@ -444,21 +438,6 @@ function buildAssistantUnits(input: BuildAssistantUnitsInput): AssistantUnitRow[
         mutable: true,
       };
     }
-    rows.push({
-      kind: "assistant-unit",
-      key: `${replyKey}:footer`,
-      replyKey,
-      estimate: rows.length === 0 ? 64 : 32,
-      renderCost: 1,
-      gapAfter: TRANSCRIPT_ROW_GAP_PX,
-      anchorUserKey,
-      live: true,
-      mutable: true,
-      renderMode,
-      compacted,
-      showAvatar: rows.length === 0,
-      unit: { kind: "status" },
-    });
   } else {
     const changedFilesCandidate = hasChangedFilesCandidate(rounds);
     const contentTailIndex = rows.length - 1;
@@ -686,7 +665,13 @@ export function createTranscriptRowModel(options?: TranscriptRowModelOptions): T
       const adopted = adoptSettledTwin(historyItems, activeTurn);
       if (adopted) {
         activeTurn = null;
-      } else if (activeTurn.lastLiveUnits.some((row) => row.unit.kind === "block")) {
+      } else if (
+        activeTurn.lastLiveUnits.some(
+          (row) =>
+            row.unit.kind === "block" ||
+            (row.unit.kind === "work-trace" && row.unit.entries.length > 0),
+        )
+      ) {
         // 产出过内容 ⟹ 真实回复必将持久化：孪生行尚未落库（persist 滞后）时
         // 登记 pendingSettle，待其落库后按同一 replyKey 认领（零 remount）。
         pendingSettle = {
