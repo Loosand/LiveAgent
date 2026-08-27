@@ -140,7 +140,7 @@ export function HostedSearchGroupView({
 
   return (
     <section
-      className="max-w-2xl text-muted-foreground"
+      className="group/search-trace max-w-2xl text-foreground/60"
       aria-busy={active}
       data-hosted-search-trace=""
     >
@@ -148,15 +148,15 @@ export function HostedSearchGroupView({
         type="button"
         aria-expanded={expanded}
         aria-label={expanded ? t("chat.search.collapseActivity") : t("chat.search.expandActivity")}
-        className="-ml-1 flex h-auto max-w-full items-center gap-2 rounded-md px-1 py-1 text-[calc(13px*var(--zone-font-scale,1))] text-muted-foreground transition-colors hover:bg-muted/70 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        className="-ml-1 flex h-auto max-w-full items-center gap-2 rounded-md px-1 py-1 text-[calc(13px*var(--zone-font-scale,1))] font-[450] text-foreground/60 transition-colors hover:bg-foreground/[0.035] hover:text-foreground/75 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         onClick={() => setExpanded((current) => !current)}
       >
-        <span aria-hidden="true" className="flex h-4 w-4 shrink-0 items-center justify-center">
-          <Globe className="h-[15px] w-[15px]" />
+        <span aria-hidden="true" className="flex h-3.5 w-3.5 shrink-0 items-center justify-center">
+          <Globe className="h-3 w-3 text-foreground/45" />
         </span>
         <span
           className={cn(
-            "min-w-0 truncate font-medium",
+            "min-w-0 truncate",
             active && "shimmer",
             status === "failed" && "text-destructive",
           )}
@@ -166,7 +166,7 @@ export function HostedSearchGroupView({
         <ChevronDown
           aria-hidden="true"
           className={cn(
-            "h-3.5 w-3.5 shrink-0 transition-transform duration-200 motion-reduce:transition-none",
+            "h-3 w-3 shrink-0 text-foreground/40 opacity-0 transition-[opacity,transform] duration-150 group-hover/search-trace:opacity-100 group-focus-within/search-trace:opacity-100 motion-reduce:transition-none",
             expanded && "rotate-180",
           )}
         />

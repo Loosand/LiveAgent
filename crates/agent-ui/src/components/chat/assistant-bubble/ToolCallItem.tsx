@@ -266,9 +266,7 @@ function ToolCallItem({
                 : t("chat.tool.waiting");
 
   const statusTextClass =
-    result?.isError || shellSessionFailed
-      ? "text-[hsl(var(--chat-error))]"
-      : "text-muted-foreground/60";
+    result?.isError || shellSessionFailed ? "text-[hsl(var(--chat-error))]" : "text-foreground/45";
 
   useEffect(() => {
     if (readOnly || isRedactedToolContent) return;
@@ -296,7 +294,7 @@ function ToolCallItem({
       ? firstLinePreview
       : toolArgsSummary || title.action;
   const summaryClassName = cn(
-    "flex select-none items-center gap-2 text-left",
+    "flex select-none items-center gap-1.5 text-left",
     compactChip
       ? "group/tool -mx-[3px] min-h-7 w-[calc(100%+6px)] rounded-lg px-[3px] py-1 transition-colors duration-150 hover:bg-foreground/[0.04]"
       : "w-full py-1.5",
@@ -304,12 +302,12 @@ function ToolCallItem({
   );
   const summaryContent = simpleFileOperation ? (
     <>
-      <ToolIcon className="h-3.5 w-3.5 shrink-0 text-muted-foreground/60" />
+      <ToolIcon className="h-3 w-3 shrink-0 text-foreground/45" />
       <span
         className={cn(
-          "shrink-0 font-normal text-muted-foreground/85",
+          "shrink-0 font-[450] text-foreground/62",
           compactChip
-            ? "text-[calc(12.5px*var(--zone-font-scale,1))]"
+            ? "text-[calc(13px*var(--zone-font-scale,1))]"
             : "text-[calc(13px*var(--zone-font-scale,1))]",
           displayIsRunning && "animate-pulse",
         )}
@@ -318,10 +316,10 @@ function ToolCallItem({
       </span>
       <span
         className={cn(
-          "inline-flex min-w-0 flex-1 items-center gap-2 font-mono text-muted-foreground/65",
+          "inline-flex min-w-0 flex-1 items-center gap-2 font-mono text-foreground/52",
           compactChip
             ? "h-[22px] text-[calc(11.5px*var(--zone-font-scale,1))]"
-            : "text-[calc(11px*var(--zone-font-scale,1))]",
+            : "text-[calc(11.5px*var(--zone-font-scale,1))]",
         )}
       >
         <FileOperationTarget
@@ -340,29 +338,24 @@ function ToolCallItem({
     </>
   ) : compactChip ? (
     <>
-      <span className="relative flex h-4 w-4 shrink-0 items-center justify-center text-muted-foreground/60">
-        <ToolIcon
-          className={cn(
-            "h-3.5 w-3.5 transition-opacity duration-150 group-hover/tool:opacity-0",
-            effectiveOpen ? "opacity-0" : "",
-          )}
-        />
+      <span className="relative flex h-3.5 w-3.5 shrink-0 items-center justify-center text-foreground/45">
+        <ToolIcon className="h-3 w-3 transition-opacity duration-150 group-hover/tool:opacity-0 group-focus-within/tool:opacity-0" />
         {canExpand ? (
           <ChevronRight
             className={cn(
-              "absolute h-3 w-3 opacity-0 transition-[opacity,transform] duration-150 group-hover/tool:opacity-100",
-              effectiveOpen ? "rotate-90 opacity-100" : "",
+              "absolute h-3 w-3 opacity-0 transition-[opacity,transform] duration-150 group-hover/tool:opacity-100 group-focus-within/tool:opacity-100",
+              effectiveOpen ? "rotate-90" : "",
             )}
           />
         ) : null}
       </span>
 
-      <span className="shrink-0 text-[calc(12.5px*var(--zone-font-scale,1))] font-normal text-muted-foreground/85">
+      <span className="shrink-0 text-[calc(13px*var(--zone-font-scale,1))] font-[450] text-foreground/62">
         {summaryTitleName}
       </span>
 
       {compactChipText || fileChangeStats ? (
-        <span className="inline-flex h-[22px] min-w-0 flex-1 items-center gap-2 font-mono text-[calc(11.5px*var(--zone-font-scale,1))] text-muted-foreground/60">
+        <span className="inline-flex h-[22px] min-w-0 flex-1 items-center gap-2 font-mono text-[calc(11.5px*var(--zone-font-scale,1))] text-foreground/48">
           {compactChipText ? (
             <span
               className="min-w-0 flex-1 truncate"
@@ -393,7 +386,7 @@ function ToolCallItem({
     </>
   ) : (
     <>
-      <ToolIcon className="h-3.5 w-3.5 shrink-0 text-muted-foreground/60 group-hover/tool:text-foreground/75" />
+      <ToolIcon className="h-3 w-3 shrink-0 text-foreground/45 group-hover/tool:text-foreground/65" />
 
       {/* Tool name + inline summary on same line. Name and summary must stay in
           one inline context (shared baseline): centering them as separate flex
@@ -402,13 +395,13 @@ function ToolCallItem({
         {/* Container carries the summary styling so the truncation ellipsis
             (styled per the block container) matches the summary text */}
         <div
-          className="min-w-0 truncate font-mono text-[calc(11px*var(--zone-font-scale,1))] leading-5 text-muted-foreground/55"
+          className="min-w-0 truncate font-mono text-[calc(11.5px*var(--zone-font-scale,1))] leading-5 text-foreground/48"
           title={inlineCommandTitle || toolArgsSummary || undefined}
         >
-          <span className="font-sans text-[calc(13px*var(--zone-font-scale,1))] font-normal text-muted-foreground/80 group-hover/tool:text-foreground">
+          <span className="font-sans text-[calc(13px*var(--zone-font-scale,1))] font-[450] text-foreground/62 group-hover/tool:text-foreground/75">
             {summaryTitleName}
             {title.action ? (
-              <span className="font-mono text-[calc(11px*var(--zone-font-scale,1))] font-normal text-muted-foreground/60">
+              <span className="font-mono text-[calc(11.5px*var(--zone-font-scale,1))] font-normal text-foreground/48">
                 {" · "}
                 {title.action}
               </span>
@@ -430,7 +423,7 @@ function ToolCallItem({
       <div className="flex shrink-0 items-center gap-2">
         {displayIsRunning ? (
           <AssistantStatus
-            className="min-h-0 gap-1.5 text-[calc(11px*var(--zone-font-scale,1))] text-muted-foreground/60"
+            className="min-h-0 gap-1.5 text-[calc(11px*var(--zone-font-scale,1))] text-foreground/45"
             iconClassName="h-3 w-3"
           >
             {statusLabel}
@@ -443,7 +436,7 @@ function ToolCallItem({
         {canExpand ? (
           <ChevronRight
             className={cn(
-              "h-3.5 w-3.5 text-muted-foreground/60 transition-transform duration-200 ease-out",
+              "h-3 w-3 text-foreground/40 opacity-0 transition-[opacity,transform] duration-150 ease-out group-hover/tool:opacity-100 group-focus-within/tool:opacity-100",
               effectiveOpen ? "rotate-90" : "",
             )}
           />

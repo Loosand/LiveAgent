@@ -118,21 +118,21 @@ function ToolTraceGroupInner(props: {
         type="button"
         aria-expanded={open}
         aria-label={open ? t("chat.tool.collapseActivity") : t("chat.tool.expandActivity")}
-        className="-mx-1.5 flex w-fit max-w-[calc(100%+0.75rem)] cursor-pointer select-none items-center gap-1.5 rounded-lg px-1.5 py-1 text-left text-[calc(12.5px*var(--zone-font-scale,1))] text-muted-foreground/75 transition-colors duration-150 hover:bg-foreground/[0.04] hover:text-foreground/80"
+        className="-mx-1.5 flex w-fit max-w-[calc(100%+0.75rem)] cursor-pointer select-none items-center gap-1.5 rounded-lg px-1.5 py-1 text-left text-[calc(13px*var(--zone-font-scale,1))] font-[450] text-foreground/60 transition-colors duration-150 hover:bg-foreground/[0.035] hover:text-foreground/75"
         onClick={() => setOpen((prev) => !prev)}
       >
-        <BatchIcon className="h-3.5 w-3.5 shrink-0 text-muted-foreground/60" />
+        <BatchIcon className="h-3 w-3 shrink-0 text-foreground/45" />
         <span className="min-w-0 truncate">{countLabel}</span>
         <ChevronRight
           className={cn(
-            "h-3 w-3 shrink-0 text-muted-foreground/60 transition-transform duration-200 ease-out",
+            "h-3 w-3 shrink-0 text-foreground/40 opacity-0 transition-[opacity,transform] duration-150 ease-out group-hover/tool-trace:opacity-100 group-focus-within/tool-trace:opacity-100",
             open ? "rotate-90" : "",
           )}
         />
         {showStatus ? (
-          <span className="shrink-0 text-[calc(10.5px*var(--zone-font-scale,1))] text-muted-foreground/50">
+          <span className="shrink-0 text-[calc(11px*var(--zone-font-scale,1))] text-foreground/45">
             {counts.running > 0 ? (
-              <AssistantStatus className="min-h-0 text-[calc(10.5px*var(--zone-font-scale,1))] text-muted-foreground/50">
+              <AssistantStatus className="min-h-0 text-[calc(11px*var(--zone-font-scale,1))] text-foreground/45">
                 {statusLabel}
               </AssistantStatus>
             ) : (

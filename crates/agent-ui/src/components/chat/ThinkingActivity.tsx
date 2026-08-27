@@ -26,10 +26,10 @@ export function ThinkingActivity() {
     <div
       aria-busy="true"
       aria-live="polite"
-      className="flex items-center gap-2 py-1 text-[calc(13px*var(--zone-font-scale,1))] text-muted-foreground"
+      className="flex items-center gap-2 py-1 text-[calc(13px*var(--zone-font-scale,1))] font-[450] text-foreground/60"
       data-thinking-status=""
     >
-      <Brain className="h-[15px] w-[15px] shrink-0" />
+      <Brain className="h-3 w-3 shrink-0 text-foreground/45" />
       <span className="shimmer">{label}</span>
     </div>
   );

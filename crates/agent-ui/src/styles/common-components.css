@@ -22,10 +22,12 @@
  * Reading rhythm: body 14/22, H1 22/30, H2 17/26, H3 14/22. */
 .chat-markdown {
   @apply text-[calc(14px*var(--zone-font-scale,1))] leading-[calc(22px*var(--zone-font-scale,1))] tracking-[0] text-foreground;
+  font-weight: 450;
 }
 
 .chat-markdown p {
   @apply my-0 min-w-0 max-w-full break-words text-[calc(14px*var(--zone-font-scale,1))] leading-[calc(22px*var(--zone-font-scale,1))] tracking-[0] text-foreground [overflow-wrap:anywhere];
+  font-weight: 450;
 }
 
 .chat-markdown p + p {
@@ -34,7 +36,7 @@
 
 .chat-markdown strong,
 .chat-markdown [data-streamdown="strong"] {
-  @apply font-semibold text-foreground;
+  @apply font-medium text-foreground;
 }
 
 .chat-markdown em {
@@ -76,7 +78,7 @@
 
 /* Inline code */
 .chat-markdown [data-streamdown="inline-code"] {
-  @apply whitespace-pre-wrap break-words rounded-[5px] border-0 bg-foreground/[0.055] px-1.5 py-px font-mono text-[0.9em] font-normal leading-[1.45] text-foreground/90 [overflow-wrap:anywhere];
+  @apply whitespace-pre-wrap break-words rounded-[4px] border-0 bg-foreground/[0.085] px-[5px] py-px font-mono text-[0.92em] font-normal leading-[1.45] text-foreground/95 [overflow-wrap:anywhere];
 }
 
 /* Code blocks — container, header, body */
@@ -130,6 +132,7 @@
 }
 .chat-markdown [data-streamdown="list-item"] {
   @apply min-w-0 max-w-full break-words py-0 pl-0 text-[calc(14px*var(--zone-font-scale,1))] leading-[calc(22px*var(--zone-font-scale,1))] [overflow-wrap:anywhere];
+  font-weight: 450;
 }
 .chat-markdown .contains-task-list {
   @apply list-none pl-0;
@@ -165,6 +168,7 @@
 }
 .chat-markdown [data-streamdown="table-cell"] {
   @apply border-0 border-b border-border/35 px-0 py-2 pr-8 text-left align-middle text-[calc(14px*var(--zone-font-scale,1))] leading-[calc(22px*var(--zone-font-scale,1))] text-foreground/88;
+  font-weight: 450;
 }
 .chat-markdown [data-streamdown="table-body"] [data-streamdown="table-row"]:nth-child(even) {
   @apply bg-transparent;

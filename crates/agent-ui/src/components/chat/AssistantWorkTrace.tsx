@@ -105,22 +105,22 @@ export function AssistantWorkTrace({
   const header = (
     <>
       {running ? <WorkPixelGrid active /> : null}
-      <span className={cn(running ? "shimmer" : "text-muted-foreground")}>{label}</span>
+      <span className={cn(running ? "shimmer" : "text-foreground/65")}>{label}</span>
       {hasDetails ? (
         <ChevronDown
           className={cn(
-            "h-[13px] w-[13px] shrink-0 transition-transform duration-200 motion-reduce:transition-none",
+            "h-3 w-3 shrink-0 text-foreground/40 opacity-0 transition-[opacity,transform] duration-150 group-hover/work-trace:opacity-100 group-focus-visible/work-trace:opacity-100 motion-reduce:transition-none",
             !expanded && "-rotate-90",
           )}
         />
       ) : null}
-      <span aria-hidden="true" className="h-px min-w-8 flex-1 bg-border/65" />
+      <span aria-hidden="true" className="h-px min-w-8 flex-1 bg-foreground/10" />
     </>
   );
 
   return (
     <section
-      className={cn("my-2 text-muted-foreground", className)}
+      className={cn("my-2 text-foreground/60", className)}
       aria-label={t("chat.work.activity")}
       aria-busy={running}
       data-chat-work-trace=""
@@ -128,14 +128,14 @@ export function AssistantWorkTrace({
       {hasDetails ? (
         <button
           type="button"
-          className="flex w-full items-center gap-2 rounded-lg py-1 text-[calc(13px*var(--zone-font-scale,1))] font-medium transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          className="group/work-trace flex w-full items-center gap-2 rounded-lg py-1 text-[calc(13px*var(--zone-font-scale,1))] font-[450] transition-colors hover:text-foreground/75 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           aria-expanded={expanded}
           onClick={() => setExpanded((current) => !current)}
         >
           {header}
         </button>
       ) : (
-        <div className="flex items-center gap-2 py-1 text-[calc(13px*var(--zone-font-scale,1))] font-medium">
+        <div className="flex items-center gap-2 py-1 text-[calc(13px*var(--zone-font-scale,1))] font-[450]">
           {header}
         </div>
       )}

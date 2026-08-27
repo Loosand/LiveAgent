@@ -40,7 +40,7 @@ test("desktop retry details render only in the stable live-status unit", () => {
 });
 
 test("standalone work trace aligns its header with the assistant avatar", () => {
-  assert.match(workTraceSource, /className=\{cn\("my-2 text-muted-foreground", className\)\}/);
+  assert.match(workTraceSource, /className=\{cn\("my-2 text-foreground\/60", className\)\}/);
   assert.match(
     bubbleSource,
     /<AssistantWorkTrace[\s\S]*?className="mb-3 mt-0"[\s\S]*?hasDetails=/,
