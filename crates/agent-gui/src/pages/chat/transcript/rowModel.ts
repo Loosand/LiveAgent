@@ -60,7 +60,7 @@ export type AssistantWorkTraceRenderUnit = {
   kind: "work-trace";
   durationMs?: number;
   entries: AssistantTurnLayoutEntry[];
-  latestThinkingKey: string | null;
+  latestToolGroupKey: string | null;
 };
 
 export type AssistantFooterRenderUnit = {
@@ -278,7 +278,7 @@ function canReuseLiveUnit(previous: AssistantUnitRow, next: AssistantUnitRow) {
             sameGroupedBlock(entry.block, nextEntry.block),
         );
       }) &&
-      previous.unit.latestThinkingKey === nextWorkTrace.latestThinkingKey
+      previous.unit.latestToolGroupKey === nextWorkTrace.latestToolGroupKey
     );
   }
 
@@ -349,15 +349,15 @@ function buildAssistantUnits(input: BuildAssistantUnitsInput): AssistantUnitRow[
   } = input;
   const rows: AssistantUnitRow[] = [];
   const layout = resolveAssistantTurnLayout(rounds, { live });
-  const visibleEntries = [...layout.work, ...layout.answer];
+  const visibleEntries = [...layout.work, ...layout.interaction, ...layout.answer];
   const roundTailKeys = new Map<string, string>();
   for (const entry of visibleEntries) roundTailKeys.set(entry.roundKey, entry.key);
 
-  let latestThinkingKey: string | null = null;
+  let latestToolGroupKey: string | null = null;
   for (let index = layout.work.length - 1; index >= 0; index -= 1) {
     const entry = layout.work[index];
-    if (entry?.block.kind === "thinking") {
-      latestThinkingKey = entry.key;
+    if (entry?.block.kind === "toolGroup") {
+      latestToolGroupKey = entry.key;
       break;
     }
   }
@@ -395,12 +395,12 @@ function buildAssistantUnits(input: BuildAssistantUnitsInput): AssistantUnitRow[
             ? Math.max(0, timestamp - retryTarget.timestamp)
             : undefined,
         entries: layout.work,
-        latestThinkingKey,
+        latestToolGroupKey,
       },
     });
   }
 
-  for (const entry of layout.answer) {
+  for (const entry of [...layout.interaction, ...layout.answer]) {
     const measurement = measureBlockUnit(entry.block);
     rows.push({
       kind: "assistant-unit",

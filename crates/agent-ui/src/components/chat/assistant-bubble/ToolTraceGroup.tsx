@@ -19,7 +19,10 @@ import {
   Wrench,
 } from "../../IconSet";
 import {
+  compactInlineText,
+  getFileOperationDisplay,
   getToolActivityCategory,
+  getToolDisplayName,
   getToolTraceKey,
   hasActiveUserInteraction,
   type ToolActivityCategory,
@@ -71,12 +74,71 @@ const TOOL_BATCH_ICONS: Record<ToolActivityCategory, IconComponent> = {
   other: Wrench,
 };
 
+function stringArgument(item: ToolTraceItem, ...keys: string[]): string {
+  const args = item.toolCall.arguments || {};
+  for (const key of keys) {
+    const value = args[key];
+    if (typeof value === "string" && value.trim()) return value.trim();
+  }
+  return "";
+}
+
+function getRunningToolTarget(item: ToolTraceItem) {
+  const fileOperation = getFileOperationDisplay(item);
+  if (fileOperation) return fileOperation.fileName;
+
+  const name = getToolDisplayName(item.toolCall.name);
+  const target =
+    name === "Bash"
+      ? stringArgument(item, "command").split("\n")[0]
+      : name === "Glob" || name === "Grep"
+        ? stringArgument(item, "pattern", "query", "path")
+        : name === "ToolSearch"
+          ? stringArgument(item, "query", "pattern", "name")
+          : name === "List"
+            ? stringArgument(item, "path") || "."
+            : name === "Agent"
+              ? stringArgument(item, "name", "id", "prompt")
+              : name === "SendMessage"
+                ? stringArgument(item, "to", "channel", "subject")
+                : stringArgument(item, "path", "label", "name", "query", "action", "command");
+
+  return compactInlineText(target, 112);
+}
+
+function getRunningToolActivity(item: ToolTraceItem, t: (key: string) => string) {
+  const fileOperation = getFileOperationDisplay(item);
+  const category = getToolActivityCategory(item.toolCall.name);
+  const action = fileOperation
+    ? t(`chat.tool.file.${fileOperation.kind}.running`)
+    : category === "other"
+      ? t("chat.tool.activity.other.running")
+      : t(`chat.tool.activity.${category}.running`);
+  const target = getRunningToolTarget(item);
+
+  return {
+    category,
+    label: target ? `${action} ${target}` : action,
+  };
+}
+
+function findLatestRunningTool(items: ToolTraceItem[], runningToolCallIds: string[]) {
+  if (runningToolCallIds.length === 0) return null;
+  const runningIds = new Set(runningToolCallIds);
+  for (let index = items.length - 1; index >= 0; index -= 1) {
+    const item = items[index];
+    if (item?.toolCall.id && runningIds.has(item.toolCall.id)) return item;
+  }
+  return null;
+}
+
 function ToolTraceGroupInner(props: {
   items: ToolTraceItem[];
   runningToolCallIds?: string[];
   readOnly?: boolean;
   redactToolContent?: boolean;
   onOpenFileLink?: (link: ChatFileLink) => void;
+  showTurnStatus?: boolean;
 }) {
   const {
     items,
@@ -84,6 +146,7 @@ function ToolTraceGroupInner(props: {
     readOnly = false,
     redactToolContent = false,
     onOpenFileLink,
+    showTurnStatus = false,
   } = props;
   const { locale, t } = useLocale();
   const counts = useMemo(
@@ -96,9 +159,13 @@ function ToolTraceGroupInner(props: {
     [items, runningToolCallIds],
   );
   const [open, setOpen] = useAttentionDisclosure(attentionRequired);
+  const showThinkingStatus = showTurnStatus && counts.running === 0;
 
-  const statusLabel =
-    counts.failed > 0
+  const statusLabel = showTurnStatus
+    ? counts.running > 0
+      ? t("chat.tool.running")
+      : t("chat.thinking")
+    : counts.failed > 0
       ? `${counts.failed} ${t("chat.tool.failed")}`
       : counts.running > 0
         ? `${counts.running} ${t("chat.tool.running")}`
@@ -109,8 +176,15 @@ function ToolTraceGroupInner(props: {
   const countLabel = batchCounts
     .map(({ category }) => t(`chat.tool.batch.${category}`))
     .join(locale === "zh-CN" ? "" : " ");
-  const showStatus = counts.failed > 0 || counts.running > 0 || counts.waiting > 0;
-  const BatchIcon = TOOL_BATCH_ICONS[batchCounts[0]?.category ?? "other"];
+  const runningActivity = useMemo(() => {
+    const item = findLatestRunningTool(items, runningToolCallIds);
+    return item ? getRunningToolActivity(item, t) : null;
+  }, [items, runningToolCallIds, t]);
+  const headerLabel = runningActivity?.label ?? countLabel;
+  const showStatus =
+    counts.failed > 0 || counts.running > 0 || counts.waiting > 0 || showThinkingStatus;
+  const BatchIcon =
+    TOOL_BATCH_ICONS[runningActivity?.category ?? batchCounts[0]?.category ?? "other"];
 
   return (
     <div className="group/tool-trace min-w-0 max-w-full pb-1">
@@ -122,7 +196,7 @@ function ToolTraceGroupInner(props: {
         onClick={() => setOpen((prev) => !prev)}
       >
         <BatchIcon className="h-3 w-3 shrink-0 text-foreground/45" />
-        <span className="min-w-0 truncate">{countLabel}</span>
+        <span className="min-w-0 truncate">{headerLabel}</span>
         <ChevronRight
           className={cn(
             "h-3 w-3 shrink-0 text-foreground/40 opacity-0 transition-[opacity,transform] duration-150 ease-out group-hover/tool-trace:opacity-100 group-focus-within/tool-trace:opacity-100",
@@ -131,7 +205,7 @@ function ToolTraceGroupInner(props: {
         />
         {showStatus ? (
           <span className="shrink-0 text-[calc(11px*var(--zone-font-scale,1))] text-foreground/45">
-            {counts.running > 0 ? (
+            {showTurnStatus ? (
               <AssistantStatus className="min-h-0 text-[calc(11px*var(--zone-font-scale,1))] text-foreground/45">
                 {statusLabel}
               </AssistantStatus>
@@ -145,7 +219,10 @@ function ToolTraceGroupInner(props: {
       <LazyCollapse open={open} retainWhileClosed={retainRunningToolContent && counts.running > 0}>
         {() => (
           <div className="-mx-1 overflow-hidden px-1.5 pb-1 pt-1">
-            <div className="flex flex-col gap-1">
+            <div
+              data-tool-trace-scroll=""
+              className="flex max-h-[400px] flex-col gap-1 overflow-y-auto overscroll-contain pr-1 [scrollbar-gutter:stable]"
+            >
               {items.map((item, index) => (
                 <MemoToolCallItem
                   key={getToolTraceKey(item, index)}
@@ -181,6 +258,7 @@ export const ToolTraceGroup = memo(
   (previous, next) =>
     previous.readOnly === next.readOnly &&
     previous.redactToolContent === next.redactToolContent &&
+    previous.showTurnStatus === next.showTurnStatus &&
     previous.onOpenFileLink === next.onOpenFileLink &&
     previous.items.length === next.items.length &&
     previous.items.every(

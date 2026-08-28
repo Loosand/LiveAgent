@@ -9,10 +9,6 @@ const roundContentSource = fs.readFileSync(
   ),
   "utf8",
 );
-const thinkingSource = fs.readFileSync(
-  new URL("../../../agent-ui/src/components/chat/ThinkingActivity.tsx", import.meta.url),
-  "utf8",
-);
 const hostedSearchSource = fs.readFileSync(
   new URL("../../../agent-ui/src/components/chat/HostedSearchGroupView.tsx", import.meta.url),
   "utf8",
@@ -51,7 +47,6 @@ test("tool and operation blocks share clear vertical separation from prose", () 
 });
 
 test("operation components defer outer spacing to the shared block wrapper", () => {
-  assert.doesNotMatch(thinkingSource, /className="[^"]*\bmy-/);
   assert.doesNotMatch(hostedSearchSource, /className="[^"]*\bmy-/);
 });
 
@@ -72,7 +67,6 @@ test("inline code uses the higher-contrast transcript treatment", () => {
 });
 
 test("operation rows use compact icons and reveal disclosure chevrons on intent", () => {
-  assert.match(thinkingSource, /Brain className="h-3 w-3/);
   assert.match(hostedSearchSource, /Globe className="h-3 w-3/);
   assert.match(toolTraceSource, /BatchIcon className="h-3 w-3/);
   assert.match(toolCallSource, /ToolIcon className="h-3 w-3/);

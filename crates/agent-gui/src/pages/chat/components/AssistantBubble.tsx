@@ -35,10 +35,6 @@ export const AssistantBubbleUnit = memo(function AssistantBubbleUnit(props: {
     unit.kind === "work-trace"
       ? unit.entries.filter((entry) => entry.block.kind !== "thinking")
       : [];
-  const activeThinkingEntry =
-    unit.kind === "work-trace"
-      ? (unit.entries.find((entry) => entry.key === unit.latestThinkingKey) ?? null)
-      : null;
 
   // 只有仍在直播的状态单元才渲染转圈状态行。落定交接阶段的同一单元
   // (live:false) 若继续渲染，会在底部留下一个永远旋转的 spinner——运行早已
@@ -90,20 +86,6 @@ export const AssistantBubbleUnit = memo(function AssistantBubbleUnit(props: {
             durationMs={unit.durationMs}
             hasDetails={workTraceDetailEntries.length > 0 || isCompactionRunning}
             running={row.live}
-            activeStatus={
-              activeThinkingEntry ? (
-                <RoundBlockContent
-                  block={activeThinkingEntry.block}
-                  isLive={row.live}
-                  renderMode={row.renderMode}
-                  runningToolCallIds={activeThinkingEntry.runningToolCallIds}
-                  thinkingOpen={activeThinkingEntry.thinkingOpen}
-                  isLatestThinking
-                  workdir={workdir}
-                  onOpenFileLink={onOpenFileLink}
-                />
-              ) : null
-            }
           >
             {workTraceDetailEntries.map((entry) => (
               <RoundBlockContent
@@ -113,7 +95,8 @@ export const AssistantBubbleUnit = memo(function AssistantBubbleUnit(props: {
                 renderMode={row.renderMode}
                 runningToolCallIds={entry.runningToolCallIds}
                 thinkingOpen={row.live ? entry.thinkingOpen : true}
-                isLatestThinking={entry.key === unit.latestThinkingKey}
+                isLatestThinking={false}
+                showTurnStatus={row.live && entry.key === unit.latestToolGroupKey}
                 workdir={workdir}
                 onOpenFileLink={onOpenFileLink}
               />

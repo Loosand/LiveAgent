@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 
 /**
- * Keeps disclosure ownership with the user, except when a new blocking
- * interaction appears. Attention opens the disclosure once; it never closes
- * it on completion and does not fight a manual collapse while still pending.
+ * Keeps disclosure ownership with the user after its initial state is chosen.
+ * A new blocking interaction may open it once; completion never closes it and
+ * a still-pending interaction does not fight a later manual collapse.
  */
-export function useAttentionDisclosure(attentionRequired: boolean) {
-  const [open, setOpen] = useState(attentionRequired);
+export function useAttentionDisclosure(attentionRequired: boolean, defaultOpen = false) {
+  const [open, setOpen] = useState(() => defaultOpen || attentionRequired);
 
   useEffect(() => {
     if (attentionRequired) setOpen(true);

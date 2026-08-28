@@ -457,7 +457,7 @@ test("turn layout omits reasoning text and merges tool fragments into readable s
   );
 });
 
-test("live turn keeps only a text-free marker for the active thinking phase", () => {
+test("live turn omits reasoning rows while keeping the tool-group anchor stable", () => {
   const layout = resolveAssistantTurnLayout(
     [
       {
@@ -466,6 +466,7 @@ test("live turn keeps only a text-free marker for the active thinking phase", ()
         thinkingOpen: true,
         blocks: [
           { kind: "thinking", id: "thinking-1", text: "a very long private reasoning stream" },
+          toolBlock("read-1", "Read", "ok"),
         ],
       },
     ],
@@ -473,22 +474,72 @@ test("live turn keeps only a text-free marker for the active thinking phase", ()
   );
 
   assert.equal(layout.work.length, 1);
-  assert.equal(layout.work[0].block.kind, "thinking");
-  assert.equal(layout.work[0].block.text, "");
+  assert.equal(layout.work[0].block.kind, "toolGroup");
+  assert.equal(layout.work.some((entry) => entry.block.kind === "thinking"), false);
 
-  const settled = resolveAssistantTurnLayout(
+  const betweenTools = resolveAssistantTurnLayout(
     [
       {
         round: 1,
         key: "r1",
         thinkingOpen: false,
-        blocks: [{ kind: "thinking", id: "thinking-1", text: "finished reasoning" }],
-        meta: { stopReason: "stop" },
+        blocks: [
+          { kind: "thinking", id: "thinking-1", text: "finished reasoning" },
+          toolBlock("read-1", "Read", "ok"),
+        ],
       },
     ],
-    { live: false },
+    { live: true },
   );
-  assert.equal(settled.work.length, 0);
+  assert.equal(betweenTools.work[0].key, layout.work[0].key);
+  assert.equal(betweenTools.work.some((entry) => entry.block.kind === "thinking"), false);
+});
+
+test("interactive prose and cards render outside the processing disclosure", () => {
+  const liveRound = {
+    round: 1,
+    key: "r1",
+    thinkingOpen: false,
+    runningToolCallIds: ["ask-1"],
+    blocks: [
+      { kind: "thinking", id: "thinking-1", text: "inspect" },
+      toolBlock("read-1", "Read", "ok"),
+      { kind: "text", id: "question-context", text: "I need you to choose the target." },
+      toolBlock("ask-1", "AskUserQuestion"),
+    ],
+    meta: { stopReason: "toolUse" },
+  };
+  const layout = resolveAssistantTurnLayout([liveRound], { live: true });
+
+  assert.deepEqual(
+    layout.work.map((entry) => entry.block.kind),
+    ["toolGroup"],
+  );
+  assert.deepEqual(
+    layout.interaction.map((entry) => entry.block.kind),
+    ["text", "tool"],
+  );
+  assert.equal(layout.interaction[1].block.item.toolCall.name, "AskUserQuestion");
+  assert.equal(layout.answer.length, 0);
+
+  const model = createTranscriptRowModel();
+  const snapshot = model.build([userItem("u1")], {
+    ...idleLive,
+    isSending: true,
+    liveRounds: [liveRound],
+  });
+  assert.deepEqual(
+    workTraceRows(snapshot)[0].unit.entries.map((entry) => entry.block.kind),
+    ["toolGroup"],
+  );
+  assert.equal(
+    workTraceRows(snapshot)[0].unit.latestToolGroupKey,
+    workTraceRows(snapshot)[0].unit.entries[0].key,
+  );
+  assert.deepEqual(
+    blockRows(snapshot).map((row) => row.unit.block.kind),
+    ["text", "tool"],
+  );
 });
 
 test("failed operations stay inspectable in the trace while the failure summary remains outside", () => {

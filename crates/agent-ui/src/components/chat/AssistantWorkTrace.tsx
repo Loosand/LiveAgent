@@ -2,6 +2,7 @@ import { ChevronDown } from "@liveagent/ui/components/IconSet";
 import { useLocale } from "@liveagent/ui/i18n/index";
 import { cn } from "@liveagent/ui/lib/shared/utils";
 import { type CSSProperties, type ReactNode, useEffect, useRef, useState } from "react";
+import { LazyCollapse } from "./LazyCollapse";
 import { useAttentionDisclosure } from "./useAttentionDisclosure";
 
 const PIXEL_KEYS = [
@@ -74,7 +75,7 @@ export function AssistantWorkTrace({
   running: boolean;
 }) {
   const { t } = useLocale();
-  const [expanded, setExpanded] = useAttentionDisclosure(attentionRequired);
+  const [expanded, setExpanded] = useAttentionDisclosure(attentionRequired, running);
   const [elapsedMs, setElapsedMs] = useState(durationMs ?? 0);
   const startedAtRef = useRef<number | null>(running ? Date.now() : null);
 
@@ -140,7 +141,9 @@ export function AssistantWorkTrace({
         </div>
       )}
 
-      {hasDetails && expanded ? <div className="mt-1">{children}</div> : null}
+      {hasDetails ? (
+        <LazyCollapse open={expanded}>{() => <div className="mt-1">{children}</div>}</LazyCollapse>
+      ) : null}
       {activeStatus}
     </section>
   );

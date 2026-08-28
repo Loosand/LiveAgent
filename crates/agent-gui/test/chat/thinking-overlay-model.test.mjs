@@ -6,13 +6,16 @@ import { createTsModuleLoader } from "../helpers/load-ts-module.mjs";
 const { resolveThinkingOverlayPlacement } = createTsModuleLoader().loadModule(
   "@liveagent/ui/lib/chat/thinkingOverlayModel.ts",
 );
-const componentSource = fs.readFileSync(
-  new URL("../../../agent-ui/src/components/chat/ThinkingActivity.tsx", import.meta.url),
-  "utf8",
-);
 const roundContentSource = fs.readFileSync(
   new URL(
     "../../../agent-ui/src/components/chat/assistant-bubble/RoundContent.tsx",
+    import.meta.url,
+  ),
+  "utf8",
+);
+const toolTraceSource = fs.readFileSync(
+  new URL(
+    "../../../agent-ui/src/components/chat/assistant-bubble/ToolTraceGroup.tsx",
     import.meta.url,
   ),
   "utf8",
@@ -48,22 +51,26 @@ test("keeps a renderable overlay inside an extremely narrow viewport", () => {
   assert.ok(placement.left + placement.width <= 8);
 });
 
-test("thinking uses a lightweight live-only status instead of retaining detail text", () => {
-  assert.match(componentSource, /data-thinking-status/);
-  assert.match(componentSource, /aria-live="polite"/);
-  assert.doesNotMatch(componentSource, /Markdown/);
-  assert.doesNotMatch(componentSource, /open\?: boolean;/);
-  assert.doesNotMatch(componentSource, /userInteractedRef/);
-  assert.doesNotMatch(componentSource, /createPortal/);
-  assert.doesNotMatch(componentSource, /role="dialog"/);
-  assert.doesNotMatch(componentSource, /thinkingOverlayModel/);
+test("transcript retires the standalone thinking row in favor of the tool-group status", () => {
+  assert.doesNotMatch(roundContentSource, /ThinkingActivity/);
+  assert.doesNotMatch(roundContentSource, /activeThinkingEntry/);
+  assert.match(toolTraceSource, /showThinkingStatus/);
+  assert.match(toolTraceSource, /t\("chat\.thinking"\)/);
+  assert.match(toolTraceSource, /const statusLabel = showTurnStatus/);
+  assert.match(toolTraceSource, /\{showTurnStatus \? \(/);
 });
 
-test("GUI transcript renders only the current thinking phase below the work trace details", () => {
-  assert.match(roundContentSource, /const isRunning = isLive && thinkingOpen && isLatestThinking;/);
-  assert.match(roundContentSource, /content = isRunning \? <ThinkingActivity \/> : null;/);
-  assert.match(roundContentSource, /activeStatus=\{activeThinkingEntry/);
+test("GUI transcript keeps live interaction content outside the work trace", () => {
+  assert.match(
+    roundContentSource,
+    /layout\.interaction\.map\(\(entry\) => renderEntry\(entry, false, true\)\)/,
+  );
+  assert.match(roundContentSource, /isLive=\{running && \(insideWorkTrace \|\| liveInteraction\)\}/);
   assert.match(roundContentSource, /filter\(\(entry\) => entry\.block\.kind !== "thinking"\)/);
   assert.match(roundContentSource, /attentionRequired=\{attentionRequired\}/);
-  assert.match(roundContentSource, /hasInteractionRequiringAttention\(layout\.work\)/);
+  assert.match(
+    roundContentSource,
+    /hasInteractionRequiringAttention\(\[\.\.\.layout\.work, \.\.\.layout\.interaction\]\)/,
+  );
+  assert.match(roundContentSource, /showTurnStatus=\{insideWorkTrace && running/);
 });

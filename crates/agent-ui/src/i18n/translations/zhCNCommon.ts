@@ -365,6 +365,7 @@ export const ZH_CN_COMMON_TRANSLATIONS = {
   "chat.tool.activity.agent.running": "正在调用代理",
   "chat.tool.activity.agent.completed": "已调用代理",
   "chat.tool.activity.agent.failed": "代理失败",
+  "chat.tool.activity.other.running": "正在执行",
   "chat.tool.file.read.running": "正在读取",
   "chat.tool.file.read.completed": "已读取",
   "chat.tool.file.read.failed": "读取失败",

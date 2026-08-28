@@ -80,13 +80,17 @@ export function getToolActivityCategory(name: string): ToolActivityCategory {
 
 const ATTENTION_TOOL_NAMES = new Set(["AskUserQuestion", "ExitPlanMode"]);
 
+export function isUserInteractionToolName(name: string) {
+  return ATTENTION_TOOL_NAMES.has(name);
+}
+
 export function hasActiveUserInteraction(items: ToolTraceItem[], runningToolCallIds: string[]) {
   if (items.length === 0 || runningToolCallIds.length === 0) return false;
   const runningIds = new Set(runningToolCallIds);
   return items.some(
     (item) =>
       !item.toolResult &&
-      ATTENTION_TOOL_NAMES.has(item.toolCall.name) &&
+      isUserInteractionToolName(item.toolCall.name) &&
       Boolean(item.toolCall.id && runningIds.has(item.toolCall.id)),
   );
 }
@@ -289,6 +293,7 @@ export type AssistantTurnLayoutEntry = {
 
 export type AssistantTurnLayout = {
   work: AssistantTurnLayoutEntry[];
+  interaction: AssistantTurnLayoutEntry[];
   answer: AssistantTurnLayoutEntry[];
 };
 
@@ -322,36 +327,20 @@ function mergeRunningToolCallIds(left: string[], right: string[]) {
  * work summary. Completed thinking text is deliberately omitted from the
  * transcript: concatenating every reasoning delta into one ever-growing
  * Markdown payload made long agent turns progressively more expensive to
- * reconcile and render. Only the latest actively-thinking phase survives as a
- * text-free status marker; merge neighboring tool/search activity until a
- * visible progress note creates the next stage boundary.
+ * reconcile and render. The latest tool-group trigger carries the live phase
+ * label instead; neighboring tool/search activity is merged until a visible
+ * progress note creates the next stage boundary.
  */
 export function compactAssistantWorkEntries(
   entries: readonly AssistantTurnLayoutEntry[],
-  options: { showActiveThinking: boolean },
 ): AssistantTurnLayoutEntry[] {
   const compacted: AssistantTurnLayoutEntry[] = [];
-  let activeThinkingKey: string | null = null;
-  if (options.showActiveThinking) {
-    for (let index = entries.length - 1; index >= 0; index -= 1) {
-      const entry = entries[index];
-      if (entry?.block.kind === "thinking" && entry.thinkingOpen) {
-        activeThinkingKey = entry.key;
-        break;
-      }
-    }
-  }
 
   for (const entry of entries) {
     if (entry.block.kind === "thinking") {
-      if (entry.key === activeThinkingKey) {
-        // The UI only needs a transient phase marker. Never retain or pass the
-        // accumulated reasoning text into React's visible tree.
-        compacted.push({
-          ...entry,
-          block: { ...entry.block, text: "" },
-        });
-      }
+      // Reasoning content and phase markers stay out of the visible tree. The
+      // latest tool-group trigger owns the compact live state (运行中/思考中),
+      // so there is no second status row to blink between provider phases.
       continue;
     }
 
@@ -388,12 +377,47 @@ export function compactAssistantWorkEntries(
   return compacted;
 }
 
+function isUserInteractionBlock(block: GroupedRoundBlock) {
+  if (block.kind === "tool") {
+    return isUserInteractionToolName(block.item.toolCall.name);
+  }
+  if (block.kind === "toolGroup") {
+    return block.items.some((item) => isUserInteractionToolName(item.toolCall.name));
+  }
+  return false;
+}
+
+function splitInteractionEntries(entries: readonly AssistantTurnLayoutEntry[]) {
+  const interactionIndexes = new Set<number>();
+  for (let index = 0; index < entries.length; index += 1) {
+    const entry = entries[index];
+    if (!entry || !isUserInteractionBlock(entry.block)) continue;
+    interactionIndexes.add(index);
+
+    // A model usually explains why it needs input immediately before calling
+    // AskUserQuestion / ExitPlanMode. Keep that adjacent prose with the card so
+    // neither can disappear inside the processing disclosure.
+    for (let proseIndex = index - 1; proseIndex >= 0; proseIndex -= 1) {
+      const proseEntry = entries[proseIndex];
+      if (!proseEntry || proseEntry.block.kind !== "text") break;
+      interactionIndexes.add(proseIndex);
+    }
+  }
+
+  return {
+    background: entries.filter((_, index) => !interactionIndexes.has(index)),
+    interaction: entries.filter((_, index) => interactionIndexes.has(index)),
+  };
+}
+
 /**
- * Project every model/tool round produced by one user request into the two
+ * Project every model/tool round produced by one user request into the three
  * visual layers used by the transcript:
  *
- * - `work` is the complete in-progress trace (thinking, progress notes,
- *   searches and tool activity), shown inside one collapsible section.
+ * - `work` is the visible in-progress trace (progress notes, searches and tool
+ *   activity), shown inside one collapsible section.
+ * - `interaction` is user-facing decision prose plus its interactive card,
+ *   rendered outside the work disclosure so it cannot be hidden while pending.
  * - `answer` is only the final trailing prose, rendered as the assistant's
  *   durable response below that section.
  *
@@ -421,27 +445,31 @@ export function resolveAssistantTurnLayout(
       }));
   });
 
-  if (entries.length === 0) return { work: [], answer: [] };
+  if (entries.length === 0) return { work: [], interaction: [], answer: [] };
+
+  const { background, interaction } = splitInteractionEntries(entries);
 
   const lastRound = rounds.at(-1);
   if (options.live && !isTerminalStopReason(lastRound?.meta?.stopReason)) {
     return {
-      work: compactAssistantWorkEntries(entries, { showActiveThinking: true }),
+      work: compactAssistantWorkEntries(background),
+      interaction,
       answer: [],
     };
   }
 
-  const lastEntry = entries.at(-1);
+  const lastEntry = background.at(-1);
   if (!lastEntry || lastEntry.block.kind !== "text") {
     return {
-      work: compactAssistantWorkEntries(entries, { showActiveThinking: false }),
+      work: compactAssistantWorkEntries(background),
+      interaction,
       answer: [],
     };
   }
 
-  let answerStart = entries.length - 1;
+  let answerStart = background.length - 1;
   while (answerStart > 0) {
-    const previous = entries[answerStart - 1];
+    const previous = background[answerStart - 1];
     if (!previous || previous.roundKey !== lastEntry.roundKey || previous.block.kind !== "text") {
       break;
     }
@@ -449,10 +477,9 @@ export function resolveAssistantTurnLayout(
   }
 
   return {
-    work: compactAssistantWorkEntries(entries.slice(0, answerStart), {
-      showActiveThinking: false,
-    }),
-    answer: entries.slice(answerStart),
+    work: compactAssistantWorkEntries(background.slice(0, answerStart)),
+    interaction,
+    answer: background.slice(answerStart),
   };
 }
 
@@ -664,7 +691,7 @@ export function groupRoundBlocks(blocks: UiRound["blocks"]): GroupedRoundBlock[]
       if (
         block.item.toolCall.name === "Image" ||
         isTaskToolName(block.item.toolCall.name) ||
-        block.item.toolCall.name === "AskUserQuestion" ||
+        isUserInteractionToolName(block.item.toolCall.name) ||
         block.item.toolCall.name === "ProcessWait" ||
         block.item.toolCall.name === "ProcessStop" ||
         isAgentToolName(block.item.toolCall.name)

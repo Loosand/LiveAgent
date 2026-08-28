@@ -28,6 +28,18 @@ const env = await createDomTestEnv({
           ({
             "chat.tool.batch.read": "读取了文件",
             "chat.tool.batch.command": "运行了命令",
+            "chat.tool.running": "运行中",
+            "chat.tool.waiting": "等待中",
+            "chat.tool.failed": "失败",
+            "chat.tool.success": "完成",
+            "chat.thinking": "思考中",
+            "chat.tool.activity.read.running": "正在读取",
+            "chat.tool.activity.command.running": "正在运行",
+            "chat.tool.activity.other.running": "正在执行",
+            "chat.tool.file.read.running": "正在读取",
+            "chat.tool.file.create.running": "正在创建",
+            "chat.tool.file.edit.running": "正在编辑",
+            "chat.tool.file.delete.running": "正在删除",
           })[key] ?? key,
       }),
     },
@@ -45,7 +57,21 @@ const env = await createDomTestEnv({
       Wrench: EmptyIcon,
     },
     "./assistantBubbleUtils": {
+      compactInlineText: (value) => value,
+      getFileOperationDisplay: (item) => {
+        if (!["Read", "Write", "Edit", "Delete"].includes(item.toolCall.name)) return null;
+        const path = item.toolCall.arguments?.path;
+        if (typeof path !== "string" || !path) return null;
+        const kind =
+          item.toolCall.name === "Read"
+            ? "read"
+            : item.toolCall.name === "Write"
+              ? "create"
+              : item.toolCall.name.toLowerCase();
+        return { kind, path, fileName: path.split("/").at(-1), link: null };
+      },
       getToolActivityCategory: (name) => (name === "Bash" ? "command" : "read"),
+      getToolDisplayName: (name) => name,
       getToolTraceKey: (item, index) => item.toolCall.id ?? String(index),
       hasActiveUserInteraction: (items, runningToolCallIds) =>
         items.some(
@@ -92,12 +118,13 @@ const toolItem = {
   toolResult: { isError: false },
 };
 
-function renderToolTrace(root, running, items = [toolItem]) {
+function renderToolTrace(root, running, items = [toolItem], showTurnStatus = false) {
   act(() => {
     root.render(
       React.createElement(ToolTraceGroup, {
         items,
         runningToolCallIds: running ? items.map((item) => item.toolCall.id) : [],
+        showTurnStatus,
       }),
     );
   });
@@ -109,20 +136,20 @@ test("manual work-trace disclosure survives running state transitions", () => {
 
   renderWorkTrace(root, true);
   const button = container.querySelector("button");
-  assert.equal(button.getAttribute("aria-expanded"), "false");
+  assert.equal(button.getAttribute("aria-expanded"), "true");
 
   click(button);
-  assert.equal(button.getAttribute("aria-expanded"), "true");
+  assert.equal(button.getAttribute("aria-expanded"), "false");
 
   renderWorkTrace(root, false);
-  assert.equal(button.getAttribute("aria-expanded"), "true");
+  assert.equal(button.getAttribute("aria-expanded"), "false");
   renderWorkTrace(root, true);
-  assert.equal(button.getAttribute("aria-expanded"), "true");
+  assert.equal(button.getAttribute("aria-expanded"), "false");
 
   click(button);
-  assert.equal(button.getAttribute("aria-expanded"), "false");
+  assert.equal(button.getAttribute("aria-expanded"), "true");
   renderWorkTrace(root, false);
-  assert.equal(button.getAttribute("aria-expanded"), "false");
+  assert.equal(button.getAttribute("aria-expanded"), "true");
 
   act(() => root.unmount());
 });
@@ -131,7 +158,7 @@ test("a new blocking interaction opens the work trace once without stealing late
   const container = document.createElement("div");
   const root = createRoot(container);
 
-  renderWorkTrace(root, true, false);
+  renderWorkTrace(root, false, false);
   const button = container.querySelector("button");
   assert.equal(button.getAttribute("aria-expanded"), "false");
 
@@ -218,6 +245,41 @@ test("mixed tool batch labels are contiguous without dot separators", () => {
   const label = container.querySelector("button").textContent;
   assert.equal(label, "读取了文件运行了命令");
   assert.doesNotMatch(label, /[·•]/);
+
+  act(() => root.unmount());
+});
+
+test("latest tool batch switches between running and thinking without a second status row", () => {
+  const container = document.createElement("div");
+  const root = createRoot(container);
+
+  renderToolTrace(root, false, [toolItem], true);
+  assert.match(container.querySelector("button").textContent, /思考中/);
+  assert.doesNotMatch(container.querySelector("button").textContent, /运行中/);
+
+  renderToolTrace(root, true, [toolItem], true);
+  assert.match(container.querySelector("button").textContent, /运行中/);
+  assert.doesNotMatch(container.querySelector("button").textContent, /思考中/);
+
+  act(() => root.unmount());
+});
+
+test("a running tool batch names the current operation and caps its expanded height", () => {
+  const container = document.createElement("div");
+  const root = createRoot(container);
+  const readItem = {
+    toolCall: { id: "read-1", name: "Read", arguments: { path: "src/App.tsx" } },
+  };
+
+  renderToolTrace(root, true, [readItem], true);
+  const button = container.querySelector("button");
+  assert.match(button.textContent, /正在读取 App\.tsx/);
+  assert.match(button.textContent, /运行中/);
+
+  click(button);
+  const scrollRegion = container.querySelector("[data-tool-trace-scroll]");
+  assert.match(scrollRegion.className, /max-h-\[400px\]/);
+  assert.match(scrollRegion.className, /overflow-y-auto/);
 
   act(() => root.unmount());
 });

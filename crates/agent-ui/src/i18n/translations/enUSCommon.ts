@@ -400,6 +400,7 @@ export const EN_US_COMMON_TRANSLATIONS = {
   "chat.tool.activity.agent.running": "Using agent",
   "chat.tool.activity.agent.completed": "Used agent",
   "chat.tool.activity.agent.failed": "Agent failed",
+  "chat.tool.activity.other.running": "Running",
   "chat.tool.file.read.running": "Reading",
   "chat.tool.file.read.completed": "Read",
   "chat.tool.file.read.failed": "Read failed",

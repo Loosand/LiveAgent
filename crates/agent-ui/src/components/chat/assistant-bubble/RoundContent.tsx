@@ -1,14 +1,9 @@
-import {
-  AssistantStatus,
-  CompactingText,
-  VibingText,
-} from "@liveagent/ui/components/chat/AssistantStatus";
+import { CompactingText } from "@liveagent/ui/components/chat/AssistantStatus";
 import { AssistantWorkTrace } from "@liveagent/ui/components/chat/AssistantWorkTrace";
 import { HostedSearchGroupView } from "@liveagent/ui/components/chat/HostedSearchGroupView";
-import { ThinkingActivity } from "@liveagent/ui/components/chat/ThinkingActivity";
 import { Markdown } from "@liveagent/ui/components/Markdown";
 import type { UiRound } from "@liveagent/ui/lib/chat/assistantBubbleAdapter";
-import { normalizeLiveToolStatus, VIBING_STATUS } from "@liveagent/ui/lib/chat/assistantStatus";
+import { normalizeLiveToolStatus } from "@liveagent/ui/lib/chat/assistantStatus";
 import type { ChatFileLink } from "@liveagent/ui/lib/chat/chatFileLinks";
 import { cn } from "@liveagent/ui/lib/shared/utils";
 import { memo, type ReactNode, useMemo } from "react";
@@ -32,6 +27,7 @@ export const RoundBlockContent = memo(function RoundBlockContent(props: {
   runningToolCallIds: string[];
   thinkingOpen: boolean;
   isLatestThinking: boolean;
+  showTurnStatus?: boolean;
   readOnly?: boolean;
   redactToolContent?: boolean;
   workdir?: string;
@@ -42,8 +38,7 @@ export const RoundBlockContent = memo(function RoundBlockContent(props: {
     isLive,
     renderMode,
     runningToolCallIds,
-    thinkingOpen,
-    isLatestThinking,
+    showTurnStatus = false,
     readOnly = false,
     redactToolContent = false,
     workdir,
@@ -52,8 +47,7 @@ export const RoundBlockContent = memo(function RoundBlockContent(props: {
 
   let content: ReactNode;
   if (block.kind === "thinking") {
-    const isRunning = isLive && thinkingOpen && isLatestThinking;
-    content = isRunning ? <ThinkingActivity /> : null;
+    content = null;
   } else if (block.kind === "tool") {
     const isRedactedToolContent =
       redactToolContent && isBuiltinShareToolName(block.item.toolCall.name);
@@ -87,6 +81,7 @@ export const RoundBlockContent = memo(function RoundBlockContent(props: {
         readOnly={readOnly}
         redactToolContent={redactToolContent}
         onOpenFileLink={onOpenFileLink}
+        showTurnStatus={showTurnStatus}
       />
     );
   } else if (block.kind === "hostedSearch" || block.kind === "hostedSearchGroup") {
@@ -191,41 +186,40 @@ export const AssistantTurnContent = memo(function AssistantTurnContent(props: {
   const running = Boolean(isLive && isStreaming);
   const normalizedToolStatus = running ? normalizeLiveToolStatus(toolStatus ?? null) : null;
   const isCompactionStatus = toolStatusVariant === "compaction";
-  const isVibingStatus = normalizedToolStatus === VIBING_STATUS;
   const showDetailedStatus = Boolean(
-    normalizedToolStatus &&
-      (isCompactionStatus || isVibingStatus) &&
-      !hasRunningToolCall(layout.work),
+    normalizedToolStatus && isCompactionStatus && !hasRunningToolCall(layout.work),
   );
-  const attentionRequired = running && hasInteractionRequiringAttention(layout.work);
-  const latestThinkingKey = useMemo(() => {
+  const attentionRequired =
+    running && hasInteractionRequiringAttention([...layout.work, ...layout.interaction]);
+  const latestToolGroupKey = useMemo(() => {
     for (let index = layout.work.length - 1; index >= 0; index -= 1) {
       const entry = layout.work[index];
-      if (entry?.block.kind === "thinking") return entry.key;
+      if (entry?.block.kind === "toolGroup") return entry.key;
     }
     return null;
   }, [layout.work]);
-  const activeThinkingEntry = useMemo(
-    () => layout.work.find((entry) => entry.key === latestThinkingKey) ?? null,
-    [latestThinkingKey, layout.work],
-  );
   const detailEntries = useMemo(
     () => layout.work.filter((entry) => entry.block.kind !== "thinking"),
     [layout.work],
   );
   const showWorkTrace = running || layout.work.length > 0;
 
-  if (!showWorkTrace && layout.answer.length === 0) return null;
+  if (!showWorkTrace && layout.interaction.length === 0 && layout.answer.length === 0) return null;
 
-  const renderEntry = (entry: AssistantTurnLayoutEntry, insideWorkTrace: boolean) => (
+  const renderEntry = (
+    entry: AssistantTurnLayoutEntry,
+    insideWorkTrace: boolean,
+    liveInteraction = false,
+  ) => (
     <RoundBlockContent
       key={entry.key}
       block={entry.block}
-      isLive={insideWorkTrace && running}
+      isLive={running && (insideWorkTrace || liveInteraction)}
       renderMode={renderMode}
       runningToolCallIds={entry.runningToolCallIds}
       thinkingOpen={insideWorkTrace ? (running ? entry.thinkingOpen : true) : false}
-      isLatestThinking={insideWorkTrace && entry.key === latestThinkingKey}
+      isLatestThinking={false}
+      showTurnStatus={insideWorkTrace && running && entry.key === latestToolGroupKey}
       readOnly={readOnly}
       redactToolContent={redactToolContent}
       workdir={workdir}
@@ -241,23 +235,17 @@ export const AssistantTurnContent = memo(function AssistantTurnContent(props: {
           durationMs={durationMs}
           hasDetails={detailEntries.length > 0 || showDetailedStatus}
           running={running}
-          activeStatus={activeThinkingEntry ? renderEntry(activeThinkingEntry, true) : null}
         >
           {detailEntries.map((entry) => renderEntry(entry, true))}
           {showDetailedStatus ? (
             <div className="py-1.5">
-              {isCompactionStatus ? (
-                <CompactingText />
-              ) : isVibingStatus ? (
-                <VibingText />
-              ) : (
-                <AssistantStatus>{normalizedToolStatus}</AssistantStatus>
-              )}
+              <CompactingText />
             </div>
           ) : null}
         </AssistantWorkTrace>
       ) : null}
 
+      {layout.interaction.map((entry) => renderEntry(entry, false, true))}
       {layout.answer.map((entry) => renderEntry(entry, false))}
     </div>
   );
