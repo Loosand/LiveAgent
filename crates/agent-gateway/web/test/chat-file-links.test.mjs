@@ -87,7 +87,6 @@ test("Gateway historical and streaming rows keep the explicit file-open prop cha
   const files = [
     "../src/app/GatewayAppView.tsx",
     "../src/components/GatewayTranscript.tsx",
-    "../../../agent-ui/src/components/chat/ThinkingActivity.tsx",
     "../../../agent-ui/src/components/chat/AssistantBubble.tsx",
     "../../../agent-ui/src/components/chat/assistant-bubble/RoundContent.tsx",
   ];
@@ -115,9 +114,11 @@ test("Gateway historical and streaming rows keep the explicit file-open prop cha
     ),
     "utf8",
   );
-  assert.match(thinkingActivity, /<Markdown/);
-  assert.match(thinkingActivity, /onOpenFileLink=\{onOpenFileLink\}/);
-  assert.match(thinkingActivity, /workdir=\{workdir\}/);
+  assert.match(thinkingActivity, /reasonSummary\?: string \| null/);
+  assert.match(thinkingActivity, /data-reason-summary/);
+  assert.doesNotMatch(thinkingActivity, /<Markdown/);
+  assert.doesNotMatch(thinkingActivity, /onOpenFileLink/);
+  assert.doesNotMatch(thinkingActivity, /workdir/);
 
   const gatewayProjectTools = fs.readFileSync(
     fileURLToPath(new URL("../src/app/hooks/useGatewayProjectTools.ts", import.meta.url)),

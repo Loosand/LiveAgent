@@ -329,6 +329,7 @@ export const ZH_CN_COMMON_TRANSLATIONS = {
   "chat.send": "发送",
   "chat.stopGeneration": "停止生成",
   "chat.thinking": "思考中",
+  "chat.thinkingActive": "正在思考",
   "chat.thoughtFor": "思考了",
   "chat.thinkingComplete": "思考完成",
   "chat.thinkingProcess": "思考过程",

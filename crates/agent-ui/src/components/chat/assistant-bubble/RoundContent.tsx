@@ -1,10 +1,12 @@
 import { CompactingText } from "@liveagent/ui/components/chat/AssistantStatus";
 import { AssistantWorkTrace } from "@liveagent/ui/components/chat/AssistantWorkTrace";
 import { HostedSearchGroupView } from "@liveagent/ui/components/chat/HostedSearchGroupView";
+import { ThinkingActivity } from "@liveagent/ui/components/chat/ThinkingActivity";
 import { Markdown } from "@liveagent/ui/components/Markdown";
 import type { UiRound } from "@liveagent/ui/lib/chat/assistantBubbleAdapter";
 import { normalizeLiveToolStatus } from "@liveagent/ui/lib/chat/assistantStatus";
 import type { ChatFileLink } from "@liveagent/ui/lib/chat/chatFileLinks";
+import { resolveLiveThinkingActivity } from "@liveagent/ui/lib/chat/thinkingActivity";
 import { cn } from "@liveagent/ui/lib/shared/utils";
 import { memo, type ReactNode, useMemo } from "react";
 import {
@@ -184,6 +186,7 @@ export const AssistantTurnContent = memo(function AssistantTurnContent(props: {
     [isLive, rounds],
   );
   const running = Boolean(isLive && isStreaming);
+  const thinkingActivity = useMemo(() => resolveLiveThinkingActivity(rounds), [rounds]);
   const normalizedToolStatus = running ? normalizeLiveToolStatus(toolStatus ?? null) : null;
   const isCompactionStatus = toolStatusVariant === "compaction";
   const showDetailedStatus = Boolean(
@@ -231,6 +234,11 @@ export const AssistantTurnContent = memo(function AssistantTurnContent(props: {
     <div className="space-y-2">
       {showWorkTrace ? (
         <AssistantWorkTrace
+          activeStatus={
+            running && !isCompactionStatus && thinkingActivity.active ? (
+              <ThinkingActivity reasonSummary={thinkingActivity.reasonSummary} />
+            ) : null
+          }
           attentionRequired={attentionRequired}
           collapseAfterAnswer={layout.answer.length > 0}
           durationMs={durationMs}

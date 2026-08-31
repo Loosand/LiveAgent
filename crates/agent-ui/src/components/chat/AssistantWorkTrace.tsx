@@ -113,6 +113,7 @@ export function AssistantWorkTrace({
   const label = `${running ? t("chat.work.running") : t("chat.work.activity")}${
     elapsedLabel ? ` ${elapsedLabel}` : ""
   }`;
+  const showHeader = hasDetails || activeStatus == null;
   const header = (
     <>
       {running ? <WorkPixelGrid active /> : null}
@@ -136,7 +137,7 @@ export function AssistantWorkTrace({
       aria-busy={running}
       data-chat-work-trace=""
     >
-      {hasDetails ? (
+      {showHeader && hasDetails ? (
         <button
           type="button"
           className="group/work-trace flex w-full items-center gap-2 rounded-lg py-1 text-[calc(13px*var(--zone-font-scale,1))] font-[450] transition-colors hover:text-foreground/75 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
@@ -145,11 +146,11 @@ export function AssistantWorkTrace({
         >
           {header}
         </button>
-      ) : (
+      ) : showHeader ? (
         <div className="flex items-center gap-2 py-1 text-[calc(13px*var(--zone-font-scale,1))] font-[450]">
           {header}
         </div>
-      )}
+      ) : null}
 
       {hasDetails ? (
         <LazyCollapse open={expanded}>{() => <div className="mt-1">{children}</div>}</LazyCollapse>

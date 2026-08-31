@@ -321,7 +321,7 @@ export function AskUserQuestionCard({
 
   return (
     <div className="tool-expand w-full max-w-[min(100%,36rem)]">
-      <div className="overflow-hidden rounded-2xl border border-black/[0.055] bg-white/72 shadow-[0_12px_40px_-18px_rgba(15,23,42,0.2),0_2px_6px_-2px_rgba(15,23,42,0.07),inset_0_1px_0_rgba(255,255,255,0.72)] backdrop-blur-xl backdrop-saturate-150 dark:border-white/[0.09] dark:bg-white/[0.045] dark:shadow-[0_12px_40px_-18px_rgba(0,0,0,0.68),0_2px_6px_-2px_rgba(0,0,0,0.38),inset_0_1px_0_rgba(255,255,255,0.07)]">
+      <div className="overflow-hidden rounded-2xl border border-black/[0.055] bg-white/72 shadow-[inset_0_1px_0_rgba(255,255,255,0.72)] backdrop-blur-xl backdrop-saturate-150 dark:border-white/[0.09] dark:bg-white/[0.045] dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.07)]">
         <div className="px-4 pb-3 pt-4">
           <div
             aria-live="polite"

@@ -364,6 +364,7 @@ export const EN_US_COMMON_TRANSLATIONS = {
   "chat.send": "Send",
   "chat.stopGeneration": "Stop Generation",
   "chat.thinking": "Thinking",
+  "chat.thinkingActive": "Thinking",
   "chat.thoughtFor": "Thought for",
   "chat.thinkingComplete": "Thinking complete",
   "chat.thinkingProcess": "Thinking Process",

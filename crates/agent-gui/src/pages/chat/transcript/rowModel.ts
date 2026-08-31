@@ -3,6 +3,7 @@ import {
   type GroupedRoundBlock,
   resolveAssistantTurnLayout,
 } from "@liveagent/ui/components/chat/assistant-bubble/assistantBubbleUtils";
+import { resolveLiveThinkingActivity } from "@liveagent/ui/lib/chat/thinkingActivity";
 import {
   CHECKPOINT_ROW_ESTIMATE_PX,
   estimateAssistantRowHeight,
@@ -61,6 +62,8 @@ export type AssistantWorkTraceRenderUnit = {
   durationMs?: number;
   entries: AssistantTurnLayoutEntry[];
   latestToolGroupKey: string | null;
+  thinking: boolean;
+  reasonSummary: string | null;
 };
 
 export type AssistantFooterRenderUnit = {
@@ -266,6 +269,8 @@ function canReuseLiveUnit(previous: AssistantUnitRow, next: AssistantUnitRow) {
     return (
       previous.unit.entries.length === nextWorkTrace.entries.length &&
       previous.unit.durationMs === nextWorkTrace.durationMs &&
+      previous.unit.thinking === nextWorkTrace.thinking &&
+      previous.unit.reasonSummary === nextWorkTrace.reasonSummary &&
       previous.unit.entries.every((entry, index) => {
         const nextEntry = nextWorkTrace.entries[index];
         return Boolean(
@@ -349,6 +354,7 @@ function buildAssistantUnits(input: BuildAssistantUnitsInput): AssistantUnitRow[
   } = input;
   const rows: AssistantUnitRow[] = [];
   const layout = resolveAssistantTurnLayout(rounds, { live });
+  const thinkingActivity = resolveLiveThinkingActivity(rounds);
   const visibleEntries = [...layout.work, ...layout.interaction, ...layout.answer];
   const roundTailKeys = new Map<string, string>();
   for (const entry of visibleEntries) roundTailKeys.set(entry.roundKey, entry.key);
@@ -396,6 +402,8 @@ function buildAssistantUnits(input: BuildAssistantUnitsInput): AssistantUnitRow[
             : undefined,
         entries: layout.work,
         latestToolGroupKey,
+        thinking: live && thinkingActivity.active,
+        reasonSummary: live ? thinkingActivity.reasonSummary : null,
       },
     });
   }

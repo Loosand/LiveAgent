@@ -20,7 +20,7 @@ const env = await createDomTestEnv({
       getToolActivityCategory: () => "read",
       getToolTraceKey: (item, index) => item.toolCall.id ?? String(index),
     },
-    "@liveagent/ui/components/IconSet": { ChevronDown: EmptyIcon },
+    "@liveagent/ui/components/IconSet": { Brain: EmptyIcon, ChevronDown: EmptyIcon },
     "@liveagent/ui/i18n/index": {
       useLocale: () => ({
         locale: "zh-CN",
@@ -33,6 +33,9 @@ const env = await createDomTestEnv({
             "chat.tool.failed": "失败",
             "chat.tool.success": "完成",
             "chat.thinking": "思考中",
+            "chat.thinkingActive": "正在思考",
+            "chat.work.activity": "已处理",
+            "chat.work.running": "处理中",
             "chat.tool.activity.read.running": "正在读取",
             "chat.tool.activity.command.running": "正在运行",
             "chat.tool.activity.other.running": "正在执行",
@@ -92,6 +95,9 @@ const { React, act, createRoot } = env;
 const { AssistantWorkTrace } = env.loadModule(
   "@liveagent/ui/components/chat/AssistantWorkTrace.tsx",
 );
+const { ThinkingActivity } = env.loadModule(
+  "@liveagent/ui/components/chat/ThinkingActivity.tsx",
+);
 const { ToolTraceGroup } = env.loadModule(
   "@liveagent/ui/components/chat/assistant-bubble/ToolTraceGroup.tsx",
 );
@@ -150,6 +156,32 @@ test("manual work-trace disclosure survives running state transitions", () => {
   assert.equal(button.getAttribute("aria-expanded"), "true");
   renderWorkTrace(root, false);
   assert.equal(button.getAttribute("aria-expanded"), "true");
+
+  act(() => root.unmount());
+});
+
+test("an empty work trace shows the compact thinking status instead of a duplicate header", () => {
+  const container = document.createElement("div");
+  const root = createRoot(container);
+
+  act(() => {
+    root.render(
+      React.createElement(AssistantWorkTrace, {
+        activeStatus: React.createElement(ThinkingActivity, {
+          reasonSummary: "检查消息状态",
+        }),
+        hasDetails: false,
+        running: true,
+        children: null,
+      }),
+    );
+  });
+
+  assert.match(container.textContent, /正在思考/);
+  assert.match(container.textContent, /检查消息状态/);
+  assert.equal(container.querySelector("[data-chat-work-grid]"), null);
+  assert.ok(container.querySelector("[data-thinking-status]"));
+  assert.ok(container.querySelector("[data-reason-summary]"));
 
   act(() => root.unmount());
 });

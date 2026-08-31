@@ -3,6 +3,7 @@ import { LiveAssistantStatus } from "@liveagent/ui/components/chat/AssistantStat
 import { AssistantWorkTrace } from "@liveagent/ui/components/chat/AssistantWorkTrace";
 import { RoundBlockContent } from "@liveagent/ui/components/chat/assistant-bubble/RoundContent";
 import { RetryDetailsBlock } from "@liveagent/ui/components/chat/RetryDetailsBlock";
+import { ThinkingActivity } from "@liveagent/ui/components/chat/ThinkingActivity";
 import type { ChatFileLink } from "@liveagent/ui/lib/chat/chatFileLinks";
 import { cn } from "@liveagent/ui/lib/shared/utils";
 import { memo } from "react";
@@ -82,6 +83,11 @@ export const AssistantBubbleUnit = memo(function AssistantBubbleUnit(props: {
 
         {unit.kind === "work-trace" ? (
           <AssistantWorkTrace
+            activeStatus={
+              row.live && unit.thinking && !isCompactionRunning ? (
+                <ThinkingActivity reasonSummary={unit.reasonSummary} />
+              ) : null
+            }
             className="mb-3 mt-0"
             durationMs={unit.durationMs}
             hasDetails={workTraceDetailEntries.length > 0 || isCompactionRunning}

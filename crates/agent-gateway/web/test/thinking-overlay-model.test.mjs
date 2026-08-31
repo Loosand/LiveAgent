@@ -43,20 +43,19 @@ test("keeps a renderable overlay inside an extremely narrow viewport", () => {
   assert.ok(placement.left + placement.width <= 8);
 });
 
-test("thinking details use an inline disclosure instead of a portal overlay", () => {
-  assert.match(componentSource, /open\?: boolean;/);
-  assert.match(componentSource, /\{isOpen \? \(/);
-  assert.match(componentSource, /userInteractedRef/);
+test("thinking status is a compact plain-text summary instead of an overlay", () => {
+  assert.match(componentSource, /reasonSummary\?: string \| null/);
+  assert.match(componentSource, /data-thinking-status/);
+  assert.match(componentSource, /data-reason-summary/);
   assert.doesNotMatch(componentSource, /createPortal/);
   assert.doesNotMatch(componentSource, /role="dialog"/);
   assert.doesNotMatch(componentSource, /thinkingOverlayModel/);
+  assert.doesNotMatch(componentSource, /<Markdown/);
 });
 
-test("WebUI transcript keeps thinking nested in the work trace collapsed by default", () => {
-  assert.match(roundContentSource, /const isRunning = isLive && thinkingOpen && isLatestThinking;/);
-  assert.match(
-    roundContentSource,
-    /open=\{collapseThinking \? false : isRunning \|\| \(!isLive && thinkingOpen\)\}/,
-  );
-  assert.match(roundContentSource, /collapseThinking=\{insideWorkTrace\}/);
+test("WebUI transcript derives the compact status while keeping raw thinking hidden", () => {
+  assert.match(roundContentSource, /resolveLiveThinkingActivity/);
+  assert.match(roundContentSource, /<ThinkingActivity/);
+  assert.match(roundContentSource, /activeStatus=\{/);
+  assert.match(roundContentSource, /filter\(\(entry\) => entry\.block\.kind !== "thinking"\)/);
 });

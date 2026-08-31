@@ -100,6 +100,47 @@ const idleLive = {
   isSettled: false,
 };
 
+test("live work trace exposes thinking state and a compact reason summary", () => {
+  const model = createTranscriptRowModel();
+  const history = [userItem("u1")];
+
+  const waiting = model.build(history, { ...idleLive, isSending: true });
+  assert.equal(workTraceRows(waiting)[0].unit.thinking, true);
+  assert.equal(workTraceRows(waiting)[0].unit.reasonSummary, null);
+
+  const reasoning = model.build(history, {
+    ...idleLive,
+    isSending: true,
+    liveRounds: [
+      {
+        round: 1,
+        key: "r1",
+        blocks: [{ kind: "thinking", id: "thinking-1", text: "检查当前请求" }],
+        runningToolCallIds: [],
+        thinkingOpen: true,
+      },
+    ],
+  });
+  assert.equal(workTraceRows(reasoning)[0].unit.thinking, true);
+  assert.equal(workTraceRows(reasoning)[0].unit.reasonSummary, "检查当前请求");
+
+  const runningTool = model.build(history, {
+    ...idleLive,
+    isSending: true,
+    liveRounds: [
+      {
+        round: 1,
+        key: "r1",
+        blocks: [toolBlock("read-1", "Read")],
+        runningToolCallIds: ["read-1"],
+        thinkingOpen: false,
+      },
+    ],
+  });
+  assert.equal(workTraceRows(runningTool)[0].unit.thinking, false);
+  assert.equal(workTraceRows(runningTool)[0].unit.reasonSummary, null);
+});
+
 test("settling a live turn promotes trailing prose out of the work trace", () => {
   const model = createTranscriptRowModel();
   const history = [userItem("u1")];

@@ -51,8 +51,10 @@ test("keeps a renderable overlay inside an extremely narrow viewport", () => {
   assert.ok(placement.left + placement.width <= 8);
 });
 
-test("transcript retires the standalone thinking row in favor of the tool-group status", () => {
-  assert.doesNotMatch(roundContentSource, /ThinkingActivity/);
+test("transcript renders a compact live thinking status without restoring reasoning rows", () => {
+  assert.match(roundContentSource, /ThinkingActivity/);
+  assert.match(roundContentSource, /resolveLiveThinkingActivity/);
+  assert.match(roundContentSource, /reasonSummary=\{thinkingActivity\.reasonSummary\}/);
   assert.doesNotMatch(roundContentSource, /activeThinkingEntry/);
   assert.match(toolTraceSource, /showThinkingStatus/);
   assert.match(toolTraceSource, /t\("chat\.thinking"\)/);
