@@ -511,84 +511,7 @@
 
   html[data-liveagent-webui="gateway"] .settings-content-providers {
     overflow: hidden;
-    padding-bottom: max(14px, env(safe-area-inset-bottom));
-  }
-
-  html[data-liveagent-webui="gateway"] .settings-provider-tabs-wrap {
-    display: flex;
-    width: 100%;
-    flex-direction: column;
-    align-items: stretch;
-    gap: 10px;
-    margin-bottom: 10px;
-    overflow: visible;
-  }
-
-  html[data-liveagent-webui="gateway"] .settings-provider-tabs {
-    width: 100%;
-    max-width: 100%;
-    min-width: 0;
-    height: 42px;
-    overflow-x: auto;
-    overscroll-behavior-x: contain;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-  }
-
-  html[data-liveagent-webui="gateway"] .settings-provider-tabs::-webkit-scrollbar {
-    display: none;
-    height: 0;
-  }
-
-  html[data-liveagent-webui="gateway"] .settings-provider-tab {
-    min-height: 34px;
-    padding-left: 10px;
-    padding-right: 10px;
-    font-size: 13px;
-  }
-
-  html[data-liveagent-webui="gateway"] .settings-provider-action-group {
-    display: flex;
-    width: 100%;
-    height: 42px;
-    flex: none;
-  }
-
-  html[data-liveagent-webui="gateway"] .settings-provider-action-label {
-    display: inline;
-  }
-
-  html[data-liveagent-webui="gateway"]
-    .settings-provider-action-group
-    > .settings-provider-action-slot,
-  html[data-liveagent-webui="gateway"] .settings-provider-action-group > .settings-provider-action {
-    flex: 1 1 0;
-  }
-
-  html[data-liveagent-webui="gateway"] .settings-provider-action-group .settings-provider-action {
-    min-width: 0;
-    padding: 0 12px;
-    font-size: 13px;
-  }
-
-  html[data-liveagent-webui="gateway"] .settings-provider-list {
-    gap: 10px;
-  }
-
-  html[data-liveagent-webui="gateway"] .settings-provider-list-scroll {
-    padding-right: 0;
-    overscroll-behavior-y: contain;
-    -webkit-overflow-scrolling: touch;
-  }
-
-  html[data-liveagent-webui="gateway"] .settings-provider-empty {
-    min-height: min(42svh, 280px);
-    padding: 28px 16px;
-  }
-
-  html[data-liveagent-webui="gateway"] .settings-provider-empty-add {
-    width: min(100%, 16rem);
-    min-height: 40px;
+    padding: 0;
   }
 
   html[data-liveagent-webui="gateway"] .settings-provider-custom-sheet {
@@ -1148,7 +1071,7 @@
   }
 
   html[data-liveagent-webui="gateway"] .settings-content-providers {
-    padding-bottom: max(10px, env(safe-area-inset-bottom));
+    padding: 0;
   }
 
   html[data-liveagent-webui="gateway"] .settings-main-header {
@@ -1312,31 +1235,6 @@
 
   html[data-liveagent-webui="gateway"] .settings-log-row > span:nth-of-type(3) {
     margin-left: 0;
-  }
-
-  html[data-liveagent-webui="gateway"] .settings-provider-card-row {
-    display: grid;
-    grid-template-columns: 20px 20px minmax(0, 1fr) auto;
-    align-items: center;
-    flex-wrap: nowrap;
-  }
-
-  html[data-liveagent-webui="gateway"] .settings-provider-card-main {
-    min-width: 0;
-  }
-
-  html[data-liveagent-webui="gateway"] .settings-provider-empty {
-    min-height: min(36svh, 240px);
-    padding: 22px 12px;
-  }
-
-  html[data-liveagent-webui="gateway"] .settings-provider-empty-add {
-    width: 100%;
-  }
-
-  html[data-liveagent-webui="gateway"] .settings-provider-tab {
-    padding-left: 8px;
-    padding-right: 8px;
   }
 
   html[data-liveagent-webui="gateway"] .settings-hooks-card-row {

@@ -57,11 +57,12 @@ import {
   itemsByIdOrder,
 } from "./ProviderPresentation";
 
-type ModalProps = {
+type ProviderEditorProps = {
   providerType: ProviderId;
   initialData?: CustomProvider;
   onSave: (data: Omit<CustomProvider, "id">) => void;
   onClose: () => void;
+  presentation?: "dialog" | "page";
 };
 
 type ProviderDialogPanel = "general" | "request" | "usage";
@@ -120,7 +121,13 @@ function reconcileModelOrder(
   return next;
 }
 
-function useProviderModalController({ providerType, initialData, onSave, onClose }: ModalProps) {
+function useProviderModalController({
+  providerType,
+  initialData,
+  onSave,
+  onClose,
+  presentation = "dialog",
+}: ProviderEditorProps) {
   const { t } = useLocale();
   const isGatewayWebui = isGatewayWebuiRuntime();
   const initialApiKey = initialData?.apiKey ?? "";
@@ -217,7 +224,13 @@ function useProviderModalController({ providerType, initialData, onSave, onClose
   } | null>(null);
   const [headerSuggestActive, setHeaderSuggestActive] = useState(0);
   const [dialogOpen, setDialogOpen] = useState(true);
-  const requestClose = useCallback(() => setDialogOpen(false), []);
+  const requestClose = useCallback(() => {
+    if (presentation === "page") {
+      onClose();
+      return;
+    }
+    setDialogOpen(false);
+  }, [onClose, presentation]);
 
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const prevFetchKey = useRef("");
@@ -1048,6 +1061,13 @@ function useProviderModalController({ providerType, initialData, onSave, onClose
 
 export type ProviderModalViewModel = ReturnType<typeof useProviderModalController>;
 
-export function ProviderModal(props: ModalProps) {
-  return <ProviderModalView viewModel={useProviderModalController(props)} />;
+export function ProviderModal(props: ProviderEditorProps) {
+  return <ProviderModalView viewModel={useProviderModalController(props)} presentation="dialog" />;
+}
+
+export function ProviderEditor(props: Omit<ProviderEditorProps, "presentation">) {
+  const pageProps = { ...props, presentation: "page" as const };
+  return (
+    <ProviderModalView viewModel={useProviderModalController(pageProps)} presentation="page" />
+  );
 }

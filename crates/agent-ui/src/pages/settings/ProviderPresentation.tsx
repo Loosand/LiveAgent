@@ -223,18 +223,18 @@ export function DialogSwitch(props: {
       role="switch"
       aria-checked={checked}
       aria-label={ariaLabel}
-      className="relative inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+      className="relative inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/30 focus-visible:ring-offset-2"
       onClick={() => onCheckedChange(!checked)}
     >
       <span
         className={cn(
           "relative block h-5 w-9 rounded-full bg-muted-foreground/35 transition-colors",
-          checked && "bg-primary",
+          checked && "bg-emerald-500",
         )}
       >
         <span
           className={cn(
-            "absolute left-0.5 top-0.5 h-4 w-4 rounded-full bg-background shadow-sm transition-transform",
+            "absolute left-0.5 top-0.5 h-4 w-4 rounded-full bg-white shadow-sm transition-transform",
             checked && "translate-x-4",
           )}
         />

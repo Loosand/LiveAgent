@@ -23,9 +23,11 @@ import type { SettingsSectionProps } from "@liveagent/app/pages/settings/types";
 import {
   Activity,
   ChevronDown,
+  List,
   Pencil,
   Plus,
   RefreshCw,
+  Search,
   Settings,
   Shield,
   Trash2,
@@ -46,19 +48,19 @@ import { createUuid } from "@liveagent/ui/lib/shared/id";
 import { cn } from "@liveagent/ui/lib/shared/utils";
 import { ModelPicker, type ModelPickerOption } from "@liveagent/ui/pages/settings/modelPicker";
 import { ConfirmDeletePopover } from "@liveagent/ui/pages/settings/shared";
-import { type CSSProperties, type ReactNode, useEffect, useMemo, useRef, useState } from "react";
-import { ProviderModal } from "./ProviderModal";
+import { useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
+import { ProviderEditor } from "./ProviderModal";
 import {
   DrawerFieldLabel,
   DrawerGroupLabel,
   DrawerSectionHeader,
   getProviderLabel,
-  itemsByIdOrder,
   PROVIDER_TABS,
   ProviderBrandIcon,
   UsagePlanLine,
   usageRelativeTimeText,
 } from "./ProviderPresentation";
+import { isProviderConnectionEnabled, providerMatchesQuery } from "./providerWorkspace";
 import { RetryErrorSection } from "./RetryErrorSection";
 
 function FailoverNumberField(props: {
@@ -209,6 +211,7 @@ function FailoverSettingsCard(props: SettingsSectionProps & { providerType: Prov
         }
         action={
           <Switch
+            tone="success"
             checked={failover.enabled}
             onCheckedChange={(checked) => patchFailover({ enabled: checked === true })}
             aria-label={t("settings.failoverTitle")}
@@ -514,7 +517,55 @@ function CustomSettingsDrawer(
 }
 
 const PROVIDER_ACTION_CLASS =
-  "settings-provider-action h-full min-w-0 gap-1.5 rounded-md px-2.5 text-[12.5px] font-medium shadow-none";
+  "h-8 min-w-0 gap-1.5 rounded-md px-3 text-[12px] font-medium shadow-none";
+
+const PROVIDER_CARD_GRID_CLASS =
+  "grid grid-cols-1 gap-3 min-[1280px]:grid-cols-2 min-[1480px]:grid-cols-3";
+
+const PROVIDER_PROTOCOL_LABELS: Record<ProviderId, string> = {
+  claude_code: "Anthropic Messages",
+  codex: "OpenAI Responses",
+  gemini: "Gemini API",
+  xai: "xAI API",
+  deepseek: "DeepSeek API",
+};
+
+function ProviderMark({ type, compact = false }: { type: ProviderId; compact?: boolean }) {
+  return (
+    <span
+      aria-hidden="true"
+      className={cn(
+        "flex shrink-0 items-center justify-center border border-border bg-muted text-foreground",
+        compact ? "size-8 rounded-md text-[18px]" : "size-11 rounded-lg text-[24px]",
+      )}
+    >
+      <ProviderBrandIcon type={type} />
+    </span>
+  );
+}
+
+function ProviderStateDot({ enabled }: { enabled: boolean }) {
+  const { t } = useLocale();
+  return (
+    <span
+      className="inline-flex size-5 shrink-0 items-center justify-center"
+      title={enabled ? t("settings.providerEnabledGroup") : t("settings.providerInactiveGroup")}
+    >
+      <span
+        aria-hidden="true"
+        className={cn(
+          "size-2 rounded-full",
+          enabled
+            ? "bg-emerald-500 shadow-[0_0_0_3px_rgb(16_185_129/0.12)]"
+            : "bg-muted-foreground/25",
+        )}
+      />
+      <span className="sr-only">
+        {enabled ? t("settings.providerEnabledGroup") : t("settings.providerInactiveGroup")}
+      </span>
+    </span>
+  );
+}
 
 function ProviderActionGroup(props: {
   activeTab: ProviderId;
@@ -530,20 +581,22 @@ function ProviderActionGroup(props: {
 
   return (
     <fieldset
-      className="settings-provider-action-group min-w-0 border-0 p-0"
+      className="settings-provider-overview-actions flex min-w-0 flex-wrap items-center justify-end gap-2 border-0 p-0"
       aria-label={t("settings.providerActionGroup")}
     >
       <Button
         type="button"
-        variant="ghost"
+        variant="outline"
         size="sm"
-        className={cn(PROVIDER_ACTION_CLASS, "settings-provider-action--primary")}
+        className={PROVIDER_ACTION_CLASS}
         onClick={onAdd}
         title={t("settings.addProvider")}
         aria-label={t("settings.addProvider")}
       >
         <Plus className="h-3.5 w-3.5" />
-        <span className="settings-provider-action-label">{t("settings.addProviderShort")}</span>
+        <span className="settings-provider-action-label">
+          {t("settings.addProviderShort")} {getProviderLabel(activeTab)}
+        </span>
       </Button>
       <ProviderSettingsExtension
         activeTab={activeTab}
@@ -553,12 +606,9 @@ function ProviderActionGroup(props: {
       />
       <Button
         type="button"
-        variant="ghost"
+        variant="outline"
         size="sm"
-        className={cn(
-          PROVIDER_ACTION_CLASS,
-          customSettingsOpen && "settings-provider-action-active",
-        )}
+        className={cn(PROVIDER_ACTION_CLASS, customSettingsOpen && "bg-accent text-foreground")}
         onClick={onOpenCustomSettings}
         title={t("settings.openCustomSettings")}
         aria-label={t("settings.openCustomSettings")}
@@ -572,16 +622,180 @@ function ProviderActionGroup(props: {
   );
 }
 
-function ProviderCardRow(props: {
+function ProviderDirectory(props: {
+  providers: CustomProvider[];
+  selectedProviderId: string | null;
+  showingOverview: boolean;
+  onSelectOverview: () => void;
+  onSelectProvider: (provider: CustomProvider) => void;
+  onAddProvider: (type: ProviderId) => void;
+}) {
+  const {
+    providers,
+    selectedProviderId,
+    showingOverview,
+    onSelectOverview,
+    onSelectProvider,
+    onAddProvider,
+  } = props;
+  const { t } = useLocale();
+  const [query, setQuery] = useState("");
+  const deferredQuery = useDeferredValue(query);
+  const providerGroups = useMemo(() => {
+    const normalizedQuery = deferredQuery.trim().toLocaleLowerCase();
+    return PROVIDER_TABS.flatMap((type) => {
+      const vendorLabel = getProviderLabel(type);
+      const vendorMatches = `${vendorLabel} ${PROVIDER_PROTOCOL_LABELS[type]}`
+        .toLocaleLowerCase()
+        .includes(normalizedQuery);
+      const vendorProviders = providers.filter((provider) => provider.type === type);
+      const matchingProviders =
+        !normalizedQuery || vendorMatches
+          ? vendorProviders
+          : vendorProviders.filter((provider) =>
+              providerMatchesQuery(provider, normalizedQuery, vendorLabel),
+            );
+
+      if (normalizedQuery && !vendorMatches && matchingProviders.length === 0) return [];
+      return [{ type, providers: matchingProviders }];
+    });
+  }, [deferredQuery, providers]);
+
+  const renderProviders = (items: CustomProvider[]) => (
+    <div className="space-y-0.5">
+      {items.map((provider) => {
+        const enabled = isProviderConnectionEnabled(provider);
+        const active = selectedProviderId === provider.id;
+        return (
+          <button
+            key={provider.id}
+            type="button"
+            aria-current={active ? "page" : undefined}
+            className="flex w-full items-center gap-2.5 rounded-md px-2.5 py-2 text-left transition-colors hover:bg-accent data-[active=true]:bg-accent data-[active=true]:text-accent-foreground"
+            data-active={active || undefined}
+            onClick={() => onSelectProvider(provider)}
+          >
+            <ProviderMark type={provider.type} compact />
+            <span className="min-w-0 flex-1">
+              <span className="block truncate text-[13px] font-medium">{provider.name}</span>
+              <span className="block truncate font-mono text-[10px] text-muted-foreground">
+                {PROVIDER_PROTOCOL_LABELS[provider.type]}
+              </span>
+            </span>
+            <span
+              aria-hidden="true"
+              className={cn(
+                "size-1.5 shrink-0 rounded-full",
+                enabled ? "bg-emerald-500" : "bg-muted-foreground/25",
+              )}
+            />
+            <span className="sr-only">
+              {enabled ? t("settings.providerEnabledGroup") : t("settings.providerInactiveGroup")}
+            </span>
+          </button>
+        );
+      })}
+    </div>
+  );
+
+  return (
+    <aside className="settings-provider-directory flex min-h-0 flex-col border-b border-border bg-muted/20 min-[900px]:border-b-0 min-[900px]:border-r">
+      <header className="shrink-0 border-b border-border px-3 pb-3 pt-4">
+        <div className="flex items-baseline justify-between gap-3 px-1">
+          <div>
+            <p className="text-[11px] font-medium uppercase tracking-[0.08em] text-muted-foreground">
+              {t("settings.providerDirectoryEyebrow")}
+            </p>
+            <h1 className="mt-1 text-[15px] font-medium">{t("settings.navProviders")}</h1>
+          </div>
+          <span className="text-xs tabular-nums text-muted-foreground">{providers.length}</span>
+        </div>
+        <div className="relative mt-3">
+          <Search className="pointer-events-none absolute left-2.5 top-1/2 size-3.5 -translate-y-1/2 text-muted-foreground" />
+          <input
+            type="search"
+            value={query}
+            className="h-8 w-full rounded-md border border-transparent bg-background/85 pl-8 pr-2.5 text-[12px] outline-none placeholder:text-muted-foreground focus:border-border focus:ring-2 focus:ring-foreground/5"
+            placeholder={t("settings.providerSearchPlaceholder")}
+            aria-label={t("settings.providerSearchPlaceholder")}
+            onChange={(event) => setQuery(event.currentTarget.value)}
+          />
+        </div>
+      </header>
+
+      <nav className="min-h-0 flex-1 overflow-y-auto p-2" aria-label={t("settings.navProviders")}>
+        <button
+          type="button"
+          aria-current={showingOverview ? "page" : undefined}
+          className="mb-2 flex w-full items-center gap-2.5 rounded-md px-2.5 py-2 text-left transition-colors hover:bg-accent data-[active=true]:bg-accent data-[active=true]:text-accent-foreground"
+          data-active={showingOverview || undefined}
+          onClick={onSelectOverview}
+        >
+          <span className="flex size-8 shrink-0 items-center justify-center rounded-md border border-border bg-background text-muted-foreground">
+            <List className="size-4" />
+          </span>
+          <span className="min-w-0 flex-1 truncate text-[13px] font-medium">
+            {t("settings.providerAllConnections")}
+          </span>
+          <span className="text-[10px] tabular-nums text-muted-foreground">{providers.length}</span>
+        </button>
+
+        {providerGroups.map(({ type, providers: groupProviders }, groupIndex) => {
+          const vendorLabel = getProviderLabel(type);
+          const groupId = `provider-directory-${type}`;
+          return (
+            <section
+              key={type}
+              className={cn("border-t border-border/70 pt-3", groupIndex === 0 ? "mt-2" : "mt-3")}
+              aria-labelledby={groupId}
+            >
+              <div className="flex items-center justify-between gap-2 px-2 pb-1.5">
+                <h2
+                  id={groupId}
+                  className="truncate text-[10px] font-medium uppercase tracking-[0.06em] text-muted-foreground"
+                >
+                  {vendorLabel}
+                </h2>
+                {groupProviders.length > 0 ? (
+                  <span className="text-[10px] tabular-nums text-muted-foreground/70">
+                    {groupProviders.length}
+                  </span>
+                ) : null}
+              </div>
+              {groupProviders.length > 0 ? renderProviders(groupProviders) : null}
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                className="mt-0.5 w-full justify-start gap-2 px-2 text-[11px] text-muted-foreground"
+                onClick={() => onAddProvider(type)}
+              >
+                <Plus className="size-3.5" />
+                {t("settings.providerAddVendorConnection").replace("{vendor}", vendorLabel)}
+              </Button>
+            </section>
+          );
+        })}
+
+        {providerGroups.length === 0 ? (
+          <div className="px-4 py-8 text-center">
+            <p className="text-[12px] font-medium">{t("settings.providerNoMatches")}</p>
+            <p className="mt-1 text-[11px] leading-4 text-muted-foreground">
+              {t("settings.providerNoMatchesHint")}
+            </p>
+          </div>
+        ) : null}
+      </nav>
+    </aside>
+  );
+}
+
+function ProviderOverviewCard(props: {
   provider: CustomProvider;
-  type: ProviderId;
   usageDisplay: ReturnType<typeof getProviderUsageCardDisplay>;
   refreshing: boolean;
   usageExpanded: boolean;
   onToggleUsageExpanded: () => void;
-  dragging: boolean;
-  reorderProps: { "data-vertical-reorder-id": string; style?: CSSProperties };
-  dragHandle: ReactNode;
   onEdit: () => void;
   onDelete: () => void;
   onRefreshUsage: () => void;
@@ -589,57 +803,67 @@ function ProviderCardRow(props: {
   const { t } = useLocale();
   const {
     provider,
-    type,
     usageDisplay,
     refreshing,
     usageExpanded,
     onToggleUsageExpanded,
-    dragging,
-    reorderProps,
-    dragHandle,
     onEdit,
     onDelete,
     onRefreshUsage,
   } = props;
-  // 收起态只展示首个套餐,其余套餐放入可动画折叠容器;配合下方等高骨架,
-  // 卡片在"加载→出数"全程保持两行高度,不产生布局跳动。
   const [firstUsagePlan, ...extraUsagePlans] = usageDisplay.plans;
+  const enabled = isProviderConnectionEnabled(provider);
 
   return (
-    <div
-      {...reorderProps}
-      className={cn(
-        "settings-card-row settings-provider-card-row group flex items-center gap-3 rounded-xl border bg-card px-4 py-3 transition-colors hover:bg-accent/30",
-        dragging && "bg-accent shadow-lg",
-      )}
+    // biome-ignore lint/a11y/useKeyWithClickEvents: the named header button provides the same keyboard action; this handler only extends the mouse hit area around non-interactive card content.
+    <article
+      className="settings-provider-overview-card group flex min-h-40 min-w-0 cursor-pointer flex-col overflow-hidden rounded-lg border border-border bg-card transition-[border-color,box-shadow] hover:border-foreground/20 hover:shadow-sm"
+      onClick={(event) => {
+        if (
+          event.target instanceof Element &&
+          event.target.closest("button, a, input, select, textarea, [role='button']")
+        ) {
+          return;
+        }
+        onEdit();
+      }}
     >
-      {dragHandle}
-      <div className="flex w-5 shrink-0 items-center justify-center text-lg text-foreground">
-        <ProviderBrandIcon type={type} />
-      </div>
-      <div className="settings-provider-card-main min-w-0 flex-1">
-        <div className="flex items-center gap-1.5">
-          <span className="truncate text-sm font-medium">{provider.name}</span>
-          {provider.useSystemProxy ? (
-            <span
-              className="shrink-0 text-blue-500 dark:text-blue-400"
-              title={t("settings.providerUseSystemProxy")}
-            >
-              <Waypoints className="h-3 w-3" />
+      <div className="min-w-0 flex-1 p-4">
+        <button
+          type="button"
+          className="flex w-full min-w-0 items-start gap-3 text-left"
+          onClick={onEdit}
+        >
+          <ProviderMark type={provider.type} compact />
+          <span className="min-w-0 flex-1">
+            <span className="flex items-center gap-1.5">
+              <span className="truncate text-[14px] font-medium">{provider.name}</span>
+              {provider.useSystemProxy ? (
+                <span
+                  className="shrink-0 text-blue-500 dark:text-blue-400"
+                  title={t("settings.providerUseSystemProxy")}
+                >
+                  <Waypoints className="size-3" />
+                </span>
+              ) : null}
             </span>
-          ) : null}
-        </div>
-        <div className="truncate text-xs text-muted-foreground">
-          {provider.baseUrl || t("settings.noBaseUrl")} {" · "}
+            <span className="mt-0.5 block truncate font-mono text-[10px] text-muted-foreground">
+              {getProviderLabel(provider.type)} · {PROVIDER_PROTOCOL_LABELS[provider.type]}
+            </span>
+          </span>
+          <ProviderStateDot enabled={enabled} />
+        </button>
+        <p className="mt-3 truncate font-mono text-[10.5px] text-muted-foreground">
+          {provider.baseUrl || t("settings.noBaseUrl")}
+        </p>
+        <p className="mt-1 text-[12px] text-muted-foreground">
           {provider.activeModels.length} {t("settings.activeModels")}
-        </div>
+        </p>
         {usageDisplay.show ? (
           <div
-            className="mt-1 min-w-0 text-xs text-muted-foreground"
+            className="mt-2 min-w-0 text-xs text-muted-foreground"
             aria-busy={usageDisplay.loading}
           >
-            {/* 主行与元信息行都固定 min-h-4(= text-xs 行高):加载时
-                骨架等高占位,结果到达后原位替换,卡片高度全程稳定。 */}
             <div className="flex min-h-4 min-w-0 items-center">
               {firstUsagePlan ? (
                 <span className="settings-usage-reveal flex min-w-0">
@@ -728,75 +952,108 @@ function ProviderCardRow(props: {
           </div>
         ) : null}
       </div>
-      <div className="settings-card-actions settings-hover-actions flex items-center gap-1 opacity-0 transition-opacity focus-within:opacity-100 group-hover:opacity-100">
-        <ProviderCopyConfigButton provider={provider} />
-        {usageDisplay.show ? (
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-7 w-7 text-muted-foreground hover:text-foreground"
-            disabled={usageDisplay.refreshDisabled}
-            onClick={onRefreshUsage}
-            title={t("settings.providerUsageRefresh")}
-            aria-label={t("settings.providerUsageRefresh")}
-          >
-            <RefreshCw className={cn("h-3.5 w-3.5", refreshing && "animate-spin")} />
-          </Button>
-        ) : null}
-        <Button
-          variant="ghost"
-          size="icon"
-          className="h-7 w-7 text-muted-foreground hover:text-foreground"
-          onClick={onEdit}
-          title={t("settings.edit")}
-        >
-          <Pencil className="h-3.5 w-3.5" />
-        </Button>
-        <ConfirmDeletePopover name={provider.name} onConfirm={onDelete}>
-          {(open) => (
+      <footer className="flex items-center justify-end gap-3 border-t border-border px-4 py-2.5">
+        <div className="settings-card-actions settings-hover-actions flex items-center gap-1 opacity-0 transition-opacity focus-within:opacity-100 group-hover:opacity-100">
+          <ProviderCopyConfigButton provider={provider} />
+          {usageDisplay.show ? (
             <Button
               variant="ghost"
               size="icon"
-              className="h-7 w-7 text-muted-foreground hover:text-destructive"
-              onClick={open}
-              title={t("settings.delete")}
+              className="size-7 text-muted-foreground hover:text-foreground"
+              disabled={usageDisplay.refreshDisabled}
+              onClick={onRefreshUsage}
+              title={t("settings.providerUsageRefresh")}
+              aria-label={t("settings.providerUsageRefresh")}
             >
-              <Trash2 className="h-3.5 w-3.5" />
+              <RefreshCw className={cn("size-3.5", refreshing && "animate-spin")} />
             </Button>
-          )}
-        </ConfirmDeletePopover>
-      </div>
-    </div>
+          ) : null}
+          <Button
+            variant="ghost"
+            size="icon"
+            className="size-7 text-muted-foreground hover:text-foreground"
+            onClick={onEdit}
+            title={t("settings.edit")}
+          >
+            <Pencil className="size-3.5" />
+          </Button>
+          <ConfirmDeletePopover name={provider.name} onConfirm={onDelete}>
+            {(open) => (
+              <Button
+                variant="ghost"
+                size="icon"
+                className="size-7 text-muted-foreground hover:text-destructive"
+                onClick={open}
+                title={t("settings.delete")}
+              >
+                <Trash2 className="size-3.5" />
+              </Button>
+            )}
+          </ConfirmDeletePopover>
+        </div>
+      </footer>
+    </article>
   );
 }
 
-function ProviderList(props: {
-  type: ProviderId;
+function ProviderTemplateCard(props: { type: ProviderId; onAdd: () => void }) {
+  const { type, onAdd } = props;
+  const { t } = useLocale();
+  return (
+    <article className="flex min-h-40 min-w-0 flex-col overflow-hidden rounded-lg border border-border bg-card transition-colors hover:border-foreground/20">
+      <button type="button" className="min-w-0 flex-1 p-4 text-left" onClick={onAdd}>
+        <div className="flex min-w-0 items-start gap-3">
+          <ProviderMark type={type} compact />
+          <span className="min-w-0 flex-1">
+            <span className="block truncate text-[14px] font-medium">{getProviderLabel(type)}</span>
+            <span className="mt-0.5 block truncate font-mono text-[10px] text-muted-foreground">
+              {PROVIDER_PROTOCOL_LABELS[type]}
+            </span>
+          </span>
+        </div>
+        <p className="mt-3 text-[12px] leading-5 text-muted-foreground">
+          {t("settings.providerTemplateHint")}
+        </p>
+      </button>
+      <footer className="flex items-center justify-between border-t border-border px-4 py-2.5">
+        <span className="text-xs text-muted-foreground">{t("settings.providerPendingStatus")}</span>
+        <Plus className="size-3.5 text-muted-foreground" />
+      </footer>
+    </article>
+  );
+}
+
+function ProviderOverview(props: {
   providers: CustomProvider[];
-  onAdd: () => void;
+  activeTab: ProviderId;
+  settings: SettingsSectionProps["settings"];
+  setSettings: SettingsSectionProps["setSettings"];
+  customSettingsOpen: boolean;
+  onAdd: (type: ProviderId) => void;
   onEdit: (provider: CustomProvider) => void;
   onDelete: (id: string) => void;
-  onReorder: (type: ProviderId, nextIds: string[]) => void;
+  onOpenCustomSettings: () => void;
   usageByProvider: ProviderUsageState;
   refreshingProviderIds: ReadonlySet<string>;
   onRefreshUsage: (providerId: string) => void;
 }) {
   const { t } = useLocale();
   const {
-    type,
     providers,
+    activeTab,
+    settings,
+    setSettings,
+    customSettingsOpen,
     onAdd,
     onEdit,
     onDelete,
-    onReorder,
+    onOpenCustomSettings,
     usageByProvider,
     refreshingProviderIds,
     onRefreshUsage,
   } = props;
-  const filtered = providers.filter((provider) => provider.type === type);
-  // 30s ticker 驱动"N 分钟前"相对时间;多套餐行的展开态是纯本地 UI 状态。
   const usageNow = useUsageNowTicker(
-    filtered.some((provider) => provider.usageQuery?.enabled) ||
+    providers.some((provider) => provider.usageQuery?.enabled) ||
       Object.keys(usageByProvider).length > 0,
   );
   const [expandedUsageProviderIds, setExpandedUsageProviderIds] = useState<ReadonlySet<string>>(
@@ -811,51 +1068,51 @@ function ProviderList(props: {
       return next;
     });
   }
-  const {
-    draggingItemId: draggingProviderId,
-    getItemProps: getProviderReorderProps,
-    renderDragHandle: renderProviderDragHandle,
-    scrollContainerRef: providerScrollContainerRef,
-  } = useVerticalListReorder({
-    itemIds: filtered.map((provider) => provider.id),
-    canReorder: true,
-    reorderLabel: t("settings.reorderProvider"),
-    reorderHint: t("settings.reorderVerticalHint"),
-    disabledHint: t("settings.reorderNeedsTwoItems"),
-    onReorder: (nextIds) => onReorder(type, nextIds),
-  });
+  const providerGroups = useMemo(
+    () =>
+      PROVIDER_TABS.map((type) => ({
+        type,
+        providers: providers.filter((provider) => provider.type === type),
+      })),
+    [providers],
+  );
 
-  return (
-    <div className="settings-provider-list flex h-full min-h-0 flex-col gap-4">
-      <div
-        ref={providerScrollContainerRef}
-        className="settings-provider-list-scroll min-h-0 flex-1 overflow-y-auto pr-1"
-      >
-        {filtered.length === 0 ? (
-          <div className="settings-provider-empty flex flex-col items-center justify-center rounded-xl border border-dashed py-12 text-center">
-            <div className="mb-3 flex items-center justify-center text-3xl text-foreground">
-              <ProviderBrandIcon type={type} />
+  const renderProviderGroup = (type: ProviderId, items: CustomProvider[]) => {
+    const vendorLabel = getProviderLabel(type);
+    return (
+      <section className="space-y-3" aria-label={vendorLabel} key={type}>
+        <div className="flex min-w-0 items-center gap-3 border-b border-border/70 pb-2.5">
+          <ProviderMark type={type} compact />
+          <div className="min-w-0 flex-1">
+            <div className="flex items-baseline gap-2">
+              <h2 className="truncate text-[15px] font-medium">{vendorLabel}</h2>
+              <span className="text-xs tabular-nums text-muted-foreground">{items.length}</span>
             </div>
-            <p className="text-sm font-medium">{t("settings.noProvidersHint")}</p>
-            <Button
-              variant="outline"
-              size="sm"
-              className="settings-provider-empty-add mt-4 gap-1.5"
-              onClick={onAdd}
-            >
-              <Plus className="h-3.5 w-3.5" />
-              {t("settings.addProvider")}
-            </Button>
+            <p className="truncate font-mono text-[10px] text-muted-foreground">
+              {PROVIDER_PROTOCOL_LABELS[type]}
+            </p>
           </div>
-        ) : (
-          <div className="space-y-2 pb-1">
-            {filtered.map((provider) => {
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            className="h-8 shrink-0 gap-1.5 px-2.5 text-[11px] text-muted-foreground"
+            onClick={() => onAdd(type)}
+          >
+            <Plus className="size-3.5" />
+            {t("settings.providerAddVendorConnection").replace("{vendor}", vendorLabel)}
+          </Button>
+        </div>
+        <div className={PROVIDER_CARD_GRID_CLASS}>
+          {items.length === 0 ? (
+            <ProviderTemplateCard type={type} onAdd={() => onAdd(type)} />
+          ) : (
+            items.map((provider) => {
               const refreshing = refreshingProviderIds.has(provider.id);
               return (
-                <ProviderCardRow
+                <ProviderOverviewCard
                   key={provider.id}
                   provider={provider}
-                  type={type}
                   usageDisplay={getProviderUsageCardDisplay(
                     provider,
                     usageByProvider[provider.id],
@@ -865,21 +1122,54 @@ function ProviderList(props: {
                   refreshing={refreshing}
                   usageExpanded={expandedUsageProviderIds.has(provider.id)}
                   onToggleUsageExpanded={() => toggleUsageExpanded(provider.id)}
-                  dragging={draggingProviderId === provider.id}
-                  reorderProps={getProviderReorderProps(provider.id)}
-                  dragHandle={renderProviderDragHandle(provider.id, provider.name)}
                   onEdit={() => onEdit(provider)}
                   onDelete={() => onDelete(provider.id)}
                   onRefreshUsage={() => onRefreshUsage(provider.id)}
                 />
               );
-            })}
+            })
+          )}
+        </div>
+      </section>
+    );
+  };
+
+  return (
+    <section className="settings-provider-overview min-h-0 overflow-y-auto bg-background">
+      <div className="mx-auto w-full max-w-5xl space-y-8 px-[clamp(20px,4vw,48px)] pb-24 pt-8">
+        <header className="flex flex-wrap items-end justify-between gap-4 border-b border-border pb-5">
+          <div>
+            <p className="text-[11px] font-medium uppercase tracking-[0.08em] text-muted-foreground">
+              {t("settings.navProviders")}
+            </p>
+            <h1 className="mt-1 text-xl font-medium tracking-[-0.02em]">
+              {t("settings.providerAllConnections")}
+            </h1>
+            <p className="mt-1 max-w-2xl text-[13px] leading-5 text-muted-foreground">
+              {t("settings.providerAllConnectionsDesc")}
+            </p>
           </div>
+          <ProviderActionGroup
+            activeTab={activeTab}
+            settings={settings}
+            setSettings={setSettings}
+            customSettingsOpen={customSettingsOpen}
+            onAdd={() => onAdd(activeTab)}
+            onOpenCustomSettings={onOpenCustomSettings}
+          />
+        </header>
+
+        {providerGroups.map(({ type, providers: groupProviders }) =>
+          renderProviderGroup(type, groupProviders),
         )}
       </div>
-    </div>
+    </section>
   );
 }
+
+type ProviderEditorSelection =
+  | { kind: "edit"; providerId: string }
+  | { kind: "add"; type: ProviderId };
 
 export function ProvidersSection(
   props: SettingsSectionProps & {
@@ -890,13 +1180,20 @@ export function ProvidersSection(
   const { settings, setSettings, initialProviderId, onInitialProviderHandled } = props;
 
   const [activeTab, setActiveTab] = useState<ProviderId>("claude_code");
-  const [modalOpen, setModalOpen] = useState(false);
   const [customSettingsOpen, setCustomSettingsOpen] = useState(false);
-  const [editingProvider, setEditingProvider] = useState<CustomProvider | null>(null);
+  const [editorSelection, setEditorSelection] = useState<ProviderEditorSelection | null>(null);
   const { usageByProvider, refreshingProviderIds, refreshProvider } = useProviderUsage(
     settings.customProviders,
   );
   const openedInitialProviderIdRef = useRef<string | null>(null);
+  const editingProvider =
+    editorSelection?.kind === "edit"
+      ? (settings.customProviders.find((provider) => provider.id === editorSelection.providerId) ??
+        null)
+      : null;
+  const editorProviderType =
+    editorSelection?.kind === "add" ? editorSelection.type : editingProvider?.type;
+  const showingEditor = Boolean(editorSelection && editorProviderType);
 
   useEffect(() => {
     const providerId = initialProviderId?.trim();
@@ -905,24 +1202,22 @@ export function ProvidersSection(
     if (!provider) return;
     openedInitialProviderIdRef.current = providerId;
     setActiveTab(provider.type);
-    setEditingProvider(provider);
-    setModalOpen(true);
+    setEditorSelection({ kind: "edit", providerId: provider.id });
     onInitialProviderHandled?.();
   }, [initialProviderId, onInitialProviderHandled, settings.customProviders]);
 
-  function openAdd() {
-    setEditingProvider(null);
-    setModalOpen(true);
+  function openAdd(type: ProviderId) {
+    setActiveTab(type);
+    setEditorSelection({ kind: "add", type });
   }
 
   function openEdit(provider: CustomProvider) {
-    setEditingProvider(provider);
-    setModalOpen(true);
+    setActiveTab(provider.type);
+    setEditorSelection({ kind: "edit", providerId: provider.id });
   }
 
-  function closeModal() {
-    setModalOpen(false);
-    setEditingProvider(null);
+  function closeEditor() {
+    setEditorSelection(null);
   }
 
   function handleSave(data: Omit<CustomProvider, "id">) {
@@ -951,118 +1246,47 @@ export function ProvidersSection(
     );
   }
 
-  function handleProviderReorder(type: ProviderId, nextIds: string[]) {
-    setSettings((prev) => {
-      const providersOfType = prev.customProviders.filter((provider) => provider.type === type);
-      const reordered = itemsByIdOrder(providersOfType, nextIds);
-      const included = new Set(reordered.map((provider) => provider.id));
-      for (const provider of providersOfType) {
-        if (!included.has(provider.id)) reordered.push(provider);
-      }
-      let index = 0;
-      return updateCustomProviders(
-        prev,
-        prev.customProviders.map((provider) =>
-          provider.type === type ? (reordered[index++] ?? provider) : provider,
-        ),
-      );
-    });
-  }
-
-  const activeTabIndex = Math.max(0, PROVIDER_TABS.indexOf(activeTab));
-  // 每个厂商 Tab 内联展示已配置数量，替代原先列表上方单独的计数行。
-  const providerCountByType = useMemo(() => {
-    const counts = Object.fromEntries(PROVIDER_TABS.map((tab) => [tab, 0])) as Record<
-      ProviderId,
-      number
-    >;
-    for (const provider of settings.customProviders) {
-      if (counts[provider.type] !== undefined) counts[provider.type] += 1;
-    }
-    return counts;
-  }, [settings.customProviders]);
-
   return (
     <>
-      <div className="settings-provider-section flex min-h-0 flex-1 flex-col">
-        <div className="settings-provider-tabs-wrap mb-4 flex shrink-0 items-center justify-between gap-3">
-          <div className="settings-provider-tabs inline-flex h-9 min-w-0 items-center overflow-x-auto rounded-lg bg-muted p-1 text-muted-foreground">
-            {PROVIDER_TABS.map((tab) => (
-              <button
-                key={tab}
-                type="button"
-                onClick={() => setActiveTab(tab)}
-                className={cn(
-                  "settings-provider-tab inline-flex shrink-0 items-center justify-center gap-1.5 whitespace-nowrap rounded-md px-3 py-1 text-sm font-medium transition-all",
-                  activeTab === tab
-                    ? "bg-background text-foreground shadow"
-                    : "hover:text-foreground/80",
-                )}
-              >
-                <ProviderBrandIcon type={tab} />
-                {getProviderLabel(tab)}
-                {providerCountByType[tab] > 0 ? (
-                  <span
-                    className={cn(
-                      "inline-flex h-4 min-w-4 items-center justify-center rounded-full px-1 text-[10px] font-semibold leading-none tabular-nums transition-colors",
-                      activeTab === tab
-                        ? "bg-foreground/[0.08] text-foreground/70"
-                        : "bg-foreground/[0.06] text-muted-foreground/80",
-                    )}
-                  >
-                    {providerCountByType[tab]}
-                  </span>
-                ) : null}
-              </button>
-            ))}
-          </div>
-          <ProviderActionGroup
+      <div className="settings-provider-section settings-provider-workspace grid h-full min-h-0 flex-1 grid-cols-[minmax(230px,280px)_minmax(0,1fr)] max-[900px]:grid-cols-1 max-[900px]:grid-rows-[minmax(180px,34vh)_minmax(0,1fr)]">
+        <ProviderDirectory
+          providers={settings.customProviders}
+          selectedProviderId={editingProvider?.id ?? null}
+          showingOverview={!showingEditor}
+          onSelectOverview={closeEditor}
+          onSelectProvider={openEdit}
+          onAddProvider={openAdd}
+        />
+        {showingEditor && editorProviderType ? (
+          <ProviderEditor
+            key={
+              editorSelection?.kind === "edit"
+                ? `edit:${editorSelection.providerId}`
+                : `add:${editorProviderType}`
+            }
+            providerType={editorProviderType}
+            initialData={editingProvider ?? undefined}
+            onSave={handleSave}
+            onClose={closeEditor}
+          />
+        ) : (
+          <ProviderOverview
+            providers={settings.customProviders}
             activeTab={activeTab}
             settings={settings}
             setSettings={setSettings}
             customSettingsOpen={customSettingsOpen}
             onAdd={openAdd}
+            onEdit={openEdit}
+            onDelete={handleDelete}
             onOpenCustomSettings={() => setCustomSettingsOpen(true)}
+            usageByProvider={usageByProvider}
+            refreshingProviderIds={refreshingProviderIds}
+            onRefreshUsage={(providerId) => void refreshProvider(providerId)}
           />
-        </div>
-
-        <div className="settings-provider-panels min-h-0 flex-1 overflow-hidden">
-          <div
-            className="flex h-full transition-transform duration-300 ease-in-out"
-            style={{ transform: `translateX(-${activeTabIndex * 100}%)` }}
-          >
-            {PROVIDER_TABS.map((tab) => (
-              <div
-                key={tab}
-                className="w-full shrink-0 overflow-hidden"
-                aria-hidden={activeTab !== tab}
-                inert={activeTab !== tab}
-              >
-                <ProviderList
-                  type={tab}
-                  providers={settings.customProviders}
-                  onAdd={openAdd}
-                  onEdit={openEdit}
-                  onDelete={handleDelete}
-                  onReorder={handleProviderReorder}
-                  usageByProvider={usageByProvider}
-                  refreshingProviderIds={refreshingProviderIds}
-                  onRefreshUsage={(providerId) => void refreshProvider(providerId)}
-                />
-              </div>
-            ))}
-          </div>
-        </div>
+        )}
       </div>
 
-      {modalOpen ? (
-        <ProviderModal
-          providerType={activeTab}
-          initialData={editingProvider ?? undefined}
-          onSave={handleSave}
-          onClose={closeModal}
-        />
-      ) : null}
       {customSettingsOpen ? (
         <CustomSettingsDrawer
           settings={settings}

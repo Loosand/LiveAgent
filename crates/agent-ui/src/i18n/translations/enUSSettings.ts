@@ -436,6 +436,43 @@ export const EN_US_SETTINGS_TRANSLATIONS = {
   "settings.importProvidersHint": "Import providers from desktop developer tools",
   "settings.providerActionGroup": "Provider actions",
   "settings.providerActionSettings": "Settings",
+  "settings.providerDirectoryEyebrow": "Settings",
+  "settings.providerSearchPlaceholder": "Search providers",
+  "settings.providerAllConnections": "All connections",
+  "settings.providerAllConnectionsDesc":
+    "Manage model connections, model catalogs, and request capabilities across protocols.",
+  "settings.providerEnabledGroup": "Enabled",
+  "settings.providerInactiveGroup": "Not enabled",
+  "settings.providerAvailableGroup": "Available connections",
+  "settings.providerAddVendorConnection": "Add {vendor} connection",
+  "settings.providerNoMatches": "No matching providers",
+  "settings.providerNoMatchesHint": "Try another name, address, or protocol keyword.",
+  "settings.providerConfiguredStatus": "Configured",
+  "settings.providerPendingStatus": "Not configured",
+  "settings.providerTemplateHint":
+    "Create a compatible connection and configure its API address, key, and available models.",
+  "settings.providerBackToOverview": "Back to all connections",
+  "settings.providerDetailEditHint":
+    "Configure the connection, request behavior, model catalog, and usage query.",
+  "settings.providerDetailCreateHint": "Create a compatible connection and configure its models.",
+  "settings.providerConnectionFormHint":
+    "Connection details identify the service, establish requests, and sync its model catalog.",
+  "settings.providerNameHint":
+    "Used to distinguish connections in the model picker and provider directory.",
+  "settings.providerBaseUrlHint":
+    "Enter an official API, proxy, relay, or compatible service endpoint.",
+  "settings.providerApiKeyHint":
+    "Enter the service credential. It will not be shown in plain text after saving.",
+  "settings.providerApiKeyConfiguredHint":
+    "A key is saved. Leave it unchanged to keep it, or enter a new value to replace it.",
+  "settings.providerModelsSectionHint":
+    "Sync from the model catalog or add full model IDs manually, then choose which are enabled.",
+  "settings.providerRequestFormHint":
+    "Configure proxying, stream retries, prompt caching, and custom request headers.",
+  "settings.providerUsageFormHint":
+    "Optionally query balance or plan usage. No extra requests are made while disabled.",
+  "settings.providerUsageDisabledHint":
+    "This connection is currently used only for model requests. Enable usage query to configure its method, credentials, and test.",
   "settings.editProvider": "Edit Provider",
   "settings.compatible": "Compatible",
   "settings.providerName": "Name",

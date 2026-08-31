@@ -61,22 +61,24 @@ test("mobile cron details give configuration more room and compact log summaries
   );
 });
 
-test("mobile provider toolbar stacks tabs above a full-width action group", () => {
+test("mobile provider settings keep the Tessera-style directory and overview workspace", () => {
   assert.match(providersSource, /settings-provider-section/);
-  assert.match(providersSource, /settings-provider-action-group/);
-  assert.match(providersSource, /settings-provider-empty-add/);
+  assert.match(providersSource, /settings-provider-workspace/);
+  assert.match(providersSource, /settings-provider-directory/);
+  assert.match(providersSource, /settings-provider-overview/);
+  assert.match(providersSource, /PROVIDER_TABS\.flatMap/);
+  assert.match(providersSource, /settings\.providerAddVendorConnection/);
   assert.match(
-    responsiveStylesSource,
-    /\.settings-provider-tabs-wrap\s*\{[\s\S]*flex-direction:\s*column;/,
+    providersSource,
+    /grid-cols-1 gap-3 min-\[1280px\]:grid-cols-2 min-\[1480px\]:grid-cols-3/,
   );
+  assert.doesNotMatch(providersSource, /repeat\(auto-fit,minmax\(250px,1fr\)\)/);
+  assert.doesNotMatch(providersSource, /enabled-provider-connections/);
   assert.match(
-    responsiveStylesSource,
-    /\.settings-provider-action-group\s*\{[\s\S]*width:\s*100%;[\s\S]*height:\s*42px;/,
+    providersSource,
+    /max-\[900px\]:grid-cols-1[\s\S]*max-\[900px\]:grid-rows-/,
   );
-  assert.match(
-    responsiveStylesSource,
-    /\.settings-provider-action-label\s*\{[\s\S]*display:\s*inline;/,
-  );
+  assert.match(responsiveStylesSource, /\.settings-content-providers\s*\{[\s\S]*padding:\s*0;/);
   assert.match(
     responsiveStylesSource,
     /\.settings-provider-custom-sheet\s*\{[\s\S]*inset:\s*0;/,

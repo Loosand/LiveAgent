@@ -8,6 +8,7 @@ import {
   type ReasoningLevel,
   type SelectedModel,
 } from "@liveagent/app/lib/settings";
+import { AiModelIcon } from "@liveagent/ui/components/AiModelIcon";
 import {
   ArrowDownAZ,
   Check,
@@ -351,7 +352,11 @@ export const ComposerModelControls = memo(function ComposerModelControls(
         }
       >
         {selectedOption ? (
-          <ProviderBrandIcon type={selectedOption.providerType} className="opacity-90" />
+          <AiModelIcon
+            modelId={selectedOption.model}
+            providerType={selectedOption.providerType}
+            className="opacity-90"
+          />
         ) : (
           <Sparkle className="h-4 w-4 shrink-0 text-violet-500 dark:text-violet-400" />
         )}
@@ -544,9 +549,10 @@ export const ComposerModelControls = memo(function ComposerModelControls(
                               )}
                             >
                               <span className="flex min-w-0 items-center gap-2">
-                                <ProviderBrandIcon
-                                  type={option.providerType}
-                                  className={cn("opacity-70", isSelected && "opacity-100")}
+                                <AiModelIcon
+                                  modelId={option.model}
+                                  providerType={option.providerType}
+                                  className={cn("opacity-80", isSelected && "opacity-100")}
                                 />
                                 <span className="min-w-0 truncate">{option.model}</span>
                               </span>

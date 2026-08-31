@@ -1,4 +1,5 @@
 import type { ProviderId } from "@liveagent/app/lib/settings/index";
+import { AiModelIcon } from "@liveagent/ui/components/AiModelIcon";
 import {
   Check,
   ChevronDown,
@@ -161,7 +162,11 @@ export function ModelPicker({
             )}
           >
             {selectedOption ? (
-              <ProviderBrandIcon type={selectedOption.providerType} className="h-3.5 w-3.5" />
+              <AiModelIcon
+                modelId={selectedOption.label}
+                providerType={selectedOption.providerType}
+                className="size-6"
+              />
             ) : (
               <Sparkles className="h-3.5 w-3.5" />
             )}
@@ -265,9 +270,10 @@ export function ModelPicker({
                             )}
                           >
                             <span className="flex min-w-0 items-center gap-2">
-                              <ProviderBrandIcon
-                                type={option.providerType}
-                                className={cn("opacity-70", isSelected && "opacity-100")}
+                              <AiModelIcon
+                                modelId={option.label}
+                                providerType={option.providerType}
+                                className={cn("opacity-80", isSelected && "opacity-100")}
                               />
                               <span className="min-w-0 truncate">{option.label}</span>
                               {option.description ? (

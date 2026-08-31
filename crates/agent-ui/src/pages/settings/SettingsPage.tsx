@@ -91,6 +91,7 @@ export function SettingsPage(props: SettingsPageProps) {
         labelKey: "settings.navProviders",
         icon: <Cpu className={extension.iconClassName} />,
         contentMode: "fill",
+        showSaveIndicator: false,
         render: () => (
           <ProvidersSection
             settings={settings}

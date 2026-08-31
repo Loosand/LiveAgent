@@ -124,6 +124,7 @@ export function SettingsShell<Context>(props: SettingsShellProps<Context>) {
 
   const web = registry.surface === "web";
   const fillContent = activeSection.contentMode === "fill";
+  const integratedWorkspace = activeSection.id === "providers";
   const saveIndicator = getSaveIndicator(saveState, t);
   const showSaveIndicator = activeSection.showSaveIndicator !== false;
 
@@ -229,6 +230,7 @@ export function SettingsShell<Context>(props: SettingsShellProps<Context>) {
             className={cn(
               "settings-main-header px-8 pb-2 pt-8",
               web && "flex items-center justify-between",
+              integratedWorkspace && "hidden",
             )}
           >
             <div
@@ -263,9 +265,14 @@ export function SettingsShell<Context>(props: SettingsShellProps<Context>) {
           <div
             key={activeSection.id}
             className={cn(
-              "settings-content settings-section-enter flex-1 px-8 pb-8 pt-6",
+              "settings-content settings-section-enter flex-1",
               `settings-content-${activeSection.id}`,
-              fillContent ? "flex min-h-0 flex-col overflow-hidden" : "overflow-auto",
+              integratedWorkspace
+                ? "flex min-h-0 flex-col overflow-hidden p-0"
+                : cn(
+                    "px-8 pb-8 pt-6",
+                    fillContent ? "flex min-h-0 flex-col overflow-hidden" : "overflow-auto",
+                  ),
             )}
             data-anim-suspended={isDocumentHidden ? "true" : undefined}
             style={
@@ -277,6 +284,7 @@ export function SettingsShell<Context>(props: SettingsShellProps<Context>) {
                 "settings-section-shell",
                 `settings-section-shell-${activeSection.id}`,
                 activeSection.id === "system" && "mx-auto w-full max-w-[920px]",
+                integratedWorkspace && "h-full",
                 fillContent ? "flex min-h-0 flex-1 flex-col" : "min-h-full",
               )}
             >

@@ -42,14 +42,19 @@ test("settings pages forward and consume provider deep links", () => {
   );
 });
 
-test("the shared providers section opens the requested provider editor once", () => {
+test("the shared providers section opens the requested provider detail page once", () => {
   assert.match(providersSectionSource, /openedInitialProviderIdRef/);
   assert.match(
     providersSectionSource,
     /settings\.customProviders\.find\(\(item\) => item\.id === providerId\)/,
   );
   assert.match(providersSectionSource, /setActiveTab\(provider\.type\)/);
-  assert.match(providersSectionSource, /setEditingProvider\(provider\)/);
-  assert.match(providersSectionSource, /setModalOpen\(true\)/);
+  assert.match(
+    providersSectionSource,
+    /setEditorSelection\(\{ kind: "edit", providerId: provider\.id \}\)/,
+  );
+  assert.match(providersSectionSource, /<ProviderEditor/);
+  assert.match(providersSectionSource, /showingOverview=\{!showingEditor\}/);
+  assert.doesNotMatch(providersSectionSource, /setModalOpen\(true\)/);
   assert.match(providersSectionSource, /onInitialProviderHandled\?\.\(\)/);
 });
