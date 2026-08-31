@@ -65,6 +65,7 @@ export function AssistantWorkTrace({
   hasDetails,
   attentionRequired = false,
   running,
+  collapseAfterAnswer = false,
 }: {
   children: ReactNode;
   activeStatus?: ReactNode;
@@ -73,9 +74,18 @@ export function AssistantWorkTrace({
   hasDetails: boolean;
   attentionRequired?: boolean;
   running: boolean;
+  /** 回复有总结文案（answer）时：回合结束（流停止）后自动折叠一次。 */
+  collapseAfterAnswer?: boolean;
 }) {
   const { t } = useLocale();
   const [expanded, setExpanded] = useAttentionDisclosure(attentionRequired, running);
+
+  // 有总结文案时，回合完成（running 变 false）后自动折叠「处理中」区块一次；
+  // 之后 disclosure 所有权交还给用户，手动展开/折叠不再被强制收回，
+  // 也不会和 attentionRequired（待用户交互的卡片）的强制展开打架。
+  useEffect(() => {
+    if (!running && !attentionRequired && collapseAfterAnswer) setExpanded(false);
+  }, [running, attentionRequired, collapseAfterAnswer, setExpanded]);
   const [elapsedMs, setElapsedMs] = useState(durationMs ?? 0);
   const startedAtRef = useRef<number | null>(running ? Date.now() : null);
 

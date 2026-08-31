@@ -232,6 +232,7 @@ export const AssistantTurnContent = memo(function AssistantTurnContent(props: {
       {showWorkTrace ? (
         <AssistantWorkTrace
           attentionRequired={attentionRequired}
+          collapseAfterAnswer={layout.answer.length > 0}
           durationMs={durationMs}
           hasDetails={detailEntries.length > 0 || showDetailedStatus}
           running={running}
