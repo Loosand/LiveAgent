@@ -5,7 +5,6 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "dev:chat-gallery": "vite --open /chat-gallery.html",
     "build": "tsc && vite build",
     "preview": "vite preview",
     "tauri": "tauri",

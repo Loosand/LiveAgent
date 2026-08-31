@@ -31,7 +31,6 @@ test("composer derives its body-aligned width from the live transcript width", (
     "../../../agent-ui/src/pages/chat/transcript/TranscriptWidthControls.tsx",
   );
   const composerSource = read("../../../agent-ui/src/pages/chat/ChatComposerBar.tsx");
-  const gallerySource = read("../../src/dev/chat-gallery/TranscriptGallery.tsx");
 
   assert.match(surfaceSource, /data-chat-width-owner=""/);
   assert.match(surfaceSource, /\[CHAT_TRANSCRIPT_WIDTH_CSS_VAR\]: `\$\{contentWidth\}px`/);
@@ -43,7 +42,6 @@ test("composer derives its body-aligned width from the live transcript width", (
   );
   assert.match(composerSource, /w-\[calc\(100%-2\.25rem\)\]/);
   assert.match(composerSource, /translate-x-\[18px\]/);
-  assert.match(gallerySource, /data-chat-width-owner=""/);
 });
 
 test("FloorNavRail clamps its panel to the container, not the viewport", () => {
