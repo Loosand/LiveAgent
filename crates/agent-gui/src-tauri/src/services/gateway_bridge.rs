@@ -663,6 +663,30 @@ pub async fn handle_file_mention_list(
     })
 }
 
+/// 已安装应用清单（WebUI @ 应用提及）：复用桌面 @ 弹层同一份枚举，
+/// WebUI 拿到的与 GUI 完全一致（含 32px PNG 图标 data URL）。宿主自身
+/// 的剔除也走同一份裁决（macOS 按 bundle id，Windows 按当前 exe）。
+pub async fn handle_installed_apps_list(
+    host_identifier: String,
+) -> Result<proto::InstalledAppsListResponse, String> {
+    tauri::async_runtime::spawn_blocking(move || {
+        crate::services::cua_driver::installed_apps::list_installed_apps(&host_identifier)
+    })
+    .await
+    .map_err(|e| format!("gateway installed apps list join failed: {e}"))
+    .map(|apps| proto::InstalledAppsListResponse {
+        apps: apps
+            .into_iter()
+            .map(|app| proto::InstalledAppEntry {
+                name: app.name,
+                bundle_id: app.bundle_id,
+                path: app.path,
+                icon_data_url: app.icon_data_url.unwrap_or_default(),
+            })
+            .collect(),
+    })
+}
+
 pub async fn handle_fs_roots() -> Result<proto::FsRootsResponse, String> {
     tauri::async_runtime::spawn_blocking(fs_roots_sync)
         .await
@@ -1036,6 +1060,7 @@ pub async fn handle_upload_readable_files(
             .map(|file| proto::ChatUploadedFile {
                 relative_path: file.relative_path,
                 absolute_path: file.absolute_path,
+                dedupe_key: file.dedupe_key.unwrap_or_default(),
                 file_name: file.file_name,
                 kind: file.kind,
                 size_bytes: i64::try_from(file.size_bytes).unwrap_or(i64::MAX),
@@ -1395,6 +1420,7 @@ fn is_builtin_share_tool_name(name: &str) -> bool {
         "Agent"
             | "AskUserQuestion"
             | "Bash"
+            | "Browser"
             | "CronTaskManager"
             | "Delete"
             | "Edit"
@@ -1409,6 +1435,7 @@ fn is_builtin_share_tool_name(name: &str) -> bool {
             | "McpManager"
             | "MemoryManager"
             | "Read"
+            | "ReadConversation"
             | "ReadTerminal"
             | "SendMessage"
             | "SkillsManager"

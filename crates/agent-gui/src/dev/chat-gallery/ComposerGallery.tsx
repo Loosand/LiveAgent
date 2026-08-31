@@ -273,6 +273,7 @@ export function GalleryComposerHarness(props: {
         setRuntimeControls((current) => ({ ...current, ...patch }));
       }}
       onPickReadableFiles={() => undefined}
+      onPickWorkspaceFolder={() => undefined}
       onPasteFiles={() => undefined}
       pendingUploadedFiles={uploads}
       onRemovePendingUpload={(relativePath) => {
