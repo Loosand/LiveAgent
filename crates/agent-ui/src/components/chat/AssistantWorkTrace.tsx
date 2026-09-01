@@ -46,7 +46,7 @@ function WorkPixelGrid({ active }: { active: boolean }) {
   );
 }
 
-function formatElapsedTime(elapsedMs: number) {
+export function formatElapsedTime(elapsedMs: number) {
   const totalSeconds = Math.floor(elapsedMs / 1_000);
   if (totalSeconds < 1) return "";
   const hours = Math.floor(totalSeconds / 3_600);
@@ -59,7 +59,7 @@ function formatElapsedTime(elapsedMs: number) {
 
 export function AssistantWorkTrace({
   children,
-  activeStatus,
+  collapsedTail,
   className,
   durationMs,
   hasDetails,
@@ -68,7 +68,12 @@ export function AssistantWorkTrace({
   collapseAfterAnswer = false,
 }: {
   children: ReactNode;
-  activeStatus?: ReactNode;
+  /**
+   * 当前正在进行的活动区块（运行中的工具组 / 思考中 / 正在流式输出的
+   * 进度文本）。仅在「运行中且用户手动折叠了本区块」时渲染在折叠头下方，
+   * 这样折叠后外面不至于空无一物；展开时内容本就可见，不再重复。
+   */
+  collapsedTail?: ReactNode;
   className?: string;
   durationMs?: number;
   hasDetails: boolean;
@@ -113,7 +118,6 @@ export function AssistantWorkTrace({
   const label = `${running ? t("chat.work.running") : t("chat.work.activity")}${
     elapsedLabel ? ` ${elapsedLabel}` : ""
   }`;
-  const showHeader = hasDetails || activeStatus == null;
   const header = (
     <>
       {running ? <WorkPixelGrid active /> : null}
@@ -137,7 +141,7 @@ export function AssistantWorkTrace({
       aria-busy={running}
       data-chat-work-trace=""
     >
-      {showHeader && hasDetails ? (
+      {hasDetails ? (
         <button
           type="button"
           className="group/work-trace flex w-full items-center gap-2 rounded-lg py-1 text-[calc(13px*var(--zone-font-scale,1))] font-[450] transition-colors hover:text-foreground/75 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
@@ -146,18 +150,22 @@ export function AssistantWorkTrace({
         >
           {header}
         </button>
-      ) : showHeader ? (
+      ) : (
         <div className="flex items-center gap-2 py-1 text-[calc(13px*var(--zone-font-scale,1))] font-[450]">
           {header}
         </div>
-      ) : null}
+      )}
 
       {hasDetails ? (
         <LazyCollapse className="[contain:layout_paint]" open={expanded}>
           {() => <div className="mt-1 [scrollbar-gutter:stable]">{children}</div>}
         </LazyCollapse>
       ) : null}
-      {activeStatus}
+      {running && hasDetails && !expanded && collapsedTail ? (
+        <div className="mt-1" data-chat-work-collapsed-tail="">
+          {collapsedTail}
+        </div>
+      ) : null}
     </section>
   );
 }

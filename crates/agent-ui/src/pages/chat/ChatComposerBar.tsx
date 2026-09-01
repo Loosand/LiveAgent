@@ -1121,7 +1121,7 @@ export const ChatComposerBar = memo(function ChatComposerBar(props: ChatComposer
         )}
       >
         {taskProgressBar ? (
-          <div className="pointer-events-none absolute inset-x-0 bottom-full z-40 mb-3 flex justify-center px-3 [&>fieldset]:pointer-events-auto [&>fieldset]:mb-0">
+          <div className="pointer-events-none absolute inset-x-0 bottom-full z-40 mb-3 flex justify-center px-3">
             {taskProgressBar}
           </div>
         ) : null}

@@ -1,12 +1,11 @@
 import { CompactingText } from "@liveagent/ui/components/chat/AssistantStatus";
 import { AssistantWorkTrace } from "@liveagent/ui/components/chat/AssistantWorkTrace";
 import { HostedSearchGroupView } from "@liveagent/ui/components/chat/HostedSearchGroupView";
-import { ThinkingActivity } from "@liveagent/ui/components/chat/ThinkingActivity";
+import { LiveSparkle } from "@liveagent/ui/components/chat/LiveSparkle";
 import { Markdown } from "@liveagent/ui/components/Markdown";
 import type { UiRound } from "@liveagent/ui/lib/chat/assistantBubbleAdapter";
 import { normalizeLiveToolStatus } from "@liveagent/ui/lib/chat/assistantStatus";
 import type { ChatFileLink } from "@liveagent/ui/lib/chat/chatFileLinks";
-import { resolveLiveThinkingActivity } from "@liveagent/ui/lib/chat/thinkingActivity";
 import { cn } from "@liveagent/ui/lib/shared/utils";
 import { memo, type ReactNode, useMemo } from "react";
 import {
@@ -14,8 +13,11 @@ import {
   type GroupedRoundBlock,
   hasActiveUserInteraction,
   isBuiltinShareToolName,
+  resolveActiveThinkingEntryKey,
+  resolveActiveWorkEntry,
   resolveAssistantTurnLayout,
 } from "./assistantBubbleUtils";
+import { ThinkingDisclosure } from "./ThinkingDisclosure";
 import { MemoToolCallItem } from "./ToolCallItem";
 import { getNativeDisplayImagePayload, NativeDisplayImageBlock } from "./ToolImages";
 import { ToolTraceGroup } from "./ToolTraceGroup";
@@ -29,7 +31,16 @@ export const RoundBlockContent = memo(function RoundBlockContent(props: {
   runningToolCallIds: string[];
   thinkingOpen: boolean;
   isLatestThinking: boolean;
+  /** Transcript-stable entry key; block ids alone repeat across rounds. */
+  traceKey?: string;
   showTurnStatus?: boolean;
+  /**
+   * True when the block renders as its own transcript row outside the work
+   * trace (interaction cards, answer-layer results). Standalone rows get
+   * their vertical rhythm from the layout layer, so the operation wrapper
+   * must not stack its own my-3 on top of it.
+   */
+  standalone?: boolean;
   readOnly?: boolean;
   redactToolContent?: boolean;
   workdir?: string;
@@ -40,7 +51,11 @@ export const RoundBlockContent = memo(function RoundBlockContent(props: {
     isLive,
     renderMode,
     runningToolCallIds,
+    thinkingOpen,
+    isLatestThinking,
+    traceKey,
     showTurnStatus = false,
+    standalone = false,
     readOnly = false,
     redactToolContent = false,
     workdir,
@@ -49,7 +64,20 @@ export const RoundBlockContent = memo(function RoundBlockContent(props: {
 
   let content: ReactNode;
   if (block.kind === "thinking") {
-    content = null;
+    // Shared/redacted views hide tool internals; model reasoning is at least
+    // as sensitive, so it disappears entirely there instead of rendering a
+    // teasing header without a body.
+    content = redactToolContent ? null : (
+      <ThinkingDisclosure
+        text={block.text}
+        trackKey={traceKey ?? block.key}
+        active={Boolean(isLive && thinkingOpen && isLatestThinking)}
+        renderMode={renderMode}
+        readOnly={readOnly}
+        workdir={workdir}
+        onOpenFileLink={onOpenFileLink}
+      />
+    );
   } else if (block.kind === "tool") {
     const isRedactedToolContent =
       redactToolContent && isBuiltinShareToolName(block.item.toolCall.name);
@@ -114,7 +142,7 @@ export const RoundBlockContent = memo(function RoundBlockContent(props: {
   const isOperationBlock = block.kind !== "text";
   return (
     <div
-      className={cn(!isLive && "w-full", isOperationBlock && "my-3")}
+      className={cn(!isLive && "w-full", isOperationBlock && !standalone && "my-3")}
       data-assistant-operation={isOperationBlock ? "" : undefined}
     >
       {content}
@@ -186,7 +214,6 @@ export const AssistantTurnContent = memo(function AssistantTurnContent(props: {
     [isLive, rounds],
   );
   const running = Boolean(isLive && isStreaming);
-  const thinkingActivity = useMemo(() => resolveLiveThinkingActivity(rounds), [rounds]);
   const normalizedToolStatus = running ? normalizeLiveToolStatus(toolStatus ?? null) : null;
   const isCompactionStatus = toolStatusVariant === "compaction";
   const showDetailedStatus = Boolean(
@@ -201,10 +228,8 @@ export const AssistantTurnContent = memo(function AssistantTurnContent(props: {
     }
     return null;
   }, [layout.work]);
-  const detailEntries = useMemo(
-    () => layout.work.filter((entry) => entry.block.kind !== "thinking"),
-    [layout.work],
-  );
+  const activeThinkingKey = running ? resolveActiveThinkingEntryKey(layout.work) : null;
+  const collapsedTailEntry = running ? resolveActiveWorkEntry(layout.work) : null;
   const showWorkTrace = running || layout.work.length > 0;
 
   if (!showWorkTrace && layout.interaction.length === 0 && layout.answer.length === 0) return null;
@@ -220,9 +245,11 @@ export const AssistantTurnContent = memo(function AssistantTurnContent(props: {
       isLive={running && (insideWorkTrace || liveInteraction)}
       renderMode={renderMode}
       runningToolCallIds={entry.runningToolCallIds}
-      thinkingOpen={insideWorkTrace ? (running ? entry.thinkingOpen : true) : false}
-      isLatestThinking={false}
+      thinkingOpen={insideWorkTrace && running ? entry.thinkingOpen : false}
+      isLatestThinking={entry.key === activeThinkingKey}
+      traceKey={entry.key}
       showTurnStatus={insideWorkTrace && running && entry.key === latestToolGroupKey}
+      standalone={!insideWorkTrace}
       readOnly={readOnly}
       redactToolContent={redactToolContent}
       workdir={workdir}
@@ -234,18 +261,14 @@ export const AssistantTurnContent = memo(function AssistantTurnContent(props: {
     <div className="space-y-2">
       {showWorkTrace ? (
         <AssistantWorkTrace
-          activeStatus={
-            running && !isCompactionStatus && thinkingActivity.active ? (
-              <ThinkingActivity reasonSummary={thinkingActivity.reasonSummary} />
-            ) : null
-          }
           attentionRequired={attentionRequired}
           collapseAfterAnswer={layout.answer.length > 0}
+          collapsedTail={collapsedTailEntry ? renderEntry(collapsedTailEntry, true) : null}
           durationMs={durationMs}
-          hasDetails={detailEntries.length > 0 || showDetailedStatus}
+          hasDetails={layout.work.length > 0 || showDetailedStatus}
           running={running}
         >
-          {detailEntries.map((entry) => renderEntry(entry, true))}
+          {layout.work.map((entry) => renderEntry(entry, true))}
           {showDetailedStatus ? (
             <div className="py-1.5">
               <CompactingText />
@@ -256,6 +279,7 @@ export const AssistantTurnContent = memo(function AssistantTurnContent(props: {
 
       {layout.interaction.map((entry) => renderEntry(entry, false, true))}
       {layout.answer.map((entry) => renderEntry(entry, false))}
+      {running ? <LiveSparkle /> : null}
     </div>
   );
 });

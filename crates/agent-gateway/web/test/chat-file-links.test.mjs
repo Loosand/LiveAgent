@@ -108,17 +108,20 @@ test("Gateway historical and streaming rows keep the explicit file-open prop cha
   assert.ok((roundContent.match(/onOpenFileLink=\{onOpenFileLink\}/g) ?? []).length >= 2);
   assert.ok((roundContent.match(/workdir=\{workdir\}/g) ?? []).length >= 2);
 
-  const thinkingActivity = fs.readFileSync(
+  // Reasoning disclosures render Markdown, so file links inside reasoning
+  // text keep the same explicit open-prop chain as answer prose.
+  const thinkingDisclosure = fs.readFileSync(
     fileURLToPath(
-      new URL("../../../agent-ui/src/components/chat/ThinkingActivity.tsx", import.meta.url),
+      new URL(
+        "../../../agent-ui/src/components/chat/assistant-bubble/ThinkingDisclosure.tsx",
+        import.meta.url,
+      ),
     ),
     "utf8",
   );
-  assert.match(thinkingActivity, /reasonSummary\?: string \| null/);
-  assert.match(thinkingActivity, /data-reason-summary/);
-  assert.doesNotMatch(thinkingActivity, /<Markdown/);
-  assert.doesNotMatch(thinkingActivity, /onOpenFileLink/);
-  assert.doesNotMatch(thinkingActivity, /workdir/);
+  assert.match(thinkingDisclosure, /<Markdown/);
+  assert.match(thinkingDisclosure, /onOpenFileLink=\{onOpenFileLink\}/);
+  assert.match(thinkingDisclosure, /workdir=\{workdir\}/);
 
   const gatewayProjectTools = fs.readFileSync(
     fileURLToPath(new URL("../src/app/hooks/useGatewayProjectTools.ts", import.meta.url)),

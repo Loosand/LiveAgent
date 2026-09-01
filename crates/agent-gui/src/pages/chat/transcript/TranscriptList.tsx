@@ -91,7 +91,6 @@ export type TranscriptListProps = {
   isViewportFollowing?: () => boolean;
   viewportFollowing: boolean;
   isSending: boolean;
-  isAgentMode: boolean;
   isCompactionRunning: boolean;
   showUsage: boolean;
   usageContextWindow?: number;
@@ -129,7 +128,6 @@ export const TranscriptList = memo(function TranscriptList(props: TranscriptList
     isViewportFollowing,
     viewportFollowing,
     isSending,
-    isAgentMode,
     isCompactionRunning,
     showUsage,
     usageContextWindow,
@@ -402,7 +400,6 @@ export const TranscriptList = memo(function TranscriptList(props: TranscriptList
                 row={row}
                 showUsage={showUsage}
                 usageContextWindow={usageContextWindow}
-                isAgentMode={isAgentMode}
                 isCompactionRunning={isCompactionRunning}
                 toolStatus={displayedToolStatus}
                 actionsVisible={actionsVisible}
@@ -421,7 +418,6 @@ export const TranscriptList = memo(function TranscriptList(props: TranscriptList
                 row={row}
                 showUsage={showUsage}
                 usageContextWindow={usageContextWindow}
-                isAgentMode={isAgentMode}
                 isCompactionRunning={row.mutable ? isCompactionRunning : false}
                 toolStatus={row.mutable ? displayedToolStatus : null}
                 actionsVisible={actionsVisible}

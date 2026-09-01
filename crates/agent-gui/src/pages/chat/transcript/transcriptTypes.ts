@@ -24,7 +24,6 @@ export type ChatTranscriptProps = {
   onLoadEarlierHistory: () => Promise<void>;
   isHistorySwitching: boolean;
   isSending: boolean;
-  isAgentMode: boolean;
   showUsage: boolean;
   usageContextWindow?: number;
   liveTranscriptStore: LiveTranscriptStore;

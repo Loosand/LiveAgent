@@ -15,7 +15,6 @@ export type AssistantRenderUnitProps = {
   row: AssistantUnitRow;
   showUsage?: boolean;
   usageContextWindow?: number;
-  isAgentMode: boolean;
   isCompactionRunning: boolean;
   toolStatus: string | null;
   actionsVisible?: boolean;
@@ -107,7 +106,6 @@ export const AssistantRenderUnit = memo(function AssistantRenderUnit(
     row,
     showUsage,
     usageContextWindow,
-    isAgentMode,
     isCompactionRunning,
     toolStatus,
     actionsVisible,
@@ -138,7 +136,6 @@ export const AssistantRenderUnit = memo(function AssistantRenderUnit(
     <div className={cn("group/assistant w-full max-w-full", compactedClass)}>
       <AssistantBubbleUnit
         row={row}
-        isAgentMode={isAgentMode}
         isCompactionRunning={isCompactionRunning}
         toolStatus={toolStatus}
         retryAttempts={retryAttempts}

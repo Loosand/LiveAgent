@@ -25,7 +25,7 @@ test("the streaming assistant keeps live status inside its stable work trace", (
   );
   assert.match(sharedAssistantStatusSource, /export function LiveAssistantStatus/);
   assert.match(sharedAssistantStatusSource, /if \(isCompaction\) return <CompactingText/);
-  assert.match(sharedAssistantStatusSource, /return <VibingText/);
+  assert.match(sharedAssistantStatusSource, /return <LiveSparkle/);
   assert.match(sharedAssistantStatusSource, /return <AssistantStatus/);
 });
 

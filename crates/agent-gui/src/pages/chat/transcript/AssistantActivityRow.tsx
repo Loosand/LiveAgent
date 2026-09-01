@@ -1,3 +1,4 @@
+import { LiveSparkle } from "@liveagent/ui/components/chat/LiveSparkle";
 import type { ChatFileLink } from "@liveagent/ui/lib/chat/chatFileLinks";
 import type { ConversationMentionReference } from "@liveagent/ui/lib/chat/mentionReferences";
 import type { PendingUploadedFile } from "@liveagent/ui/lib/chat/uploadedFiles";
@@ -11,7 +12,6 @@ export const AssistantActivityRow = memo(function AssistantActivityRow(props: {
   row: AssistantActivityRowModel;
   showUsage?: boolean;
   usageContextWindow?: number;
-  isAgentMode: boolean;
   isCompactionRunning: boolean;
   toolStatus: string | null;
   actionsVisible?: boolean;
@@ -30,7 +30,6 @@ export const AssistantActivityRow = memo(function AssistantActivityRow(props: {
     row,
     showUsage,
     usageContextWindow,
-    isAgentMode,
     isCompactionRunning,
     toolStatus,
     actionsVisible,
@@ -49,11 +48,10 @@ export const AssistantActivityRow = memo(function AssistantActivityRow(props: {
             row={unit}
             showUsage={showUsage}
             usageContextWindow={usageContextWindow}
-            isAgentMode={isAgentMode}
             isCompactionRunning={unit.mutable ? isCompactionRunning : false}
             toolStatus={unit.mutable ? toolStatus : null}
             actionsVisible={actionsVisible}
-            retryAttempts={unit.mutable && unit.unit.kind === "status" ? retryAttempts : undefined}
+            retryAttempts={unit.mutable ? retryAttempts : undefined}
             workdir={workdir}
             onOpenFileLink={onOpenFileLink}
             onResendFromEdit={onResendFromEdit}
@@ -64,6 +62,9 @@ export const AssistantActivityRow = memo(function AssistantActivityRow(props: {
           ) : null}
         </div>
       ))}
+      {/* 整个回合存活期间常驻的脉冲星标：工具/思考的空档、压缩总结阶段都
+          保持可见，告诉用户对话仍在进行；回合落定（live=false）即消失。 */}
+      {row.live ? <LiveSparkle className="pl-10 pt-1" /> : null}
     </div>
   );
 });

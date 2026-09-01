@@ -207,12 +207,21 @@
   @apply my-3.5 block max-w-full overflow-x-auto overflow-y-hidden px-1 py-1.5 text-center;
 }
 
-/* Thinking markdown */
+/* Thinking markdown — reasoning disclosures reuse chat structure but read
+ * visually recessed: smaller, muted ink and regular weight. The base chat
+ * rules re-assert 450/strong-at-full-foreground per element, so weight and
+ * emphasis must be overridden here too or reasoning looks bold all over. */
 .chat-markdown.thinking-markdown {
   @apply text-[calc(12px*var(--zone-font-scale,1))] leading-6 text-muted-foreground/80;
+  font-weight: 400;
 }
 .chat-markdown.thinking-markdown p {
   @apply my-1 text-[calc(12px*var(--zone-font-scale,1))] leading-6 text-muted-foreground/80;
+  font-weight: 400;
+}
+.chat-markdown.thinking-markdown strong,
+.chat-markdown.thinking-markdown [data-streamdown="strong"] {
+  @apply font-medium text-muted-foreground/95;
 }
 .chat-markdown.thinking-markdown [data-streamdown^="heading-"] {
   @apply mb-0 mt-1 text-[calc(12px*var(--zone-font-scale,1))] font-medium leading-6 tracking-normal text-muted-foreground/90;
@@ -223,6 +232,7 @@
 }
 .chat-markdown.thinking-markdown [data-streamdown="list-item"] {
   @apply text-[calc(12px*var(--zone-font-scale,1))] leading-5 text-muted-foreground/80;
+  font-weight: 400;
 }
 .chat-markdown.thinking-markdown [data-streamdown="blockquote"] {
   @apply my-1 border-l-0 pl-0 not-italic text-muted-foreground/75;

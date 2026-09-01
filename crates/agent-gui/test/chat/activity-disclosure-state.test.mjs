@@ -95,9 +95,6 @@ const { React, act, createRoot } = env;
 const { AssistantWorkTrace } = env.loadModule(
   "@liveagent/ui/components/chat/AssistantWorkTrace.tsx",
 );
-const { ThinkingActivity } = env.loadModule(
-  "@liveagent/ui/components/chat/ThinkingActivity.tsx",
-);
 const { ToolTraceGroup } = env.loadModule(
   "@liveagent/ui/components/chat/assistant-bubble/ToolTraceGroup.tsx",
 );
@@ -160,16 +157,13 @@ test("manual work-trace disclosure survives running state transitions", () => {
   act(() => root.unmount());
 });
 
-test("an empty work trace shows the compact thinking status instead of a duplicate header", () => {
+test("an empty running work trace shows the plain processing header, not a button", () => {
   const container = document.createElement("div");
   const root = createRoot(container);
 
   act(() => {
     root.render(
       React.createElement(AssistantWorkTrace, {
-        activeStatus: React.createElement(ThinkingActivity, {
-          reasonSummary: "检查消息状态",
-        }),
         hasDetails: false,
         running: true,
         children: null,
@@ -177,11 +171,52 @@ test("an empty work trace shows the compact thinking status instead of a duplica
     );
   });
 
-  assert.match(container.textContent, /正在思考/);
-  assert.match(container.textContent, /检查消息状态/);
-  assert.equal(container.querySelector("[data-chat-work-grid]"), null);
-  assert.ok(container.querySelector("[data-thinking-status]"));
-  assert.ok(container.querySelector("[data-reason-summary]"));
+  assert.match(container.textContent, /处理中/);
+  assert.ok(container.querySelector("[data-chat-work-grid]"));
+  assert.equal(container.querySelector("button"), null);
+  assert.equal(container.querySelector("[data-chat-work-collapsed-tail]"), null);
+
+  act(() => root.unmount());
+});
+
+test("collapsing a running work trace surfaces the active block outside it", () => {
+  const container = document.createElement("div");
+  const root = createRoot(container);
+  const tail = React.createElement("div", { "data-testid": "active-tail" }, "正在读取 App.tsx");
+
+  const render = (running) => {
+    act(() => {
+      root.render(
+        React.createElement(AssistantWorkTrace, {
+          hasDetails: true,
+          running,
+          collapsedTail: tail,
+          children: React.createElement("div", null, "details"),
+        }),
+      );
+    });
+  };
+
+  // Expanded by default while running: the trace body is visible, no tail.
+  render(true);
+  const button = container.querySelector("button");
+  assert.equal(button.getAttribute("aria-expanded"), "true");
+  assert.equal(container.querySelector("[data-chat-work-collapsed-tail]"), null);
+
+  // User collapses mid-run: the in-progress block re-homes below the header.
+  click(button);
+  assert.equal(button.getAttribute("aria-expanded"), "false");
+  assert.ok(container.querySelector("[data-chat-work-collapsed-tail]"));
+  assert.match(container.textContent, /正在读取 App\.tsx/);
+
+  // Re-expanding removes the duplicate; the body carries the content again.
+  click(button);
+  assert.equal(container.querySelector("[data-chat-work-collapsed-tail]"), null);
+
+  // Once the run settles, a collapsed trace shows no tail either.
+  click(button);
+  render(false);
+  assert.equal(container.querySelector("[data-chat-work-collapsed-tail]"), null);
 
   act(() => root.unmount());
 });
@@ -281,12 +316,14 @@ test("mixed tool batch labels are contiguous without dot separators", () => {
   act(() => root.unmount());
 });
 
-test("latest tool batch switches between running and thinking without a second status row", () => {
+test("latest tool batch shows 运行中 while running and no filler status when idle", () => {
   const container = document.createElement("div");
   const root = createRoot(container);
 
+  // All tools settled: no fake "思考中" phase — the turn-level sparkle and
+  // real reasoning rows carry the live state instead.
   renderToolTrace(root, false, [toolItem], true);
-  assert.match(container.querySelector("button").textContent, /思考中/);
+  assert.doesNotMatch(container.querySelector("button").textContent, /思考中/);
   assert.doesNotMatch(container.querySelector("button").textContent, /运行中/);
 
   renderToolTrace(root, true, [toolItem], true);

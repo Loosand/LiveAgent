@@ -159,16 +159,18 @@ function ToolTraceGroupInner(props: {
     [items, runningToolCallIds],
   );
   const [open, setOpen] = useAttentionDisclosure(attentionRequired);
-  const showThinkingStatus = showTurnStatus && counts.running === 0;
 
-  const statusLabel = showTurnStatus
-    ? counts.running > 0
-      ? t("chat.tool.running")
-      : t("chat.thinking")
-    : counts.failed > 0
+  // The latest live batch drops the count prefix ("运行中" instead of
+  // "1 运行中"), nothing more. Idle phases render no filler status here:
+  // an active reasoning segment shows its own 思考中 row and the turn-level
+  // sparkle covers the gaps in between.
+  const statusLabel =
+    counts.failed > 0
       ? `${counts.failed} ${t("chat.tool.failed")}`
       : counts.running > 0
-        ? `${counts.running} ${t("chat.tool.running")}`
+        ? showTurnStatus
+          ? t("chat.tool.running")
+          : `${counts.running} ${t("chat.tool.running")}`
         : counts.waiting > 0
           ? `${counts.waiting} ${t("chat.tool.waiting")}`
           : t("chat.tool.success");
@@ -181,8 +183,7 @@ function ToolTraceGroupInner(props: {
     return item ? getRunningToolActivity(item, t) : null;
   }, [items, runningToolCallIds, t]);
   const headerLabel = runningActivity?.label ?? countLabel;
-  const showStatus =
-    counts.failed > 0 || counts.running > 0 || counts.waiting > 0 || showThinkingStatus;
+  const showStatus = counts.failed > 0 || counts.running > 0 || counts.waiting > 0;
   const BatchIcon =
     TOOL_BATCH_ICONS[runningActivity?.category ?? batchCounts[0]?.category ?? "other"];
 
@@ -205,7 +206,7 @@ function ToolTraceGroupInner(props: {
         />
         {showStatus ? (
           <span className="shrink-0 text-[calc(11px*var(--zone-font-scale,1))] text-foreground/45">
-            {showTurnStatus ? (
+            {showTurnStatus && counts.running > 0 ? (
               <AssistantStatus className="min-h-0 text-[calc(11px*var(--zone-font-scale,1))] text-foreground/45">
                 {statusLabel}
               </AssistantStatus>

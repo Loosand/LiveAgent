@@ -1,5 +1,5 @@
 import { type DiffLine, DiffLineType, generateDiffFile } from "@git-diff-view/file";
-import { type ReactNode, useMemo } from "react";
+import { type CSSProperties, type ReactNode, useMemo } from "react";
 import { cn } from "../../lib/shared/utils";
 
 type DiffPiece = {
@@ -208,6 +208,7 @@ function buildDiffRows(beforeText: string, afterText: string, filePath?: string)
   diffFile.buildUnifiedDiffLines();
 
   const rows: DiffRow[] = [];
+  let widestLineNumber = 0;
   for (let index = 0; index < diffFile.unifiedLineLength; index += 1) {
     const line = diffFile.getUnifiedLine(index);
     if (!line || line.isHidden || line.value === undefined) continue;
@@ -220,6 +221,7 @@ function buildDiffRows(beforeText: string, afterText: string, filePath?: string)
           : "ctx";
     const lineNumber = type === "del" ? line.oldLineNumber : line.newLineNumber;
     const text = trimLineEnding(line.value);
+    if (lineNumber && lineNumber > widestLineNumber) widestLineNumber = lineNumber;
     rows.push({
       key: `${type}-${line.oldLineNumber ?? ""}-${line.newLineNumber ?? ""}-${index}`,
       lineNumber: lineNumber ?? null,
@@ -231,6 +233,9 @@ function buildDiffRows(beforeText: string, afterText: string, filePath?: string)
   return {
     added: diffFile.additionLength,
     removed: diffFile.deletionLength,
+    // Two digits keep the familiar narrow gutter; wider files grow it so a
+    // four-digit line number cannot spill under the code column.
+    gutterDigits: Math.max(2, String(widestLineNumber).length),
     rows,
   };
 }
@@ -262,11 +267,14 @@ export function EditDiffView(props: { beforeText: string; afterText: string; fil
         </span>
       </figcaption>
 
-      <div className="py-3 font-mono text-[12.5px] leading-[1.65] text-foreground/78">
+      <div
+        className="py-3 font-mono text-[12.5px] leading-[1.65] text-foreground/78"
+        style={{ "--diff-gutter": `calc(${diff.gutterDigits}ch + 4px)` } as CSSProperties}
+      >
         <div className="relative">
           <span
             aria-hidden="true"
-            className="pointer-events-none absolute inset-y-0 left-5 w-px bg-border/70"
+            className="pointer-events-none absolute inset-y-0 left-[var(--diff-gutter)] w-px bg-border/70"
           />
           {diff.rows.map((row) => {
             const added = row.type === "add";
@@ -275,7 +283,7 @@ export function EditDiffView(props: { beforeText: string; afterText: string; fil
               <div
                 key={row.key}
                 className={cn(
-                  "relative grid grid-cols-[20px_minmax(0,1fr)] items-start",
+                  "relative grid grid-cols-[var(--diff-gutter)_minmax(0,1fr)] items-start",
                   added && "bg-emerald-500/[0.09]",
                   deleted && "bg-red-500/[0.09]",
                 )}

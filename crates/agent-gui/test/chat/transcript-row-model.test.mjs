@@ -5,9 +5,12 @@ import { createTsModuleLoader } from "../helpers/load-ts-module.mjs";
 
 const loader = createTsModuleLoader();
 const { createTranscriptRowModel } = loader.loadModule("src/pages/chat/transcript/rowModel.ts");
-const { getToolActivityCategory, resolveAssistantTurnLayout } = loader.loadModule(
-  "@liveagent/ui/components/chat/assistant-bubble/assistantBubbleUtils.ts",
-);
+const {
+  getToolActivityCategory,
+  resolveActiveThinkingEntryKey,
+  resolveActiveWorkEntry,
+  resolveAssistantTurnLayout,
+} = loader.loadModule("@liveagent/ui/components/chat/assistant-bubble/assistantBubbleUtils.ts");
 const { createLiveTranscriptStore } = loader.loadModule(
   "src/lib/chat/conversation/liveTranscriptStore.ts",
 );
@@ -100,13 +103,12 @@ const idleLive = {
   isSettled: false,
 };
 
-test("live work trace exposes thinking state and a compact reason summary", () => {
+test("live work trace keeps reasoning entries with their streaming flag", () => {
   const model = createTranscriptRowModel();
   const history = [userItem("u1")];
 
   const waiting = model.build(history, { ...idleLive, isSending: true });
-  assert.equal(workTraceRows(waiting)[0].unit.thinking, true);
-  assert.equal(workTraceRows(waiting)[0].unit.reasonSummary, null);
+  assert.equal(workTraceRows(waiting)[0].unit.entries.length, 0);
 
   const reasoning = model.build(history, {
     ...idleLive,
@@ -121,8 +123,14 @@ test("live work trace exposes thinking state and a compact reason summary", () =
       },
     ],
   });
-  assert.equal(workTraceRows(reasoning)[0].unit.thinking, true);
-  assert.equal(workTraceRows(reasoning)[0].unit.reasonSummary, "检查当前请求");
+  const reasoningEntries = workTraceRows(reasoning)[0].unit.entries;
+  assert.deepEqual(
+    reasoningEntries.map((entry) => entry.block.kind),
+    ["thinking"],
+  );
+  assert.equal(reasoningEntries[0].block.text, "检查当前请求");
+  assert.equal(reasoningEntries[0].thinkingOpen, true);
+  assert.equal(resolveActiveThinkingEntryKey(reasoningEntries), reasoningEntries[0].key);
 
   const runningTool = model.build(history, {
     ...idleLive,
@@ -137,8 +145,12 @@ test("live work trace exposes thinking state and a compact reason summary", () =
       },
     ],
   });
-  assert.equal(workTraceRows(runningTool)[0].unit.thinking, false);
-  assert.equal(workTraceRows(runningTool)[0].unit.reasonSummary, null);
+  const toolEntries = workTraceRows(runningTool)[0].unit.entries;
+  assert.deepEqual(
+    toolEntries.map((entry) => entry.block.kind),
+    ["toolGroup"],
+  );
+  assert.equal(resolveActiveThinkingEntryKey(toolEntries), null);
 });
 
 test("settling a live turn promotes trailing prose out of the work trace", () => {
@@ -391,10 +403,14 @@ test("assistant rounds hide task tools while preserving grouped top-level render
     },
   ];
   const snapshot = model.build([userItem("u1"), assistantItem("a1", rounds)], idleLive);
-  assert.equal(blockRows(snapshot).length, 0);
   assert.deepEqual(
     workTraceRows(snapshot)[0].unit.entries.map((entry) => entry.block.kind),
-    ["text", "toolGroup", "hostedSearchGroup"],
+    ["text", "thinking", "toolGroup"],
+  );
+  // The trailing hosted-search result is the durable answer-layer block.
+  assert.deepEqual(
+    blockRows(snapshot).map((row) => row.unit.block.kind),
+    ["hostedSearchGroup"],
   );
   assert.equal(footerRows(snapshot).length, 1);
   assert.equal(workTraceRows(snapshot)[0].showAvatar, true);
@@ -427,7 +443,7 @@ test("turn layout keeps every intermediate round in one trace and exposes only f
   const settled = resolveAssistantTurnLayout(rounds, { live: false });
   assert.deepEqual(
     settled.work.map((entry) => entry.block.kind),
-    ["toolGroup", "text", "toolGroup"],
+    ["thinking", "toolGroup", "text", "toolGroup"],
   );
   assert.deepEqual(
     settled.answer.map((entry) => entry.block.kind),
@@ -446,7 +462,7 @@ test("turn layout keeps every intermediate round in one trace and exposes only f
   );
 });
 
-test("turn layout omits reasoning text and merges tool fragments into readable stages", () => {
+test("turn layout keeps reasoning segments as stage boundaries between tool batches", () => {
   const layout = resolveAssistantTurnLayout(
     [
       {
@@ -483,22 +499,27 @@ test("turn layout omits reasoning text and merges tool fragments into readable s
     { live: false },
   );
 
+  // Reasoning stays visible; tools merge into one batch only until the next
+  // reasoning segment or progress note starts a new stage.
   assert.deepEqual(
     layout.work.map((entry) => entry.block.kind),
-    ["toolGroup", "text", "toolGroup"],
-  );
-  assert.equal(layout.work.some((entry) => entry.block.kind === "thinking"), false);
-  assert.deepEqual(
-    layout.work[0].block.items.map((item) => item.toolCall.name),
-    ["Read", "Grep", "List"],
+    ["thinking", "toolGroup", "thinking", "toolGroup", "text", "thinking", "toolGroup"],
   );
   assert.deepEqual(
-    layout.work[2].block.items.map((item) => item.toolCall.name),
+    layout.work[1].block.items.map((item) => item.toolCall.name),
+    ["Read"],
+  );
+  assert.deepEqual(
+    layout.work[3].block.items.map((item) => item.toolCall.name),
+    ["Grep", "List"],
+  );
+  assert.deepEqual(
+    layout.work[6].block.items.map((item) => item.toolCall.name),
     ["Bash"],
   );
 });
 
-test("live turn omits reasoning rows while keeping the tool-group anchor stable", () => {
+test("live turn keeps reasoning rows and the tool-group anchor stable across phases", () => {
   const layout = resolveAssistantTurnLayout(
     [
       {
@@ -514,9 +535,10 @@ test("live turn omits reasoning rows while keeping the tool-group anchor stable"
     { live: true },
   );
 
-  assert.equal(layout.work.length, 1);
-  assert.equal(layout.work[0].block.kind, "toolGroup");
-  assert.equal(layout.work.some((entry) => entry.block.kind === "thinking"), false);
+  assert.deepEqual(
+    layout.work.map((entry) => entry.block.kind),
+    ["thinking", "toolGroup"],
+  );
 
   const betweenTools = resolveAssistantTurnLayout(
     [
@@ -532,8 +554,53 @@ test("live turn omits reasoning rows while keeping the tool-group anchor stable"
     ],
     { live: true },
   );
+  // Both the reasoning row and the tool group keep their identities while the
+  // streaming flag flips, so neither remounts between provider phases.
   assert.equal(betweenTools.work[0].key, layout.work[0].key);
-  assert.equal(betweenTools.work.some((entry) => entry.block.kind === "thinking"), false);
+  assert.equal(betweenTools.work[1].key, layout.work[1].key);
+  assert.equal(resolveActiveThinkingEntryKey(layout.work), layout.work[0].key);
+  assert.equal(resolveActiveThinkingEntryKey(betweenTools.work), null);
+});
+
+test("the collapsed-trace active entry tracks the newest in-progress block", () => {
+  const liveWork = (blocks, runningToolCallIds, thinkingOpen) =>
+    resolveAssistantTurnLayout(
+      [{ round: 1, key: "r1", blocks, runningToolCallIds, thinkingOpen }],
+      { live: true },
+    ).work;
+
+  const streamingThinking = liveWork(
+    [toolBlock("read-1", "Read", "ok"), { kind: "thinking", id: "thinking-1", text: "review" }],
+    [],
+    true,
+  );
+  assert.equal(resolveActiveWorkEntry(streamingThinking)?.block.kind, "thinking");
+
+  const runningTool = liveWork(
+    [{ kind: "thinking", id: "thinking-1", text: "review" }, toolBlock("edit-1", "Edit")],
+    ["edit-1"],
+    false,
+  );
+  assert.equal(resolveActiveWorkEntry(runningTool)?.block.kind, "toolGroup");
+
+  // A streaming progress note is the active tail while it lasts.
+  const streamingText = liveWork(
+    [
+      toolBlock("read-1", "Read", "ok"),
+      { kind: "text", id: "progress-1", text: "Reading the config now." },
+    ],
+    [],
+    false,
+  );
+  assert.equal(resolveActiveWorkEntry(streamingText)?.block.kind, "text");
+
+  // A settled trailing block yields nothing: the sparkle alone covers the gap.
+  const idleGap = liveWork(
+    [{ kind: "thinking", id: "thinking-1", text: "review" }, toolBlock("edit-1", "Edit", "ok")],
+    [],
+    false,
+  );
+  assert.equal(resolveActiveWorkEntry(idleGap), null);
 });
 
 test("interactive prose and cards render outside the processing disclosure", () => {
@@ -554,7 +621,7 @@ test("interactive prose and cards render outside the processing disclosure", () 
 
   assert.deepEqual(
     layout.work.map((entry) => entry.block.kind),
-    ["toolGroup"],
+    ["thinking", "toolGroup"],
   );
   assert.deepEqual(
     layout.interaction.map((entry) => entry.block.kind),
@@ -571,16 +638,41 @@ test("interactive prose and cards render outside the processing disclosure", () 
   });
   assert.deepEqual(
     workTraceRows(snapshot)[0].unit.entries.map((entry) => entry.block.kind),
-    ["toolGroup"],
+    ["thinking", "toolGroup"],
   );
   assert.equal(
     workTraceRows(snapshot)[0].unit.latestToolGroupKey,
-    workTraceRows(snapshot)[0].unit.entries[0].key,
+    workTraceRows(snapshot)[0].unit.entries[1].key,
   );
   assert.deepEqual(
     blockRows(snapshot).map((row) => row.unit.block.kind),
     ["text", "tool"],
   );
+});
+
+test("an answered interaction card flows back into the trace timeline", () => {
+  const answeredRound = {
+    round: 1,
+    key: "r1",
+    thinkingOpen: false,
+    runningToolCallIds: [],
+    blocks: [
+      { kind: "text", id: "question-context", text: "I need you to choose the target." },
+      toolBlock("ask-1", "AskUserQuestion", "ok"),
+      { kind: "thinking", id: "thinking-2", text: "the user picked one" },
+    ],
+    meta: { stopReason: "toolUse" },
+  };
+  const layout = resolveAssistantTurnLayout([answeredRound], { live: true });
+
+  // Once answered, the card is ordinary timeline activity: later reasoning
+  // and tools stack below it instead of the card trailing the whole turn.
+  assert.equal(layout.interaction.length, 0);
+  assert.deepEqual(
+    layout.work.map((entry) => entry.block.kind),
+    ["text", "tool", "thinking"],
+  );
+  assert.equal(layout.work[1].block.item.toolCall.name, "AskUserQuestion");
 });
 
 test("failed operations stay inspectable in the trace while the failure summary remains outside", () => {
@@ -652,7 +744,7 @@ test("one live activity is pinned while its completed prefix units keep stable k
   assert.equal(workUnits.length, 1);
   assert.deepEqual(
     workUnits[0].unit.entries.map((entry) => entry.block.kind),
-    ["text", "text"],
+    ["text", "thinking", "text"],
   );
   assert.equal(workUnits[0].mutable, true);
   assert.equal(answerUnits.length, 0);

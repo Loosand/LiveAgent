@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import { useLocale } from "../../i18n/index";
 import { normalizeLiveToolStatus, VIBING_STATUS } from "../../lib/chat/assistantStatus";
 import { cn } from "../../lib/shared/utils";
+import { LiveSparkle } from "./LiveSparkle";
 
 export { VIBING_STATUS } from "../../lib/chat/assistantStatus";
 
@@ -23,7 +24,9 @@ export function LiveAssistantStatus(props: {
   const normalizedStatus = normalizeLiveToolStatus(status);
   if (isCompaction) return <CompactingText className={className} />;
   if (!normalizedStatus || normalizedStatus === VIBING_STATUS) {
-    return <VibingText className={className} />;
+    // No concrete activity to report — show the liveness sparkle instead of a
+    // filler phrase, matching the turn-level indicator under live replies.
+    return <LiveSparkle className={className} />;
   }
   return <AssistantStatus className={className}>{normalizedStatus}</AssistantStatus>;
 }

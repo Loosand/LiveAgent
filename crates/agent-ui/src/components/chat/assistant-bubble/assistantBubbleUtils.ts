@@ -343,12 +343,10 @@ function mergeRunningToolCallIds(left: string[], right: string[]) {
  * Turn raw round-by-round activity into the stage-oriented trace used by the
  * transcript. Provider rounds often alternate `thinking -> one tool` dozens
  * of times; exposing that shape produces a repetitive log instead of a useful
- * work summary. Completed thinking text is deliberately omitted from the
- * transcript: concatenating every reasoning delta into one ever-growing
- * Markdown payload made long agent turns progressively more expensive to
- * reconcile and render. The latest tool-group trigger carries the live phase
- * label instead; neighboring tool/search activity is merged until a visible
- * progress note creates the next stage boundary.
+ * work summary. Thinking segments stay in the trace as collapsed disclosures
+ * (the reasoning body only mounts when the user expands one), and they act as
+ * stage boundaries: neighboring tool/search activity merges into one group
+ * until a thinking segment or a visible progress note starts the next stage.
  */
 export function compactAssistantWorkEntries(
   entries: readonly AssistantTurnLayoutEntry[],
@@ -356,13 +354,6 @@ export function compactAssistantWorkEntries(
   const compacted: AssistantTurnLayoutEntry[] = [];
 
   for (const entry of entries) {
-    if (entry.block.kind === "thinking") {
-      // Reasoning content and phase markers stay out of the visible tree. The
-      // latest tool-group trigger owns the compact live state (运行中/思考中),
-      // so there is no second status row to blink between provider phases.
-      continue;
-    }
-
     const previous = compacted.at(-1);
     if (previous?.block.kind === "toolGroup" && entry.block.kind === "toolGroup") {
       compacted[compacted.length - 1] = {
@@ -396,12 +387,66 @@ export function compactAssistantWorkEntries(
   return compacted;
 }
 
-function isUserInteractionBlock(block: GroupedRoundBlock) {
+/**
+ * The most recent thinking entry is the only one that can still be streaming.
+ * Its key is exposed so renderers can show that single disclosure in the live
+ * "思考中" state; every earlier segment is a settled "思考了/思考过程" row.
+ */
+export function resolveActiveThinkingEntryKey(
+  entries: readonly AssistantTurnLayoutEntry[],
+): string | null {
+  for (let index = entries.length - 1; index >= 0; index -= 1) {
+    const entry = entries[index];
+    if (entry?.block.kind !== "thinking") continue;
+    return entry.thinkingOpen ? entry.key : null;
+  }
+  return null;
+}
+
+/**
+ * The work entry the turn is visibly busy with *right now*: a streaming
+ * reasoning segment, a tool batch with running calls, an in-flight hosted
+ * search, or the progress note currently being streamed. When the user
+ * collapses the processing disclosure mid-run, this entry is re-rendered
+ * outside it so the transcript never goes blank while work continues. A
+ * settled trailing entry returns null — the liveness sparkle alone covers
+ * gaps between activities.
+ */
+export function resolveActiveWorkEntry(
+  entries: readonly AssistantTurnLayoutEntry[],
+): AssistantTurnLayoutEntry | null {
+  const entry = entries.at(-1);
+  if (!entry) return null;
+  const block = entry.block;
+  if (block.kind === "thinking") return entry.thinkingOpen ? entry : null;
+  if (block.kind === "text") return entry;
+  if (block.kind === "tool" || block.kind === "toolGroup") {
+    const runningIds = new Set(entry.runningToolCallIds);
+    const items = block.kind === "tool" ? [block.item] : block.items;
+    return items.some((item) => item.toolCall.id && runningIds.has(item.toolCall.id))
+      ? entry
+      : null;
+  }
+  const searches = block.kind === "hostedSearch" ? [block.item] : block.items;
+  return searches.some((item) => item.status === "searching") ? entry : null;
+}
+
+/**
+ * Only an *unanswered* interaction is pinned outside the processing
+ * disclosure — it must stay visible and operable while it blocks the run.
+ * The moment it settles (answered, cancelled or timed out) it becomes
+ * ordinary timeline activity and flows back into the trace at the position
+ * where it happened, so later reasoning/tools stack below it instead of the
+ * answered card trailing the whole turn.
+ */
+function isPendingUserInteractionBlock(block: GroupedRoundBlock) {
   if (block.kind === "tool") {
-    return isUserInteractionToolName(block.item.toolCall.name);
+    return isUserInteractionToolName(block.item.toolCall.name) && !block.item.toolResult;
   }
   if (block.kind === "toolGroup") {
-    return block.items.some((item) => isUserInteractionToolName(item.toolCall.name));
+    return block.items.some(
+      (item) => isUserInteractionToolName(item.toolCall.name) && !item.toolResult,
+    );
   }
   return false;
 }
@@ -410,7 +455,7 @@ function splitInteractionEntries(entries: readonly AssistantTurnLayoutEntry[]) {
   const interactionIndexes = new Set<number>();
   for (let index = 0; index < entries.length; index += 1) {
     const entry = entries[index];
-    if (!entry || !isUserInteractionBlock(entry.block)) continue;
+    if (!entry || !isPendingUserInteractionBlock(entry.block)) continue;
     interactionIndexes.add(index);
 
     // A model usually explains why it needs input immediately before calling
@@ -433,8 +478,8 @@ function splitInteractionEntries(entries: readonly AssistantTurnLayoutEntry[]) {
  * Project every model/tool round produced by one user request into the three
  * visual layers used by the transcript:
  *
- * - `work` is the visible in-progress trace (progress notes, searches and tool
- *   activity), shown inside one collapsible section.
+ * - `work` is the visible in-progress trace (reasoning disclosures, progress
+ *   notes, searches and tool activity), shown inside one collapsible section.
  * - `interaction` is user-facing decision prose plus its interactive card,
  *   rendered outside the work disclosure so it cannot be hidden while pending.
  * - `answer` is the final trailing user-visible result, rendered as the
