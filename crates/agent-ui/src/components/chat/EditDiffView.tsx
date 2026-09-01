@@ -161,7 +161,7 @@ function DiffPieces({ pieces }: { pieces: DiffPiece[] }) {
           <span
             key={piece.key}
             className={cn(
-              "rounded-[3px] px-0.5 [box-decoration-break:clone] [-webkit-box-decoration-break:clone]",
+              "rounded-xs px-0.5 [box-decoration-break:clone] [-webkit-box-decoration-break:clone]",
               added ? "bg-emerald-500/20" : "bg-red-500/20",
             )}
           >

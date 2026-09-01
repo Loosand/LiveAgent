@@ -40,7 +40,7 @@ function WorkPixelGrid({ active }: { active: boolean }) {
         {PIXEL_DELAYS.map((delay, index) => (
           <span
             key={PIXEL_KEYS[index]}
-            className="chat-work-pixel size-1 rounded-[1px] bg-foreground"
+            className="chat-work-pixel size-1 bg-foreground"
             data-paused={active ? undefined : ""}
             style={{ "--chat-work-delay": `${delay}ms` } as LoadingPixelStyle}
           />

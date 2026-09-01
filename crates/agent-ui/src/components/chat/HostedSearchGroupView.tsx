@@ -86,7 +86,7 @@ function SourceFavicon({ url }: { url: string }) {
     <img
       alt=""
       aria-hidden="true"
-      className="h-3.5 w-3.5 shrink-0 rounded-[3px] bg-muted object-contain"
+      className="h-3.5 w-3.5 shrink-0 rounded-xs bg-muted object-contain"
       decoding="async"
       loading="lazy"
       onError={() => setCandidateIndex((current) => current + 1)}

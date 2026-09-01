@@ -78,12 +78,12 @@
 
 /* Inline code */
 .chat-markdown [data-streamdown="inline-code"] {
-  @apply whitespace-pre-wrap break-words rounded-[4px] border-0 bg-foreground/[0.085] px-[5px] py-px font-mono text-[0.92em] font-normal leading-[1.45] text-foreground/95 [overflow-wrap:anywhere];
+  @apply whitespace-pre-wrap break-words rounded-xs border-0 bg-foreground/[0.085] px-[5px] py-px font-mono text-[0.92em] font-normal leading-[1.45] text-foreground/95 [overflow-wrap:anywhere];
 }
 
 /* Code blocks — container, header, body */
 .chat-markdown [data-streamdown="code-block"] {
-  @apply relative my-4 w-full min-w-0 overflow-hidden rounded-[10px] border-0 bg-foreground/[0.045] p-0 shadow-none outline-none ring-0;
+  @apply relative my-4 w-full min-w-0 overflow-hidden rounded-lg border-0 bg-foreground/[0.045] p-0 shadow-none outline-none ring-0;
 }
 .chat-markdown [data-streamdown="code-block-header"] {
   @apply h-8 border-0 border-b border-border/45 bg-transparent px-3 py-0 text-[calc(11px*var(--zone-font-scale,1))] font-medium tracking-[0] text-muted-foreground/85 shadow-none;
