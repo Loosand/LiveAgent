@@ -49,11 +49,22 @@ test("collapsing the live work trace re-homes the active block below the header"
 });
 
 test("one persistent sparkle marks the live turn; textual fillers are gone", () => {
-  assert.match(roundContentSource, /\{running \? <LiveSparkle \/> : null\}/);
+  assert.match(roundContentSource, /\{running \? <LiveSparkle paused=\{attentionRequired\} \/> : null\}/);
   assert.match(activityRowSource, /\{row\.live \? <LiveSparkle/);
   // The latest tool batch no longer fakes a "思考中" phase while idle — a real
   // reasoning segment shows its own row and the sparkle covers gaps.
   assert.doesNotMatch(toolTraceSource, /t\("chat\.thinking"\)/);
+});
+
+test("a turn waiting on the user freezes its progress indicators", () => {
+  assert.match(workTraceSource, /<WorkPixelGrid active=\{!awaitingDecision\} \/>/);
+  assert.match(workTraceSource, /running && !awaitingDecision \? "shimmer"/);
+  assert.match(
+    activityRowSource,
+    /hasPendingToolApproval \|\| hasPendingInteractionCard\(row\.units\)/,
+  );
+  assert.match(activityRowSource, /paused=\{awaitingDecision\}/);
+  assert.match(guiBubbleSource, /awaitingDecision=\{awaitingDecision\}/);
 });
 
 test("GUI transcript keeps live interaction content outside the work trace", () => {

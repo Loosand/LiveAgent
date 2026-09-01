@@ -162,8 +162,10 @@
   animation: chat-work-pixel 650ms ease-in-out var(--chat-work-delay) infinite;
 }
 
+/* Frozen while the turn waits on the user: still legible as an indicator,
+   but visibly not cycling. */
 .chat-work-pixel[data-paused] {
-  opacity: 0.15;
+  opacity: 0.45;
   transform: none;
   animation: none;
 }

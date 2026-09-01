@@ -35,6 +35,10 @@ import type {
   RenderTimelineItem,
 } from "../../../lib/chat/conversation/conversationState";
 import type { LiveTranscriptStore } from "../../../lib/chat/conversation/liveTranscriptStore";
+import {
+  getPendingToolApprovalsSnapshot,
+  subscribeToolApprovalsForConversation,
+} from "../../../lib/tools/toolApproval";
 import { AssistantActivityRow } from "./AssistantActivityRow";
 import { AssistantRenderUnit } from "./AssistantRenderUnit";
 import { extractRenderUnitRange } from "./renderUnitRangeExtractor";
@@ -146,6 +150,19 @@ export const TranscriptList = memo(function TranscriptList(props: TranscriptList
     liveTranscriptStore.getSnapshot,
     liveTranscriptStore.getSnapshot,
   );
+
+  // 审批门在工具执行「之前」挂起，转录里看不出运行中的工具；活跃回合据此把
+  // 进度指示冻结成静态（同一份 pending 表也驱动输入框上方的审批栏）。
+  const subscribeApprovals = useCallback(
+    (listener: () => void) => subscribeToolApprovalsForConversation(conversationId, listener),
+    [conversationId],
+  );
+  const getApprovalsSnapshot = useCallback(
+    () => getPendingToolApprovalsSnapshot(conversationId),
+    [conversationId],
+  );
+  const hasPendingToolApproval =
+    useSyncExternalStore(subscribeApprovals, getApprovalsSnapshot, getApprovalsSnapshot).length > 0;
 
   // The component remounts per conversation (keyed by ChatTranscript), so
   // per-conversation state initializes once per mount — no reset effects.
@@ -401,6 +418,7 @@ export const TranscriptList = memo(function TranscriptList(props: TranscriptList
                 showUsage={showUsage}
                 usageContextWindow={usageContextWindow}
                 isCompactionRunning={isCompactionRunning}
+                hasPendingToolApproval={hasPendingToolApproval}
                 toolStatus={displayedToolStatus}
                 actionsVisible={actionsVisible}
                 retryAttempts={liveState.retryAttempts}

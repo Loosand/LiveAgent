@@ -336,6 +336,7 @@ export const ZH_CN_COMMON_TRANSLATIONS = {
   "chat.time.seconds": "秒",
   "chat.work.running": "处理中",
   "chat.work.activity": "已处理",
+  "chat.work.awaitingDecision": "等待你的决定",
   "chat.tool.batch.read": "读取了文件",
   "chat.tool.batch.search": "进行了搜索",
   "chat.tool.batch.edit": "编辑了文件",

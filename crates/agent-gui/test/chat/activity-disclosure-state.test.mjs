@@ -179,6 +179,39 @@ test("an empty running work trace shows the plain processing header, not a butto
   act(() => root.unmount());
 });
 
+test("a work trace parked on a user decision renders a frozen header", () => {
+  const container = document.createElement("div");
+  const root = createRoot(container);
+
+  const render = (awaitingDecision) => {
+    act(() => {
+      root.render(
+        React.createElement(AssistantWorkTrace, {
+          hasDetails: false,
+          running: true,
+          awaitingDecision,
+          children: null,
+        }),
+      );
+    });
+  };
+
+  render(false);
+  assert.equal(container.querySelector("section").getAttribute("aria-busy"), "true");
+  assert.equal(container.querySelector(".chat-work-pixel[data-paused]"), null);
+  assert.match(container.innerHTML, /shimmer/);
+
+  render(true);
+  assert.equal(container.querySelector("section").getAttribute("aria-busy"), "false");
+  assert.equal(
+    container.querySelectorAll(".chat-work-pixel[data-paused]").length,
+    container.querySelectorAll(".chat-work-pixel").length,
+  );
+  assert.doesNotMatch(container.innerHTML, /shimmer/);
+
+  act(() => root.unmount());
+});
+
 test("collapsing a running work trace surfaces the active block outside it", () => {
   const container = document.createElement("div");
   const root = createRoot(container);

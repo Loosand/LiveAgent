@@ -64,6 +64,7 @@ export function AssistantWorkTrace({
   durationMs,
   hasDetails,
   attentionRequired = false,
+  awaitingDecision = false,
   running,
   collapseAfterAnswer = false,
 }: {
@@ -78,6 +79,11 @@ export function AssistantWorkTrace({
   durationMs?: number;
   hasDetails: boolean;
   attentionRequired?: boolean;
+  /**
+   * 回合停在用户决策上（提问 / 计划审批 / 工具审批）：进度还在，但没有任何
+   * 东西在跑。此时像素格与标题冻结成静态，避免用闪烁把「等你」误报成「在忙」。
+   */
+  awaitingDecision?: boolean;
   running: boolean;
   /** 回复有总结文案（answer）时：回合结束（流停止）后自动折叠一次。 */
   collapseAfterAnswer?: boolean;
@@ -120,8 +126,10 @@ export function AssistantWorkTrace({
   }`;
   const header = (
     <>
-      {running ? <WorkPixelGrid active /> : null}
-      <span className={cn(running ? "shimmer" : "text-foreground/65")}>{label}</span>
+      {running ? <WorkPixelGrid active={!awaitingDecision} /> : null}
+      <span className={cn(running && !awaitingDecision ? "shimmer" : "text-foreground/65")}>
+        {label}
+      </span>
       {hasDetails ? (
         <ChevronDown
           className={cn(
@@ -138,7 +146,7 @@ export function AssistantWorkTrace({
     <section
       className={cn("my-2 text-foreground/60", className)}
       aria-label={t("chat.work.activity")}
-      aria-busy={running}
+      aria-busy={running && !awaitingDecision}
       data-chat-work-trace=""
     >
       {hasDetails ? (

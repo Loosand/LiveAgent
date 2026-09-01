@@ -16,6 +16,7 @@ export type AssistantRenderUnitProps = {
   showUsage?: boolean;
   usageContextWindow?: number;
   isCompactionRunning: boolean;
+  awaitingDecision?: boolean;
   toolStatus: string | null;
   actionsVisible?: boolean;
   retryAttempts?: RetryAttemptRecord[];
@@ -107,6 +108,7 @@ export const AssistantRenderUnit = memo(function AssistantRenderUnit(
     showUsage,
     usageContextWindow,
     isCompactionRunning,
+    awaitingDecision,
     toolStatus,
     actionsVisible,
     retryAttempts,
@@ -137,6 +139,7 @@ export const AssistantRenderUnit = memo(function AssistantRenderUnit(
       <AssistantBubbleUnit
         row={row}
         isCompactionRunning={isCompactionRunning}
+        awaitingDecision={awaitingDecision}
         toolStatus={toolStatus}
         retryAttempts={retryAttempts}
         workdir={workdir}

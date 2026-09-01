@@ -19,12 +19,21 @@ export { AssistantAvatar } from "@liveagent/ui/components/chat/AssistantAvatar";
 export const AssistantBubbleUnit = memo(function AssistantBubbleUnit(props: {
   row: AssistantUnitRow;
   isCompactionRunning: boolean;
+  awaitingDecision?: boolean;
   toolStatus: string | null;
   retryAttempts?: RetryAttemptRecord[];
   workdir?: string;
   onOpenFileLink?: (link: ChatFileLink) => void;
 }) {
-  const { row, isCompactionRunning, toolStatus, retryAttempts, workdir, onOpenFileLink } = props;
+  const {
+    row,
+    isCompactionRunning,
+    awaitingDecision = false,
+    toolStatus,
+    retryAttempts,
+    workdir,
+    onOpenFileLink,
+  } = props;
   const { unit } = row;
   if (unit.kind === "footer") return null;
 
@@ -82,6 +91,7 @@ export const AssistantBubbleUnit = memo(function AssistantBubbleUnit(props: {
         {unit.kind === "work-trace" ? (
           <AssistantWorkTrace
             className="mb-3 mt-0"
+            awaitingDecision={awaitingDecision}
             collapsedTail={collapsedTailEntry ? renderWorkEntry(collapsedTailEntry) : null}
             durationMs={unit.durationMs}
             hasDetails={workEntries.length > 0 || isCompactionRunning}

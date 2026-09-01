@@ -13,6 +13,7 @@ import {
 } from "@liveagent/ui/lib/chat/assistantBubbleAdapter";
 import { type ChatFileLink, parseChatFileLink } from "@liveagent/ui/lib/chat/chatFileLinks";
 import { isTaskToolBlock } from "@liveagent/ui/lib/chat/taskProgress";
+import { readToolApprovalPending } from "@liveagent/ui/lib/chat/toolApprovalArgs";
 import type {
   SubagentCardDetails,
   SubagentReportDetails,
@@ -86,15 +87,23 @@ export function isUserInteractionToolName(name: string) {
   return ATTENTION_TOOL_NAMES.has(name);
 }
 
+/**
+ * The turn is parked on the user rather than on the model: an unanswered
+ * question / plan card, or an ordinary tool held at the approval gate. The
+ * gate fires *before* the call executes, so approval-pending items are not in
+ * `runningToolCallIds` and are recognised by the synced argument marker.
+ */
 export function hasActiveUserInteraction(items: ToolTraceItem[], runningToolCallIds: string[]) {
-  if (items.length === 0 || runningToolCallIds.length === 0) return false;
+  if (items.length === 0) return false;
   const runningIds = new Set(runningToolCallIds);
-  return items.some(
-    (item) =>
-      !item.toolResult &&
+  return items.some((item) => {
+    if (item.toolResult) return false;
+    if (readToolApprovalPending(item.toolCall.arguments)) return true;
+    return (
       isUserInteractionToolName(item.toolCall.name) &&
-      Boolean(item.toolCall.id && runningIds.has(item.toolCall.id)),
-  );
+      Boolean(item.toolCall.id && runningIds.has(item.toolCall.id))
+    );
+  });
 }
 
 export function getToolMeta(name: string): {
@@ -439,7 +448,7 @@ export function resolveActiveWorkEntry(
  * where it happened, so later reasoning/tools stack below it instead of the
  * answered card trailing the whole turn.
  */
-function isPendingUserInteractionBlock(block: GroupedRoundBlock) {
+export function isPendingUserInteractionBlock(block: GroupedRoundBlock) {
   if (block.kind === "tool") {
     return isUserInteractionToolName(block.item.toolCall.name) && !block.item.toolResult;
   }

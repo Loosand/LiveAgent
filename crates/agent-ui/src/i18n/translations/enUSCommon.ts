@@ -371,6 +371,7 @@ export const EN_US_COMMON_TRANSLATIONS = {
   "chat.time.seconds": "seconds",
   "chat.work.running": "Processing",
   "chat.work.activity": "Processed",
+  "chat.work.awaitingDecision": "Waiting for your decision",
   "chat.tool.batch.read": "Read files",
   "chat.tool.batch.search": "Searched",
   "chat.tool.batch.edit": "Edited files",

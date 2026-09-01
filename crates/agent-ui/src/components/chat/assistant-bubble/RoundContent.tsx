@@ -262,6 +262,7 @@ export const AssistantTurnContent = memo(function AssistantTurnContent(props: {
       {showWorkTrace ? (
         <AssistantWorkTrace
           attentionRequired={attentionRequired}
+          awaitingDecision={attentionRequired}
           collapseAfterAnswer={layout.answer.length > 0}
           collapsedTail={collapsedTailEntry ? renderEntry(collapsedTailEntry, true) : null}
           durationMs={durationMs}
@@ -279,7 +280,7 @@ export const AssistantTurnContent = memo(function AssistantTurnContent(props: {
 
       {layout.interaction.map((entry) => renderEntry(entry, false, true))}
       {layout.answer.map((entry) => renderEntry(entry, false))}
-      {running ? <LiveSparkle /> : null}
+      {running ? <LiveSparkle paused={attentionRequired} /> : null}
     </div>
   );
 });

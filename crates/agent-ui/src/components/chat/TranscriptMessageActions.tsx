@@ -61,8 +61,8 @@ export function TranscriptUserMessageActions(
       {!readOnly ? (
         <div
           className={cn(
-            "flex gap-0.5 opacity-0 transition-opacity group-hover:opacity-100 group-focus-within:opacity-100",
-            alwaysShowActions && "[@media(hover:none)]:opacity-100",
+            "chat-row-hover-chrome chat-row-hover-chrome--actions flex gap-0.5 opacity-0 transition-opacity group-hover:opacity-100 group-focus-within:opacity-100",
+            alwaysShowActions && "[@media(any-hover:none)]:opacity-100",
           )}
         >
           <button
@@ -105,8 +105,8 @@ export function TranscriptUserMessageActions(
       ) : null}
       <span
         className={cn(
-          "select-none text-[calc(11px*var(--zone-font-scale,1))] tabular-nums text-muted-foreground/70 opacity-0 transition-opacity duration-150 group-hover:opacity-100 group-focus-within:opacity-100 motion-reduce:transition-none",
-          alwaysShowActions && "[@media(hover:none)]:opacity-100",
+          "chat-row-hover-chrome select-none text-[calc(11px*var(--zone-font-scale,1))] tabular-nums text-muted-foreground/70 opacity-0 transition-opacity duration-150 group-hover:opacity-100 group-focus-within:opacity-100 motion-reduce:transition-none",
+          alwaysShowActions && "[@media(any-hover:none)]:opacity-100",
         )}
       >
         {formatTranscriptMessageTimestamp(timestamp)}
@@ -157,11 +157,12 @@ export function TranscriptAssistantMessageActions(
     >
       <div
         className={cn(
-          "pointer-events-none flex gap-0.5 opacity-0 transition-opacity duration-150 group-data-[actions-visible=true]/assistant:pointer-events-auto group-data-[actions-visible=true]/assistant:opacity-100 group-focus-within/assistant:pointer-events-auto group-focus-within/assistant:opacity-100 group-hover/assistant:pointer-events-auto group-hover/assistant:opacity-100 motion-reduce:transition-none",
+          "chat-row-hover-chrome chat-row-hover-chrome--actions pointer-events-none flex gap-0.5 opacity-0 transition-opacity duration-150 group-data-[actions-visible=true]/assistant:pointer-events-auto group-data-[actions-visible=true]/assistant:opacity-100 group-focus-within/assistant:pointer-events-auto group-focus-within/assistant:opacity-100 group-hover/assistant:pointer-events-auto group-hover/assistant:opacity-100 motion-reduce:transition-none",
           alwaysShowActions &&
-            "[@media(hover:none)]:pointer-events-auto [@media(hover:none)]:opacity-100",
+            "[@media(any-hover:none)]:pointer-events-auto [@media(any-hover:none)]:opacity-100",
           branchPending && "pointer-events-auto opacity-100",
         )}
+        data-force-visible={branchPending ? "true" : undefined}
       >
         <button
           type="button"
@@ -224,8 +225,8 @@ export function TranscriptAssistantMessageActions(
       </div>
       <span
         className={cn(
-          "ml-1 select-none text-[calc(11px*var(--zone-font-scale,1))] tabular-nums text-muted-foreground/70 opacity-0 transition-opacity duration-150 group-data-[actions-visible=true]/assistant:opacity-100 group-focus-within/assistant:opacity-100 group-hover/assistant:opacity-100 motion-reduce:transition-none",
-          alwaysShowActions && "[@media(hover:none)]:opacity-100",
+          "chat-row-hover-chrome ml-1 select-none text-[calc(11px*var(--zone-font-scale,1))] tabular-nums text-muted-foreground/70 opacity-0 transition-opacity duration-150 group-data-[actions-visible=true]/assistant:opacity-100 group-focus-within/assistant:opacity-100 group-hover/assistant:opacity-100 motion-reduce:transition-none",
+          alwaysShowActions && "[@media(any-hover:none)]:opacity-100",
         )}
       >
         {formatTranscriptMessageTimestamp(timestamp)}
@@ -234,10 +235,14 @@ export function TranscriptAssistantMessageActions(
   );
 
   if (!withAvatarSpacer) {
-    return <div className="mt-1 flex items-center justify-start gap-1.5">{actions}</div>;
+    return (
+      <div className="chat-assistant-actions mt-1 flex items-center justify-start gap-1.5">
+        {actions}
+      </div>
+    );
   }
   return (
-    <div className="assistant-bubble-shell flex w-full max-w-full items-start gap-3">
+    <div className="chat-assistant-actions assistant-bubble-shell flex w-full max-w-full items-start gap-3">
       <div className="assistant-bubble-avatar w-7 shrink-0" aria-hidden="true" />
       {actions}
     </div>

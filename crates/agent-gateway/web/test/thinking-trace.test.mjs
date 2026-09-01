@@ -25,11 +25,13 @@ test("WebUI transcript renders reasoning as expandable disclosures", () => {
 });
 
 test("the live reply carries one persistent sparkle beacon", () => {
-  assert.match(roundContentSource, /\{running \? <LiveSparkle \/> : null\}/);
+  assert.match(roundContentSource, /\{running \? <LiveSparkle paused=\{attentionRequired\} \/> : null\}/);
   assert.match(sparkleSource, /data-live-sparkle/);
   // The cluster twinkles via SMIL animations baked into the SVG itself.
   assert.match(sparkleSource, /<animate/);
   assert.match(sparkleSource, /repeatCount="indefinite"/);
+  // …unless the turn is parked on a user decision, where nothing is running.
+  assert.match(sparkleSource, /\{paused \? null : \(/);
   // The pending-bubble status line falls back to the sparkle instead of the
   // "Vibing..." filler phrase when there is no concrete activity to report.
   assert.match(statusSource, /return <LiveSparkle className=\{className\} \/>/);
