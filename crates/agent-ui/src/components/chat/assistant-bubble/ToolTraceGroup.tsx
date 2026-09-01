@@ -219,7 +219,7 @@ function ToolTraceGroupInner(props: {
 
       <LazyCollapse open={open} retainWhileClosed={retainRunningToolContent && counts.running > 0}>
         {() => (
-          <div className="-mx-1 overflow-hidden px-1.5 pb-1 pt-1">
+          <div className="-mx-1 overflow-hidden px-1.5 pt-0.5">
             <div
               data-tool-trace-scroll=""
               className="flex max-h-[400px] flex-col gap-1 overflow-y-auto overscroll-contain pr-1 [scrollbar-gutter:stable]"

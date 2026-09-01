@@ -40,12 +40,12 @@ const chatStylesSource = fs.readFileSync(
   "utf8",
 );
 
-test("tool and operation blocks share clear vertical separation from prose", () => {
+test("tool and operation blocks share the same compact rhythm as prose", () => {
   assert.match(roundContentSource, /const isOperationBlock = block\.kind !== "text";/);
-  // Inside the work trace the operation wrapper owns its rhythm; standalone
-  // rows (interaction cards, answer results) defer to the layout layer so
+  // Inside the work trace the operation wrapper owns its rhythm (my-1 matches
+  // thinking/tool-header pb-1). Standalone rows defer to the layout layer so
   // margins never stack with unit gaps.
-  assert.match(roundContentSource, /isOperationBlock && !standalone && "my-3"/);
+  assert.match(roundContentSource, /isOperationBlock && !standalone && "my-1"/);
   assert.match(roundContentSource, /data-assistant-operation=\{isOperationBlock \? "" : undefined\}/);
 });
 

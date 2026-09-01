@@ -38,7 +38,7 @@ export const RoundBlockContent = memo(function RoundBlockContent(props: {
    * True when the block renders as its own transcript row outside the work
    * trace (interaction cards, answer-layer results). Standalone rows get
    * their vertical rhythm from the layout layer, so the operation wrapper
-   * must not stack its own my-3 on top of it.
+   * must not stack its own my-1 on top of it.
    */
   standalone?: boolean;
   readOnly?: boolean;
@@ -142,7 +142,7 @@ export const RoundBlockContent = memo(function RoundBlockContent(props: {
   const isOperationBlock = block.kind !== "text";
   return (
     <div
-      className={cn(!isLive && "w-full", isOperationBlock && !standalone && "my-3")}
+      className={cn(!isLive && "w-full", isOperationBlock && !standalone && "my-1")}
       data-assistant-operation={isOperationBlock ? "" : undefined}
     >
       {content}

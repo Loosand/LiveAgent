@@ -31,7 +31,10 @@ export function LazyCollapse(props: {
     <div
       aria-hidden={!open}
       className={cn(
-        "grid origin-top transition-[grid-template-rows] duration-[220ms] ease-[cubic-bezier(0.16,1,0.3,1)] motion-reduce:transition-none",
+        // h-min: open `1fr` must size to the content. Nested collapses and
+        // virtualized rows otherwise stretch this track to leftover parent
+        // height, leaving a large blank gap under the last tool chip.
+        "grid h-min origin-top content-start transition-[grid-template-rows] duration-[220ms] ease-[cubic-bezier(0.16,1,0.3,1)] motion-reduce:transition-none",
         open ? "grid-rows-[1fr]" : "pointer-events-none grid-rows-[0fr]",
         className,
       )}

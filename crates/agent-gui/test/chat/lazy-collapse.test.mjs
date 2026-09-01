@@ -33,6 +33,8 @@ test("collapse animates in both directions and releases settled content afterwar
 
   renderCollapse(root, { open: true });
   assert.match(container.firstElementChild.className, /grid-rows-\[1fr\]/);
+  assert.match(container.firstElementChild.className, /\bh-min\b/);
+  assert.match(container.firstElementChild.className, /\bcontent-start\b/);
   assert.match(
     container.querySelector("[data-lazy-collapse-content]").className,
     /opacity-100/,

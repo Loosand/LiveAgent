@@ -37,9 +37,9 @@ test("desktop retry details render on the mutable live tail", () => {
 });
 
 test("standalone work trace aligns its header with the assistant avatar", () => {
-  assert.match(workTraceSource, /className=\{cn\("my-2 text-foreground\/60", className\)\}/);
+  assert.match(workTraceSource, /className=\{cn\("my-0 text-foreground\/60", className\)\}/);
   assert.match(
     bubbleSource,
-    /<AssistantWorkTrace[\s\S]*?className="mb-3 mt-0"[\s\S]*?hasDetails=/,
+    /<AssistantWorkTrace[\s\S]*?className="mt-0"[\s\S]*?hasDetails=/,
   );
 });

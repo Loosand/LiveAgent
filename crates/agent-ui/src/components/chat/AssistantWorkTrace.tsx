@@ -144,7 +144,7 @@ export function AssistantWorkTrace({
 
   return (
     <section
-      className={cn("my-2 text-foreground/60", className)}
+      className={cn("my-0 text-foreground/60", className)}
       aria-label={t("chat.work.activity")}
       aria-busy={running && !awaitingDecision}
       data-chat-work-trace=""

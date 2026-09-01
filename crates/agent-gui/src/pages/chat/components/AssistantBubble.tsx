@@ -90,7 +90,7 @@ export const AssistantBubbleUnit = memo(function AssistantBubbleUnit(props: {
 
         {unit.kind === "work-trace" ? (
           <AssistantWorkTrace
-            className="mb-3 mt-0"
+            className="mt-0"
             awaitingDecision={awaitingDecision}
             collapsedTail={collapsedTailEntry ? renderWorkEntry(collapsedTailEntry) : null}
             durationMs={unit.durationMs}

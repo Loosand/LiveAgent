@@ -49,7 +49,10 @@ test("collapsing the live work trace re-homes the active block below the header"
 });
 
 test("one persistent sparkle marks the live turn; textual fillers are gone", () => {
-  assert.match(roundContentSource, /\{running \? <LiveSparkle paused=\{attentionRequired\} \/> : null\}/);
+  assert.match(
+    roundContentSource,
+    /\{running \? <LiveSparkle paused=\{attentionRequired\} \/> : null\}/,
+  );
   assert.match(activityRowSource, /\{row\.live \? <LiveSparkle/);
   // The latest tool batch no longer fakes a "思考中" phase while idle — a real
   // reasoning segment shows its own row and the sparkle covers gaps.
