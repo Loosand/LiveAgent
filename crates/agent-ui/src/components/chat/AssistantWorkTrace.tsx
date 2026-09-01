@@ -29,19 +29,23 @@ type LoadingPixelStyle = CSSProperties & {
 
 function WorkPixelGrid({ active }: { active: boolean }) {
   return (
+    // 3×4px + 2×1.5px = 15px，比下方活动行的 12px 图标列宽：居中溢出到图标列
+    // 宽度的盒子里，表头的像素格才和思考/工具图标共用同一条竖中轴。
     <span
       aria-hidden="true"
-      className="grid shrink-0 grid-cols-[repeat(3,4px)] gap-[1.5px]"
+      className="flex w-3 shrink-0 items-center justify-center"
       data-chat-work-grid=""
     >
-      {PIXEL_DELAYS.map((delay, index) => (
-        <span
-          key={PIXEL_KEYS[index]}
-          className="chat-work-pixel size-1 rounded-[1px] bg-foreground"
-          data-paused={active ? undefined : ""}
-          style={{ "--chat-work-delay": `${delay}ms` } as LoadingPixelStyle}
-        />
-      ))}
+      <span className="grid shrink-0 grid-cols-[repeat(3,4px)] gap-[1.5px]">
+        {PIXEL_DELAYS.map((delay, index) => (
+          <span
+            key={PIXEL_KEYS[index]}
+            className="chat-work-pixel size-1 rounded-[1px] bg-foreground"
+            data-paused={active ? undefined : ""}
+            style={{ "--chat-work-delay": `${delay}ms` } as LoadingPixelStyle}
+          />
+        ))}
+      </span>
     </span>
   );
 }

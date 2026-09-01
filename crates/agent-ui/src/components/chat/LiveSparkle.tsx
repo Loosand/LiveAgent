@@ -56,28 +56,32 @@ export function LiveSparkle({
       data-live-sparkle=""
       data-paused={paused ? "" : undefined}
     >
-      <svg
-        aria-hidden="true"
-        className="h-5 w-5"
-        fill="currentColor"
-        viewBox="0 0 16 16"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        {SPARKLE_STARS.map((star) => (
-          <path key={star.id} d={star.d} fillOpacity={star.fillOpacity}>
-            {paused ? null : (
-              <animate
-                attributeName="fill-opacity"
-                attributeType="XML"
-                dur={star.dur}
-                keyTimes="0;0.5;1"
-                repeatCount="indefinite"
-                values={star.values}
-              />
-            )}
-          </path>
-        ))}
-      </svg>
+      {/* 星标本体 20px，比思考/工具行的 12px 图标列宽：装进一个图标列宽度的
+          盒子里居中溢出，星群才和上面那列图标共用同一条竖中轴。 */}
+      <span aria-hidden="true" className="flex h-5 w-3 shrink-0 items-center justify-center">
+        <svg
+          aria-hidden="true"
+          className="h-5 w-5 shrink-0"
+          fill="currentColor"
+          viewBox="0 0 16 16"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          {SPARKLE_STARS.map((star) => (
+            <path key={star.id} d={star.d} fillOpacity={star.fillOpacity}>
+              {paused ? null : (
+                <animate
+                  attributeName="fill-opacity"
+                  attributeType="XML"
+                  dur={star.dur}
+                  keyTimes="0;0.5;1"
+                  repeatCount="indefinite"
+                  values={star.values}
+                />
+              )}
+            </path>
+          ))}
+        </svg>
+      </span>
     </div>
   );
 }

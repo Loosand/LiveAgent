@@ -338,7 +338,9 @@ function ToolCallItem({
     </>
   ) : compactChip ? (
     <>
-      <span className="relative flex h-3.5 w-3.5 shrink-0 items-center justify-center text-foreground/45">
+      {/* 宽度锁在图标列的 12px 上（高度仍留 14px 呼吸感），否则悬停切换用的
+          居中盒会把图标整体右推 1px，和同组里的简单文件操作行错开。 */}
+      <span className="relative flex h-3.5 w-3 shrink-0 items-center justify-center text-foreground/45">
         <ToolIcon className="h-3 w-3 transition-opacity duration-150 group-hover/tool:opacity-0 group-focus-within/tool:opacity-0" />
         {canExpand ? (
           <ChevronRight

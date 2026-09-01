@@ -219,7 +219,9 @@ function ToolTraceGroupInner(props: {
 
       <LazyCollapse open={open} retainWhileClosed={retainRunningToolContent && counts.running > 0}>
         {() => (
-          <div className="-mx-1 overflow-hidden px-1.5 pt-0.5">
+          // 横向内缩与折叠头按钮同口径（-mx-1.5 / px-1.5），组内每行的图标
+          // 才和组头图标落在同一条竖线上。
+          <div className="-mx-1.5 overflow-hidden px-1.5 pt-0.5">
             <div
               data-tool-trace-scroll=""
               className="flex max-h-[400px] flex-col gap-1 overflow-y-auto overscroll-contain pr-1 [scrollbar-gutter:stable]"
