@@ -288,11 +288,11 @@ export const ChatTranscript = memo(function ChatTranscript(props: ChatTranscript
       <div
         ref={setScrollViewport}
         data-scroll-viewport
-        className="h-full w-full overflow-y-auto [overflow-anchor:none]"
+        className="h-full w-full overflow-y-auto [overflow-anchor:none] [scrollbar-gutter:stable]"
       >
         <div
           className={cn(
-            "mx-auto w-full max-w-[var(--chat-transcript-content-width)] px-5 py-4 [overflow-anchor:none]",
+            "mx-auto w-full max-w-(--chat-transcript-content-width) px-5 py-4 [overflow-anchor:none]",
             // Empty states center against the scroll viewport (the pane), not
             // the window: a viewport-height min-height overflows half-height
             // panes in vertical splits and shifts the hero content.
@@ -386,36 +386,36 @@ export const ChatTranscript = memo(function ChatTranscript(props: ChatTranscript
       ) : null}
       {renderedContextMenu && transcriptContextMenuPosition
         ? createPortal(
-            <div
-              ref={transcriptContextMenuRef}
-              role="menu"
-              className={cn(
-                "editor-context-menu layer-popover fixed w-max min-w-[9.5rem] max-w-[calc(100vw-1.5rem)] select-none overflow-hidden rounded-lg border border-border/70 bg-popover p-1.5 text-popover-foreground shadow-[0_20px_60px_-20px_rgba(15,23,42,0.35)]",
-                isContextMenuExiting && "editor-context-menu-exit",
-              )}
-              style={{
-                left: transcriptContextMenuPosition.left,
-                top: transcriptContextMenuPosition.top,
-              }}
-              onContextMenu={(event) => {
-                event.preventDefault();
+          <div
+            ref={transcriptContextMenuRef}
+            role="menu"
+            className={cn(
+              "editor-context-menu layer-popover fixed w-max min-w-38 max-w-[calc(100vw-1.5rem)] select-none overflow-hidden rounded-lg border border-border/70 bg-popover p-1.5 text-popover-foreground shadow-[0_20px_60px_-20px_rgba(15,23,42,0.35)]",
+              isContextMenuExiting && "editor-context-menu-exit",
+            )}
+            style={{
+              left: transcriptContextMenuPosition.left,
+              top: transcriptContextMenuPosition.top,
+            }}
+            onContextMenu={(event) => {
+              event.preventDefault();
+            }}
+          >
+            <button
+              type="button"
+              role="menuitem"
+              className="flex w-full items-center gap-2 rounded-md px-2.5 py-1.5 text-left text-[calc(13px*var(--zone-font-scale,1))] text-foreground/90 transition-colors hover:bg-accent hover:text-accent-foreground"
+              onClick={() => {
+                writeTextToClipboard(renderedContextMenu.selectedText);
+                closeTranscriptContextMenu();
               }}
             >
-              <button
-                type="button"
-                role="menuitem"
-                className="flex w-full items-center gap-2 rounded-md px-2.5 py-1.5 text-left text-[calc(13px*var(--zone-font-scale,1))] text-foreground/90 transition-colors hover:bg-accent hover:text-accent-foreground"
-                onClick={() => {
-                  writeTextToClipboard(renderedContextMenu.selectedText);
-                  closeTranscriptContextMenu();
-                }}
-              >
-                <Copy className="h-3.5 w-3.5 shrink-0" />
-                <span className="min-w-0 flex-1 truncate">{copySelectedTextLabel}</span>
-              </button>
-            </div>,
-            document.body,
-          )
+              <Copy className="h-3.5 w-3.5 shrink-0" />
+              <span className="min-w-0 flex-1 truncate">{copySelectedTextLabel}</span>
+            </button>
+          </div>,
+          document.body,
+        )
         : null}
       {isHistorySwitching || isTranscriptSettling ? <HistorySwitchLoadingOverlay /> : null}
     </div>

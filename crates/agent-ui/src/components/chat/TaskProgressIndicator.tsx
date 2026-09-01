@@ -194,7 +194,7 @@ export function TaskProgressIndicator({
         data-task-progress-panel=""
         hidden={!panelOpen}
         id={panelId}
-        className="max-h-[min(264px,40vh)] overflow-y-auto overscroll-contain p-px"
+        className="max-h-[min(264px,40vh)] overflow-y-auto overscroll-contain p-px [scrollbar-gutter:stable]"
       >
         <div className="flex flex-col gap-2">
           {snapshot.tasks.map((task, index) => {

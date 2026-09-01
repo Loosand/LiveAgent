@@ -325,6 +325,14 @@ function isTerminalStopReason(stopReason: string | undefined) {
   return Boolean(stopReason && stopReason !== "toolUse");
 }
 
+function isAnswerResultBlock(block: GroupedRoundBlock) {
+  if (block.kind === "text") return block.text.trim().length > 0;
+  if (block.kind === "hostedSearch" || block.kind === "hostedSearchGroup") return true;
+  if (block.kind !== "tool") return false;
+  if (block.item.toolCall.name !== "Image" || block.item.toolResult?.isError) return false;
+  return getBuiltinResultKind(block.item.toolResult) === "display_image";
+}
+
 function mergeRunningToolCallIds(left: string[], right: string[]) {
   if (right.length === 0) return left;
   if (left.length === 0) return right;
@@ -429,8 +437,10 @@ function splitInteractionEntries(entries: readonly AssistantTurnLayoutEntry[]) {
  *   activity), shown inside one collapsible section.
  * - `interaction` is user-facing decision prose plus its interactive card,
  *   rendered outside the work disclosure so it cannot be hidden while pending.
- * - `answer` is only the final trailing prose, rendered as the assistant's
- *   durable response below that section.
+ * - `answer` is the final trailing user-visible result, rendered as the
+ *   assistant's durable response below that section. It may include prose,
+ *   native image results, or hosted search results produced at the end of the
+ *   same provider round.
  *
  * A live, non-terminal turn deliberately keeps trailing prose in `work`.
  * Otherwise a progress note would jump in and out of the final-answer layer
@@ -470,7 +480,7 @@ export function resolveAssistantTurnLayout(
   }
 
   const lastEntry = background.at(-1);
-  if (!lastEntry || lastEntry.block.kind !== "text") {
+  if (!lastEntry || !isAnswerResultBlock(lastEntry.block)) {
     return {
       work: compactAssistantWorkEntries(background),
       interaction,
@@ -481,7 +491,11 @@ export function resolveAssistantTurnLayout(
   let answerStart = background.length - 1;
   while (answerStart > 0) {
     const previous = background[answerStart - 1];
-    if (!previous || previous.roundKey !== lastEntry.roundKey || previous.block.kind !== "text") {
+    if (
+      !previous ||
+      previous.roundKey !== lastEntry.roundKey ||
+      !isAnswerResultBlock(previous.block)
+    ) {
       break;
     }
     answerStart -= 1;

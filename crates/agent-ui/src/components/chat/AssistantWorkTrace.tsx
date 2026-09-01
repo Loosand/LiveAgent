@@ -153,7 +153,9 @@ export function AssistantWorkTrace({
       ) : null}
 
       {hasDetails ? (
-        <LazyCollapse open={expanded}>{() => <div className="mt-1">{children}</div>}</LazyCollapse>
+        <LazyCollapse className="[contain:layout_paint]" open={expanded}>
+          {() => <div className="mt-1 [scrollbar-gutter:stable]">{children}</div>}
+        </LazyCollapse>
       ) : null}
       {activeStatus}
     </section>
