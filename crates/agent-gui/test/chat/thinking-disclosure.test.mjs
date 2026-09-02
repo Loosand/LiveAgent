@@ -9,6 +9,10 @@ const EmptyIcon = () => null;
 // real module is unit-tested separately below.
 const durationState = { settledMs: null };
 
+// The follow engine is unit-tested in scroll-follow-core.test.mjs; here we
+// only assert the disclosure hands it the right elements and gates.
+const scrollFollowCalls = [];
+
 const env = await createDomTestEnv({
   mocks: {
     "@liveagent/ui/components/Markdown": {
@@ -16,6 +20,12 @@ const env = await createDomTestEnv({
     },
     "@liveagent/ui/lib/chat/thinkingDurations": {
       resolveThinkingDurationMs: (_key, active) => (active ? null : durationState.settledMs),
+    },
+    "@liveagent/ui/lib/chat-scroll/useScrollFollow": {
+      useScrollFollow: (args) => {
+        scrollFollowCalls.push(args);
+        return { handle: {}, following: true };
+      },
     },
     "@liveagent/ui/i18n/index": {
       useLocale: () => ({
@@ -130,6 +140,53 @@ test("a history-loaded segment without a measured duration reads 思考过程", 
   const button = container.querySelector("button");
   assert.match(button.textContent, /思考过程/);
   assert.equal(button.getAttribute("aria-expanded"), "false");
+
+  act(() => root.unmount());
+});
+
+test("a streaming segment pins its scroller through the follow engine, not column-reverse", () => {
+  const container = document.createElement("div");
+  const root = createRoot(container);
+
+  renderDisclosure(root, { active: true });
+  const scroller = container.querySelector("[data-thinking-scroll]");
+  assert.ok(scroller);
+  // The CSS-only pin is unreliable in WebKit (no bottom anchoring while
+  // streaming, scrollTop <= 0 confuses nested-wheel detection).
+  assert.doesNotMatch(scroller.className, /flex-col-reverse/);
+  assert.match(scroller.className, /overflow-y-auto/);
+
+  const wiring = scrollFollowCalls.at(-1);
+  assert.equal(wiring.enabled, true);
+  assert.equal(wiring.viewport, scroller);
+  // The growth target must be the inner wrapper: once max-h clamps the
+  // scroller its own border box stops changing while scrollHeight grows.
+  assert.equal(wiring.content, scroller.firstElementChild);
+  assert.notEqual(wiring.content, scroller);
+  assert.equal(wiring.config.reattachZonePx, 0);
+
+  act(() => root.unmount());
+});
+
+test("scroll follow disengages once the segment settles or is collapsed", () => {
+  const container = document.createElement("div");
+  const root = createRoot(container);
+
+  renderDisclosure(root, { active: true });
+  assert.equal(scrollFollowCalls.at(-1).enabled, true);
+
+  // User folds the streaming block: no pinning against a hidden body.
+  click(container.querySelector("button"));
+  assert.equal(scrollFollowCalls.at(-1).enabled, false);
+
+  click(container.querySelector("button"));
+  assert.equal(scrollFollowCalls.at(-1).enabled, true);
+
+  // Settled segments read top-down, even while the user keeps them open.
+  durationState.settledMs = 2_000;
+  renderDisclosure(root, { active: false });
+  assert.equal(container.querySelector("button").getAttribute("aria-expanded"), "true");
+  assert.equal(scrollFollowCalls.at(-1).enabled, false);
 
   act(() => root.unmount());
 });

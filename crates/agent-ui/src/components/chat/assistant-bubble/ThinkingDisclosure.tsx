@@ -4,6 +4,7 @@ import { Markdown } from "@liveagent/ui/components/Markdown";
 import { useLocale } from "@liveagent/ui/i18n/index";
 import type { ChatFileLink } from "@liveagent/ui/lib/chat/chatFileLinks";
 import { resolveThinkingDurationMs } from "@liveagent/ui/lib/chat/thinkingDurations";
+import { useScrollFollow } from "@liveagent/ui/lib/chat-scroll/useScrollFollow";
 import { cn } from "@liveagent/ui/lib/shared/utils";
 import { useEffect, useRef, useState } from "react";
 import { Brain, ChevronRight } from "../../IconSet";
@@ -45,6 +46,28 @@ export function ThinkingDisclosure(props: {
     if (!active && !userOwnsDisclosureRef.current) setOpen(false);
   }, [active]);
 
+  // Callback ref → state so the follow engine re-binds whenever LazyCollapse
+  // mounts a fresh body (the element identity changes on every reopen).
+  const [scrollViewport, setScrollViewport] = useState<HTMLDivElement | null>(null);
+  const [scrollContent, setScrollContent] = useState<HTMLDivElement | null>(null);
+
+  // Same reducer engine as the transcript viewport, minus the reattach zone
+  // (there is no reserve band inside the scroller). A pure-CSS pin via
+  // `flex-direction: column-reverse` was tried first, but WebKit does not keep
+  // a reverse scroller anchored at the bottom while content streams in, and a
+  // reverse scroller's scrollTop is always <= 0, so the transcript's
+  // nested-wheel detection (scrollTop > 0) never let it consume wheel-up and
+  // the block read as unscrollable. The ResizeObserver target must be the
+  // inner content wrapper: once max-h clamps the scroller its border box stops
+  // resizing while scrollHeight keeps growing. Follow only runs while the
+  // segment streams; a settled segment reads top-down.
+  useScrollFollow({
+    viewport: scrollViewport,
+    content: scrollContent,
+    enabled: active && open,
+    config: { reattachZonePx: 0 },
+  });
+
   const durationMs = resolveThinkingDurationMs(trackKey, active);
   const durationLabel = durationMs !== null ? formatElapsedTime(durationMs) : "";
   const settledLabel = durationLabel
@@ -83,16 +106,11 @@ export function ThinkingDisclosure(props: {
         {() => (
           <div className="-mx-1 overflow-hidden px-1.5 pb-1 pt-1">
             <div
+              ref={setScrollViewport}
               data-thinking-scroll=""
-              className={cn(
-                "max-h-[320px] overflow-y-auto overscroll-contain pr-1 [scrollbar-gutter:stable]",
-                // While streaming, column-reverse keeps the scroll pinned to
-                // the newest reasoning without a scroll-follow effect; settled
-                // segments read top-down as usual.
-                active && "flex flex-col-reverse",
-              )}
+              className="max-h-[320px] overflow-y-auto overscroll-contain pr-1 [scrollbar-gutter:stable]"
             >
-              <div className="border-l-2 border-foreground/10 pl-3">
+              <div ref={setScrollContent} className="border-l-2 border-foreground/10 pl-3">
                 <Markdown
                   content={text}
                   className="font-chat thinking-markdown"
