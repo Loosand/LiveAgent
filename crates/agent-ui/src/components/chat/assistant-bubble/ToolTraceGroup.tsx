@@ -175,9 +175,11 @@ function ToolTraceGroupInner(props: {
           ? `${counts.waiting} ${t("chat.tool.waiting")}`
           : t("chat.tool.success");
 
+  // 中文标签之间没有天然的词边界（"读取了文件运行了命令"会黏成一句），
+  // 用全角竖线分隔；全角字符自带留白，两侧不再加空格。
   const countLabel = batchCounts
     .map(({ category }) => t(`chat.tool.batch.${category}`))
-    .join(locale === "zh-CN" ? "" : " ");
+    .join(locale === "zh-CN" ? "｜" : " | ");
   const runningActivity = useMemo(() => {
     const item = findLatestRunningTool(items, runningToolCallIds);
     return item ? getRunningToolActivity(item, t) : null;

@@ -326,7 +326,7 @@ test("a tool batch opens when a pending user interaction appears inside it", () 
   act(() => root.unmount());
 });
 
-test("mixed tool batch labels are contiguous without dot separators", () => {
+test("mixed tool batch labels are separated by a fullwidth bar", () => {
   const container = document.createElement("div");
   const root = createRoot(container);
   const commandItem = {
@@ -343,8 +343,29 @@ test("mixed tool batch labels are contiguous without dot separators", () => {
   });
 
   const label = container.querySelector("button").textContent;
-  assert.equal(label, "读取了文件运行了命令");
+  assert.equal(label, "读取了文件｜运行了命令");
   assert.doesNotMatch(label, /[·•]/);
+
+  act(() => root.unmount());
+});
+
+test("a single-category tool batch renders no separator", () => {
+  const container = document.createElement("div");
+  const root = createRoot(container);
+  const secondReadItem = {
+    toolCall: { id: "tool-3", name: "Read", arguments: { path: "src/main.ts" } },
+    toolResult: { isError: false },
+  };
+
+  act(() => {
+    root.render(
+      React.createElement(ToolTraceGroup, {
+        items: [toolItem, secondReadItem],
+      }),
+    );
+  });
+
+  assert.equal(container.querySelector("button").textContent, "读取了文件");
 
   act(() => root.unmount());
 });
