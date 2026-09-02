@@ -872,10 +872,11 @@ const GatewayTranscriptListRegion = memo(function GatewayTranscriptListRegion(pr
               <div className="flex w-full max-w-full items-start gap-3">
                 <AssistantAvatar />
                 <div className="min-w-0 flex-1 space-y-2 pt-1">
-                  <div className="flex items-center py-1">
+                  <div className="flex w-full items-center py-1">
                     <LiveAssistantStatus
                       status={displayedToolStatus}
                       isCompaction={displayedToolStatusIsCompaction}
+                      className={displayedToolStatusIsCompaction ? "w-full" : undefined}
                     />
                   </div>
                   {retryAttempts && retryAttempts.length > 0 ? (

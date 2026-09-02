@@ -477,6 +477,63 @@
     animation: checkpointShimmer 2.5s ease-in-out infinite;
   }
 
+  /* Compaction band — shared chrome for the live "compressing context"
+     status and the settled in-reply seam. The active band carries a sweeping
+     progress line along its bottom edge and a breathing icon tile; the
+     settled band is static so history stays calm. */
+  @keyframes compactionBandSweep {
+    0% {
+      transform: translateX(-100%);
+    }
+    100% {
+      transform: translateX(300%);
+    }
+  }
+
+  @keyframes compactionBandBreathe {
+    0%,
+    100% {
+      transform: scale(1);
+      opacity: 0.85;
+    }
+    50% {
+      transform: scale(1.08);
+      opacity: 1;
+    }
+  }
+
+  .compaction-band-progress {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    height: 2px;
+    width: 34%;
+    border-radius: 9999px;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      hsl(270 80% 62% / 0.75) 50%,
+      transparent 100%
+    );
+    animation: compactionBandSweep 1.6s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+    pointer-events: none;
+  }
+
+  .compaction-band-icon-active {
+    animation: compactionBandBreathe 1.8s ease-in-out infinite;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .compaction-band-progress,
+    .compaction-band-icon-active {
+      animation: none;
+    }
+    .compaction-band-progress {
+      width: 100%;
+      opacity: 0.5;
+    }
+  }
+
   /* Tool card animations & micro-interactions */
   @keyframes toolExpandIn {
     from {

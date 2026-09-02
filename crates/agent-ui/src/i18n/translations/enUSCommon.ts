@@ -484,6 +484,8 @@ export const EN_US_COMMON_TRANSLATIONS = {
   "chat.contextCheckpoint.title": "Context Checkpoint",
   "chat.contextCheckpoint.messageCount": "{count} msgs",
   "chat.contextCheckpoint.compressed": "Compressed",
+  "chat.contextCheckpoint.seam": "Context compressed, continued",
+  "chat.contextCheckpoint.tokensAfter": "{tokens} after",
   "chat.manualCompactTitle": "Compact context manually?",
   "chat.manualCompactDescription":
     "Folds earlier messages into a summary checkpoint to free context space.",

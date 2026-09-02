@@ -445,6 +445,8 @@ export const ZH_CN_COMMON_TRANSLATIONS = {
   "chat.contextCheckpoint.title": "上下文检查点",
   "chat.contextCheckpoint.messageCount": "{count} 条消息",
   "chat.contextCheckpoint.compressed": "已压缩",
+  "chat.contextCheckpoint.seam": "已压缩上下文，继续处理",
+  "chat.contextCheckpoint.tokensAfter": "压缩后 {tokens}",
   "chat.manualCompactTitle": "手动压缩上下文？",
   "chat.manualCompactDescription": "将历史消息折叠为摘要检查点，释放上下文空间。",
   "chat.manualCompactConfirm": "压缩",

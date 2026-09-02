@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import { useLocale } from "../../i18n/index";
 import { normalizeLiveToolStatus, VIBING_STATUS } from "../../lib/chat/assistantStatus";
 import { cn } from "../../lib/shared/utils";
+import { CompactionBand } from "./CompactionBand";
 import { LiveSparkle } from "./LiveSparkle";
 
 export { VIBING_STATUS } from "../../lib/chat/assistantStatus";
@@ -10,9 +11,24 @@ export function VibingText({ className }: { className?: string }) {
   return <AssistantStatus className={className}>{VIBING_STATUS}</AssistantStatus>;
 }
 
+/**
+ * The live "compressing context" status. Wears the same violet band as the
+ * settled compaction seam so the two moments of one event look alike, and
+ * so the fold stands out from ordinary grey tool/reasoning rows while
+ * scanning history.
+ */
 export function CompactingText({ className }: { className?: string }) {
   const { t } = useLocale();
-  return <AssistantStatus className={className}>{t("chat.compactingContext")}</AssistantStatus>;
+  return (
+    <span
+      role="status"
+      aria-live="polite"
+      className={cn("flex min-w-0 max-w-full items-center", className)}
+      data-compacting-status=""
+    >
+      <CompactionBand active label={t("chat.compactingContext")} />
+    </span>
+  );
 }
 
 export function LiveAssistantStatus(props: {

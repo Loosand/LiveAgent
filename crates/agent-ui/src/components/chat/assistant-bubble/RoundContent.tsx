@@ -17,6 +17,7 @@ import {
   resolveActiveWorkEntry,
   resolveAssistantTurnLayout,
 } from "./assistantBubbleUtils";
+import { CompactionSeamRow } from "./CompactionSeamRow";
 import { ThinkingDisclosure } from "./ThinkingDisclosure";
 import { MemoToolCallItem } from "./ToolCallItem";
 import { getNativeDisplayImagePayload, NativeDisplayImageBlock } from "./ToolImages";
@@ -122,6 +123,8 @@ export const RoundBlockContent = memo(function RoundBlockContent(props: {
         readOnly={readOnly}
       />
     );
+  } else if (block.kind === "checkpoint") {
+    content = <CompactionSeamRow seam={block.seam} readOnly={readOnly} workdir={workdir} />;
   } else if (block.text.trim()) {
     content = (
       <Markdown

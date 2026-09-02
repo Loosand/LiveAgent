@@ -1153,3 +1153,210 @@ test("a Task-only run's twin (all blocks filtered) is adopted by the live turn (
   assert.equal(settledActivity.replyKey, liveTurnKey);
   assert.ok(settledActivity.units.every((unit) => unit.renderMode === "streaming"));
 });
+
+// ---------------------------------------------------------------------------
+// Reply continuity across a mid-reply context compaction
+
+function summaryItem(key, summaryId = key) {
+  return {
+    kind: "summary",
+    key,
+    segmentIndex: 1,
+    summaryId,
+    content: "summary body",
+    coveredMessageCount: 7,
+    coversThroughMessageId: "m-7",
+    generatedBy: { providerId: "deepseek", model: "deepseek-v4-flash" },
+    contextUsageTokens: 9000,
+    timestamp: 3,
+    collapsed: true,
+  };
+}
+
+function writeBlock(id, path) {
+  return {
+    kind: "tool",
+    item: {
+      toolCall: { type: "toolCall", id, name: "Write", arguments: { path, content: "x\n" } },
+      toolResult: {
+        role: "toolResult",
+        toolCallId: id,
+        isError: false,
+        content: [],
+        details: { path },
+      },
+    },
+  };
+}
+
+test("history: a compaction inside a reply renders one avatar, one trace with a seam, one footer", () => {
+  const model = createTranscriptRowModel();
+  const history = [
+    userItem("u1"),
+    assistantItem("a1", [{ round: 1, key: "r1", blocks: [writeBlock("w1", "a.ts")] }]),
+    summaryItem("s1"),
+    assistantItem("a2", [
+      { round: 1, key: "r1", blocks: [writeBlock("w2", "b.ts")], meta: { stopReason: "toolUse" } },
+      { ...round("r2", "all done"), meta: { stopReason: "stop" } },
+    ]),
+  ];
+  const snapshot = model.build(history, idleLive);
+
+  assert.deepEqual(
+    snapshot.rows.map((row) => row.kind),
+    ["user", "assistant-unit", "assistant-unit", "assistant-unit"],
+    "no summary row and no second reply",
+  );
+  const units = snapshot.rows.slice(1);
+  assert.deepEqual(
+    units.map((row) => row.unit.kind),
+    ["work-trace", "block", "footer"],
+  );
+  assert.deepEqual(
+    units.map((row) => row.showAvatar),
+    [true, false, false],
+    "exactly one avatar for the whole reply",
+  );
+  assert.deepEqual(
+    units[0].unit.entries.map((entry) => entry.block.kind),
+    ["toolGroup", "checkpoint", "toolGroup"],
+    "the checkpoint is a seam inside the processing trace",
+  );
+  assert.equal(units[0].unit.entries[1].block.seam.summaryId, "s1");
+  assert.equal(units[0].unit.hasAnswer, true);
+  assert.equal(units[1].unit.block.text, "all done");
+  assert.equal(units[2].unit.hasChangedFilesCandidate, true);
+  assert.deepEqual(
+    collectChangedFiles(units[2].unit.rounds).files.map((file) => file.path),
+    ["a.ts", "b.ts"],
+    "changed files aggregate across the seam",
+  );
+  assert.equal(units[2].unit.replyText, "all done");
+  assert.equal(new Set(units[0].unit.entries.map((entry) => entry.key)).size, 3, "unique keys");
+});
+
+test("history: a checkpoint that ends an exchange stays a standalone divider card", () => {
+  const model = createTranscriptRowModel();
+  const history = [
+    userItem("u1"),
+    assistantItem("a1", [round("r1", "reply")]),
+    summaryItem("s1"),
+    userItem("u2"),
+    assistantItem("a2", [round("r1", "reply 2")]),
+  ];
+  const snapshot = model.build(history, idleLive);
+  assert.deepEqual(
+    snapshot.rows.map((row) => row.kind),
+    ["user", "assistant-unit", "assistant-unit", "summary", "user", "assistant-unit", "assistant-unit"],
+  );
+});
+
+test("live: a mid-run compaction absorbs the committed half into the live reply and settles remount-free", () => {
+  const model = createTranscriptRowModel();
+  const sending = (liveRounds) => ({ ...idleLive, isSending: true, liveRounds });
+  const firstHalfRound = {
+    round: 1,
+    key: "r1",
+    blocks: [writeBlock("w1", "a.ts")],
+    runningToolCallIds: [],
+    thinkingOpen: false,
+  };
+
+  // Streaming the first half.
+  const streaming = model.build([userItem("u1")], sending([firstHalfRound]));
+  const activityKey = streaming.rows.at(-1).key;
+  const workKey = workTraceRows(streaming)[0].key;
+
+  // Compaction lands: the first half + checkpoint are committed to history and
+  // the live transcript restarts empty (rebaseConversationStateDuringRun).
+  const committed = [
+    userItem("u1"),
+    assistantItem("a1", [{ round: 1, key: "r1", blocks: firstHalfRound.blocks }]),
+    summaryItem("s1"),
+  ];
+  const rebased = model.build(committed, sending([]));
+  assert.deepEqual(
+    rebased.rows.map((row) => row.kind),
+    ["user", "assistant-activity"],
+    "the committed half and the checkpoint fold into the live activity row",
+  );
+  assert.equal(rebased.rows.at(-1).key, activityKey);
+  assert.equal(rebased.liveStartIndex, 1);
+  const rebasedTrace = workTraceRows(rebased)[0];
+  assert.equal(rebasedTrace.key, workKey);
+  assert.deepEqual(
+    rebasedTrace.unit.entries.map((entry) => entry.block.kind),
+    ["toolGroup", "checkpoint"],
+  );
+
+  // The continuation streams.
+  const continuationRound = {
+    round: 1,
+    key: "r1",
+    blocks: [writeBlock("w2", "b.ts")],
+    runningToolCallIds: ["w2"],
+    thinkingOpen: false,
+  };
+  const continuing = model.build(committed, sending([continuationRound]));
+  const continuingTrace = workTraceRows(continuing)[0];
+  assert.equal(continuingTrace.key, workKey);
+  assert.deepEqual(
+    continuingTrace.unit.entries.map((entry) => entry.block.kind),
+    ["toolGroup", "checkpoint", "toolGroup"],
+  );
+  assert.equal(
+    new Set(continuingTrace.unit.entries.map((entry) => entry.key)).size,
+    3,
+    "both halves' r1 rounds are re-keyed apart",
+  );
+  const liveContinuationKey = continuingTrace.unit.entries[2].key;
+
+  // Settle: the persisted twin is assistant → summary → assistant.
+  const settledHistory = [
+    ...committed,
+    assistantItem("a2", [
+      { round: 1, key: "r1", blocks: continuationRound.blocks, meta: { stopReason: "toolUse" } },
+      { ...round("r2", "all done"), meta: { stopReason: "stop" } },
+    ]),
+  ];
+  const settled = model.build(settledHistory, idleLive);
+  assert.deepEqual(
+    settled.rows.map((row) => row.kind),
+    ["user", "assistant-activity"],
+    "the settled reply is adopted as one activity row",
+  );
+  assert.equal(settled.rows.at(-1).key, activityKey, "zero remount: same activity key");
+  const settledTrace = workTraceRows(settled)[0];
+  assert.equal(settledTrace.key, workKey);
+  assert.equal(
+    settledTrace.unit.entries[2].key,
+    liveContinuationKey,
+    "the continuation entry keeps the key it streamed under",
+  );
+  assert.deepEqual(
+    settled.rows.at(-1).units.map((unit) => unit.unit.kind),
+    ["work-trace", "block", "footer"],
+  );
+  assert.deepEqual(
+    settled.rows.at(-1).units.map((unit) => unit.showAvatar),
+    [true, false, false],
+  );
+});
+
+test("live: an idle manual compaction still settles into a standalone checkpoint card", () => {
+  const model = createTranscriptRowModel();
+  const history = [userItem("u1"), assistantItem("a1", [round("r1", "reply")])];
+  model.build(history, { ...idleLive, isCompactionRunning: true });
+  const withCheckpoint = [...history, summaryItem("s1")];
+  const running = model.build(withCheckpoint, { ...idleLive, isCompactionRunning: true });
+  assert.equal(
+    running.rows.filter((row) => row.kind === "summary").length,
+    1,
+    "no reply content ⇒ the checkpoint is not absorbed",
+  );
+  const settled = model.build(withCheckpoint, idleLive);
+  assert.deepEqual(
+    settled.rows.map((row) => row.kind),
+    ["user", "assistant-unit", "assistant-unit", "summary"],
+  );
+});

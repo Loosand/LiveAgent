@@ -4,12 +4,20 @@ import {
   resolveAssistantTurnLayout,
 } from "@liveagent/ui/components/chat/assistant-bubble/assistantBubbleUtils";
 import {
+  assembleContinuousReply,
+  type CompactionSeamRound,
+  type ReplyStitchClass,
+  rekeyContinuationRounds,
+  stitchCompactedReplies,
+} from "@liveagent/ui/lib/chat/replyContinuity";
+import {
   CHECKPOINT_ROW_ESTIMATE_PX,
   estimateAssistantRowHeight,
   estimateUserRowHeight,
   measureEstimateText,
 } from "@liveagent/ui/lib/transcript-virtual/rowEstimates";
 import type {
+  RenderAssistantGroup,
   RenderSummaryCard,
   RenderTimelineItem,
   RenderUserMessage,
@@ -19,6 +27,79 @@ import { getRoundText, type LiveRound, type UiRound } from "../../../lib/chat/me
 
 const TRANSCRIPT_ROW_GAP_PX = 24;
 const ASSISTANT_UNIT_GAP_PX = 8;
+
+type ReplyRound = UiRound | LiveRound | CompactionSeamRound;
+
+function classifyTimelineItem(item: RenderTimelineItem): ReplyStitchClass {
+  if (item.kind === "user") return "user";
+  if (item.kind === "summary") return "checkpoint";
+  return "assistant";
+}
+
+/**
+ * Stitch `assistant → summary → assistant` chains (a compaction that landed
+ * mid-reply) into one continuous reply. History rounds are per-group
+ * ordinals, so continuation parts are re-keyed positionally; the live turn
+ * uses the same re-keying (see buildLiveReplyRounds) so its persisted twin
+ * lands on identical unit keys at settle.
+ */
+function assembleHistoryReply(items: readonly RenderTimelineItem[]) {
+  return assembleContinuousReply<RenderTimelineItem, UiRound>(items, {
+    classify: classifyTimelineItem,
+    roundsOf: (item) => (item.kind === "assistant" ? item.rounds : []),
+    seamOf: (item) => item as RenderSummaryCard,
+    rekeyParts: true,
+  });
+}
+
+/**
+ * The committed prefix of the reply that is still streaming. A compaction
+ * that fires mid-run commits the first half of the reply plus its checkpoint
+ * into history (`assistant → summary`) and restarts the live transcript for
+ * the continuation. Those trailing items belong to the live reply: they are
+ * absorbed into the live activity row so one avatar / one work trace / one
+ * footer covers the whole reply, and the checkpoint renders as a seam inside
+ * it instead of a card between two half-replies.
+ *
+ * Returns the index of the first absorbed item, or -1 when nothing should be
+ * absorbed: the trailing chain must end with a checkpoint (a trailing
+ * assistant item is the persisted twin of a settled reply — see
+ * adoptSettledTwin) and must either contain an assistant part or precede a
+ * live continuation that already has content (an idle manual compaction
+ * produces a checkpoint with neither, and that one is an exchange divider).
+ */
+function findLiveReplyLeader(
+  historyItems: readonly RenderTimelineItem[],
+  historyLenAtStart: number,
+  liveHasContent: boolean,
+): number {
+  const last = historyItems[historyItems.length - 1];
+  if (!last || last.kind !== "summary" || historyItems.length - 1 < historyLenAtStart) return -1;
+  let leader = -1;
+  let firstAssistant = -1;
+  for (let index = historyItems.length - 1; index >= historyLenAtStart; index -= 1) {
+    const item = historyItems[index];
+    if (!item || item.kind === "user") break;
+    leader = index;
+    if (item.kind === "assistant") firstAssistant = index;
+  }
+  if (firstAssistant !== -1) return firstAssistant;
+  return liveHasContent ? leader : -1;
+}
+
+/**
+ * Rounds of the live reply: the absorbed committed prefix (re-keyed exactly
+ * as the persisted twin will be) followed by the streaming continuation,
+ * re-keyed as the next part so settle lands on identical unit keys.
+ */
+function buildLiveReplyRounds(
+  absorbed: readonly RenderTimelineItem[],
+  tailRounds: readonly (UiRound | LiveRound)[],
+): ReplyRound[] {
+  if (absorbed.length === 0) return tailRounds as ReplyRound[];
+  const prefix = assembleHistoryReply(absorbed);
+  return [...prefix.rounds, ...rekeyContinuationRounds(tailRounds, prefix.partCount)];
+}
 
 export type SummaryRow = {
   kind: "summary";
@@ -70,7 +151,7 @@ export type AssistantFooterRenderUnit = {
   timestamp?: number;
   replyText: string;
   retryTarget: RenderUserMessage | null;
-  rounds: (UiRound | LiveRound)[];
+  rounds: ReplyRound[];
   hasChangedFilesCandidate: boolean;
 };
 
@@ -124,7 +205,7 @@ export type LiveTailInput = LiveTranscriptState & {
   isCompactionRunning?: boolean;
 };
 
-function buildReplyText(rounds: (UiRound | LiveRound)[]): string {
+function buildReplyText(rounds: readonly ReplyRound[]): string {
   const finalAnswer = resolveAssistantTurnLayout(rounds, { live: false })
     .answer.flatMap((entry) => (entry.block.kind === "text" ? [entry.block.text.trim()] : []))
     .filter((text) => text.length > 0)
@@ -152,7 +233,7 @@ function hasRunningToolCall(blocks: GroupedRoundBlock[], runningToolCallIds: str
   });
 }
 
-function hasChangedFilesCandidate(rounds: (UiRound | LiveRound)[]) {
+function hasChangedFilesCandidate(rounds: readonly ReplyRound[]) {
   return rounds.some((round) =>
     round.blocks.some(
       (block) =>
@@ -198,6 +279,9 @@ function measureBlockUnit(block: GroupedRoundBlock) {
     estimate = 96;
     renderCost =
       block.kind === "hostedSearchGroup" ? Math.min(6, 1 + Math.ceil(block.items.length / 3)) : 2;
+  } else if (block.kind === "checkpoint") {
+    estimate = 36;
+    renderCost = 1;
   } else {
     estimate = 72;
     renderCost = 2;
@@ -225,6 +309,9 @@ function sameGroupedBlock(previous: GroupedRoundBlock, next: GroupedRoundBlock) 
   }
   if (previous.kind === "hostedSearch") {
     return next.kind === "hostedSearch" && previous.item === next.item;
+  }
+  if (previous.kind === "checkpoint") {
+    return next.kind === "checkpoint" && previous.seam === next.seam;
   }
   if (previous.kind === "toolGroup") {
     return (
@@ -323,7 +410,7 @@ type BuildAssistantUnitsInput = {
   replyKey: string;
   live: boolean;
   renderMode: "streaming" | "static";
-  rounds: (UiRound | LiveRound)[];
+  rounds: readonly ReplyRound[];
   timestamp?: number;
   compacted: boolean;
   replyText: string;
@@ -465,7 +552,7 @@ function buildAssistantUnits(input: BuildAssistantUnitsInput): AssistantUnitRow[
         timestamp,
         replyText,
         retryTarget,
-        rounds,
+        rounds: rounds as ReplyRound[],
         hasChangedFilesCandidate: changedFilesCandidate,
       },
     });
@@ -497,11 +584,16 @@ export type TranscriptRowModel = {
 };
 
 export function createTranscriptRowModel(options?: TranscriptRowModelOptions): TranscriptRowModel {
+  // Keyed by the FIRST item of a render group: a plain user/summary item, or
+  // the leading assistant part of a (possibly stitched) reply. `members`
+  // records every item the cached rows were built from so a group that grows
+  // (a checkpoint + continuation appended to the trailing reply) rebuilds.
   let rowCache = new WeakMap<
     RenderTimelineItem,
     {
       anchorUserKey: string | null;
       retryTarget: RenderUserMessage | null;
+      members: readonly RenderTimelineItem[];
       rows: TranscriptRow[];
     }
   >();
@@ -550,75 +642,128 @@ export function createTranscriptRowModel(options?: TranscriptRowModelOptions): T
     return draftRoundCache.round;
   };
 
+  // The persisted twin of a live turn is the whole reply it streamed. When
+  // that reply compacted mid-way it is persisted as several items
+  // (assistant → summary → assistant …); the origin alias attaches to the
+  // LEADING assistant part, because that item keys the stitched group. Walk
+  // back from the newest assistant item over assistant/summary items only —
+  // a user item ends the reply.
+  const findReplyLeader = (
+    historyItems: RenderTimelineItem[],
+    index: number,
+    lowerBound: number,
+  ) => {
+    let leader = index;
+    for (let cursor = index - 1; cursor >= lowerBound; cursor -= 1) {
+      const item = historyItems[cursor];
+      if (!item || item.kind === "user") break;
+      if (item.kind === "assistant") leader = cursor;
+    }
+    return leader;
+  };
+
   const adoptSettledTwin = (
     historyItems: RenderTimelineItem[],
     turn: { replyKey: string; historyLenAtStart: number },
   ) => {
     for (let index = historyItems.length - 1; index >= turn.historyLenAtStart; index -= 1) {
       const item = historyItems[index];
-      if (item?.kind === "assistant" && !streamOrigins.has(item.key)) {
-        streamOrigins.set(item.key, turn.replyKey);
-        if (rowCache.has(item)) {
-          rowCache.delete(item);
-          historyRowsCache = null;
-        }
-        return true;
+      if (item?.kind !== "assistant") continue;
+      const leader = historyItems[findReplyLeader(historyItems, index, turn.historyLenAtStart)];
+      if (!leader || leader.kind !== "assistant") return false;
+      if (streamOrigins.has(leader.key)) return false;
+      streamOrigins.set(leader.key, turn.replyKey);
+      if (rowCache.has(leader)) {
+        rowCache.delete(leader);
+        historyRowsCache = null;
       }
+      return true;
     }
     return false;
   };
 
+  const sameMembers = (
+    previous: readonly RenderTimelineItem[],
+    next: readonly RenderTimelineItem[],
+  ) => previous.length === next.length && previous.every((item, index) => item === next[index]);
+
   const buildHistoryRows = (
-    item: RenderTimelineItem,
+    members: readonly RenderTimelineItem[],
     retryTarget: RenderUserMessage | null,
   ): TranscriptRow[] => {
-    const anchorUserKey = item.kind === "user" ? item.key : (retryTarget?.key ?? null);
-    const cached = rowCache.get(item);
-    if (cached && cached.anchorUserKey === anchorUserKey && cached.retryTarget === retryTarget) {
+    const leader = members[0];
+    if (!leader) return [];
+    const anchorUserKey = leader.kind === "user" ? leader.key : (retryTarget?.key ?? null);
+    const cached = rowCache.get(leader);
+    if (
+      cached &&
+      cached.anchorUserKey === anchorUserKey &&
+      cached.retryTarget === retryTarget &&
+      sameMembers(cached.members, members)
+    ) {
       return cached.rows;
     }
 
     let rows: TranscriptRow[];
-    if (item.kind === "summary") {
+    if (leader.kind === "summary") {
       rows = [
         {
           kind: "summary",
-          key: item.key,
+          key: leader.key,
           estimate: CHECKPOINT_ROW_ESTIMATE_PX,
           renderCost: 1,
           gapAfter: TRANSCRIPT_ROW_GAP_PX,
           anchorUserKey,
-          item,
+          item: leader,
         },
       ];
-    } else if (item.kind === "user") {
+    } else if (leader.kind === "user") {
       rows = [
         {
           kind: "user",
-          key: item.key,
-          estimate: estimateUserRowHeight(item.text.length, item.attachments.length),
-          renderCost: Math.min(4, 1 + item.attachments.length),
+          key: leader.key,
+          estimate: estimateUserRowHeight(leader.text.length, leader.attachments.length),
+          renderCost: Math.min(4, 1 + leader.attachments.length),
           gapAfter: TRANSCRIPT_ROW_GAP_PX,
-          anchorUserKey: item.key,
-          item,
+          anchorUserKey: leader.key,
+          item: leader,
         },
       ];
     } else {
-      const originKey = streamOrigins.get(item.key);
+      const originKey = streamOrigins.get(leader.key);
+      const reply = assembleHistoryReply(members);
+      const lastPart = members.reduce<RenderAssistantGroup | null>(
+        (last, item) => (item.kind === "assistant" ? item : last),
+        null,
+      );
       const assistantUnits = buildAssistantUnits({
-        replyKey: originKey ?? item.key,
+        replyKey: originKey ?? leader.key,
         live: false,
         renderMode: originKey ? "streaming" : "static",
-        rounds: item.rounds,
-        timestamp: item.timestamp,
-        compacted: item.isFromCompactedSegment,
-        replyText: buildReplyText(item.rounds),
+        rounds: reply.rounds,
+        timestamp: lastPart?.timestamp ?? leader.timestamp,
+        compacted: members.every((item) => item.kind === "summary" || item.isFromCompactedSegment),
+        replyText: buildReplyText(reply.rounds),
         retryTarget,
         anchorUserKey,
       });
       rows = originKey ? [buildAssistantActivityRow(originKey, assistantUnits)] : assistantUnits;
     }
-    rowCache.set(item, { anchorUserKey, retryTarget, rows });
+    rowCache.set(leader, { anchorUserKey, retryTarget, members, rows });
+    return rows;
+  };
+
+  // History rows for items[0, end): the same grouped/cached path as the full
+  // build, so the prefix shares row identities with the complete history.
+  const buildHistoryRowsUntil = (historyItems: RenderTimelineItem[], end: number) => {
+    const prefixItems = historyItems.slice(0, end);
+    const rows: TranscriptRow[] = [];
+    let retryTarget: RenderUserMessage | null = null;
+    for (const group of stitchCompactedReplies(prefixItems, classifyTimelineItem)) {
+      const members = group.kind === "reply" ? group.items : [group.item];
+      rows.push(...buildHistoryRows(members, retryTarget));
+      if (group.kind === "single" && group.item.kind === "user") retryTarget = group.item;
+    }
     return rows;
   };
 
@@ -704,11 +849,12 @@ export function createTranscriptRowModel(options?: TranscriptRowModelOptions): T
     } else {
       historyRows = [];
       let retryTarget: RenderUserMessage | null = null;
-      for (const item of historyItems) {
-        const itemRows = buildHistoryRows(item, retryTarget);
+      for (const group of stitchCompactedReplies(historyItems, classifyTimelineItem)) {
+        const members = group.kind === "reply" ? group.items : [group.item];
+        const itemRows = buildHistoryRows(members, retryTarget);
         historyRows.push(...itemRows);
         for (const row of itemRows) trackBirth(row.key);
-        if (item.kind === "user") retryTarget = item;
+        if (group.kind === "single" && group.item.kind === "user") retryTarget = group.item;
       }
       historyRowsCache = { items: historyItems, rows: historyRows };
     }
@@ -716,14 +862,31 @@ export function createTranscriptRowModel(options?: TranscriptRowModelOptions): T
     let rows = historyRows;
     let liveStartIndex = -1;
     if ((liveTailVisible || pendingSettle) && activeTurn) {
+      // 运行中压缩：前半段回复已经作为历史项落库（assistant → summary），后半段
+      // 仍在流式。把从本 turn 起点开始的尾部历史项（只允许 assistant/summary，
+      // 遇 user 即止）并入 live 回合——前半段的轮次 + 检查点缝合轮 + 实时轮次
+      // 组成一条连续回复，只渲染一个头像 / 一个工作区块。这些历史项在本次
+      // 构建里不再单独出行；落定后由 adoptSettledTwin 以同一 replyKey 认领整条
+      // 缝合回复（首段 assistant 项为 leader），单元 key 逐一对上、零 remount。
+      const liveHasContent = live.liveRounds.length > 0 || Boolean(live.draftAssistantText);
+      const absorbedLeaderIndex = liveTailVisible
+        ? findLiveReplyLeader(historyItems, activeTurn.historyLenAtStart, liveHasContent)
+        : -1;
+      const absorbed = absorbedLeaderIndex === -1 ? [] : historyItems.slice(absorbedLeaderIndex);
+      const visibleHistoryRows =
+        absorbed.length > 0
+          ? buildHistoryRowsUntil(historyItems, absorbedLeaderIndex)
+          : historyRows;
+
       let liveUnits = activeTurn.lastLiveUnits;
       if (liveTailVisible) {
-        const rounds: (UiRound | LiveRound)[] =
+        const tailRounds: readonly (UiRound | LiveRound)[] =
           live.liveRounds.length > 0
             ? live.liveRounds
             : live.draftAssistantText
               ? [draftRound(live.draftAssistantText)]
               : [];
+        const rounds = buildLiveReplyRounds(absorbed, tailRounds);
         liveUnits = buildAssistantUnits({
           replyKey: activeTurn.replyKey,
           live: true,
@@ -732,7 +895,7 @@ export function createTranscriptRowModel(options?: TranscriptRowModelOptions): T
           compacted: false,
           replyText: "",
           retryTarget: null,
-          anchorUserKey: historyRows.at(-1)?.anchorUserKey ?? null,
+          anchorUserKey: visibleHistoryRows.at(-1)?.anchorUserKey ?? null,
           liveUnitCache: activeTurn.liveUnitCache,
         });
         activeTurn.lastLiveUnits = liveUnits;
@@ -748,7 +911,7 @@ export function createTranscriptRowModel(options?: TranscriptRowModelOptions): T
         liveUnits = activeTurn.settlingUnits;
       }
       const liveActivity = buildAssistantActivityRow(activeTurn.replyKey, liveUnits);
-      rows = [...historyRows, liveActivity];
+      rows = [...visibleHistoryRows, liveActivity];
       liveStartIndex = rows.length - 1;
       trackBirth(liveActivity.key);
     }

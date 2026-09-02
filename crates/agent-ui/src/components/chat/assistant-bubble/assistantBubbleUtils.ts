@@ -12,6 +12,7 @@ import {
   shouldDisplayToolTraceItem,
 } from "@liveagent/ui/lib/chat/assistantBubbleAdapter";
 import { type ChatFileLink, parseChatFileLink } from "@liveagent/ui/lib/chat/chatFileLinks";
+import { type CompactionSeam, getCompactionSeam } from "@liveagent/ui/lib/chat/replyContinuity";
 import { isTaskToolBlock } from "@liveagent/ui/lib/chat/taskProgress";
 import { readToolApprovalPending } from "@liveagent/ui/lib/chat/toolApprovalArgs";
 import type {
@@ -258,6 +259,16 @@ export type GroupedRoundBlock =
       kind: "toolGroup";
       key: string;
       items: ToolTraceItem[];
+    }
+  | {
+      /**
+       * A context compaction that landed inside this reply. Rendered as a
+       * seam milestone in the work trace so the reply reads as one
+       * continuous turn instead of two replies split by a card.
+       */
+      kind: "checkpoint";
+      key: string;
+      seam: CompactionSeam;
     };
 
 function isReasoningOrSearchBlock(block: GroupedRoundBlock) {
@@ -327,6 +338,7 @@ function isVisibleTurnBlock(block: GroupedRoundBlock) {
   if (block.kind === "text" || block.kind === "thinking") {
     return block.text.trim().length > 0;
   }
+  if (block.kind === "checkpoint") return true;
   return !isTaskToolBlock(block);
 }
 
@@ -427,6 +439,7 @@ export function resolveActiveWorkEntry(
   const entry = entries.at(-1);
   if (!entry) return null;
   const block = entry.block;
+  if (block.kind === "checkpoint") return null;
   if (block.kind === "thinking") return entry.thinkingOpen ? entry : null;
   if (block.kind === "text") return entry;
   if (block.kind === "tool" || block.kind === "toolGroup") {
@@ -508,6 +521,22 @@ export function resolveAssistantTurnLayout(
     const roundKey = round.key?.trim() || `r${round.round}`;
     const runningToolCallIds = round.runningToolCallIds ?? [];
     const thinkingOpen = round.thinkingOpen ?? false;
+    const seam = getCompactionSeam(round);
+    if (seam) {
+      // A compaction seam is a stage boundary of its own: it renders as a
+      // milestone row in the work trace and, like a thinking segment, keeps
+      // the tool batches on either side from merging into one group.
+      return [
+        {
+          key: `${roundKey}:checkpoint`,
+          roundKey,
+          roundMeta: round.meta,
+          block: { kind: "checkpoint" as const, key: `checkpoint-${seam.key}`, seam },
+          runningToolCallIds,
+          thinkingOpen,
+        },
+      ];
+    }
     return groupRoundBlocks(round.blocks)
       .filter(isVisibleTurnBlock)
       .map((block) => ({
