@@ -61,6 +61,8 @@ export type AssistantWorkTraceRenderUnit = {
   durationMs?: number;
   entries: AssistantTurnLayoutEntry[];
   latestToolGroupKey: string | null;
+  /** 回合已有总结文案（answer 层非空）：落定后工作区块可自动折叠成一行。 */
+  hasAnswer: boolean;
 };
 
 export type AssistantFooterRenderUnit = {
@@ -273,7 +275,8 @@ function canReuseLiveUnit(previous: AssistantUnitRow, next: AssistantUnitRow) {
             sameGroupedBlock(entry.block, nextEntry.block),
         );
       }) &&
-      previous.unit.latestToolGroupKey === nextWorkTrace.latestToolGroupKey
+      previous.unit.latestToolGroupKey === nextWorkTrace.latestToolGroupKey &&
+      previous.unit.hasAnswer === nextWorkTrace.hasAnswer
     );
   }
 
@@ -391,6 +394,7 @@ function buildAssistantUnits(input: BuildAssistantUnitsInput): AssistantUnitRow[
             : undefined,
         entries: layout.work,
         latestToolGroupKey,
+        hasAnswer: layout.answer.length > 0,
       },
     });
   }

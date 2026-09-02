@@ -818,6 +818,58 @@ test("the active assistant turn stays one outer activity row through growth and 
   assert.equal(settledActivity.units[0].unit.kind, "work-trace");
 });
 
+test("the work trace flags a final answer only once the turn has settled with one", () => {
+  const model = createTranscriptRowModel();
+  const history = [userItem("u1")];
+  const toolItem = {
+    toolCall: { type: "toolCall", id: "call-1", name: "Bash", arguments: { command: "pwd" } },
+    toolResult: { role: "toolResult", toolCallId: "call-1", isError: false, content: [] },
+  };
+  const liveRound = {
+    round: 1,
+    key: "r1",
+    blocks: [
+      { kind: "tool", item: toolItem },
+      { kind: "text", id: "text-1", text: "进度说明" },
+    ],
+    runningToolCallIds: [],
+    thinkingOpen: false,
+  };
+
+  // Live and non-terminal: trailing prose is still a progress note inside the
+  // trace, so nothing counts as an answer yet.
+  const streaming = model.build(history, { ...idleLive, isSending: true, liveRounds: [liveRound] });
+  const liveWorkTrace = workTraceRows(streaming)[0];
+  assert.equal(liveWorkTrace.unit.hasAnswer, false);
+
+  // Settled with trailing prose: the prose becomes the answer layer and the
+  // trace is flagged so the GUI auto-collapses it, matching the WebUI.
+  const settledWithAnswer = model.build(
+    [
+      userItem("u1"),
+      assistantItem("a1", [{ round: 1, key: "r1", blocks: liveRound.blocks }]),
+    ],
+    idleLive,
+  );
+  const settledWorkTrace = workTraceRows(settledWithAnswer)[0];
+  assert.equal(settledWorkTrace.key, liveWorkTrace.key);
+  assert.equal(settledWorkTrace.unit.hasAnswer, true);
+  assert.equal(blockRows(settledWithAnswer).length, 1);
+
+  // Settled with tools only: no answer layer, so the trace must not be told
+  // to collapse — it is the whole reply.
+  const toolOnlyModel = createTranscriptRowModel();
+  const settledToolOnly = toolOnlyModel.build(
+    [
+      userItem("u1"),
+      assistantItem("a1", [{ round: 1, key: "r1", blocks: [{ kind: "tool", item: toolItem }] }]),
+    ],
+    idleLive,
+  );
+  assert.equal(workTraceRows(settledToolOnly)[0].unit.hasAnswer, false);
+  assert.equal(blockRows(settledToolOnly).length, 0);
+});
+
 test("one outer activity row stays stable across one hundred appended tools", () => {
   const model = createTranscriptRowModel();
   const history = [userItem("u1")];

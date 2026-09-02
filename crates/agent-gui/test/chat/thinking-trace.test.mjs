@@ -17,6 +17,7 @@ const toolTraceSource = readSource(
 const workTraceSource = readSource("../../../agent-ui/src/components/chat/AssistantWorkTrace.tsx");
 const guiBubbleSource = readSource("../../src/pages/chat/components/AssistantBubble.tsx");
 const activityRowSource = readSource("../../src/pages/chat/transcript/AssistantActivityRow.tsx");
+const rowModelSource = readSource("../../src/pages/chat/transcript/rowModel.ts");
 
 test("reasoning renders as expandable disclosures instead of vanishing status text", () => {
   assert.match(roundContentSource, /<ThinkingDisclosure/);
@@ -68,6 +69,15 @@ test("a turn waiting on the user freezes its progress indicators", () => {
   );
   assert.match(activityRowSource, /paused=\{awaitingDecision\}/);
   assert.match(guiBubbleSource, /awaitingDecision=\{awaitingDecision\}/);
+});
+
+test("a settled turn with a final answer collapses its work trace on both surfaces", () => {
+  // Shared AssistantTurnContent (WebUI path) and the GUI's own bubble unit
+  // bypass each other, so the auto-collapse wiring must exist in both.
+  assert.match(workTraceSource, /if \(!running && !attentionRequired && collapseAfterAnswer\)/);
+  assert.match(roundContentSource, /collapseAfterAnswer=\{layout\.answer\.length > 0\}/);
+  assert.match(guiBubbleSource, /collapseAfterAnswer=\{unit\.hasAnswer\}/);
+  assert.match(rowModelSource, /hasAnswer: layout\.answer\.length > 0/);
 });
 
 test("GUI transcript keeps live interaction content outside the work trace", () => {
