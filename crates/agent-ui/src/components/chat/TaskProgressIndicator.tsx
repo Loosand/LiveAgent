@@ -1,8 +1,9 @@
 import { Check } from "@liveagent/ui/components/IconSet";
-import { useId } from "react";
+import { useId, useState } from "react";
 import type { TaskItem } from "../../contracts/task";
 import type { TaskProgressSnapshot } from "../../lib/chat/taskProgress";
 import { cn } from "../../lib/shared/utils";
+import { createTooltipHandle, Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 
 export type TaskProgressIndicatorLabels = {
   title: string;
@@ -83,6 +84,15 @@ function getTaskDisplayState(task: TaskItem, isConversationRunning: boolean): Di
   return "running";
 }
 
+/**
+ * line-clamp 只在视觉上裁掉多余行，scrollHeight 仍是完整文本的高度；两者出现差值
+ * 就说明这一行被截断了。只有这种行才值得弹 tooltip，完整可见的短句悬停不打扰。
+ */
+function isTaskSubjectClamped(element: Element | undefined): boolean {
+  if (!element) return false;
+  return element.scrollHeight - element.clientHeight > 1;
+}
+
 export function TaskProgressIndicator({
   snapshot,
   isConversationRunning,
@@ -94,6 +104,8 @@ export function TaskProgressIndicator({
 }) {
   const instanceId = useId();
   const panelId = `${instanceId}-tasks`;
+  // 整个列表共用一个 tooltip 实例：每一行只是它的分离式触发器，payload 带上完整标题。
+  const [subjectTooltip] = useState(() => createTooltipHandle<string>());
   const displayState: DisplayState =
     snapshot.state === "completed"
       ? "completed"
@@ -143,7 +155,7 @@ export function TaskProgressIndicator({
       >
         <ul
           aria-label={labels.title}
-          className="flex max-h-[min(300px,42vh)] flex-col gap-2.5 overflow-y-auto overscroll-contain rounded-2xl bg-background/95 px-3 py-2.5 shadow-[0_0_0_1px_rgba(0,0,0,0.07),0_2px_4px_-2px_rgba(0,0,0,0.08),0_16px_40px_-20px_rgba(15,23,42,0.45)] backdrop-blur-xl backdrop-saturate-150 [scrollbar-gutter:stable] dark:shadow-[0_0_0_1px_rgba(255,255,255,0.12),0_16px_40px_-20px_rgba(0,0,0,0.8)]"
+          className="flex max-h-[min(300px,42vh)] flex-col gap-2.5 overflow-x-hidden overflow-y-auto overscroll-contain rounded-2xl bg-background/95 px-3 py-2.5 shadow-[0_0_0_1px_rgba(0,0,0,0.07),0_2px_4px_-2px_rgba(0,0,0,0.08),0_16px_40px_-20px_rgba(15,23,42,0.45)] backdrop-blur-xl backdrop-saturate-150 [scrollbar-gutter:stable] dark:shadow-[0_0_0_1px_rgba(255,255,255,0.12),0_16px_40px_-20px_rgba(0,0,0,0.8)]"
         >
           {snapshot.tasks.map((task) => {
             const taskDisplayState = getTaskDisplayState(task, isConversationRunning);
@@ -162,24 +174,54 @@ export function TaskProgressIndicator({
                 key={task.id}
               >
                 <TaskStatusIcon className="mt-[3px]" state={taskDisplayState} />
-                <span
-                  className={cn(
-                    "min-w-0 flex-1 text-pretty text-[12.5px] leading-5",
-                    taskDisplayState === "completed"
-                      ? "text-muted-foreground"
-                      : taskDisplayState === "running"
-                        ? "font-medium text-foreground"
-                        : "text-foreground/70",
-                  )}
+                {/* 标题最多两行，超长路径/URL 之类无空格串强制折行，绝不再把列表撑出横向滚动条。 */}
+                <TooltipTrigger
+                  closeOnClick={false}
+                  delay={300}
+                  handle={subjectTooltip}
+                  payload={task.subject}
+                  render={
+                    <span
+                      className={cn(
+                        "line-clamp-2 min-w-0 flex-1 break-words text-pretty text-[12.5px] leading-5",
+                        taskDisplayState === "completed"
+                          ? "text-muted-foreground"
+                          : taskDisplayState === "running"
+                            ? "font-medium text-foreground"
+                            : "text-foreground/70",
+                      )}
+                    />
+                  }
                 >
                   {task.subject}
-                </span>
+                </TooltipTrigger>
                 <span className="sr-only">{statusText}</span>
               </li>
             );
           })}
         </ul>
       </div>
+
+      <Tooltip
+        disableHoverablePopup
+        handle={subjectTooltip}
+        onOpenChange={(open, details) => {
+          if (!open || isTaskSubjectClamped(details.trigger)) return;
+          details.cancel();
+          // 指针从一条被截断的行直接滑到相邻的完整行时，hover 逻辑会把这次移动视作
+          // "换触发器"而不主动关闭；这里既否决了新行的打开，就得顺手把旧弹层收掉。
+          if (subjectTooltip.isOpen) queueMicrotask(() => subjectTooltip.close());
+        }}
+      >
+        {({ payload }) => (
+          <TooltipContent
+            className="pointer-events-none max-w-[min(360px,calc(100vw-2rem))] break-words font-normal leading-[18px]"
+            side="top"
+          >
+            {payload}
+          </TooltipContent>
+        )}
+      </Tooltip>
     </div>
   );
 }

@@ -15,6 +15,9 @@ const localeContextPath = fileURLToPath(
 const taskProgressIndicatorPath = fileURLToPath(
   new URL("../../../agent-ui/src/components/chat/TaskProgressIndicator.tsx", import.meta.url),
 );
+const tooltipPath = fileURLToPath(
+  new URL("../../../agent-ui/src/components/ui/tooltip.tsx", import.meta.url),
+);
 
 const labels = {
   title: "Task progress",
@@ -34,6 +37,9 @@ function createHookHarness() {
     useId() {
       return `task-progress-panel-${idIndex++}`;
     },
+    useState(initial) {
+      return [typeof initial === "function" ? initial() : initial, () => {}];
+    },
   };
   return {
     react,
@@ -44,8 +50,27 @@ function createHookHarness() {
   };
 }
 
+function createTooltipMock() {
+  let handleIndex = 0;
+  return {
+    createTooltipHandle: () => ({
+      kind: "tooltip-handle",
+      id: handleIndex++,
+      isOpen: false,
+      closeCalls: 0,
+      close() {
+        this.closeCalls += 1;
+      },
+    }),
+    Tooltip: (props) => ({ type: "Tooltip", props }),
+    TooltipTrigger: (props) => ({ type: "TooltipTrigger", props }),
+    TooltipContent: (props) => ({ type: "TooltipContent", props }),
+  };
+}
+
 function createIndicatorHarness() {
   const hooks = createHookHarness();
+  const tooltip = createTooltipMock();
   const loader = createWebModuleLoader({
     rootDir,
     mocks: {
@@ -58,6 +83,7 @@ function createIndicatorHarness() {
           return values.filter(Boolean).join(" ");
         },
       },
+      [tooltipPath]: tooltip,
     },
   });
   const { TaskProgressIndicator } = loader.loadModule(
@@ -134,11 +160,12 @@ function treeText(node) {
   return treeText(node.props?.children);
 }
 
+function componentsNamed(node, name) {
+  return findAll(node, (child) => typeof child.type === "function" && child.type.name === name);
+}
+
 function statusIcons(node) {
-  return findAll(
-    node,
-    (child) => typeof child.type === "function" && child.type.name === "TaskStatusIcon",
-  );
+  return componentsNamed(node, "TaskStatusIcon");
 }
 
 function readIndicator(tree) {
@@ -152,6 +179,8 @@ function readIndicator(tree) {
     list: findAll(tree, (node) => node.type === "ul")[0],
     progress: findAll(tree, (node) => node.props?.role === "progressbar")[0],
     rows: findAll(tree, (node) => typeof node.props?.["data-task-status"] === "string"),
+    subjectTriggers: componentsNamed(tree, "TooltipTrigger"),
+    tooltip: componentsNamed(tree, "Tooltip")[0],
   };
 }
 
@@ -213,6 +242,79 @@ test("web lists task subjects only, dropping descriptions and per-row disclosure
     assert.equal(row.props["aria-expanded"], undefined);
     assert.equal(row.props["aria-controls"], undefined);
   }
+});
+
+test("web clamps long subjects to two lines and reveals the full text through one shared tooltip", async () => {
+  const { list, rows, subjectTriggers, tooltip } = readIndicator(
+    createIndicatorHarness().render(),
+  );
+
+  // 列表容器本身永不出现横向滚动条：无空格长串在行内折行，其余溢出一律裁掉。
+  assert.match(list.props.className, /\boverflow-x-hidden\b/);
+  assert.match(list.props.className, /\boverflow-y-auto\b/);
+
+  // 每一行都是同一个 tooltip 的分离式触发器，payload 携带完整标题。
+  assert.equal(subjectTriggers.length, rows.length);
+  const handle = tooltip.props.handle;
+  assert.equal(handle.kind, "tooltip-handle");
+  const subjects = ["Inspect", "Implement", "Verify"];
+  for (const [index, subjectTrigger] of subjectTriggers.entries()) {
+    assert.equal(subjectTrigger.props.handle, handle);
+    assert.equal(subjectTrigger.props.payload, subjects[index]);
+    assert.equal(subjectTrigger.props.children, subjects[index]);
+    assert.equal(subjectTrigger.props.closeOnClick, false);
+    assert.equal(subjectTrigger.props.render.type, "span");
+    const textClass = subjectTrigger.props.render.props.className;
+    assert.match(textClass, /\bline-clamp-2\b/);
+    assert.match(textClass, /\bbreak-words\b/);
+    assert.match(textClass, /\bmin-w-0\b/);
+    assert.match(textClass, /\bflex-1\b/);
+  }
+  // 运行中的行加粗、已完成的行降为次要色，与之前的行样式一致。
+  assert.match(subjectTriggers[0].props.render.props.className, /text-muted-foreground/);
+  assert.match(subjectTriggers[1].props.render.props.className, /font-medium/);
+
+  // 只有真被 line-clamp 截断的行才允许弹出；完整可见的行取消这次打开。
+  assert.equal(tooltip.props.disableHoverablePopup, true);
+  const attemptOpen = (open, trigger) => {
+    let canceled = false;
+    tooltip.props.onOpenChange(open, {
+      trigger,
+      cancel() {
+        canceled = true;
+      },
+    });
+    return canceled;
+  };
+  assert.equal(attemptOpen(true, { scrollHeight: 60, clientHeight: 40 }), false);
+  assert.equal(attemptOpen(true, { scrollHeight: 40, clientHeight: 40 }), true);
+  // 亚像素舍入带来的 1px 差值不算截断。
+  assert.equal(attemptOpen(true, { scrollHeight: 41, clientHeight: 40 }), true);
+  assert.equal(attemptOpen(true, undefined), true);
+  // 关闭请求从不拦截，否则弹层会卡在打开态。
+  assert.equal(attemptOpen(false, undefined), false);
+  // 弹层本就没开时，否决不会多余地触发一次关闭。
+  await Promise.resolve();
+  assert.equal(handle.closeCalls, 0);
+
+  // 弹层还挂在上一条被截断的行上、指针直接滑进相邻完整行：hover 逻辑把它当作
+  // "换触发器"而不主动收起，这里否决新行的同时必须把旧弹层关掉，否则会卡住不动。
+  handle.isOpen = true;
+  assert.equal(attemptOpen(true, { scrollHeight: 20, clientHeight: 20 }), true);
+  await Promise.resolve();
+  assert.equal(handle.closeCalls, 1);
+  // 换到另一条同样被截断的行则交给 tooltip 自己迁移锚点，不能误关。
+  assert.equal(attemptOpen(true, { scrollHeight: 60, clientHeight: 40 }), false);
+  await Promise.resolve();
+  assert.equal(handle.closeCalls, 1);
+
+  // 弹层内容就是当前触发行的完整标题，且不吃指针，避免盖住上一行时把外层 hover 面板打断。
+  const content = tooltip.props.children({ payload: "Implement completion criteria" });
+  assert.equal(content.type.name, "TooltipContent");
+  assert.equal(content.props.children, "Implement completion criteria");
+  assert.equal(content.props.side, "top");
+  assert.match(content.props.className, /\bpointer-events-none\b/);
+  assert.match(content.props.className, /\bbreak-words\b/);
 });
 
 test("web keeps task labels stable and scopes the spinning ring to the running row", () => {
