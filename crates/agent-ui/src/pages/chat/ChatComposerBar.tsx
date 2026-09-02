@@ -57,6 +57,7 @@ import {
 } from "@liveagent/ui/components/ui/dropdown-menu";
 import { LabelTooltip as RuntimeControlTooltip } from "@liveagent/ui/components/ui/label-tooltip";
 import { useLocale } from "@liveagent/ui/i18n/index";
+import { measureComposerOverlay } from "@liveagent/ui/lib/chat/composerOverlayMetrics";
 import {
   type ConversationReferenceInsertResult,
   getActiveConversationReferenceDrag,
@@ -364,6 +365,18 @@ export type ChatComposerBarProps = {
   /** 澄清系统提示词附带的轻量工作区信息。 */
   clarifyContext?: ClarifyContext;
   onHeightChange?: (height: number) => void;
+  /**
+   * 预留线之上被队列面板、任务进度药丸额外占据的高度（见
+   * composerOverlayMetrics）。它们不计入 onHeightChange，但浮在输入区上方的
+   * 控件（回到底部按钮）要再让出这段距离才不会被盖住。仅 desktop 上报。
+   */
+  onFloatingOverhangChange?: (height: number) => void;
+  /**
+   * 卡片列中心相对输入区层中心的水平偏移（向右为正）。desktop 卡片为对齐正文
+   * 整体右移，居中锚定在输入区上方的控件要按此平移才能与卡片、药丸对齐。
+   * 仅 desktop 上报。
+   */
+  onCenterOffsetChange?: (offsetPx: number) => void;
   /** 当前会话任务进度（存在时渲染在审批栏和队列面板之上）。 */
   taskProgressBar?: ReactNode;
   /** 待审批时替换输入卡片的集中审批面板。 */
@@ -449,6 +462,8 @@ export const ChatComposerBar = memo(function ChatComposerBar(props: ChatComposer
     runClarifyTurn,
     clarifyContext,
     onHeightChange,
+    onFloatingOverhangChange,
+    onCenterOffsetChange,
     taskProgressBar,
     approvalBar,
     fileDropOverlay,
@@ -502,7 +517,11 @@ export const ChatComposerBar = memo(function ChatComposerBar(props: ChatComposer
   const scheduleHeightMeasureRef = useRef<(() => void) | null>(null);
   const scheduleComposerOverflowMeasureRef = useRef<(() => void) | null>(null);
   const composerLayerRef = useRef<HTMLDivElement | null>(null);
+  const composerColumnRef = useRef<HTMLDivElement | null>(null);
   const queuePanelRef = useRef<HTMLDivElement | null>(null);
+  // 走 state 而非 ref：容器随 taskProgressBar 插槽挂载/卸载，测量 effect 要
+  // 跟着重新观察它。
+  const [taskProgressBarElement, setTaskProgressBarElement] = useState<HTMLDivElement | null>(null);
   const queueListRef = useRef<HTMLUListElement | null>(null);
   const queueScrollbarTrackRef = useRef<HTMLDivElement | null>(null);
   const queueScrollbarDragRef = useRef<{
@@ -1122,15 +1141,21 @@ export const ChatComposerBar = memo(function ChatComposerBar(props: ChatComposer
     if (!composerLayer) return;
 
     if (surface === "desktop") {
-      if (!onHeightChange) return;
+      if (!onHeightChange && !onFloatingOverhangChange && !onCenterOffsetChange) return;
 
       let animationFrame: number | null = null;
       const measure = () => {
         animationFrame = null;
         if (isComposerExpandedRef.current || expandAnimationRef.current) return;
-        const composerLayerHeight = composerLayer.getBoundingClientRect().height;
-        const queueHeight = queuePanelRef.current?.getBoundingClientRect().height ?? 0;
-        onHeightChange(Math.ceil(Math.max(0, composerLayerHeight - queueHeight)));
+        const metrics = measureComposerOverlay({
+          layer: composerLayer.getBoundingClientRect(),
+          queueHeight: queuePanelRef.current?.getBoundingClientRect().height ?? 0,
+          floating: taskProgressBarElement?.getBoundingClientRect(),
+          column: composerColumnRef.current?.getBoundingClientRect(),
+        });
+        onHeightChange?.(metrics.heightPx);
+        onFloatingOverhangChange?.(metrics.floatingOverhangPx);
+        onCenterOffsetChange?.(metrics.centerOffsetPx);
       };
       const scheduleMeasure = () => {
         if (animationFrame !== null) return;
@@ -1142,6 +1167,10 @@ export const ChatComposerBar = memo(function ChatComposerBar(props: ChatComposer
       const resizeObserver =
         typeof ResizeObserver === "undefined" ? null : new ResizeObserver(scheduleMeasure);
       resizeObserver?.observe(composerLayer);
+      // 卡片列宽度跟随正文宽度设置，可在 composerLayer 尺寸不变时独立变化。
+      if (composerColumnRef.current) resizeObserver?.observe(composerColumnRef.current);
+      // 药丸容器绝对定位在卡片列之外，出现/消失不会改变 composerLayer 的尺寸。
+      if (taskProgressBarElement) resizeObserver?.observe(taskProgressBarElement);
       window.addEventListener("resize", scheduleMeasure);
 
       return () => {
@@ -1151,7 +1180,9 @@ export const ChatComposerBar = memo(function ChatComposerBar(props: ChatComposer
         }
         resizeObserver?.disconnect();
         window.removeEventListener("resize", scheduleMeasure);
-        onHeightChange(0);
+        onHeightChange?.(0);
+        onFloatingOverhangChange?.(0);
+        onCenterOffsetChange?.(0);
       };
     }
 
@@ -1190,7 +1221,13 @@ export const ChatComposerBar = memo(function ChatComposerBar(props: ChatComposer
       resizeObserver.disconnect();
       chatFrame.style.removeProperty("--gateway-chat-composer-overlay-height");
     };
-  }, [onHeightChange, surface]);
+  }, [
+    onHeightChange,
+    onFloatingOverhangChange,
+    onCenterOffsetChange,
+    surface,
+    taskProgressBarElement,
+  ]);
 
   return (
     <div
@@ -1216,6 +1253,7 @@ export const ChatComposerBar = memo(function ChatComposerBar(props: ChatComposer
           The card extends 4px past the body's left edge so scrolling content
           cannot peek around its rounded lower-left corner. */}
       <div
+        ref={composerColumnRef}
         className={cn(
           surface === "desktop"
             ? "pointer-events-auto relative w-[calc(100%-2.25rem)] max-w-[calc(var(--chat-transcript-content-width,768px)-4.75rem)] translate-x-[18px]"
@@ -1225,7 +1263,10 @@ export const ChatComposerBar = memo(function ChatComposerBar(props: ChatComposer
         )}
       >
         {taskProgressBar ? (
-          <div className="pointer-events-none absolute inset-x-0 bottom-full z-40 mb-3 flex justify-center px-3">
+          <div
+            ref={setTaskProgressBarElement}
+            className="pointer-events-none absolute inset-x-0 bottom-full z-40 mb-3 flex justify-center px-3"
+          >
             {taskProgressBar}
           </div>
         ) : null}

@@ -159,6 +159,8 @@ const RegisteredConversationPaneHost = forwardRef<
   const composerRef = useRef<MentionComposerHandle | null>(null);
   const scrollFollowRef = useRef<ScrollFollowHandle | null>(null);
   const [composerOverlayHeight, setComposerOverlayHeight] = useState(0);
+  const [composerFloatingOverhang, setComposerFloatingOverhang] = useState(0);
+  const [composerCenterOffset, setComposerCenterOffset] = useState(0);
   // Background panes send through their own conversation-scoped pipeline; the
   // handler owns clear-on-send/restore-on-failure for this pane's composer.
   const paneSendHandler = useMemo(
@@ -231,6 +233,8 @@ const RegisteredConversationPaneHost = forwardRef<
                   isSending={isSending}
                   isCompactionRunning={isCompactionRunning}
                   bottomReservePx={composerOverlayHeight}
+                  floatingOverhangPx={composerFloatingOverhang}
+                  composerCenterOffsetPx={composerCenterOffset}
                 />
               </DesktopCheckpointRewindProvider>
             </ChangedFilesActionsProvider>
@@ -250,6 +254,8 @@ const RegisteredConversationPaneHost = forwardRef<
               onManualCompactConfirm={controller.compact}
               manualCompactBlocked={isCompactionRunning}
               onHeightChange={setComposerOverlayHeight}
+              onFloatingOverhangChange={setComposerFloatingOverhang}
+              onCenterOffsetChange={setComposerCenterOffset}
               taskProgressBar={
                 <CurrentTaskProgress
                   key={snapshot.conversationId}

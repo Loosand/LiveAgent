@@ -53,6 +53,8 @@ export const ChatTranscript = memo(function ChatTranscript(props: ChatTranscript
     liveTranscriptStore,
     isCompactionRunning,
     bottomReservePx = 0,
+    floatingOverhangPx = 0,
+    composerCenterOffsetPx = 0,
     contentWidth,
     onContentWidthChange,
     onOpenFileLink,
@@ -376,8 +378,14 @@ export const ChatTranscript = memo(function ChatTranscript(props: ChatTranscript
           aria-label={jumpToBottomLabel}
           title={jumpToBottomLabel}
           onClick={() => scrollFollowHandle.jumpToBottom()}
-          className="chat-jump-to-bottom absolute left-1/2 z-10 flex h-8 w-8 items-center justify-center rounded-full text-muted-foreground transition-colors hover:text-foreground"
-          style={{ bottom: Math.ceil(bottomReservePx) + 16 }}
+          className="chat-jump-to-bottom absolute z-10 flex h-8 w-8 items-center justify-center rounded-full text-muted-foreground transition-colors hover:text-foreground"
+          // Centered on the composer card (not the pane) and stacked above
+          // the task-progress pill / queue panel: the composer layer paints
+          // over the transcript, so any overlap would hide the button.
+          style={{
+            left: `calc(50% + ${Math.round(composerCenterOffsetPx)}px)`,
+            bottom: Math.ceil(bottomReservePx) + Math.ceil(floatingOverhangPx) + 16,
+          }}
         >
           <ChevronDown className="h-4 w-4" />
         </button>
