@@ -7,6 +7,7 @@ import type {
 } from "@earendil-works/pi-ai";
 import { ASK_USER_QUESTION_TOOL_NAME } from "@liveagent/ui/lib/chat/askUserQuestion";
 import type { HostedSearchBlock } from "@liveagent/ui/lib/chat/hostedSearch";
+import type { ConversationMentionReference } from "@liveagent/ui/lib/chat/mentionReferences";
 import {
   composeTrajectorySystemPrompt,
   serializeToolCatalog,
@@ -302,6 +303,8 @@ export type RunAgentConversationTurnParams = {
   getMcpSettings: () => AppSettings["mcp"];
   /** 工具审批策略的实时读取(权威 settingsRef,非 turn 级快照),缺省视为空表。 */
   getToolPolicies?: () => AppSettings["system"]["toolPolicies"];
+  /** 允许 CUA 工具操作 LiveAgent 自身；默认 false，见 lib/tools/cuaSelfGuard.ts。 */
+  getCuaAllowSelfTargeting?: () => boolean;
   /** 命令执行方式(turn 级快照):ask 全量审批 / auto 按策略 / sandbox(±断网)。 */
   commandSafetyMode?: AppSettings["system"]["commandSafetyMode"];
   /** Plan mode(turn 级快照):真时本轮只注入只读工具 + ExitPlanMode 提交闸门。 */
@@ -318,6 +321,8 @@ export type RunAgentConversationTurnParams = {
   /** Run 级任务状态存储：由 send 管线构建，提交走非终态持久化。 */
   taskStateStore: TaskStateStore;
   conversationId: string;
+  /** Structured conversation references explicitly selected in the current composer draft. */
+  referencedConversations?: readonly ConversationMentionReference[];
   checkpointTurnId?: string;
   conversationCwd?: string;
   fallbackTitle: string;
@@ -393,6 +398,7 @@ export async function runAgentConversationTurn(params: RunAgentConversationTurnP
     agentTemplates,
     getMcpSettings,
     getToolPolicies,
+    getCuaAllowSelfTargeting,
     commandSafetyMode,
     planModeEnabled,
     applyMcpOps,
@@ -406,6 +412,7 @@ export async function runAgentConversationTurn(params: RunAgentConversationTurnP
     sessionId,
     taskStateStore,
     conversationId,
+    referencedConversations,
     checkpointTurnId,
     conversationCwd,
     fallbackTitle,
@@ -625,6 +632,8 @@ export async function runAgentConversationTurn(params: RunAgentConversationTurnP
     askUserQuestionConversationId: conversationId,
     planMode: planModeEnabled ? { conversationId } : undefined,
     toolSearch: { conversationId },
+    currentConversationId: conversationId,
+    referencedConversations,
     checkpoint: {
       conversationId,
       turnId: checkpointTurnId?.trim() || crypto.randomUUID(),
@@ -645,6 +654,7 @@ export async function runAgentConversationTurn(params: RunAgentConversationTurnP
     sshManagerRemoteAllowed,
     onSshSessionsChanged,
     onTunnelsChanged,
+    cuaAllowSelfTargeting: getCuaAllowSelfTargeting?.() === true,
     onMcpLoadError: (message) => {
       const warning = `MCP 工具加载失败，已跳过并继续对话：${message || "未知错误"}`;
       console.warn(warning);

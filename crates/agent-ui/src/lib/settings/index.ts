@@ -35,7 +35,6 @@ import {
   MIN_CHAT_TRANSCRIPT_WIDTH,
 } from "@liveagent/ui/lib/transcript-width/transcriptWidthModel";
 import { normalizeModelFailoverSettings } from "./modelFailover";
-import { normalizeRetryErrorSettings } from "./retryError";
 import {
   normalizeChatTranscriptSettings,
   normalizeFontScaleSettings,
@@ -43,6 +42,7 @@ import {
   normalizePositiveInteger,
   normalizeStringArray,
 } from "./normalizers";
+import { normalizeRetryErrorSettings } from "./retryError";
 import {
   DEFAULT_RIGHT_DOCK_FILE_TREE_STATE,
   normalizeRightDockFileTreeExpandedPaths,
@@ -63,6 +63,7 @@ import {
 import type {
   AgentPromptTemplate,
   AppSettings,
+  BrowserAutomationMode,
   ChatRuntimeControls,
   ChatRuntimeReasoningProviderKey,
   CloseWindowBehavior,
@@ -78,6 +79,8 @@ import type {
   McpSettings,
   McpTransport,
   MemorySettings,
+  ModelInputModalitiesOverride,
+  ModelInputModality,
   ModelLimitsSource,
   ProjectPromptStrategy,
   PromptCacheHintMode,
@@ -113,9 +116,11 @@ import type {
   WorkspaceResourceSettings,
 } from "./types";
 import {
+  BROWSER_AUTOMATION_MODES,
   COMMAND_SAFETY_MODES,
   DEFAULT_CHAT_RUNTIME_CONTROLS,
   getDefaultUsageQueryConfig,
+  MODEL_INPUT_MODALITIES,
   PROMPT_CACHE_HINT_MODES,
   PROVIDER_RETRY_MAX_RETRIES_LIMITS,
   RIGHT_DOCK_BACKGROUND_TASKS_TAB_ID,
@@ -145,12 +150,12 @@ export {
   normalizeModelFailoverSettings,
   normalizeProviderFailoverSettings,
 } from "./modelFailover";
-export { normalizeRetryErrorSettings } from "./retryError";
 export {
   normalizeChatTranscriptSettings,
   normalizeFontScale,
   normalizeFontScaleSettings,
 } from "./normalizers";
+export { normalizeRetryErrorSettings } from "./retryError";
 export {
   DEFAULT_RIGHT_DOCK_FILE_TREE_STATE,
   normalizeRightDockBackgroundTasksState,
@@ -861,6 +866,7 @@ export function normalizeProviderModelConfig(
 
   const promptCacheHintMode =
     providerId === "codex" ? normalizePromptCacheHintMode(obj.promptCacheHintMode) : undefined;
+  const inputModalities = normalizeInputModalities(obj.inputModalities);
   return {
     id,
     ...(ownedBy ? { ownedBy } : {}),
@@ -868,7 +874,30 @@ export function normalizeProviderModelConfig(
     maxOutputToken: limits.maxOutputToken,
     limitsSource,
     ...(promptCacheHintMode ? { promptCacheHintMode } : {}),
+    // 用户手动的输入模态覆盖（如给未识别的多模态模型强制开启图片输入）；
+    // 经 normalizeInputModalities 归一化后透传（可能过滤非法值/补齐 text/
+    // 重排顺序），合法覆盖永不被自动删除。
+    ...(inputModalities ? { inputModalities } : {}),
   };
+}
+
+/**
+ * 输入模态覆盖的运行时归一化（设置加载与 modelFactory 共用的唯一校验）：
+ * - 非数组、空数组、全部非法 -> undefined（等价于“无覆盖，用内置推断”）；
+ * - 混合非法项采用“过滤合法项”的容错策略；
+ * - 本应用的聊天协议始终发送文本，因此含 "image" 缺 "text" 时自动补齐；
+ * - 输出固定为 ["text","image"] 规范顺序，避免同义配置产生持久化差异。
+ */
+export function normalizeInputModalities(input: unknown): ModelInputModalitiesOverride | undefined {
+  if (!Array.isArray(input)) return undefined;
+  const valid = new Set<string>(
+    input.filter(
+      (item): item is ModelInputModality =>
+        typeof item === "string" && (MODEL_INPUT_MODALITIES as readonly string[]).includes(item),
+    ),
+  );
+  if (valid.size === 0) return undefined;
+  return valid.has("image") ? ["text", "image"] : ["text"];
 }
 export function normalizeProviderModelConfigs(
   input: unknown,
@@ -1370,13 +1399,28 @@ export function strictestCommandSafetyMode(
   return COMMAND_SAFETY_MODE_STRICTNESS[a] >= COMMAND_SAFETY_MODE_STRICTNESS[b] ? a : b;
 }
 
+/**
+ * 浏览器接入模式归一。缺失/空串/未知值一律回 `auto`:该设置是行为选择而非
+ * 安全约束(登录态使用与否由 group:browser 审批把关),未知值不需要 fail-closed。
+ */
+export function normalizeBrowserAutomationMode(input: unknown): BrowserAutomationMode {
+  if (typeof input !== "string") return "auto";
+  const mode = input.trim();
+  return (BROWSER_AUTOMATION_MODES as readonly string[]).includes(mode)
+    ? (mode as BrowserAutomationMode)
+    : "auto";
+}
+
 export function normalizeSystemSettings(input: unknown): SystemSettings {
   const obj = (input && typeof input === "object" ? input : {}) as Record<string, unknown>;
   return {
     executionMode: normalizeExecutionMode(obj.executionMode),
     workdir: normalizeWorkdir(obj.workdir),
     toolPolicies: normalizeToolPolicies(obj.toolPolicies),
+    // 安全侧开关：任何非 true 的值都收敛成 false。
+    cuaAllowSelfTargeting: obj.cuaAllowSelfTargeting === true,
     commandSafetyMode: normalizeCommandSafetyMode(obj.commandSafetyMode),
+    browserAutomationMode: normalizeBrowserAutomationMode(obj.browserAutomationMode),
     workspaceProjects: normalizeWorkspaceProjects(obj.workspaceProjects),
     workspaceProjectGroups: normalizeWorkspaceProjectGroups(obj.workspaceProjectGroups),
     activeWorkspaceProjectId:
@@ -1566,12 +1610,23 @@ export function normalizeCustomSettings(
       normalizeSelectedModel(obj.commitMessageModel),
       customProviders,
     ),
+    // 缺省开启：老配置无此字段时保持澄清按钮可见（与上线前行为一致）。
+    promptClarifyEnabled: obj.promptClarifyEnabled !== false,
+    promptClarifyModel: normalizeSelectedModelForProviders(
+      normalizeSelectedModel(obj.promptClarifyModel),
+      customProviders,
+    ),
     chatSidebar: {
       projectsCollapsed: chatSidebar.projectsCollapsed === true,
       recentCollapsed: chatSidebar.recentCollapsed === true,
     },
     chatTranscript: normalizeChatTranscriptSettings(obj.chatTranscript),
     rightDock: normalizeRightDockSettings(obj.rightDock),
+    // 三档枚举：历史配置无此字段或值不合法（含曾设想过的 "auto"）一律落回默认的统计状态栏。
+    composerContextDisplay:
+      obj.composerContextDisplay === "ring" || obj.composerContextDisplay === "both"
+        ? obj.composerContextDisplay
+        : "statsBar",
     // fontFamily was the single pre-split preference. Read it only to migrate
     // saved local settings into the new interface-specific field.
     interfaceFontFamily: normalizeFontFamily(obj.interfaceFontFamily ?? obj.fontFamily),
@@ -1595,6 +1650,7 @@ export function getDefaultSettings(): AppSettings {
       executionMode: "tools",
       workdir: "",
       commandSafetyMode: "auto",
+      browserAutomationMode: "auto",
       workspaceProjects: [],
       workspaceProjectGroups: [],
       activeWorkspaceProjectId: undefined,
@@ -2006,6 +2062,25 @@ export function updateCustomSettings(
       ...patch,
     },
   });
+}
+
+/**
+ * 澄清提示词的模型覆盖解析（两端共用）。返回 null 表示「跟随当前对话模型」：
+ * 未选择、供应商已删或模型已停用（与 commitMessageModel 同一回退契约——
+ * normalize 已在落库时清掉失效选择，这里再挡一次会话内的时序空窗）。
+ */
+export function resolvePromptClarifyModel(
+  settings: AppSettings,
+): { provider: CustomProvider; model: string } | null {
+  const selected = settings.customSettings.promptClarifyModel;
+  if (!selected) {
+    return null;
+  }
+  const provider = settings.customProviders.find((item) => item.id === selected.customProviderId);
+  if (!provider?.activeModels.includes(selected.model)) {
+    return null;
+  }
+  return { provider, model: selected.model };
 }
 
 export function updateModelFailover(

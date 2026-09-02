@@ -108,6 +108,12 @@ macro_rules! app_invoke_handler {
             commands::subagent_worktree::subagent_worktree_status,
             commands::subagent_worktree::subagent_worktree_apply,
             commands::subagent_worktree::subagent_worktree_cleanup,
+            // Browser automation
+            commands::browser::browser_action,
+            commands::browser::browser_status,
+            commands::browser::browser_close,
+            commands::browser::browser_extension_install_info,
+            commands::browser::browser_extension_reveal_dir,
             // MCP
             commands::mcp::mcp_list_tools,
             commands::mcp::mcp_call_tool,
@@ -175,7 +181,6 @@ macro_rules! app_invoke_handler {
             commands::settings::settings_backup_fetch_remote_info,
             commands::settings::settings_backup_upload,
             commands::settings::settings_backup_download,
-            commands::settings::settings_backup_mark_dirty,
             commands::update::app_update_check,
             commands::update::app_update_install,
             commands::update::app_restart,
@@ -313,6 +318,15 @@ macro_rules! app_invoke_handler {
             commands::system::system_begin_power_activity,
             commands::system::system_end_power_activity,
             commands::system::system_clipboard_read_text,
+            commands::cua_driver::cua_driver_probe,
+            commands::cua_driver::cua_driver_install_command,
+            commands::cua_driver::cua_driver_install,
+            commands::cua_driver::cua_driver_permissions_status,
+            commands::cua_driver::cua_driver_permissions_grant,
+            commands::cua_driver::cua_driver_self_identity,
+            commands::cua_driver::cua_driver_self_windows,
+            commands::cua_driver::cua_driver_frontmost_pid,
+            commands::cua_driver::cua_driver_list_installed_apps,
             commands::gateway::gateway_connect,
             commands::gateway::gateway_disconnect,
             commands::gateway::gateway_status,
@@ -331,6 +345,8 @@ macro_rules! app_invoke_handler {
             commands::gateway::gateway_chat_runtime_heartbeat,
             commands::gateway::gateway_chat_release_lease,
             commands::gateway::gateway_chat_queue_respond,
+            commands::gateway::gateway_clarify_respond,
+            commands::gateway::gateway_clarify_delta,
             commands::gateway::gateway_publish_chat_queue_event,
             commands::gateway::gateway_publish_settings_sync,
             commands::gateway::gateway_tunnel_state,
@@ -737,6 +753,10 @@ pub fn run() {
         commands::app::CLOSE_WINDOW_BEHAVIOR_MINIMIZE,
     ));
     let stt_manager = Arc::new(services::stt::SttManager::default());
+    let browser_manager = Arc::new(services::browser::BrowserManager::default());
+    // 扩展桥接：接受 LiveAgent 浏览器扩展的反向连接，Browser 工具优先驱动
+    // 用户日常浏览器（复用登录态）；未连接时回退独立 profile 启动。
+    browser_manager.start_extension_bridge();
 
     let builder = tauri::Builder::default();
     // dev 构建与已安装正式版共享 identifier；若 dev 也注册单实例，
@@ -785,6 +805,7 @@ pub fn run() {
         .manage(Arc::clone(&automation_scheduler))
         .manage(Arc::new(commands::hook::HookScopeRegistry::default()))
         .manage(stt_manager)
+        .manage(Arc::clone(&browser_manager))
         .on_page_load(|webview, payload| {
             if webview.label() != MAIN_WINDOW_LABEL
                 || !matches!(payload.event(), tauri::webview::PageLoadEvent::Started)
@@ -820,6 +841,12 @@ pub fn run() {
                 app.manage(services::proxy::start_proxy_server()?);
                 if let Err(error) = services::skills::ensure_builtin_agent_skills_sync() {
                     eprintln!("failed to seed builtin skills: {error}");
+                }
+                // 浏览器扩展同步到 ~/.liveagent/extension：Chrome 加载解压
+                // 扩展记录绝对路径，必须给一个不随应用更新变化的目录。
+                if let Err(error) = commands::browser::sync_bundled_browser_extension(app.handle())
+                {
+                    eprintln!("failed to sync browser extension: {error}");
                 }
                 terminal_registry.attach_app_handle(app.handle().clone());
                 sftp_registry.attach_app_handle(app.handle().clone());
@@ -928,6 +955,7 @@ pub fn run() {
                 shell_session_manager.shutdown_cleanup();
                 managed_process_registry.shutdown_cleanup();
                 git_clone_task_registry.shutdown_cleanup();
+                browser_manager.shutdown_cleanup();
                 power_activity.clear_all();
             }
         }

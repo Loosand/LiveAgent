@@ -53,6 +53,10 @@ build:
 desktop-build-macos: check-rust-target-$(DESKTOP_MACOS_TARGET)
 	pnpm --dir $(AGENT_GUI_DIR) tauri build --config $(DESKTOP_MACOS_TAURI_CONFIG) --target $(DESKTOP_MACOS_TARGET)
 
+# tauri-bundler skips the Finder AppleScript that writes the DMG .DS_Store whenever
+# CI=true, so the bundler's own DMG is only used to locate the output path. The
+# release DMG is rebuilt from the signed .app with dmgbuild, which writes the Finder
+# layout (background, window size, icon positions) directly and deterministically.
 desktop-build-macos-release: check-rust-target-$(DESKTOP_MACOS_TARGET) check-macos-signing-identity check-macos-notary-profile
 	env -u APPLE_ID -u APPLE_PASSWORD -u APPLE_API_ISSUER -u APPLE_API_KEY -u APPLE_API_KEY_PATH APPLE_SIGNING_IDENTITY="$(APPLE_SIGNING_IDENTITY)" pnpm --dir $(AGENT_GUI_DIR) tauri build $(DESKTOP_RELEASE_TAURI_CONFIG_FLAGS) --target $(DESKTOP_MACOS_TARGET)
 	@set -e; \
@@ -263,6 +267,7 @@ desktop-verify-macos:
 	dmg_path="$$(find "target/$(DESKTOP_MACOS_TARGET)/release/bundle/dmg" -maxdepth 1 -name '$(DESKTOP_MACOS_APP_NAME)_*.dmg' -print -quit)"; \
 	if [ ! -d "$$app_path" ]; then echo "macOS app not found: $$app_path"; exit 1; fi; \
 	if [ -z "$$dmg_path" ] || [ ! -f "$$dmg_path" ]; then echo "macOS dmg not found under target/$(DESKTOP_MACOS_TARGET)/release/bundle/dmg"; exit 1; fi; \
+	bash "$(DESKTOP_MACOS_DMG_VERIFY)" "$$dmg_path"; \
 	codesign -dv --verbose=4 "$$app_path" 2>&1; \
 	codesign --verify --deep --strict --verbose=4 "$$app_path"; \
 	xcrun stapler validate -v "$$dmg_path"; \

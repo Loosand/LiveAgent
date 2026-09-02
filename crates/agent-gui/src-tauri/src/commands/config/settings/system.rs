@@ -244,7 +244,20 @@ fn normalize_workspace_resource_settings(raw: Option<&Value>) -> Value {
             .get("updatedAt")
             .and_then(Value::as_u64)
             .unwrap_or(0);
+        let project_prompt = entry
+            .get("projectPrompt")
+            .and_then(Value::as_str)
+            .map(str::trim)
+            .unwrap_or_default();
+        let project_prompt_strategy = match entry
+            .get("projectPromptStrategy")
+            .and_then(Value::as_str)
+        {
+            Some("replace") => "replace",
+            _ => "append",
+        };
         if mode == "inherit"
+            && project_prompt.is_empty()
             && updated_at > 0
             && now.saturating_sub(updated_at) > WORKSPACE_RESOURCE_TOMBSTONE_TTL_MS
         {
@@ -264,6 +277,8 @@ fn normalize_workspace_resource_settings(raw: Option<&Value>) -> Value {
                 } else {
                     Value::Array(Vec::new())
                 },
+                "projectPrompt": project_prompt,
+                "projectPromptStrategy": project_prompt_strategy,
                 "stateVersion": state_version,
                 "writerId": writer_id,
                 "updatedAt": updated_at,
@@ -272,8 +287,14 @@ fn normalize_workspace_resource_settings(raw: Option<&Value>) -> Value {
     }
     let mut normalized_entries = normalized_by_path.into_iter().collect::<Vec<_>>();
     normalized_entries.sort_by(|(path_a, entry_a), (path_b, entry_b)| {
-        let active_a = entry_a["mode"] != "inherit";
-        let active_b = entry_b["mode"] != "inherit";
+        let entry_active = |entry: &Value| {
+            entry["mode"] != "inherit"
+                || entry["projectPrompt"]
+                    .as_str()
+                    .is_some_and(|prompt| !prompt.is_empty())
+        };
+        let active_a = entry_active(entry_a);
+        let active_b = entry_active(entry_b);
         active_b
             .cmp(&active_a)
             .then_with(|| {
@@ -463,8 +484,41 @@ fn system_value_with_defaults(raw: Option<Value>, default_workdir: &str) -> Valu
         SYSTEM_COMMAND_SAFETY_MODE_KEY.to_string(),
         normalize_command_safety_mode_value(system.get(SYSTEM_COMMAND_SAFETY_MODE_KEY)),
     );
+    // 缺省 false：安全侧的开关，任何非 true 的值（缺失、null、字符串）
+    // 都收敛成「不允许自指」。
+    system.insert(
+        SYSTEM_CUA_ALLOW_SELF_TARGETING_KEY.to_string(),
+        Value::Bool(
+            system
+                .get(SYSTEM_CUA_ALLOW_SELF_TARGETING_KEY)
+                .and_then(Value::as_bool)
+                .unwrap_or(false),
+        ),
+    );
+    system.insert(
+        SYSTEM_BROWSER_AUTOMATION_MODE_KEY.to_string(),
+        normalize_browser_automation_mode_value(system.get(SYSTEM_BROWSER_AUTOMATION_MODE_KEY)),
+    );
 
     Value::Object(system)
+}
+
+/// 浏览器接入模式的合法取值,与前端 BROWSER_AUTOMATION_MODES 一致。
+const BROWSER_AUTOMATION_MODES: [&str; 3] = ["auto", "userProfile", "isolated"];
+
+/// "auto" | "userProfile" | "isolated";缺失/空串/未知值一律回 "auto"。
+/// 该设置是行为选择而非安全约束(登录态使用与否由 group:browser 审批把关),
+/// 未知值无需 fail-closed,与前端 normalizeBrowserAutomationMode 同语义。
+fn normalize_browser_automation_mode_value(raw: Option<&Value>) -> Value {
+    let text = raw
+        .and_then(Value::as_str)
+        .map(str::trim)
+        .unwrap_or_default();
+    if BROWSER_AUTOMATION_MODES.contains(&text) {
+        Value::String(text.to_string())
+    } else {
+        Value::String("auto".to_string())
+    }
 }
 
 /// 命令安全模式的合法取值,与前端 COMMAND_SAFETY_MODES 一致。
@@ -526,6 +580,26 @@ pub(crate) fn load_runtime_command_safety_mode() -> Result<String, String> {
     }
 }
 
+/// Browser 工具运行期的浏览器接入模式。与 `load_runtime_command_safety_mode`
+/// 同范式:后端回查持久化设置,不信任调用方参数;WebUI/网关调用自动同语义。
+/// 读取失败回缺省 "auto"(该设置非安全约束,无需 fail-closed 阻断)。
+pub(crate) fn load_runtime_browser_automation_mode() -> String {
+    let mode = open_db()
+        .and_then(|conn| load_system(&conn))
+        .ok()
+        .flatten()
+        .and_then(|value| {
+            value
+                .get(SYSTEM_BROWSER_AUTOMATION_MODE_KEY)
+                .and_then(Value::as_str)
+                .map(str::to_string)
+        });
+    match normalize_browser_automation_mode_value(mode.map(Value::String).as_ref()) {
+        Value::String(mode) => mode,
+        _ => "auto".to_string(),
+    }
+}
+
 fn load_system_with_defaults(conn: &Connection, default_workdir: &str) -> Result<Value, String> {
     Ok(system_value_with_defaults(
         load_system(conn)?,
@@ -564,6 +638,7 @@ fn save_system_with_default_workdir(
         SYSTEM_WORKDIR_KEY,
         SYSTEM_TOOL_POLICIES_KEY,
         SYSTEM_COMMAND_SAFETY_MODE_KEY,
+        SYSTEM_BROWSER_AUTOMATION_MODE_KEY,
         SYSTEM_WORKSPACE_PROJECTS_KEY,
         SYSTEM_WORKSPACE_PROJECT_GROUPS_KEY,
         SYSTEM_ACTIVE_WORKSPACE_PROJECT_ID_KEY,
@@ -572,6 +647,7 @@ fn save_system_with_default_workdir(
         SYSTEM_ARCHIVED_WORKSPACE_PROJECT_PATHS_KEY,
         SYSTEM_WORKSPACE_RESOURCE_SETTINGS_KEY,
         SYSTEM_SYSTEM_PROXY_KEY,
+        SYSTEM_CUA_ALLOW_SELF_TARGETING_KEY,
     ] {
         let value = system.get(key).cloned().unwrap_or(Value::Null);
         tx.execute(

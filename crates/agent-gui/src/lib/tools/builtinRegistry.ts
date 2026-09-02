@@ -1,4 +1,5 @@
 import type { ToolCall, ToolResultMessage } from "@earendil-works/pi-ai";
+import type { ConversationMentionReference } from "@liveagent/ui/lib/chat/mentionReferences";
 import type { SystemToolRuntimeScope } from "@liveagent/ui/lib/tools/systemToolOptions";
 import { homeDir } from "@tauri-apps/api/path";
 import type { RuntimePlatform } from "../runtimePlatform";
@@ -17,11 +18,13 @@ import {
 } from "../subagents";
 import type { AdditionalProjectRoot } from "./additionalProjectRoots";
 import { createAskUserQuestionTools } from "./askUserQuestionTools";
+import { createBrowserTools } from "./browserTools";
 import type {
   BuiltinToolBundle,
   BuiltinToolExecutionContext,
   BuiltinToolMetadata,
 } from "./builtinTypes";
+import { createConversationTools } from "./conversationTools";
 import { createCronTools } from "./cronTools";
 import { createFileToolState, type FileToolState } from "./fileToolState";
 import { createFsTools } from "./fsTools";
@@ -186,6 +189,8 @@ type BuildBuiltinBaseToolRegistryParams = {
   applyMcpOps?: (ops: McpSettingsOp[]) => void;
   onMcpLoadError?: (message: string) => void;
   mcpLoadFailureMode?: "continue" | "throw";
+  /** 允许 CUA 工具把 LiveAgent 自己当作操作目标；默认 false，见 cuaSelfGuard.ts。 */
+  cuaAllowSelfTargeting?: boolean;
   memoryToolMode?: "rw" | "ro";
   remoteWebTunnelsEnabled?: boolean;
   tunnelProjectPathKey?: string;
@@ -288,6 +293,15 @@ async function buildBaseBuiltinToolBundles(
           }),
         ]
       : []),
+    // sandboxOffline(enabled 且 !allowNetwork)下浏览器出网违背离线语义,
+    // 整个 bundle 不注册,模型工具表内不可见;executor 内另有 fail-closed 兜底。
+    ...(params.sandbox?.enabled === true && !params.sandbox.allowNetwork
+      ? []
+      : [
+          createBrowserTools({
+            sandbox: params.sandbox,
+          }),
+        ]),
   ];
 
   const enabledServers = selectEnabledMcpServers(params.getMcpSettings());
@@ -297,6 +311,7 @@ async function buildBaseBuiltinToolBundles(
       servers: enabledServers,
       onLoadError: params.onMcpLoadError,
       loadFailureMode: params.mcpLoadFailureMode,
+      cuaAllowSelfTargeting: params.cuaAllowSelfTargeting,
     });
     baseBundles.push(mcpBusinessBundle);
   }
@@ -320,6 +335,9 @@ export async function buildBuiltinToolRegistry(
     toolSearch?: {
       conversationId: string;
     };
+    /** Earlier conversations explicitly selected through structured @ mentions this turn. */
+    referencedConversations?: readonly ConversationMentionReference[];
+    currentConversationId?: string;
   },
 ) {
   const planModeActive = Boolean(params.planMode);
@@ -363,10 +381,22 @@ export async function buildBuiltinToolRegistry(
           }),
         ]
       : [];
+  const conversationBundles =
+    params.runtimeScope === "chat" &&
+    params.currentConversationId &&
+    params.referencedConversations?.length
+      ? [
+          createConversationTools({
+            references: params.referencedConversations,
+            currentConversationId: params.currentConversationId,
+          }),
+        ]
+      : [];
   const chatBundles = [
     ...taskBundles,
     ...askUserQuestionBundles,
     ...planModeBundles,
+    ...conversationBundles,
     ...toolSearchBundles,
   ];
 

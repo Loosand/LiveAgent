@@ -25,6 +25,9 @@ const MIN_MODELS_PER_PROVIDER = {
 };
 const PROVIDERS = Object.keys(MIN_MODELS_PER_PROVIDER);
 
+// 与生成脚本 INPUT_MODALITIES 同值：inputModalities 的合法值全集兼规范顺序。
+const INPUT_MODALITIES = ["text", "image", "audio", "video", "pdf"];
+
 test("generated catalog upholds the data invariants", () => {
   assert.deepEqual(
     Object.keys(catalog.MODEL_CATALOG),
@@ -54,11 +57,20 @@ test("generated catalog upholds the data invariants", () => {
       assert.ok(entry.maxOutputToken < entry.contextWindow, `${label}: output must be < context`);
       const limits = { contextWindow: entry.contextWindow, maxOutputToken: entry.maxOutputToken };
       assert.deepEqual(catalog.normalizeModelLimits(limits), limits, label);
-      // 计费功能已移除：目录条目只承载限额与思考能力。
-      const expectedKeys = entry.thinking
-        ? ["contextWindow", "id", "maxOutputToken", "thinking"]
-        : ["contextWindow", "id", "maxOutputToken"];
-      assert.deepEqual(Object.keys(entry).sort(), expectedKeys, label);
+      // 计费功能已移除：目录条目只承载限额、输入模态与思考能力。
+      const expectedKeys = ["contextWindow", "id", "maxOutputToken"];
+      if (entry.inputModalities) expectedKeys.push("inputModalities");
+      if (entry.thinking) expectedKeys.push("thinking");
+      assert.deepEqual(Object.keys(entry).sort(), expectedKeys.sort(), label);
+      if (entry.inputModalities) {
+        assert.ok(entry.inputModalities.length > 0, `${label}: input modalities must be non-empty`);
+        // 同一断言覆盖三个不变量：值都在合法全集内、无重复、按规范顺序排列。
+        assert.deepEqual(
+          entry.inputModalities,
+          INPUT_MODALITIES.filter((modality) => entry.inputModalities.includes(modality)),
+          `${label}: input modalities must be known values in canonical order`,
+        );
+      }
       if (entry.thinking) {
         assert.deepEqual(Object.keys(entry.thinking).sort(), ["levels", "off"], label);
       }
@@ -67,6 +79,8 @@ test("generated catalog upholds the data invariants", () => {
 });
 
 test("openai catalog prefers Codex metadata and keeps models.dev supplements", () => {
+  // Codex models.json 的 context_window 是输入侧预算（272K），生成期换算成
+  // 与目录其余分区一致的总窗口语义：272K + 128K（models.dev 输出补充）= 400K。
   for (const modelId of [
     "gpt-5.2",
     "gpt-5.4",
@@ -78,8 +92,8 @@ test("openai catalog prefers Codex metadata and keeps models.dev supplements", (
   ]) {
     assert.equal(
       catalog.findCatalogModel("codex", modelId)?.contextWindow,
-      272_000,
-      `${modelId}: context window must come from openai/codex models.json`,
+      400_000,
+      `${modelId}: context window must come from openai/codex models.json (input budget + output)`,
     );
   }
 
@@ -176,6 +190,34 @@ test("cross-provider lookup resolves models configured under a foreign provider"
   assert.equal(catalog.findCatalogModelAcrossProviders("longcat-2.0")?.id, "LongCat-2.0");
 });
 
+test("resolveModelInputModalities resolves scoped, decorated, and cross-provider ids", () => {
+  // 供应商作用域命中（含候选链装饰形态）。
+  assert.deepEqual(catalog.resolveModelInputModalities("claude_code", "claude-sonnet-4-6"), [
+    "text",
+    "image",
+    "pdf",
+  ]);
+  assert.deepEqual(catalog.resolveModelInputModalities("claude_code", "claude-sonnet-4-6[1m]"), [
+    "text",
+    "image",
+    "pdf",
+  ]);
+  // Codex 主源合并路径也带模态（models.json 的 input_modalities）。
+  assert.deepEqual(catalog.resolveModelInputModalities("codex", "gpt-5.6-sol"), ["text", "image"]);
+  // 纯文本模型如实返回 ["text"]，与"目录未命中"（undefined）可区分。
+  assert.deepEqual(catalog.resolveModelInputModalities("deepseek", "deepseek-v4-pro"), ["text"]);
+  // 供应商作用域未命中时跨供应商回查（国内厂商分区只经此路径消费）。
+  assert.deepEqual(catalog.resolveModelInputModalities("codex", "glm-4.6"), ["text"]);
+  assert.deepEqual(catalog.resolveModelInputModalities("codex", "qwen3-omni-flash"), [
+    "text",
+    "image",
+    "audio",
+    "video",
+  ]);
+  assert.equal(catalog.resolveModelInputModalities("codex", "model-not-in-catalog"), undefined);
+  assert.equal(catalog.resolveModelInputModalities("codex", undefined), undefined);
+});
+
 // repairStaleCrossProviderLimits（指纹匹配式的坏默认值修复）已被"方案乙"的
 // limitsSource 来源标记取代：settings/index.ts 的 normalizeProviderModelConfig
 // 按存量的 catalog/fallback/provider/user 来源判断是否重解析，不再靠数值指纹
@@ -191,13 +233,14 @@ test("resolveModelLimits returns repaired catalog limits and undefined on miss",
   assert.equal(catalog.resolveModelLimits("xai", "grok-unknown"), undefined);
 });
 
-test("provider fallback limits keep the historical defaults and return copies", () => {
+test("provider fallback limits use total-window semantics and return copies", () => {
   assert.deepEqual(catalog.getProviderFallbackLimits("claude_code"), {
     contextWindow: 200_000,
     maxOutputToken: 32_000,
   });
+  // codex/xai 兜底为总窗口语义：258K 输入预算 + 142K 输出 = 400K。
   assert.deepEqual(catalog.getProviderFallbackLimits("codex"), {
-    contextWindow: 258_000,
+    contextWindow: 400_000,
     maxOutputToken: 142_000,
   });
   assert.deepEqual(catalog.getProviderFallbackLimits("gemini"), {
@@ -205,7 +248,7 @@ test("provider fallback limits keep the historical defaults and return copies", 
     maxOutputToken: 65_536,
   });
   assert.deepEqual(catalog.getProviderFallbackLimits("xai"), {
-    contextWindow: 258_000,
+    contextWindow: 400_000,
     maxOutputToken: 142_000,
   });
   const first = catalog.getProviderFallbackLimits("xai");
