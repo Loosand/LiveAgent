@@ -96,47 +96,11 @@ export const ChatTranscript = memo(function ChatTranscript(props: ChatTranscript
     config: { reattachZonePx: BOTTOM_REATTACH_ZONE_PX },
   });
 
-  const prependAnchorRef = useRef<{
-    firstItemKey: string | undefined;
-    scrollHeight: number;
-    scrollTop: number;
-  } | null>(null);
-  const loadingEarlierRef = useRef(false);
-  const firstHistoryItemKey = historyItems[0]?.key;
-
-  useLayoutEffect(() => {
-    const anchor = prependAnchorRef.current;
-    if (!anchor || !scrollViewport || anchor.firstItemKey === firstHistoryItemKey) return;
-    scrollViewport.scrollTop =
-      anchor.scrollTop + Math.max(0, scrollViewport.scrollHeight - anchor.scrollHeight);
-    prependAnchorRef.current = null;
-  }, [firstHistoryItemKey, scrollViewport]);
-
-  useEffect(() => {
-    if (!scrollViewport || !hasMoreHistory || isHistorySwitching) return;
-    const loadAtTop = () => {
-      if (scrollViewport.scrollTop > 480 || loadingEarlierRef.current) return;
-      loadingEarlierRef.current = true;
-      prependAnchorRef.current = {
-        firstItemKey: historyItems[0]?.key,
-        scrollHeight: scrollViewport.scrollHeight,
-        scrollTop: scrollViewport.scrollTop,
-      };
-      void onLoadEarlierHistory()
-        .catch(() => undefined)
-        .finally(() => {
-          loadingEarlierRef.current = false;
-          requestAnimationFrame(() => {
-            const anchor = prependAnchorRef.current;
-            if (anchor?.firstItemKey === historyItems[0]?.key) {
-              prependAnchorRef.current = null;
-            }
-          });
-        });
-    };
-    scrollViewport.addEventListener("scroll", loadAtTop, { passive: true });
-    return () => scrollViewport.removeEventListener("scroll", loadAtTop);
-  }, [hasMoreHistory, historyItems, isHistorySwitching, onLoadEarlierHistory, scrollViewport]);
+  // Earlier-history paging lives in TranscriptList next to the virtualizer:
+  // a prepended page is anchored by the virtualizer's origin (the row under
+  // the viewport keeps its position with no scrollTop write from here), and
+  // the "near the top" trigger has to read the virtualizer's settled offset
+  // rather than the parked DOM scrollTop.
 
   // 楼层导航：从时间线派生用户消息楼层；当前楼层由 TranscriptList 上报。
   // 不在此处按 conversationId 重置——TranscriptList 按会话重挂载后其挂载
@@ -329,6 +293,9 @@ export const ChatTranscript = memo(function ChatTranscript(props: ChatTranscript
                 key={conversationId}
                 conversationId={conversationId}
                 historyItems={historyItems}
+                hasMoreHistory={hasMoreHistory}
+                onLoadEarlierHistory={onLoadEarlierHistory}
+                isHistorySwitching={isHistorySwitching}
                 liveTranscriptStore={liveTranscriptStore}
                 scrollViewport={scrollViewport}
                 layoutWidth={contentWidth}

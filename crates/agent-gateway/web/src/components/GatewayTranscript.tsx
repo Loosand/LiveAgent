@@ -763,21 +763,36 @@ const GatewayTranscriptListRegion = memo(function GatewayTranscriptListRegion(pr
   // further back keeps paging one request at a time: readers load exactly as
   // far as they scroll, servers transfer only the pages actually walked to,
   // and a failed fetch retries only on the next user scroll (no hammering).
+  // The distance is read from the virtualizer's settled offset, not DOM
+  // scrollTop: a page anchored through the 'origin' keeps scrollTop parked
+  // near the top until the rebase lands, and a raw scrollTop check would
+  // re-arm on every wheel tick and stack page after page. The hard top (DOM
+  // scrollTop 0) is a trigger of its own: WebKit defers the rebase until the
+  // gesture settles, so a fling can pin the viewport at 0 with unsettled
+  // debt still above it — the reader is pushing against the top and cannot
+  // scroll into that debt until the rebase lands. Fire once per visit there;
+  // rubber-band scroll events at 0 must not re-fire it.
   const autoLoadEarlierInFlightRef = useRef(false);
+  const hardTopLatchedRef = useRef(false);
   const maybeAutoLoadEarlierRef = useRef(() => {});
   maybeAutoLoadEarlierRef.current = () => {
+    if (!scrollViewport) return;
+    const atHardTop = scrollViewport.scrollTop <= 1;
+    if (!atHardTop) hardTopLatchedRef.current = false;
     if (
       readOnly ||
       isStreaming ||
       !hasMoreHistory ||
       !onLoadEarlierHistory ||
       isLoadingMoreHistory ||
-      autoLoadEarlierInFlightRef.current ||
-      !scrollViewport ||
-      scrollViewport.scrollTop > scrollViewport.clientHeight
+      autoLoadEarlierInFlightRef.current
     ) {
       return;
     }
+    const nearSettledTop =
+      transcriptVirtualizer.getSettledScrollOffset() <= scrollViewport.clientHeight;
+    if (!nearSettledTop && (!atHardTop || hardTopLatchedRef.current)) return;
+    if (atHardTop) hardTopLatchedRef.current = true;
     autoLoadEarlierInFlightRef.current = true;
     onLoadEarlierHistory();
   };
