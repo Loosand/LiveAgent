@@ -51,15 +51,15 @@ Markdown/Streamdown 行内代码与公式外层现已继承所在正文的字号
 | `crates/agent-gateway/web/src/styles/login.css` | 48 |
 | `crates/agent-ui/src/components/chat/UserAttachmentCards.tsx` | 28 |
 | `crates/agent-ui/src/components/chat/clarify/ClarifyPanel.tsx` | 24 |
-| `crates/agent-gateway/web/src/styles/status-board.css` | 16 |
 | `crates/agent-ui/src/components/chat/assistant-bubble/ToolResultDisplay.tsx` | 19 |
 | `crates/agent-ui/src/components/workspace-editor/WorkspaceFilePreviewOverlay.tsx` | 18 |
 | `crates/agent-ui/src/pages/chat/ChatComposerBar.tsx` | 18 |
 | `crates/agent-ui/src/components/chat/ComposerAttachmentCard.tsx` | 17 |
 | `crates/agent-ui/src/components/chat/FileDropOverlay.tsx` | 17 |
+| `crates/agent-gateway/web/src/styles/status-board.css` | 16 |
 | `crates/agent-ui/src/components/workspace-editor/WorkspaceSftpPanel.tsx` | 14 |
-| `crates/agent-ui/src/components/chat/ComposerModelControls.tsx` | 13 |
-| `crates/agent-gui/src/components/WindowsTitleBar.tsx` | 11 |
+| `crates/agent-gui/src/components/WindowsTitleBar.tsx` | 13 |
+| `crates/agent-ui/src/components/chat/assistant-bubble/ToolImages.tsx` | 13 |
 
 ## 验证记录
 
@@ -116,3 +116,5 @@ Markdown/Streamdown 行内代码与公式外层现已继承所在正文的字号
 - 本轮开始时历史存量 660，当前 645。任意字号、中间尺度和重复任意颜色均为零；剩余控件与 CSS 适配债务仍见上表，不代表全仓库零硬编码。
 
 回归记录：GUI 全量运行 3,045 项，其中 20 项失败；WebUI 全量运行 714 项，其中 1 项失败。失败均源于固定旧字号、圆角、间距或透明度的样式断言；保持原交互与布局意图更新后，覆盖全部失败文件和 token 合并的 107 项回归通过。设计规则与工作区脚本共 27 项通过。没有将未重跑的最终整套 GUI/WebUI 测试记为全量通过。
+
+最终验证：两端 TypeScript/Vite 生产构建、共享 UI 类型与边界检查、无新增设计债务检查通过；本轮涉及的 232 个源码文件通过各自应用的 Biome 检查。浏览器核对两端样板的 10/12/16px 实际字号、4/8/16px 圆角、浅深色表面合并、90%/120% 缩放、Dialog 嵌套 Select 与 Esc，以及 390px 窄屏无横向溢出。GUI 构建保留已有大包提示；样板验证不覆盖全部原生终端、编辑器和拖拽流程。
