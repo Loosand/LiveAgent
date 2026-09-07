@@ -180,7 +180,7 @@ function SshPasswordInput(props: {
         type={visible ? "text" : "password"}
         value={value}
         disabled={disabled}
-        className="pr-10"
+        className="pr-8"
         onChange={(event) => onChange(event.currentTarget.value)}
       />
       <Button
@@ -319,11 +319,11 @@ function SshHostModal(props: {
         showCloseButton
       >
         <DialogHeader className="flex-row items-center gap-3">
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-500">
+          <div className="flex h-9 w-9 items-center justify-center rounded-2xl bg-success/10 text-success">
             <Key className="h-5 w-5" />
           </div>
           <div className="flex-1">
-            <DialogTitle className="text-sm">
+            <DialogTitle className="text-base">
               {isEditing ? t("settings.sshEdit") : t("settings.sshAdd")}
             </DialogTitle>
             <DialogDescription className="text-xs">{t("settings.sshDesc")}</DialogDescription>
@@ -332,10 +332,10 @@ function SshHostModal(props: {
 
         <DialogBody>
           <div className="grid gap-4 sm:grid-cols-2">
-            <div className="space-y-1.5">
+            <div className="space-y-2">
               <Label htmlFor="ssh-name" className="text-xs font-medium text-muted-foreground">
                 {t("settings.sshName")}
-                <span className="ml-0.5 text-red-500">*</span>
+                <span className="ml-0.5 text-destructive">*</span>
               </Label>
               <Input
                 id="ssh-name"
@@ -343,10 +343,10 @@ function SshHostModal(props: {
                 onChange={(event) => setName(event.currentTarget.value)}
               />
             </div>
-            <div className="space-y-1.5">
+            <div className="space-y-2">
               <Label htmlFor="ssh-host" className="text-xs font-medium text-muted-foreground">
                 {t("settings.sshHost")}
-                <span className="ml-0.5 text-red-500">*</span>
+                <span className="ml-0.5 text-destructive">*</span>
               </Label>
               <Input
                 id="ssh-host"
@@ -354,7 +354,7 @@ function SshHostModal(props: {
                 onChange={(event) => setHost(event.currentTarget.value)}
               />
             </div>
-            <div className="space-y-1.5">
+            <div className="space-y-2">
               <Label htmlFor="ssh-username" className="text-xs font-medium text-muted-foreground">
                 {t("settings.sshUsername")}
               </Label>
@@ -364,7 +364,7 @@ function SshHostModal(props: {
                 onChange={(event) => setUsername(event.currentTarget.value)}
               />
             </div>
-            <div className="space-y-1.5">
+            <div className="space-y-2">
               <Label htmlFor="ssh-port" className="text-xs font-medium text-muted-foreground">
                 {t("settings.sshPort")}
               </Label>
@@ -391,20 +391,20 @@ function SshHostModal(props: {
                 type="button"
                 onClick={() => setAuthType("password")}
                 className={cn(
-                  "group relative flex items-center gap-3 rounded-xl border px-3 py-3 text-left transition-all duration-200 ease-out hover:-translate-y-0.5",
+                  "group relative flex items-center gap-3 rounded-2xl border px-3 py-3 text-left transition-all duration-200 ease-out hover:-translate-y-0.5",
                   isPasswordAuth
-                    ? "border-emerald-500/40 bg-emerald-500/[0.06] shadow-sm"
-                    : "border-border/60 bg-card hover:border-border hover:bg-muted/20",
+                    ? "border-success/40 bg-success/5 shadow-control"
+                    : "border-border bg-card hover:border-input hover:bg-muted/20",
                 )}
               >
                 <Lock
                   className={cn(
-                    "h-4 w-4 shrink-0 text-emerald-500 transition-transform duration-200",
+                    "h-4 w-4 shrink-0 text-success transition-transform duration-200",
                     isPasswordAuth ? "scale-110" : "group-hover:scale-105",
                   )}
                 />
                 <div className="min-w-0">
-                  <div className="text-sm font-medium">{t("settings.sshAuthPassword")}</div>
+                  <div className="text-base font-medium">{t("settings.sshAuthPassword")}</div>
                   <div className="text-xs text-muted-foreground">
                     {t("settings.sshAuthPasswordHint")}
                   </div>
@@ -412,7 +412,7 @@ function SshHostModal(props: {
                 <Check
                   aria-hidden="true"
                   className={cn(
-                    "ml-auto h-4 w-4 shrink-0 text-emerald-500 transition-all duration-200",
+                    "ml-auto h-4 w-4 shrink-0 text-success transition-all duration-200",
                     isPasswordAuth ? "scale-100 opacity-100" : "scale-75 opacity-0",
                   )}
                 />
@@ -421,20 +421,20 @@ function SshHostModal(props: {
                 type="button"
                 onClick={() => setAuthType("privateKey")}
                 className={cn(
-                  "group relative flex items-center gap-3 rounded-xl border px-3 py-3 text-left transition-all duration-200 ease-out hover:-translate-y-0.5",
+                  "group relative flex items-center gap-3 rounded-2xl border px-3 py-3 text-left transition-all duration-200 ease-out hover:-translate-y-0.5",
                   isPrivateKeyAuth
-                    ? "border-emerald-500/40 bg-emerald-500/[0.06] shadow-sm"
-                    : "border-border/60 bg-card hover:border-border hover:bg-muted/20",
+                    ? "border-success/40 bg-success/5 shadow-control"
+                    : "border-border bg-card hover:border-input hover:bg-muted/20",
                 )}
               >
                 <Key
                   className={cn(
-                    "h-4 w-4 shrink-0 text-emerald-500 transition-transform duration-200",
+                    "h-4 w-4 shrink-0 text-success transition-transform duration-200",
                     isPrivateKeyAuth ? "scale-110" : "group-hover:scale-105",
                   )}
                 />
                 <div className="min-w-0">
-                  <div className="text-sm font-medium">{t("settings.sshAuthPrivateKey")}</div>
+                  <div className="text-base font-medium">{t("settings.sshAuthPrivateKey")}</div>
                   <div className="text-xs text-muted-foreground">
                     {t("settings.sshAuthPrivateKeyHint")}
                   </div>
@@ -442,7 +442,7 @@ function SshHostModal(props: {
                 <Check
                   aria-hidden="true"
                   className={cn(
-                    "ml-auto h-4 w-4 shrink-0 text-emerald-500 transition-all duration-200",
+                    "ml-auto h-4 w-4 shrink-0 text-success transition-all duration-200",
                     isPrivateKeyAuth ? "scale-100 opacity-100" : "scale-75 opacity-0",
                   )}
                 />
@@ -451,20 +451,20 @@ function SshHostModal(props: {
                 type="button"
                 onClick={() => setAuthType("keyboardInteractive")}
                 className={cn(
-                  "group relative flex items-center gap-3 rounded-xl border px-3 py-3 text-left transition-all duration-200 ease-out hover:-translate-y-0.5",
+                  "group relative flex items-center gap-3 rounded-2xl border px-3 py-3 text-left transition-all duration-200 ease-out hover:-translate-y-0.5",
                   isKeyboardInteractiveAuth
-                    ? "border-emerald-500/40 bg-emerald-500/[0.06] shadow-sm"
-                    : "border-border/60 bg-card hover:border-border hover:bg-muted/20",
+                    ? "border-success/40 bg-success/5 shadow-control"
+                    : "border-border bg-card hover:border-input hover:bg-muted/20",
                 )}
               >
                 <Terminal
                   className={cn(
-                    "h-4 w-4 shrink-0 text-emerald-500 transition-transform duration-200",
+                    "h-4 w-4 shrink-0 text-success transition-transform duration-200",
                     isKeyboardInteractiveAuth ? "scale-110" : "group-hover:scale-105",
                   )}
                 />
                 <div className="min-w-0">
-                  <div className="text-sm font-medium">
+                  <div className="text-base font-medium">
                     {t("settings.sshAuthKeyboardInteractive")}
                   </div>
                   <div className="text-xs text-muted-foreground">
@@ -474,7 +474,7 @@ function SshHostModal(props: {
                 <Check
                   aria-hidden="true"
                   className={cn(
-                    "ml-auto h-4 w-4 shrink-0 text-emerald-500 transition-all duration-200",
+                    "ml-auto h-4 w-4 shrink-0 text-success transition-all duration-200",
                     isKeyboardInteractiveAuth ? "scale-100 opacity-100" : "scale-75 opacity-0",
                   )}
                 />
@@ -489,7 +489,7 @@ function SshHostModal(props: {
               data-state={isPasswordAuth ? "open" : "closed-up"}
               style={passwordAuthPanelStyle}
             >
-              <div className="space-y-1.5">
+              <div className="space-y-2">
                 <Label htmlFor="ssh-password" className="text-xs font-medium text-muted-foreground">
                   {t("settings.sshPassword")}
                 </Label>
@@ -500,7 +500,7 @@ function SshHostModal(props: {
                   onChange={setPassword}
                 />
                 {initialData?.passwordConfigured && !password.trim() ? (
-                  <div className="text-[11px] text-muted-foreground">
+                  <div className="text-xs text-muted-foreground">
                     {t("settings.sshPasswordConfigured")}
                   </div>
                 ) : null}
@@ -518,7 +518,7 @@ function SshHostModal(props: {
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="absolute right-2 top-2 z-10 h-7 w-7 rounded-md border border-transparent bg-background/80 p-0 text-muted-foreground shadow-none hover:border-border/70 hover:bg-muted/70 hover:text-foreground"
+                    className="absolute right-2 top-2 z-10 h-7 w-7 rounded-lg border border-transparent bg-background/80 p-0 text-muted-foreground shadow-none hover:border-input hover:bg-muted/80 hover:text-foreground"
                     aria-label={t("settings.sshPrivateKeyImport")}
                     disabled={!isPrivateKeyAuth}
                     onClick={() => fileInputRef.current?.click()}
@@ -543,11 +543,11 @@ function SshHostModal(props: {
                   />
                 </div>
                 {initialData?.privateKeyConfigured && !privateKey.trim() ? (
-                  <div className="text-[11px] text-muted-foreground">
+                  <div className="text-xs text-muted-foreground">
                     {t("settings.sshPrivateKeyConfigured")}
                   </div>
                 ) : null}
-                <div className="space-y-1.5">
+                <div className="space-y-2">
                   <Label
                     htmlFor="ssh-private-key-passphrase"
                     className="text-xs font-medium text-muted-foreground"
@@ -561,7 +561,7 @@ function SshHostModal(props: {
                     onChange={setPrivateKeyPassphrase}
                   />
                   {initialData?.privateKeyPassphraseConfigured && !privateKeyPassphrase.trim() ? (
-                    <div className="text-[11px] text-muted-foreground">
+                    <div className="text-xs text-muted-foreground">
                       {t("settings.sshPrivateKeyPassphraseConfigured")}
                     </div>
                   ) : null}
@@ -570,10 +570,10 @@ function SshHostModal(props: {
             </div>
           </div>
 
-          <div className="mt-5 overflow-hidden rounded-xl border border-border/60 bg-muted/10">
+          <div className="mt-4 overflow-hidden rounded-2xl border border-border bg-muted/10">
             <button
               type="button"
-              className="flex w-full items-center justify-between gap-3 px-4 py-3 text-left text-sm font-medium transition-colors hover:bg-muted/30"
+              className="flex w-full items-center justify-between gap-3 px-4 py-3 text-left text-xs font-medium transition-colors hover:bg-muted/40"
               onClick={() => setAdvancedOpen((open) => !open)}
             >
               <span>{t("settings.sshAdvancedSettings")}</span>
@@ -589,17 +589,17 @@ function SshHostModal(props: {
               <div
                 aria-hidden={!advancedOpen}
                 className={cn(
-                  "ssh-collapsible-inner border-border/60 px-4 transition-[border-width,padding] duration-200 ease-out",
+                  "ssh-collapsible-inner border-border px-4 transition-[border-width,padding] duration-200 ease-out",
                   advancedOpen ? "border-t py-4" : "border-t-0 py-0",
                 )}
                 inert={!advancedOpen}
               >
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                  <div className="space-y-1.5 sm:col-span-2">
+                  <div className="space-y-2 sm:col-span-2">
                     <Label className="text-xs font-medium text-muted-foreground">
                       {t("settings.sshProxyType")}
                     </Label>
-                    <div className="grid grid-cols-3 gap-2 rounded-xl border border-border/60 bg-background p-1">
+                    <div className="grid grid-cols-3 gap-2 rounded-2xl border border-border bg-background p-1">
                       {(
                         [
                           { value: "system", label: t("settings.sshProxyUseSystemTag") },
@@ -613,7 +613,7 @@ function SshHostModal(props: {
                           className={cn(
                             "rounded-lg px-3 py-2 text-xs font-medium transition-colors",
                             proxySelection === option.value
-                              ? "bg-muted text-foreground shadow-sm"
+                              ? "bg-muted text-foreground shadow-control"
                               : "text-muted-foreground hover:bg-muted/60 hover:text-foreground",
                           )}
                           onClick={() => {
@@ -630,14 +630,14 @@ function SshHostModal(props: {
                       ))}
                     </div>
                     {proxyUseSystem ? (
-                      <p className="text-[11px] leading-relaxed text-muted-foreground">
+                      <p className="text-xs leading-relaxed text-muted-foreground">
                         {t("settings.sshProxyUseSystemHint")}
                       </p>
                     ) : null}
                   </div>
                   {proxyUseSystem ? null : (
                     <>
-                      <div className="space-y-1.5">
+                      <div className="space-y-2">
                         <Label
                           htmlFor="ssh-proxy-url"
                           className="text-xs font-medium text-muted-foreground"
@@ -655,7 +655,7 @@ function SshHostModal(props: {
                           onChange={(event) => setProxyUrl(event.currentTarget.value)}
                         />
                       </div>
-                      <div className="space-y-1.5">
+                      <div className="space-y-2">
                         <Label
                           htmlFor="ssh-proxy-port"
                           className="text-xs font-medium text-muted-foreground"
@@ -676,7 +676,7 @@ function SshHostModal(props: {
                           }
                         />
                       </div>
-                      <div className="space-y-1.5">
+                      <div className="space-y-2">
                         <Label
                           htmlFor="ssh-proxy-username"
                           className="text-xs font-medium text-muted-foreground"
@@ -689,7 +689,7 @@ function SshHostModal(props: {
                           onChange={(event) => setProxyUsername(event.currentTarget.value)}
                         />
                       </div>
-                      <div className="space-y-1.5">
+                      <div className="space-y-2">
                         <Label
                           htmlFor="ssh-proxy-password"
                           className="text-xs font-medium text-muted-foreground"
@@ -702,7 +702,7 @@ function SshHostModal(props: {
                           onChange={setProxyPassword}
                         />
                         {initialData?.proxy.passwordConfigured && !proxyPassword.trim() ? (
-                          <div className="text-[11px] text-muted-foreground">
+                          <div className="text-xs text-muted-foreground">
                             {t("settings.sshProxyPasswordConfigured")}
                           </div>
                         ) : null}
@@ -782,31 +782,31 @@ function SshImportModal(props: {
         showCloseButton
       >
         <DialogHeader className="flex-row items-center gap-3">
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-500">
+          <div className="flex h-9 w-9 items-center justify-center rounded-2xl bg-success/10 text-success">
             <Upload className="h-5 w-5" />
           </div>
           <div className="flex-1">
-            <DialogTitle className="text-sm">{t("settings.sshImport")}</DialogTitle>
+            <DialogTitle className="text-base">{t("settings.sshImport")}</DialogTitle>
             <DialogDescription className="text-xs">{t("settings.sshImportDesc")}</DialogDescription>
           </div>
         </DialogHeader>
 
         <DialogBody>
           {!result && !error ? (
-            <div className="flex h-48 items-center justify-center rounded-2xl border border-dashed border-border/60 bg-muted/20 text-sm text-muted-foreground">
+            <div className="flex h-48 items-center justify-center rounded-2xl border border-dashed border-border bg-muted/20 text-base text-muted-foreground">
               {t("settings.sshImportScanning")}
             </div>
           ) : null}
 
           {error ? (
-            <div className="rounded-2xl border border-destructive/30 bg-destructive/5 p-4 text-sm text-destructive">
+            <div className="rounded-2xl border border-destructive/40 bg-destructive/5 p-4 text-base text-destructive">
               {t("settings.sshImportFailed")}: {error}
             </div>
           ) : null}
 
           {result ? (
             <div className="space-y-4">
-              <div className="rounded-xl border border-border/60 bg-muted/20 px-4 py-3 text-xs text-muted-foreground">
+              <div className="rounded-2xl border border-border bg-muted/20 px-4 py-3 text-xs text-muted-foreground">
                 <div className="font-medium text-foreground">{result.sshDirPath}</div>
                 <div className="mt-1">
                   {t("settings.sshImportFound")
@@ -816,10 +816,10 @@ function SshImportModal(props: {
               </div>
 
               {candidates.length === 0 ? (
-                <div className="flex flex-col items-center gap-3 rounded-2xl border border-dashed border-border/60 bg-muted/20 py-12 text-center">
-                  <Key className="h-8 w-8 text-muted-foreground/50" />
+                <div className="flex flex-col items-center gap-3 rounded-2xl border border-dashed border-border bg-muted/20 py-12 text-center">
+                  <Key className="h-8 w-8 text-muted-foreground/60" />
                   <div>
-                    <div className="text-sm font-medium">{t("settings.sshImportEmpty")}</div>
+                    <div className="text-base font-medium">{t("settings.sshImportEmpty")}</div>
                     <div className="mt-1 text-xs text-muted-foreground">
                       {t("settings.sshImportEmptyHint")}
                     </div>
@@ -834,18 +834,18 @@ function SshImportModal(props: {
                       disabled={candidate.duplicate}
                       onClick={() => toggle(candidate.id)}
                       className={cn(
-                        "flex w-full items-center gap-3 rounded-xl border px-4 py-3 text-left transition-colors",
+                        "flex w-full items-center gap-3 rounded-2xl border px-4 py-3 text-left transition-colors",
                         selectedIds.has(candidate.id)
-                          ? "border-emerald-500/40 bg-emerald-500/[0.06]"
-                          : "border-border/60 bg-card hover:border-border",
+                          ? "border-success/40 bg-success/5"
+                          : "border-border bg-card hover:border-input",
                         candidate.duplicate ? "cursor-not-allowed opacity-60" : "",
                       )}
                     >
                       <span
                         className={cn(
-                          "flex h-5 w-5 shrink-0 items-center justify-center rounded border transition-colors duration-150",
+                          "flex h-5 w-5 shrink-0 items-center justify-center rounded-sm border transition-colors duration-150",
                           selectedIds.has(candidate.id)
-                            ? "border-emerald-500 bg-emerald-500 text-white"
+                            ? "border-success bg-success text-success-foreground"
                             : "border-border bg-background",
                         )}
                       >
@@ -858,7 +858,7 @@ function SshImportModal(props: {
                       </span>
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center gap-2">
-                          <span className="truncate text-sm font-medium">{candidate.name}</span>
+                          <span className="truncate text-base font-medium">{candidate.name}</span>
                           <PromptTag label={authLabel(candidate, t)} />
                           {candidate.duplicate ? (
                             <PromptTag label={t("settings.sshImportDuplicate")} muted />
@@ -970,7 +970,7 @@ function SshHostCard(props: {
   );
 
   const metaTags = (
-    <div className="flex flex-wrap items-center gap-1.5">
+    <div className="flex flex-wrap items-center gap-2">
       {showKeyPath ? <PromptTag label={host.privateKeyPath} muted /> : null}
       {showKeyConfigured ? <PromptTag label={t("settings.sshPrivateKeyConfigured")} muted /> : null}
     </div>
@@ -989,15 +989,15 @@ function SshHostCard(props: {
 
   if (viewMode === "grid") {
     return (
-      <div className="group relative z-0 flex flex-col rounded-xl border border-border/60 bg-card p-4 transition-all duration-200 hover:z-10 hover:border-emerald-500/40 hover:shadow-md hover:shadow-emerald-500/10">
+      <div className="group relative z-0 flex flex-col rounded-2xl border border-border bg-card p-4 transition-all duration-200 hover:z-10 hover:border-success/40 hover:shadow-overlay hover:shadow-success/10">
         <div className="absolute right-3 top-3">{actions}</div>
         <div className="flex items-start gap-3 pr-12">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-500 transition-transform duration-200 group-hover:scale-105">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-success/10 text-success transition-transform duration-200 group-hover:scale-105">
             <Server className="h-[18px] w-[18px]" />
           </div>
           <div className="min-w-0 flex-1">
-            <div className="truncate text-sm font-medium text-foreground">{host.name}</div>
-            <div className="mt-1 flex flex-wrap items-center gap-1.5">
+            <div className="truncate text-base font-medium text-foreground">{host.name}</div>
+            <div className="mt-1 flex flex-wrap items-center gap-2">
               <PromptTag label={authLabel(host, t)} />
               {showProxy ? <PromptTag label={proxyTagLabel} muted /> : null}
             </div>
@@ -1017,14 +1017,14 @@ function SshHostCard(props: {
   }
 
   return (
-    <div className="group relative z-0 rounded-xl border border-border/60 bg-card transition-all duration-200 hover:z-10 hover:border-emerald-500/40 hover:shadow-md hover:shadow-emerald-500/10">
+    <div className="group relative z-0 rounded-2xl border border-border bg-card transition-all duration-200 hover:z-10 hover:border-success/40 hover:shadow-overlay hover:shadow-success/10">
       <div className="settings-card-row flex items-center gap-3 px-4 py-3">
-        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-500 transition-transform duration-200 group-hover:scale-105">
+        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-success/10 text-success transition-transform duration-200 group-hover:scale-105">
           <Server className="h-4 w-4" />
         </div>
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2">
-            <span className="truncate text-sm font-medium text-foreground">{host.name}</span>
+            <span className="truncate text-base font-medium text-foreground">{host.name}</span>
             <PromptTag label={authLabel(host, t)} />
             {showProxy ? <PromptTag label={proxyTagLabel} muted /> : null}
           </div>
@@ -1035,7 +1035,7 @@ function SshHostCard(props: {
         {actions}
       </div>
       {hasFooter ? (
-        <div className="space-y-2 border-t border-border/40 px-4 py-2.5">
+        <div className="space-y-2 border-t border-border px-4 py-2">
           {hasMeta ? metaTags : null}
           {resetStatusNode}
         </div>
@@ -1058,12 +1058,12 @@ function SshViewModeToggle(props: { value: SshViewMode; onChange: (value: SshVie
   ];
 
   return (
-    <fieldset className="relative isolate grid min-w-0 grid-cols-2 rounded-lg border border-border/60 bg-muted/30 p-0.5 shadow-inner shadow-black/5">
+    <fieldset className="relative isolate grid min-w-0 grid-cols-2 rounded-lg border border-border bg-muted/40 p-0.5 shadow-inset">
       <legend className="sr-only">{groupLabel}</legend>
       <span
         aria-hidden="true"
         className={cn(
-          "pointer-events-none absolute bottom-0.5 left-0.5 top-0.5 w-[calc(50%-0.125rem)] rounded-md bg-emerald-500/10 shadow-sm shadow-emerald-500/10 ring-1 ring-emerald-500/30 transition-transform duration-200 ease-out motion-reduce:transition-none",
+          "pointer-events-none absolute bottom-0.5 left-0.5 top-0.5 w-[calc(50%-0.125rem)] rounded-lg bg-success/10 shadow-control shadow-success/10 ring-1 ring-success/40 transition-transform duration-200 ease-out motion-reduce:transition-none",
           value === "grid" ? "translate-x-full" : "translate-x-0",
         )}
       />
@@ -1075,8 +1075,8 @@ function SshViewModeToggle(props: { value: SshViewMode; onChange: (value: SshVie
             key={option.value}
             type="button"
             className={cn(
-              "relative z-10 flex h-7 w-7 items-center justify-center rounded-md transition-colors duration-200 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background motion-reduce:transition-none",
-              active ? "text-emerald-500" : "text-muted-foreground",
+              "relative z-10 flex h-7 w-7 items-center justify-center rounded-lg transition-colors duration-200 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background motion-reduce:transition-none",
+              active ? "text-success" : "text-muted-foreground",
             )}
             title={option.label}
             aria-label={option.label}
@@ -1439,21 +1439,21 @@ export function SshSection(props: SettingsSectionProps) {
 
   return (
     <>
-      <div className="settings-ssh-section space-y-5">
+      <div className="settings-ssh-section space-y-4">
         <div className="settings-section-heading-row flex items-center justify-between gap-4">
           <div className="settings-section-title-group flex items-center gap-3">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-500/10">
-              <Key className="h-[18px] w-[18px] text-emerald-500" />
+            <div className="flex h-9 w-9 items-center justify-center rounded-2xl bg-success/10">
+              <Key className="h-[18px] w-[18px] text-success" />
             </div>
             <div>
-              <h3 className="text-sm font-semibold">{t("settings.sshTitle")}</h3>
+              <h3 className="text-base font-semibold">{t("settings.sshTitle")}</h3>
               <p className="text-xs text-muted-foreground">{t("settings.sshDesc")}</p>
             </div>
           </div>
 
           <div className="settings-section-actions flex items-center gap-2">
             {hosts.length > 0 ? (
-              <div className="flex items-center gap-2 rounded-lg bg-muted/50 px-2.5 py-1.5 text-xs text-muted-foreground">
+              <div className="flex items-center gap-2 rounded-lg bg-muted/60 px-2 py-2 text-xs text-muted-foreground">
                 <span className="tabular-nums font-medium text-foreground">{hosts.length}</span>
                 {t("settings.sshCount")}
               </div>
@@ -1462,13 +1462,13 @@ export function SshSection(props: SettingsSectionProps) {
             <Button
               variant="outline"
               size="sm"
-              className="gap-1.5"
+              className="gap-2"
               onClick={() => setImportOpen(true)}
             >
               <Upload className="h-3.5 w-3.5" />
               {t("settings.sshImport")}
             </Button>
-            <Button variant="outline" size="sm" className="gap-1.5" onClick={openAdd}>
+            <Button variant="outline" size="sm" className="gap-2" onClick={openAdd}>
               <Plus className="h-3.5 w-3.5" />
               {t("settings.sshAdd")}
             </Button>
@@ -1476,12 +1476,12 @@ export function SshSection(props: SettingsSectionProps) {
         </div>
 
         {hosts.length === 0 ? (
-          <div className="flex flex-col items-center gap-4 rounded-2xl border border-dashed border-border/60 bg-muted/20 py-14 text-center">
-            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-emerald-500/10">
-              <Key className="h-6 w-6 text-emerald-400" />
+          <div className="flex flex-col items-center gap-4 rounded-2xl border border-dashed border-border bg-muted/20 py-12 text-center">
+            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-success/10">
+              <Key className="h-6 w-6 text-success" />
             </div>
-            <div className="space-y-1.5">
-              <p className="text-sm font-medium text-foreground">{t("settings.sshNoHosts")}</p>
+            <div className="space-y-2">
+              <p className="text-base font-medium text-foreground">{t("settings.sshNoHosts")}</p>
               <p className="mx-auto max-w-sm text-xs leading-relaxed text-muted-foreground">
                 {t("settings.sshNoHostsHint")}
               </p>
@@ -1490,13 +1490,13 @@ export function SshSection(props: SettingsSectionProps) {
               <Button
                 variant="outline"
                 size="sm"
-                className="gap-1.5"
+                className="gap-2"
                 onClick={() => setImportOpen(true)}
               >
                 <Upload className="h-3.5 w-3.5" />
                 {t("settings.sshImport")}
               </Button>
-              <Button size="sm" className="gap-1.5" onClick={openAdd}>
+              <Button size="sm" className="gap-2" onClick={openAdd}>
                 <Plus className="h-3.5 w-3.5" />
                 {t("settings.sshAdd")}
               </Button>

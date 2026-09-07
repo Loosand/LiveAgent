@@ -59,10 +59,10 @@ type StepState = "done" | "current" | "todo" | "busy";
 type NodeTone = "done" | "active" | "warn" | "neutral";
 
 const NODE_TONE_CLASS: Record<NodeTone, string> = {
-  done: "border-transparent bg-emerald-500 text-white shadow-sm shadow-emerald-500/30",
-  active: "border-transparent bg-sky-500 text-white shadow-sm shadow-sky-500/30",
-  warn: "border-transparent bg-amber-500 text-white shadow-sm shadow-amber-500/30",
-  neutral: "border-border/75 bg-card text-muted-foreground",
+  done: "border-transparent bg-success text-success-foreground shadow-control shadow-success/30",
+  active: "border-transparent bg-info text-info-foreground shadow-control shadow-info/30",
+  warn: "border-transparent bg-warning text-warning-foreground shadow-control shadow-warning/30",
+  neutral: "border-border bg-card text-muted-foreground",
 };
 
 /**
@@ -80,13 +80,13 @@ function TimelineItem(props: {
 }) {
   const { node, tone, connector, title, action, children } = props;
   return (
-    <div className="relative flex gap-4 pb-7 last:pb-0">
+    <div className="relative flex gap-4 pb-8 last:pb-0">
       <div className="relative flex w-9 shrink-0 justify-center">
         {connector !== "none" ? (
           <span
             className={cn(
               "absolute top-11 bottom-0 w-px transition-colors duration-500",
-              connector === "done" ? "bg-emerald-500/40" : "bg-border/70",
+              connector === "done" ? "bg-success/40" : "bg-border/80",
             )}
           />
         ) : null}
@@ -101,10 +101,10 @@ function TimelineItem(props: {
       </div>
       <div className="min-w-0 flex-1">
         <div className="flex min-h-9 items-center justify-between gap-3 pr-1">
-          <h2 className="text-[14px] font-semibold tracking-tight text-foreground">{title}</h2>
+          <h2 className="text-base font-semibold tracking-tight text-foreground">{title}</h2>
           {action}
         </div>
-        <div className="mt-2 overflow-hidden rounded-2xl border border-border/75 bg-card shadow-[0_1px_2px_hsl(var(--foreground)/0.02)]">
+        <div className="mt-2 overflow-hidden rounded-2xl border border-border bg-card shadow-control">
           {children}
         </div>
       </div>
@@ -117,7 +117,7 @@ function CardBlock(props: { className?: string; children: ReactNode }) {
   return (
     <div
       className={cn(
-        "relative px-5 after:pointer-events-none after:absolute after:right-5 after:bottom-0 after:left-5 after:h-px after:bg-border/60 after:content-[''] last:after:hidden",
+        "relative px-4 after:pointer-events-none after:absolute after:right-5 after:bottom-0 after:left-5 after:h-px after:bg-border/60 after:content-[''] last:after:hidden",
         props.className,
       )}
     >
@@ -142,15 +142,11 @@ function CopyButton({ value, className }: { value: string; className?: string })
       onClick={handleCopy}
       title={value}
       className={cn(
-        "flex h-7 w-7 shrink-0 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted/60 hover:text-foreground",
+        "flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted/60 hover:text-foreground",
         className,
       )}
     >
-      {copied ? (
-        <Check className="h-3.5 w-3.5 text-emerald-500" />
-      ) : (
-        <Copy className="h-3.5 w-3.5" />
-      )}
+      {copied ? <Check className="h-3.5 w-3.5 text-success" /> : <Copy className="h-3.5 w-3.5" />}
     </button>
   );
 }
@@ -184,58 +180,56 @@ function HeroCard(props: {
   const dotClass = checking
     ? "bg-muted-foreground/40"
     : !installed || grant === "current"
-      ? "bg-amber-500"
+      ? "bg-warning"
       : enabled
-        ? "bg-emerald-500"
-        : "bg-sky-500";
+        ? "bg-success"
+        : "bg-info";
 
   return (
     <section
       className={cn(
         "relative overflow-hidden rounded-2xl border bg-card transition-all duration-500",
-        running ? "border-emerald-500/30" : "border-border/75",
+        running ? "border-success/40" : "border-border",
       )}
     >
       {/* 动态光晕 */}
       <div
         className={cn(
           "pointer-events-none absolute -top-24 -right-16 h-64 w-64 rounded-full blur-3xl transition-colors duration-700",
-          running ? "bg-emerald-500/15" : "bg-sky-500/10",
+          running ? "bg-success/20" : "bg-info/10",
         )}
       />
       <div
         className={cn(
           "pointer-events-none absolute inset-0 bg-gradient-to-br via-transparent to-transparent transition-colors duration-700",
-          running ? "from-emerald-500/[0.07]" : "from-sky-500/[0.08]",
+          running ? "from-success/5" : "from-info/10",
         )}
       />
 
-      <div className="relative flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6">
-        <div className="flex min-w-0 items-center gap-3.5">
+      <div className="relative flex flex-col gap-4 p-4 sm:flex-row sm:items-center sm:justify-between sm:p-6">
+        <div className="flex min-w-0 items-center gap-4">
           <div
             className={cn(
-              "flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl text-white shadow-lg transition-all duration-500",
+              "flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl text-white shadow-overlay transition-all duration-500",
               running
-                ? "bg-gradient-to-br from-emerald-500 to-teal-600 shadow-emerald-500/25"
-                : "bg-gradient-to-br from-sky-500 to-blue-600 shadow-sky-500/25",
+                ? "bg-gradient-to-br from-success to-success shadow-success/25"
+                : "bg-gradient-to-br from-info to-info shadow-info/25",
             )}
           >
             <SquareMousePointer className="h-6 w-6" />
           </div>
           <div className="min-w-0">
-            <div className="flex flex-wrap items-center gap-2.5">
-              <h3 className="text-[16px] font-semibold text-foreground">Computer Use</h3>
+            <div className="flex flex-wrap items-center gap-2">
+              <h3 className="text-base font-semibold text-foreground">Computer Use</h3>
               <span
                 className={cn(
-                  "inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[11px] font-medium transition-colors",
-                  running
-                    ? "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400"
-                    : "bg-muted/70 text-muted-foreground",
+                  "inline-flex items-center gap-2 rounded-full px-2 py-0.5 text-xs font-medium transition-colors",
+                  running ? "bg-success/20 text-success" : "bg-muted/80 text-muted-foreground",
                 )}
               >
                 <span className="relative flex h-1.5 w-1.5 shrink-0">
                   {running ? (
-                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-60" />
+                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-success opacity-60" />
                   ) : null}
                   <span className={cn("relative inline-flex h-1.5 w-1.5 rounded-full", dotClass)} />
                 </span>
@@ -270,22 +264,22 @@ function PermissionRow(props: {
   const { t } = useLocale();
   const { icon: Icon, name, status } = props;
   return (
-    <CardBlock className="flex items-center justify-between gap-4 py-3.5">
-      <div className="flex items-center gap-2.5">
+    <CardBlock className="flex items-center justify-between gap-4 py-4">
+      <div className="flex items-center gap-2">
         <Icon className="h-4 w-4 text-muted-foreground" />
-        <span className="text-sm font-medium text-foreground">{name}</span>
+        <span className="text-base font-medium text-foreground">{name}</span>
       </div>
       {status === "loading" ? (
-        <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
+        <span className="flex items-center gap-2 text-xs text-muted-foreground">
           <Loader2 className="h-3.5 w-3.5 animate-spin" />
           {t("settings.cuaDriver.permissionsChecking")}
         </span>
       ) : (
         <span
           className={cn(
-            "flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[11px] font-medium",
-            status === "granted" && "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
-            status === "pending" && "bg-amber-500/10 text-amber-600 dark:text-amber-400",
+            "flex items-center gap-2 rounded-full px-2 py-0.5 text-xs font-medium",
+            status === "granted" && "bg-success/10 text-success",
+            status === "pending" && "bg-warning/10 text-warning",
             status === "unknown" && "bg-muted/60 text-muted-foreground",
           )}
         >
@@ -603,7 +597,7 @@ export function CuaDriverSection(props: SettingsSectionProps & { surface?: UiSur
               type="button"
               disabled={checking || installing}
               onClick={() => void refresh({ force: true })}
-              className="flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-xs text-muted-foreground transition-colors hover:bg-muted/60 hover:text-foreground disabled:opacity-50"
+              className="flex items-center gap-2 rounded-lg px-2 py-1 text-xs text-muted-foreground transition-colors hover:bg-muted/60 hover:text-foreground disabled:opacity-50"
             >
               <RefreshCw className={checking ? "h-3.5 w-3.5 animate-spin" : "h-3.5 w-3.5"} />
               {t("settings.cuaDriver.recheck")}
@@ -615,9 +609,7 @@ export function CuaDriverSection(props: SettingsSectionProps & { surface?: UiSur
               <span
                 className={cn(
                   "flex h-8 w-8 shrink-0 items-center justify-center rounded-lg",
-                  installed
-                    ? "bg-emerald-500/10 text-emerald-500"
-                    : "bg-muted/60 text-muted-foreground",
+                  installed ? "bg-success/10 text-success" : "bg-muted/60 text-muted-foreground",
                 )}
               >
                 {checking && !probe ? (
@@ -629,7 +621,7 @@ export function CuaDriverSection(props: SettingsSectionProps & { surface?: UiSur
                 )}
               </span>
               <div className="min-w-0">
-                <div className="text-sm font-medium text-foreground">
+                <div className="text-base font-medium text-foreground">
                   {installed
                     ? probe?.version
                       ? t("settings.cuaDriver.detectedWithVersion").replace(
@@ -641,7 +633,7 @@ export function CuaDriverSection(props: SettingsSectionProps & { surface?: UiSur
                 </div>
                 {displayCommand ? (
                   <p
-                    className="mt-0.5 truncate font-mono text-[11px] text-muted-foreground"
+                    className="mt-0.5 truncate font-mono text-xs text-muted-foreground"
                     title={displayCommand}
                   >
                     {displayCommand}
@@ -653,12 +645,12 @@ export function CuaDriverSection(props: SettingsSectionProps & { surface?: UiSur
                 )}
               </div>
             </div>
-            <div className="flex shrink-0 items-center gap-1.5">
+            <div className="flex shrink-0 items-center gap-2">
               {displayCommand ? <CopyButton value={displayCommand} /> : null}
               {installed || !canProvision ? null : (
                 <Button
                   size="sm"
-                  className="h-8 gap-1.5 rounded-lg text-xs"
+                  className="h-8 gap-2 rounded-lg text-xs"
                   disabled={installing || confirmingInstall || checking}
                   onClick={() => void beginInstall()}
                 >
@@ -685,24 +677,24 @@ export function CuaDriverSection(props: SettingsSectionProps & { surface?: UiSur
 
           {/* 配置漂移 / 安装确认 / 日志 / 错误 */}
           {commandDrift || (confirmingInstall && preview) || log.length > 0 || error ? (
-            <div className="space-y-3 border-t border-border/60 px-5 py-4">
+            <div className="space-y-3 border-t border-border px-4 py-4">
               {commandDrift ? (
-                <div className="rounded-xl border border-amber-500/30 bg-amber-500/[0.05] p-3.5">
-                  <p className="flex items-center gap-1.5 text-xs font-medium text-amber-700 dark:text-amber-400">
+                <div className="rounded-2xl border border-warning/40 bg-warning/5 p-4">
+                  <p className="flex items-center gap-2 text-xs font-medium text-warning">
                     <AlertTriangle className="h-3.5 w-3.5" />
                     {t("settings.cuaDriver.commandDriftTitle")}
                   </p>
-                  <p className="mt-1 text-[11px] leading-relaxed text-muted-foreground">
+                  <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
                     {t("settings.cuaDriver.commandDriftDesc")}
                   </p>
-                  <div className="mt-2.5 space-y-1 font-mono text-[11px]">
-                    <div className="flex items-center gap-2 rounded bg-background/80 px-2.5 py-1.5">
+                  <div className="mt-2 space-y-1 font-mono text-xs">
+                    <div className="flex items-center gap-2 rounded-sm bg-background/80 px-2 py-2">
                       <span className="shrink-0 text-muted-foreground">
                         {t("settings.cuaDriver.commandDriftConfigured")}
                       </span>
                       <span className="min-w-0 truncate">{commandDrift.configured}</span>
                     </div>
-                    <div className="flex items-center gap-2 rounded bg-background/80 px-2.5 py-1.5">
+                    <div className="flex items-center gap-2 rounded-sm bg-background/80 px-2 py-2">
                       <span className="shrink-0 text-muted-foreground">
                         {t("settings.cuaDriver.commandDriftProbed")}
                       </span>
@@ -712,7 +704,7 @@ export function CuaDriverSection(props: SettingsSectionProps & { surface?: UiSur
                   <Button
                     size="sm"
                     variant="outline"
-                    className="mt-3 h-7 gap-1.5 rounded-lg text-xs"
+                    className="mt-3 h-7 gap-2 rounded-lg text-xs"
                     onClick={realignCommand}
                   >
                     <Replace className="h-3 w-3" />
@@ -722,16 +714,16 @@ export function CuaDriverSection(props: SettingsSectionProps & { surface?: UiSur
               ) : null}
 
               {confirmingInstall && preview ? (
-                <div className="rounded-xl border border-amber-500/30 bg-amber-500/[0.05] p-3.5">
-                  <p className="flex items-center gap-1.5 text-xs font-medium text-amber-700 dark:text-amber-400">
+                <div className="rounded-2xl border border-warning/40 bg-warning/5 p-4">
+                  <p className="flex items-center gap-2 text-xs font-medium text-warning">
                     <AlertTriangle className="h-3.5 w-3.5" />
                     {t("settings.cuaDriver.confirmTitle")}
                   </p>
-                  <p className="mt-1 text-[11px] text-muted-foreground">
+                  <p className="mt-1 text-xs text-muted-foreground">
                     {t("settings.cuaDriver.confirmDesc").replace("{url}", preview.sourceUrl)}
                   </p>
-                  <div className="relative mt-2.5">
-                    <pre className="overflow-x-auto rounded-lg bg-foreground/[0.05] px-3 py-2 pr-9 font-mono text-[11px] leading-relaxed text-foreground">
+                  <div className="relative mt-2">
+                    <pre className="overflow-x-auto rounded-lg bg-foreground/5 px-3 py-2 pr-8 font-mono text-xs leading-relaxed text-foreground">
                       {preview.display}
                     </pre>
                     <CopyButton
@@ -760,24 +752,24 @@ export function CuaDriverSection(props: SettingsSectionProps & { surface?: UiSur
               ) : null}
 
               {log.length > 0 ? (
-                <div className="overflow-hidden rounded-xl bg-zinc-950">
-                  <div className="flex items-center gap-2 border-b border-white/10 px-3 py-1.5">
-                    <Terminal className="h-3 w-3 text-zinc-400" />
-                    <span className="text-[10px] text-zinc-400">
+                <div className="overflow-hidden rounded-2xl bg-surface-inset">
+                  <div className="flex items-center gap-2 border-b border-border px-3 py-2">
+                    <Terminal className="h-3 w-3 text-muted-foreground" />
+                    <span className="text-2xs text-muted-foreground">
                       {t("settings.cuaDriver.installLog")}
                     </span>
                     {installing ? (
-                      <Loader2 className="ml-auto h-3 w-3 animate-spin text-zinc-400" />
+                      <Loader2 className="ml-auto h-3 w-3 animate-spin text-muted-foreground" />
                     ) : null}
                   </div>
-                  <pre className="max-h-48 overflow-auto px-3 py-2 font-mono text-[10.5px] leading-relaxed text-zinc-300">
+                  <pre className="max-h-48 overflow-auto px-3 py-2 font-mono text-2xs leading-relaxed text-foreground">
                     {log.join("\n")}
                   </pre>
                 </div>
               ) : null}
 
               {error ? (
-                <div className="flex items-start gap-2 rounded-xl border border-destructive/30 bg-destructive/[0.05] px-3.5 py-2.5">
+                <div className="flex items-start gap-2 rounded-2xl border border-destructive/40 bg-destructive/5 px-4 py-2">
                   <AlertCircle className="mt-0.5 h-3.5 w-3.5 shrink-0 text-destructive" />
                   <p className="min-w-0 break-words text-xs text-destructive">{error}</p>
                 </div>
@@ -798,7 +790,7 @@ export function CuaDriverSection(props: SettingsSectionProps & { surface?: UiSur
                 <Button
                   variant="outline"
                   size="sm"
-                  className="h-7 gap-1.5 rounded-lg text-xs"
+                  className="h-7 gap-2 rounded-lg text-xs"
                   disabled={granting}
                   onClick={() => void grantPermissions()}
                 >
@@ -817,7 +809,7 @@ export function CuaDriverSection(props: SettingsSectionProps & { surface?: UiSur
                 {t("settings.cuaDriver.permissionsDesc")}
               </p>
               {canProvision ? null : (
-                <p className="mt-1.5 text-xs leading-relaxed text-muted-foreground">
+                <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
                   {t("settings.cuaDriver.desktopOnlyGrant")}
                 </p>
               )}
@@ -833,9 +825,9 @@ export function CuaDriverSection(props: SettingsSectionProps & { surface?: UiSur
               status={permissionRowStatus(permissions?.screenRecording === true)}
             />
             {permissionsKnown && !permissionsPending ? (
-              <CardBlock className="py-2.5">
-                <p className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
-                  <CheckCircle2 className="h-3.5 w-3.5 shrink-0 text-emerald-500" />
+              <CardBlock className="py-2">
+                <p className="flex items-center gap-2 text-xs text-muted-foreground">
+                  <CheckCircle2 className="h-3.5 w-3.5 shrink-0 text-success" />
                   {t("settings.cuaDriver.permissionsGranted").replace(
                     "{bundleId}",
                     permissions?.attributedTo ?? "com.trycua.driver",
@@ -853,9 +845,9 @@ export function CuaDriverSection(props: SettingsSectionProps & { surface?: UiSur
           connector="default"
           title={t("settings.cuaDriver.groupSecurity")}
         >
-          <CardBlock className="flex items-center justify-between gap-3 py-3.5">
+          <CardBlock className="flex items-center justify-between gap-3 py-4">
             <div className="min-w-0 flex-1">
-              <div className="text-sm font-medium text-foreground">
+              <div className="text-base font-medium text-foreground">
                 {t("settings.cuaDriver.policyTitle")}
               </div>
               <p className="mt-0.5 text-xs text-muted-foreground">
@@ -870,9 +862,9 @@ export function CuaDriverSection(props: SettingsSectionProps & { surface?: UiSur
             />
           </CardBlock>
 
-          <CardBlock className="flex items-center justify-between gap-3 py-3.5">
+          <CardBlock className="flex items-center justify-between gap-3 py-4">
             <div className="min-w-0 flex-1">
-              <div className="flex items-center gap-1.5 text-sm font-medium text-foreground">
+              <div className="flex items-center gap-2 text-base font-medium text-foreground">
                 <ShieldOff className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
                 {t("settings.cuaDriver.allowSelfTitle")}
               </div>
@@ -896,9 +888,9 @@ export function CuaDriverSection(props: SettingsSectionProps & { surface?: UiSur
           connector="default"
           title={t("settings.cuaDriver.groupRuntime")}
         >
-          <CardBlock className="flex flex-wrap items-center justify-between gap-3 py-3.5">
+          <CardBlock className="flex flex-wrap items-center justify-between gap-3 py-4">
             <div className="min-w-0 flex-1">
-              <div className="text-sm font-medium text-foreground">
+              <div className="text-base font-medium text-foreground">
                 {t("settings.cuaDriver.timeoutLabel")}
               </div>
               <p className="mt-0.5 text-xs text-muted-foreground">
@@ -909,7 +901,7 @@ export function CuaDriverSection(props: SettingsSectionProps & { surface?: UiSur
               // biome-ignore lint/a11y/noNoninteractiveElementToInteractiveRole: 同 ToolPolicyToggle——互斥单选语义需要向读屏表达。
               role="radiogroup"
               aria-label={t("settings.cuaDriver.timeoutLabel")}
-              className="inline-flex shrink-0 items-center rounded-lg border border-border/60 bg-muted/40 p-0.5"
+              className="inline-flex shrink-0 items-center rounded-lg border border-border bg-muted/40 p-0.5"
             >
               {TIMEOUT_PRESETS.map((preset) => {
                 const active = currentTimeout === preset.value;
@@ -923,7 +915,7 @@ export function CuaDriverSection(props: SettingsSectionProps & { surface?: UiSur
                     disabled={!serverEntry}
                     onClick={() => applyTimeout(preset.value)}
                     className={cn(
-                      "rounded-md px-2.5 py-1 text-[11px] font-medium leading-none transition-colors disabled:opacity-50",
+                      "rounded-lg px-2 py-1 text-xs font-medium leading-none transition-colors disabled:opacity-50",
                       active
                         ? "bg-primary text-primary-foreground"
                         : "text-muted-foreground hover:text-foreground",
@@ -949,16 +941,16 @@ export function CuaDriverSection(props: SettingsSectionProps & { surface?: UiSur
               {capabilities.map((cap) => (
                 <div
                   key={cap.key}
-                  className="flex items-center gap-2 rounded-lg bg-muted/40 px-2.5 py-2 text-xs text-foreground/80"
+                  className="flex items-center gap-2 rounded-lg bg-muted/40 px-2 py-2 text-xs text-foreground/80"
                 >
-                  <div className="h-1.5 w-1.5 shrink-0 rounded-full bg-sky-500/70" />
+                  <div className="h-1.5 w-1.5 shrink-0 rounded-full bg-info/80" />
                   <span className="truncate">{cap.label}</span>
                 </div>
               ))}
             </div>
           </CardBlock>
           <CardBlock className="py-3">
-            <div className="flex items-center justify-between gap-3 text-[11px] text-muted-foreground">
+            <div className="flex items-center justify-between gap-3 text-xs text-muted-foreground">
               <span className="min-w-0 truncate">{t("settings.cuaDriver.policyNote")}</span>
               <a
                 href={CUA_UPSTREAM_REPO_URL}

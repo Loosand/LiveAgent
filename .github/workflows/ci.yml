@@ -254,6 +254,9 @@ jobs:
       - name: Run check script tests
         run: pnpm check:script-tests
 
+      - name: Check UI design rules
+        run: pnpm check:ui-design
+
       - name: Check shared UI dependency boundaries
         run: pnpm check:ui-boundaries
 

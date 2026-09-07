@@ -282,7 +282,7 @@ export function ToolArgsDisplay({ item }: { item: ToolTraceItem }) {
         {name ? (
           <ToolSurface>
             <ToolSurfaceLabel label="agent" />
-            <div className="break-words text-[calc(11.5px*var(--zone-font-scale,1))] font-semibold leading-[1.55] text-foreground/86">
+            <div className="break-words text-xs font-semibold leading-[1.55] text-foreground/90">
               {name}
             </div>
           </ToolSurface>
@@ -290,17 +290,13 @@ export function ToolArgsDisplay({ item }: { item: ToolTraceItem }) {
         {role ? (
           <ToolSurface>
             <ToolSurfaceLabel label="role" />
-            <div className="break-words text-[calc(11.5px*var(--zone-font-scale,1))] leading-[1.55] text-foreground/78">
-              {role}
-            </div>
+            <div className="break-words text-xs leading-[1.55] text-foreground/80">{role}</div>
           </ToolSurface>
         ) : null}
         {task ? (
           <ToolSurface>
             <ToolSurfaceLabel label="task" />
-            <div className="break-words text-[calc(11.5px*var(--zone-font-scale,1))] leading-[1.6] text-foreground/82">
-              {task}
-            </div>
+            <div className="break-words text-xs leading-[1.6] text-foreground/80">{task}</div>
           </ToolSurface>
         ) : null}
       </div>
@@ -316,8 +312,8 @@ export function ToolArgsDisplay({ item }: { item: ToolTraceItem }) {
     if (!cmd) return null;
     return (
       <div className="tool-expand flex flex-col gap-2">
-        <ToolScrollablePre className="max-h-44 bg-zinc-950/90 text-emerald-300/90 dark:bg-zinc-950/90">
-          <span className="mr-1 select-none text-emerald-500/30">$</span>
+        <ToolScrollablePre className="max-h-44 bg-surface-inset/90 text-success/90 dark:bg-surface-inset/90">
+          <span className="mr-1 select-none text-success/40">$</span>
           {cmd}
         </ToolScrollablePre>
         {display.tags.length > 0 ? <MetaTags tags={display.tags} /> : null}
@@ -334,7 +330,7 @@ export function ToolArgsDisplay({ item }: { item: ToolTraceItem }) {
             <ToolSurfaceLabel label="path" />
             <PathDisplay
               path={display.path}
-              className="block min-w-0 break-all font-mono text-[calc(11.5px*var(--zone-font-scale,1))] leading-[1.6]"
+              className="block min-w-0 break-all font-mono text-xs leading-[1.6]"
             />
           </ToolSurface>
         ) : null}
@@ -351,8 +347,8 @@ export function ToolArgsDisplay({ item }: { item: ToolTraceItem }) {
           <ToolSurface>
             <ToolSurfaceLabel label="query" />
             <div className="flex items-start gap-2">
-              <Search className="mt-[2px] h-3.5 w-3.5 shrink-0 text-muted-foreground/35" />
-              <span className="min-w-0 break-all font-mono text-[calc(11.5px*var(--zone-font-scale,1))] leading-[1.6] text-foreground/82">
+              <Search className="mt-0.5 h-3.5 w-3.5 shrink-0 text-muted-foreground/40" />
+              <span className="min-w-0 break-all font-mono text-xs leading-[1.6] text-foreground/80">
                 {display.pattern}
               </span>
             </div>
@@ -363,7 +359,7 @@ export function ToolArgsDisplay({ item }: { item: ToolTraceItem }) {
             <ToolSurfaceLabel label="scope" />
             <PathDisplay
               path={display.path}
-              className="block min-w-0 break-all font-mono text-[calc(11.5px*var(--zone-font-scale,1))] leading-[1.6]"
+              className="block min-w-0 break-all font-mono text-xs leading-[1.6]"
             />
           </ToolSurface>
         ) : null}
@@ -456,22 +452,20 @@ export function ShellToolDisplay({
 
   return (
     <section
-      className="overflow-hidden rounded-xl border border-border/75 bg-foreground/[0.025] dark:bg-white/[0.035]"
+      className="overflow-hidden rounded-2xl border border-border bg-foreground/5 dark:bg-white/5"
       aria-label="Shell"
       data-shell-tool-display=""
     >
-      <div className="px-3 pb-0.5 pt-2.5 text-[calc(12px*var(--zone-font-scale,1))] font-medium text-muted-foreground/75">
-        Shell
-      </div>
+      <div className="px-3 pb-0.5 pt-2 text-xs font-medium text-muted-foreground/80">Shell</div>
       <ToolScrollablePre
         className={cn(
-          "max-h-72 rounded-none bg-transparent px-3 pb-3 pt-1.5 text-foreground/78",
-          result?.isError && "text-red-700/90 dark:text-red-300/90",
+          "max-h-72 rounded-none bg-transparent px-3 pb-3 pt-2 text-foreground/80",
+          result?.isError && "text-destructive/90",
         )}
       >
         {command ? (
           <>
-            <span className="select-none text-muted-foreground/45">$ </span>
+            <span className="select-none text-muted-foreground/40">$ </span>
             {command}
             {output ? "\n" : null}
           </>
@@ -491,7 +485,7 @@ function CodePreview(props: { text: string; maxChars?: number }) {
   const { text, maxChars = 4000 } = props;
   if (!/\S/.test(text)) return null;
   return (
-    <ToolScrollablePre className="max-h-56 bg-black/[0.02] dark:bg-white/[0.03]">
+    <ToolScrollablePre className="max-h-56 bg-black/0 dark:bg-white/5">
       {previewText(text, maxChars)}
     </ToolScrollablePre>
   );
@@ -682,7 +676,7 @@ export function ToolResultDisplay({
           />
         </ToolSurface>
         {!details.reusedExisting && images.length > 0 ? (
-          <div className="overflow-hidden rounded-lg border border-black/[0.06] bg-white/[0.55] p-2 dark:border-white/[0.08] dark:bg-white/[0.04]">
+          <div className="overflow-hidden rounded-lg border border-border bg-white/60 p-2 dark:bg-white/5">
             {images.map((image, index) => (
               <ToolResultImagePreview
                 // biome-ignore lint/suspicious/noArrayIndexKey: 同一结果可含重复图片（内容签名会撞 key）；列表随结果整体重建，索引 key 稳定唯一。
@@ -842,15 +836,12 @@ export function ToolResultDisplay({
             {details.entries.map((entry) => (
               <div
                 key={`${entry.kind}-${entry.path}`}
-                className="flex items-start gap-2 rounded-md px-1.5 py-1 text-[calc(11px*var(--zone-font-scale,1))] leading-[1.5] even:bg-black/[0.02] dark:even:bg-white/[0.03]"
+                className="flex items-start gap-2 rounded-lg px-2 py-1 text-xs leading-[1.5] even:bg-black/0 dark:even:bg-white/5"
               >
-                <span className="mt-[1px] shrink-0 text-[calc(10px*var(--zone-font-scale,1))] font-semibold uppercase text-muted-foreground/35">
+                <span className="mt-px shrink-0 text-2xs font-semibold uppercase text-muted-foreground/40">
                   {entry.kind}
                 </span>
-                <PathDisplay
-                  path={entry.path}
-                  className="min-w-0 break-all font-mono text-[calc(11px*var(--zone-font-scale,1))]"
-                />
+                <PathDisplay path={entry.path} className="min-w-0 break-all font-mono text-xs" />
               </div>
             ))}
           </div>
@@ -880,7 +871,7 @@ export function ToolResultDisplay({
               <PathDisplay
                 key={entry}
                 path={entry}
-                className="block rounded-md px-1.5 py-1 break-all font-mono text-[calc(11px*var(--zone-font-scale,1))] leading-[1.5] even:bg-black/[0.02] dark:even:bg-white/[0.03]"
+                className="block rounded-lg px-2 py-1 break-all font-mono text-xs leading-[1.5] even:bg-black/0 dark:even:bg-white/5"
               />
             ))}
           </div>
@@ -907,15 +898,15 @@ export function ToolResultDisplay({
         </ToolSurface>
         {details.outputMode === "count" ? null : details.outputMode === "files" ? (
           <ToolSurface className="max-h-56 overflow-auto">
-            <div className="space-y-1.5">
+            <div className="space-y-2">
               {details.files.map((file) => (
                 <div
                   key={file.path}
-                  className="space-y-1 rounded-md px-1.5 py-1 even:bg-black/[0.02] dark:even:bg-white/[0.03]"
+                  className="space-y-1 rounded-lg px-2 py-1 even:bg-black/0 dark:even:bg-white/5"
                 >
                   <PathDisplay
                     path={file.path}
-                    className="block break-all font-mono text-[calc(11px*var(--zone-font-scale,1))] leading-[1.5]"
+                    className="block break-all font-mono text-xs leading-[1.5]"
                   />
                   <MetaTags
                     tags={[
@@ -935,14 +926,14 @@ export function ToolResultDisplay({
               <div
                 // biome-ignore lint/suspicious/noArrayIndexKey: multiline grep 同一行可命中多次产生字段全同的 match；列表随结果整体重建，索引 key 稳定唯一。
                 key={`${match.path}:${match.line}:${index}`}
-                className="rounded-md border border-black/[0.05] bg-white/[0.55] p-2 dark:border-white/[0.06] dark:bg-white/[0.03]"
+                className="rounded-lg border border-border bg-white/60 p-2 dark:bg-white/5"
               >
                 <div className="flex items-start gap-2">
                   <PathDisplay
                     path={match.path}
-                    className="min-w-0 break-all font-mono text-[calc(11px*var(--zone-font-scale,1))] leading-[1.5]"
+                    className="min-w-0 break-all font-mono text-xs leading-[1.5]"
                   />
-                  <span className="shrink-0 rounded bg-black/[0.04] px-1.5 py-[1px] text-[calc(10px*var(--zone-font-scale,1))] font-semibold text-muted-foreground/60 dark:bg-white/[0.05]">
+                  <span className="shrink-0 rounded-sm bg-black/5 px-2 py-px text-2xs font-semibold text-muted-foreground/60 dark:bg-white/5">
                     line {match.line}
                   </span>
                 </div>
@@ -976,7 +967,7 @@ export function ToolResultDisplay({
             { label: "issues", value: String(issues.length) },
           ]}
         />
-        <div className="text-[calc(12px*var(--zone-font-scale,1))] font-semibold leading-[1.45] text-foreground/90">
+        <div className="text-xs font-semibold leading-[1.45] text-foreground/90">
           Agent call rejected — no subagents were started
         </div>
         {issues.length > 0 ? (
@@ -1033,21 +1024,21 @@ export function ToolResultDisplay({
       <ToolSurface className="space-y-2">
         <MetaTags tags={tags} />
         <div className="space-y-2">
-          <div className="text-[calc(12px*var(--zone-font-scale,1))] font-semibold leading-[1.45] text-foreground/90">
+          <div className="text-xs font-semibold leading-[1.45] text-foreground/90">
             {agentDisplayName}
           </div>
           {agent.role ? (
-            <div className="text-[calc(11px*var(--zone-font-scale,1))] font-medium leading-[1.55] text-foreground/78">
+            <div className="text-xs font-medium leading-[1.55] text-foreground/80">
               <span className="text-muted-foreground">role</span> {agent.role}
             </div>
           ) : null}
           {agentTask ? (
-            <div className="break-words text-[calc(11px*var(--zone-font-scale,1))] font-medium leading-[1.6] text-foreground/80">
+            <div className="break-words text-xs font-medium leading-[1.6] text-foreground/80">
               <span className="text-muted-foreground">task</span> {agentTask}
             </div>
           ) : null}
           {shouldShowSubagentWorktreeLocation(agent) ? (
-            <div className="break-all text-[calc(10px*var(--zone-font-scale,1))] text-muted-foreground/70">
+            <div className="break-all text-2xs text-muted-foreground/80">
               {agent.branchName ? `${agent.branchName} | ` : ""}
               {agent.worktreeRoot}
             </div>
@@ -1136,12 +1127,12 @@ export function ToolResultDisplay({
           ]}
         />
         {details.subject ? (
-          <div className="break-words text-[calc(11.5px*var(--zone-font-scale,1))] font-semibold leading-[1.5] text-foreground/86">
+          <div className="break-words text-xs font-semibold leading-[1.5] text-foreground/90">
             {details.subject}
           </div>
         ) : null}
         {details.bodyPreview ? (
-          <div className="rounded-md border border-black/[0.05] bg-white/[0.45] px-2.5 py-2 text-[calc(11.5px*var(--zone-font-scale,1))] leading-[1.6] dark:border-white/[0.07] dark:bg-white/[0.03]">
+          <div className="rounded-lg border border-border bg-white/40 px-2 py-2 text-xs leading-[1.6] dark:bg-white/5">
             <Markdown content={details.bodyPreview} />
           </div>
         ) : null}
@@ -1152,7 +1143,7 @@ export function ToolResultDisplay({
   if (images.length > 0) {
     return (
       <div className="space-y-2">
-        <div className="overflow-hidden rounded-lg border border-black/[0.06] bg-white/[0.55] p-2 dark:border-white/[0.08] dark:bg-white/[0.04]">
+        <div className="overflow-hidden rounded-lg border border-border bg-white/60 p-2 dark:bg-white/5">
           {images.map((image, index) => (
             <ToolResultImagePreview
               // biome-ignore lint/suspicious/noArrayIndexKey: 同一结果可含重复图片（内容签名会撞 key）；列表随结果整体重建，索引 key 稳定唯一。

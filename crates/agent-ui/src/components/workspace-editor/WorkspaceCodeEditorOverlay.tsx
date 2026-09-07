@@ -41,6 +41,7 @@ import {
 } from "@liveagent/ui/lib/chat/mentionReferences";
 import * as monaco from "@liveagent/ui/lib/monacoEditor";
 import type { SftpClient } from "@liveagent/ui/lib/sftp/types";
+import { readUiFontSize } from "@liveagent/ui/lib/shared/typography";
 import { cn } from "@liveagent/ui/lib/shared/utils";
 import EditorWorker from "monaco-editor/editor/editor.worker.js?worker";
 import CssWorker from "monaco-editor/languages/features/css/css.worker.js?worker";
@@ -712,7 +713,7 @@ export function WorkspaceCodeEditorOverlay(props: WorkspaceCodeEditorOverlayProp
     if (!container || editorRef.current) return;
     const editor = monaco.editor.create(container, {
       automaticLayout: true,
-      fontSize: 13,
+      fontSize: readUiFontSize(container),
       fontLigatures: true,
       minimap: { enabled: true },
       model: null,
@@ -867,18 +868,18 @@ export function WorkspaceCodeEditorOverlay(props: WorkspaceCodeEditorOverlayProp
         "workspace-code-editor-overlay absolute inset-0 flex min-h-0 min-w-0 transform-gpu flex-col overflow-hidden border-r border-border bg-background transition-[opacity,transform,box-shadow] duration-200 ease-out motion-reduce:transition-none",
         workspaceOverlayStackClassName,
         isVisible
-          ? "pointer-events-auto translate-x-0 opacity-100 shadow-2xl"
-          : "pointer-events-none -translate-x-2 opacity-0 shadow-lg",
+          ? "pointer-events-auto translate-x-0 opacity-100 shadow-overlay"
+          : "pointer-events-none -translate-x-2 opacity-0 shadow-overlay",
       )}
     >
       <WorkspaceOverlayTitleBar />
-      <div className="flex h-11 shrink-0 items-center gap-2 border-b border-border bg-muted/45 px-3">
+      <div className="flex h-11 shrink-0 items-center gap-2 border-b border-border bg-muted/40 px-3">
         <FilePenLine className="h-4 w-4 shrink-0 text-primary" />
         <div className="min-w-0 flex-1">
-          <div className="truncate text-sm font-semibold leading-tight">
+          <div className="truncate text-base font-semibold leading-tight">
             {t("workspaceEditor.title")}
           </div>
-          <div className="truncate text-[11px] text-muted-foreground">
+          <div className="truncate text-xs text-muted-foreground">
             {activeTab ? activeTab.path : t("workspaceEditor.empty")}
           </div>
         </div>
@@ -944,7 +945,7 @@ export function WorkspaceCodeEditorOverlay(props: WorkspaceCodeEditorOverlayProp
             <div
               key={tab.key}
               className={cn(
-                "group flex h-8 max-w-[14rem] shrink-0 items-center gap-1.5 rounded-t-md border border-b-0 px-2 text-xs transition-colors",
+                "group flex h-8 max-w-[14rem] shrink-0 items-center gap-2 rounded-t-lg border border-b-0 px-2 text-xs transition-colors",
                 tab.key === activeKey
                   ? "border-border bg-muted text-foreground"
                   : "border-transparent text-muted-foreground hover:bg-muted/60 hover:text-foreground",
@@ -953,13 +954,13 @@ export function WorkspaceCodeEditorOverlay(props: WorkspaceCodeEditorOverlayProp
             >
               <button
                 type="button"
-                className="flex min-w-0 flex-1 items-center gap-1.5"
+                className="flex min-w-0 flex-1 items-center gap-2"
                 onClick={() => setActiveKey(tab.key)}
               >
                 {tab.status === "conflict" ? (
-                  <AlertTriangle className="h-3.5 w-3.5 shrink-0 text-amber-500" />
+                  <AlertTriangle className="h-3.5 w-3.5 shrink-0 text-warning" />
                 ) : tab.remote ? (
-                  <Cloud className="h-3.5 w-3.5 shrink-0 text-sky-500" />
+                  <Cloud className="h-3.5 w-3.5 shrink-0 text-info" />
                 ) : (
                   <FilePenLine className="h-3.5 w-3.5 shrink-0" />
                 )}
@@ -968,7 +969,7 @@ export function WorkspaceCodeEditorOverlay(props: WorkspaceCodeEditorOverlayProp
               </button>
               <button
                 type="button"
-                className="ml-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded text-muted-foreground/75 hover:bg-background hover:text-foreground"
+                className="ml-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-sm text-muted-foreground/80 hover:bg-background hover:text-foreground"
                 title={t("workspaceEditor.closeTab")}
                 onClick={(event) => {
                   event.stopPropagation();
@@ -983,13 +984,13 @@ export function WorkspaceCodeEditorOverlay(props: WorkspaceCodeEditorOverlayProp
       </div>
 
       {globalError || activeTab?.error ? (
-        <div className="flex shrink-0 items-center gap-2 border-b border-amber-500/20 bg-amber-500/10 px-3 py-2 text-xs text-amber-700 dark:text-amber-300">
+        <div className="flex shrink-0 items-center gap-2 border-b border-warning/20 bg-warning/10 px-3 py-2 text-xs text-warning">
           <AlertTriangle className="h-4 w-4 shrink-0" />
           <div className="min-w-0 flex-1 truncate">{activeTab?.error ?? globalError}</div>
           {activeTab?.status === "conflict" ? (
             <button
               type="button"
-              className="rounded border border-amber-500/30 px-2 py-1 text-[11px] font-medium hover:bg-amber-500/10"
+              className="rounded-sm border border-warning/40 px-2 py-1 text-xs font-medium hover:bg-warning/10"
               onClick={() => requestReloadTab(activeTab.key)}
             >
               {t("workspaceEditor.reloadFromDisk")}
@@ -1002,7 +1003,7 @@ export function WorkspaceCodeEditorOverlay(props: WorkspaceCodeEditorOverlayProp
       <div className="relative min-h-0 flex-1 bg-background" onContextMenu={openEditorContextMenu}>
         <div ref={containerRef} className={cn("absolute inset-0", !activeTab && "hidden")} />
         {!activeTab ? (
-          <div className="flex h-full flex-col items-center justify-center gap-3 p-6 text-center text-sm text-muted-foreground">
+          <div className="flex h-full flex-col items-center justify-center gap-3 p-6 text-center text-base text-muted-foreground">
             {isOpening ? (
               <Loader2 className="h-5 w-5 animate-spin" />
             ) : (
@@ -1010,7 +1011,7 @@ export function WorkspaceCodeEditorOverlay(props: WorkspaceCodeEditorOverlayProp
             )}
             <div>{isOpening ? t("workspaceEditor.opening") : t("workspaceEditor.emptyHint")}</div>
             {globalError ? (
-              <div className="max-w-md rounded-md border border-destructive/20 bg-destructive/5 px-3 py-2 text-xs text-destructive">
+              <div className="max-w-md rounded-lg border border-destructive/20 bg-destructive/5 px-3 py-2 text-xs text-destructive">
                 {globalError}
               </div>
             ) : null}
@@ -1021,7 +1022,7 @@ export function WorkspaceCodeEditorOverlay(props: WorkspaceCodeEditorOverlayProp
       {contextMenu ? (
         // biome-ignore lint/a11y/useKeyWithClickEvents: onClick 仅拦截冒泡防止 window "click" 关闭菜单；键盘经 Escape 与 menuitem 按钮操作。
         <div
-          className="editor-context-menu absolute z-50 w-[220px] overflow-hidden rounded-xl border border-border/60 bg-popover/80 p-1 text-sm text-popover-foreground shadow-2xl ring-1 ring-black/[0.03] backdrop-blur-xl dark:ring-white/[0.06]"
+          className="editor-context-menu absolute z-50 w-[220px] overflow-hidden rounded-2xl border border-border bg-popover/80 p-1 text-base text-popover-foreground shadow-overlay ring-1 ring-black/5 backdrop-blur-xl dark:ring-white/5"
           style={{ left: contextMenu.x, top: contextMenu.y }}
           role="menu"
           onClick={(event) => event.stopPropagation()}
@@ -1098,7 +1099,7 @@ export function WorkspaceCodeEditorOverlay(props: WorkspaceCodeEditorOverlayProp
         </div>
       ) : null}
 
-      <div className="flex h-7 shrink-0 items-center gap-3 border-t border-border bg-muted/45 px-3 text-[11px] text-muted-foreground">
+      <div className="flex h-7 shrink-0 items-center gap-3 border-t border-border bg-muted/40 px-3 text-xs text-muted-foreground">
         <span className="truncate">
           {activeTab ? dirname(activeTab.path) || "/" : t("workspaceEditor.noFile")}
         </span>
@@ -1120,7 +1121,7 @@ export function WorkspaceCodeEditorOverlay(props: WorkspaceCodeEditorOverlayProp
       >
         <AlertDialogContent className="max-w-md p-0">
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-sm">{dialogTitle}</AlertDialogTitle>
+            <AlertDialogTitle className="text-base">{dialogTitle}</AlertDialogTitle>
             <AlertDialogDescription className="leading-5">
               {dialogDescription}
             </AlertDialogDescription>
@@ -1157,7 +1158,7 @@ function ContextMenuItem(props: {
     <button
       type="button"
       role="menuitem"
-      className="flex h-[30px] w-full items-center gap-2.5 rounded-lg px-2 text-left text-[13px] text-popover-foreground/90 transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none"
+      className="flex h-[30px] w-full items-center gap-2 rounded-lg px-2 text-left text-xs text-popover-foreground/90 transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none"
       onClick={props.onClick}
     >
       {Icon ? (
@@ -1167,7 +1168,7 @@ function ContextMenuItem(props: {
       )}
       <span className="min-w-0 flex-1 truncate">{props.label}</span>
       {props.shortcut ? (
-        <kbd className="shrink-0 text-[11px] tracking-wide text-muted-foreground/60">
+        <kbd className="shrink-0 text-xs tracking-wide text-muted-foreground/60">
           {props.shortcut}
         </kbd>
       ) : null}
@@ -1189,7 +1190,7 @@ function IconButton(props: {
   return (
     <button
       type="button"
-      className="flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground disabled:pointer-events-none disabled:opacity-40"
+      className="flex h-8 w-8 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground disabled:pointer-events-none disabled:opacity-40"
       title={label}
       aria-label={label}
       disabled={disabled}

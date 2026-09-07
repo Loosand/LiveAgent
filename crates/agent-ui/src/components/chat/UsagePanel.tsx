@@ -98,7 +98,7 @@ export function UsagePanel(props: {
     <dl
       data-chat-usage-details
       className={cn(
-        "grid grid-cols-[minmax(0,1fr)_auto] gap-x-6 gap-y-1.5 text-[calc(12px*var(--zone-font-scale,1))] leading-5",
+        "grid grid-cols-[minmax(0,1fr)_auto] gap-x-6 gap-y-2 text-xs leading-5",
         className,
       )}
     >
@@ -133,7 +133,7 @@ export function UsageInfoPopover(props: {
           <button
             type="button"
             className={cn(
-              "chat-assistant-action inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted/50 hover:text-foreground",
+              "chat-assistant-action inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted/60 hover:text-foreground",
               className,
             )}
             title={label}
@@ -145,12 +145,12 @@ export function UsageInfoPopover(props: {
       />
       <PopoverContent side="top" align="start" sideOffset={6} className="w-60 p-3">
         <PopoverTitle className="text-xs">{label}</PopoverTitle>
-        <div className="mt-2 max-h-72 space-y-2.5 overflow-y-auto">
+        <div className="mt-2 max-h-72 space-y-2 overflow-y-auto">
           {displayableEntries.length > 0 ? (
             displayableEntries.map((entry, index) => (
-              <div key={entry.key} className={cn(index > 0 && "border-t border-border/55 pt-2.5")}>
+              <div key={entry.key} className={cn(index > 0 && "border-t border-border pt-2")}>
                 {displayableEntries.length > 1 ? (
-                  <div className="mb-1 text-[11px] font-medium text-muted-foreground/75">
+                  <div className="mb-1 text-xs font-medium text-muted-foreground/80">
                     {label} {index + 1}
                   </div>
                 ) : null}

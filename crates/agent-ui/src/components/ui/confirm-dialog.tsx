@@ -56,7 +56,7 @@ function ConfirmDialog(
       }}
     >
       <AlertDialogContent className="max-w-md">
-        <AlertDialogHeader className="pr-14">
+        <AlertDialogHeader className="pr-12">
           <AlertDialogTitle className="break-words">{title}</AlertDialogTitle>
           {subtitle ? (
             <div className="break-words text-xs leading-relaxed text-muted-foreground">
@@ -71,12 +71,12 @@ function ConfirmDialog(
 
         {description || detail ? (
           <AlertDialogBody>
-            <AlertDialogDescription className="space-y-2.5" render={<div />}>
+            <AlertDialogDescription className="space-y-2" render={<div />}>
               {description ? (
-                <div className="text-sm leading-relaxed text-foreground">{description}</div>
+                <div className="text-base leading-relaxed text-foreground">{description}</div>
               ) : null}
               {detail ? (
-                <div className="break-all rounded-md bg-muted/50 px-2.5 py-1.5 font-mono text-[calc(12px*var(--zone-font-scale,1))] leading-5 text-muted-foreground">
+                <div className="break-all rounded-lg bg-muted/60 px-2 py-2 font-mono text-xs leading-5 text-muted-foreground">
                   {detail}
                 </div>
               ) : null}

@@ -48,13 +48,13 @@ export function SkillsImportSourceTabs(props: {
             value={tool}
             disabled={props.disabled || !scan}
             aria-label={`${label}: ${scan?.exists ? scan.skills.length : 0}`}
-            className="group shrink-0 gap-1 rounded-md border border-transparent px-2 text-[11.5px] font-medium text-muted-foreground shadow-none hover:bg-muted/60 hover:text-foreground data-[active]:bg-muted data-[active]:text-foreground data-[active]:shadow-none disabled:opacity-60"
+            className="group shrink-0 gap-1 rounded-lg border border-transparent px-2 text-xs font-medium text-muted-foreground shadow-none hover:bg-muted/60 hover:text-foreground data-[active]:bg-muted data-[active]:text-foreground data-[active]:shadow-none disabled:opacity-60"
           >
             <ExternalToolSourceIcon tool={tool} className="h-3.5 w-3.5" />
             <span>{label}</span>
             <Badge
               variant="muted"
-              className="h-4 min-w-4 rounded-full px-1 text-[9.5px] font-semibold tabular-nums group-data-[active]:bg-foreground/[0.08] group-data-[active]:text-foreground"
+              className="h-4 min-w-4 rounded-full px-1 text-2xs font-semibold tabular-nums group-data-[active]:bg-foreground/10 group-data-[active]:text-foreground"
             >
               {scan ? (scan.exists ? scan.skills.length : "—") : "…"}
             </Badge>

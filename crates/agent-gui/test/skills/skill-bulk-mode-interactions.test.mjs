@@ -44,8 +44,8 @@ test("Skill cards use one selected border and never move on hover", () => {
   const imported = readSkillHubSource("SkillsImportView.tsx");
   const store = readSkillHubSource("SkillsStoreView.tsx");
 
-  assert.match(installed, /bulkSelected\s*\? "border-foreground bg-muted\/30 shadow-sm"/);
-  assert.match(imported, /checked\s*\? "border-foreground bg-muted\/30 shadow-sm"/);
+  assert.match(installed, /bulkSelected\s*\? "border-ring bg-muted\/40 shadow-control"/);
+  assert.match(imported, /checked\s*\? "border-ring bg-muted\/40 shadow-control"/);
   assert.match(imported, /focus-visible:ring-offset-2/);
   assert.doesNotMatch(installed, /hover:-translate|hover:scale|ring-2 ring-ring\/40/);
   assert.doesNotMatch(imported, /focus:ring-2|ring-2 ring-ring\/40/);

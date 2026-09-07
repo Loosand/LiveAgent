@@ -1189,7 +1189,7 @@ export function createAppMentionIcon(app?: MentionComposerAppMention) {
   icon.style.flexShrink = "0";
   icon.style.alignSelf = "center";
   // 圆角走标准 token（Shared UI Boundaries 禁用任意值圆角，内联样式同理）。
-  icon.classList.add("rounded-xs");
+  icon.classList.add("rounded-sm");
   return icon;
 }
 
@@ -1692,7 +1692,7 @@ export function createGitFileMentionChip(fileInput: MentionComposerGitFileMentio
   const fileName = file.path.split("/").pop() || file.path;
   chip.appendChild(document.createTextNode(fileName));
   const ref = document.createElement("span");
-  ref.className = "max-w-[8rem] truncate text-[calc(10px*var(--zone-font-scale,1))] opacity-70";
+  ref.className = "max-w-[8rem] truncate text-2xs opacity-70";
   ref.textContent = `@${file.refName || file.shortSha}`;
   chip.appendChild(ref);
   return chip;

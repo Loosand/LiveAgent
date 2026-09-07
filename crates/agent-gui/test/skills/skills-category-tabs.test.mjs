@@ -45,7 +45,7 @@ test("installed skill categories reuse the quiet store tabs with icons", () => {
   assert.match(controlsSource, /<Badge[\s\S]*h-4 min-w-4 rounded-full px-1/);
   // Height lives in the base TabsTrigger now, so the chips must NOT pin their
   // own — that drift is what made every tab row a different size.
-  assert.match(controlsSource, /shrink-0 gap-1 rounded-md px-2/);
+  assert.match(controlsSource, /shrink-0 gap-1 rounded-lg px-2/);
   assert.doesNotMatch(controlsSource, /<TabsTrigger[\s\S]{0,400}?"[^"]*\bh-\d/);
   assert.doesNotMatch(hubSource, /-mt-1\.5 border-b border-border/);
 });
@@ -72,8 +72,8 @@ test("primary and local-import navigation use standard Tabs without divider bord
 test("installed and local-import content keep stable scroll-area spacing", () => {
   assert.match(hubSource, /overflow-y-auto px-0\.5 pr-1 \[overflow-anchor:none\]/);
   assert.match(hubSource, /<div className="flex flex-col gap-3">/);
-  assert.match(importSource, /overflow-y-auto px-1\.5 pb-4 pt-1\.5/);
+  assert.match(importSource, /overflow-y-auto px-2 pb-4 pt-2/);
   assert.match(importSource, /<div className="flex flex-col gap-3">/);
-  assert.doesNotMatch(hubSource, /overflow-y-auto px-0\.5 pr-1 pt-1\.5/);
-  assert.doesNotMatch(importSource, /sticky top-0[^\"]*(?:pb-1\.5|pt-1\.5)/);
+  assert.doesNotMatch(hubSource, /overflow-y-auto px-0\.5 pr-1 pt-2/);
+  assert.doesNotMatch(importSource, /sticky top-0[^\"]*(?:pb-1\.5|pt-2)/);
 });

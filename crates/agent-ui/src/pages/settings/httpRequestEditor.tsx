@@ -154,10 +154,10 @@ export function HttpRequestListEditor({
         return (
           <div
             key={request.id}
-            className="overflow-hidden rounded-xl border border-border/60 bg-background/80 transition-colors hover:border-border/80"
+            className="overflow-hidden rounded-2xl border border-border bg-background/80 transition-colors hover:border-input"
           >
             <div className="settings-http-row flex items-center gap-3 px-4 py-3">
-              <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-emerald-500/10 text-xs font-bold text-emerald-600 dark:text-emerald-400">
+              <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-success/10 text-xs font-bold text-success">
                 {index + 1}
               </div>
 
@@ -198,7 +198,7 @@ export function HttpRequestListEditor({
                   type="button"
                   onClick={() => onExpand(isExpanded ? null : request.id)}
                   className={cn(
-                    "flex h-7 w-7 items-center justify-center rounded-md transition-colors hover:bg-muted/50",
+                    "flex h-7 w-7 items-center justify-center rounded-lg transition-colors hover:bg-muted/60",
                     isExpanded ? "text-primary" : "text-muted-foreground",
                   )}
                 >
@@ -218,7 +218,7 @@ export function HttpRequestListEditor({
                       onExpand(null);
                     }
                   }}
-                  className="flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive"
+                  className="flex h-7 w-7 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive"
                   title={t("settings.delete")}
                 >
                   <Trash2 className="h-3.5 w-3.5" />
@@ -227,9 +227,9 @@ export function HttpRequestListEditor({
             </div>
 
             {isExpanded ? (
-              <div className="border-t border-border/30 bg-muted/10 px-4 py-4">
+              <div className="border-t border-border bg-muted/10 px-4 py-4">
                 <div className="settings-form-grid grid gap-4 sm:grid-cols-2">
-                  <div className="space-y-1.5">
+                  <div className="space-y-2">
                     <Label className="text-xs font-medium text-muted-foreground">Headers</Label>
                     <Textarea
                       value={request.headersText}
@@ -241,7 +241,7 @@ export function HttpRequestListEditor({
                       }}
                     />
                   </div>
-                  <div className="space-y-1.5">
+                  <div className="space-y-2">
                     <Label className="text-xs font-medium text-muted-foreground">Body</Label>
                     {bodyEnabled ? (
                       <Textarea
@@ -254,7 +254,7 @@ export function HttpRequestListEditor({
                         }}
                       />
                     ) : (
-                      <div className="flex min-h-[100px] items-center justify-center rounded-lg border border-dashed border-border/50 bg-muted/10 text-xs text-muted-foreground/60">
+                      <div className="flex min-h-[100px] items-center justify-center rounded-lg border border-dashed border-border bg-muted/10 text-xs text-muted-foreground/60">
                         {t("settings.cronHttpBodyDisabled")}
                       </div>
                     )}
@@ -267,8 +267,8 @@ export function HttpRequestListEditor({
       })}
 
       {requests.length === 0 ? (
-        <div className="rounded-xl border border-dashed border-border/50 bg-muted/5 py-8 text-center">
-          <Globe className="mx-auto h-6 w-6 text-muted-foreground/30" />
+        <div className="rounded-2xl border border-dashed border-border bg-muted/5 py-8 text-center">
+          <Globe className="mx-auto h-6 w-6 text-muted-foreground/40" />
           <p className="mt-2 text-xs text-muted-foreground">
             {t("settings.cronHttpRequestRequired")}
           </p>

@@ -367,7 +367,7 @@ export function CronTaskModal({
       >
         {/* Header */}
         <DialogHeader className="flex-row items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-500/10 text-amber-500">
+          <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-warning/10 text-warning">
             <Clock3 className="h-5 w-5" />
           </div>
           <div className="min-w-0 flex-1">
@@ -381,17 +381,17 @@ export function CronTaskModal({
         {/* Body */}
         <DialogBody className="p-0 max-[820px]:p-0">
           {/* Step 1: Basic Info */}
-          <div className="border-b border-border/30 px-6 py-5">
+          <div className="border-b border-border px-6 py-4">
             <div className="mb-4 flex items-center gap-2">
-              <div className="flex h-6 w-6 items-center justify-center rounded-md bg-primary/10 text-[11px] font-bold text-primary">
+              <div className="flex h-6 w-6 items-center justify-center rounded-lg bg-primary/10 text-xs font-bold text-primary">
                 1
               </div>
-              <span className="text-sm font-semibold">{t("settings.cronStepBasic")}</span>
+              <span className="text-base font-semibold">{t("settings.cronStepBasic")}</span>
             </div>
 
             <div className="space-y-4">
               <div className="settings-form-grid grid gap-4 sm:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_9rem]">
-                <div className="space-y-1.5">
+                <div className="space-y-2">
                   <Label className="text-xs font-medium text-muted-foreground">
                     {t("settings.cronTaskName")}
                   </Label>
@@ -404,7 +404,7 @@ export function CronTaskModal({
                     }}
                   />
                 </div>
-                <div className="space-y-1.5">
+                <div className="space-y-2">
                   <Label className="text-xs font-medium text-muted-foreground">
                     {t("settings.cronExpression")}
                   </Label>
@@ -418,7 +418,7 @@ export function CronTaskModal({
                     }}
                   />
                 </div>
-                <div className="space-y-1.5">
+                <div className="space-y-2">
                   <Label className="text-xs font-medium text-muted-foreground">
                     {t("settings.cronRemainingExecutions")}
                   </Label>
@@ -436,7 +436,7 @@ export function CronTaskModal({
                 </div>
               </div>
               <div className="settings-form-grid grid gap-4 sm:grid-cols-[minmax(0,1fr)_9rem]">
-                <div className="space-y-1.5">
+                <div className="space-y-2">
                   <Label className="text-xs font-medium text-muted-foreground">
                     {t("settings.cronTaskDesc")}
                   </Label>
@@ -449,7 +449,7 @@ export function CronTaskModal({
                     }}
                   />
                 </div>
-                <div className="space-y-1.5">
+                <div className="space-y-2">
                   <Label className="text-xs font-medium text-muted-foreground">
                     {t("settings.cronTimeoutSeconds")}
                   </Label>
@@ -464,7 +464,7 @@ export function CronTaskModal({
                       setTimeoutSeconds(next);
                     }}
                   />
-                  <p className="text-[11px] text-muted-foreground/70">
+                  <p className="text-xs text-muted-foreground/80">
                     {t("settings.cronTimeoutSecondsMaxHint").replace(
                       "{max}",
                       String(maxCronTimeoutSeconds(type)),
@@ -476,12 +476,12 @@ export function CronTaskModal({
           </div>
 
           {/* Step 2: Task Type */}
-          <div className="border-b border-border/30 px-6 py-5">
+          <div className="border-b border-border px-6 py-4">
             <div className="mb-4 flex items-center gap-2">
-              <div className="flex h-6 w-6 items-center justify-center rounded-md bg-primary/10 text-[11px] font-bold text-primary">
+              <div className="flex h-6 w-6 items-center justify-center rounded-lg bg-primary/10 text-xs font-bold text-primary">
                 2
               </div>
-              <span className="text-sm font-semibold">{t("settings.cronStepType")}</span>
+              <span className="text-base font-semibold">{t("settings.cronStepType")}</span>
             </div>
 
             <div className="settings-choice-grid settings-cron-type-grid grid grid-cols-3 gap-3">
@@ -493,18 +493,16 @@ export function CronTaskModal({
                   setType("bash");
                 }}
                 className={cn(
-                  "group relative flex items-start gap-3 rounded-xl border-2 p-4 text-left transition-all",
+                  "group relative flex items-start gap-3 rounded-2xl border-2 p-4 text-left transition-all",
                   type === "bash"
-                    ? "border-blue-500/50 bg-blue-500/5 shadow-sm shadow-blue-500/10"
-                    : "border-border/60 bg-background hover:border-border hover:bg-muted/20",
+                    ? "border-info/60 bg-info/5 shadow-control shadow-info/10"
+                    : "border-border bg-background hover:border-input hover:bg-muted/20",
                 )}
               >
                 <div
                   className={cn(
-                    "flex h-10 w-10 shrink-0 items-center justify-center rounded-xl transition-colors",
-                    type === "bash"
-                      ? "bg-blue-500/15 text-blue-500"
-                      : "bg-muted/60 text-muted-foreground",
+                    "flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl transition-colors",
+                    type === "bash" ? "bg-info/20 text-info" : "bg-muted/60 text-muted-foreground",
                   )}
                 >
                   <Terminal className="h-5 w-5" />
@@ -512,8 +510,8 @@ export function CronTaskModal({
                 <div className="min-w-0 flex-1">
                   <div
                     className={cn(
-                      "text-sm font-semibold",
-                      type === "bash" ? "text-blue-600 dark:text-blue-400" : "text-foreground",
+                      "text-base font-semibold",
+                      type === "bash" ? "text-info" : "text-foreground",
                     )}
                   >
                     {t("settings.cronTypeBash")}
@@ -524,7 +522,7 @@ export function CronTaskModal({
                 </div>
                 {type === "bash" ? (
                   <div className="absolute right-3 top-3">
-                    <CheckCircle2 className="h-4.5 w-4.5 text-blue-500" />
+                    <CheckCircle2 className="h-4.5 w-4.5 text-info" />
                   </div>
                 ) : null}
               </button>
@@ -537,17 +535,17 @@ export function CronTaskModal({
                   setType("http");
                 }}
                 className={cn(
-                  "group relative flex items-start gap-3 rounded-xl border-2 p-4 text-left transition-all",
+                  "group relative flex items-start gap-3 rounded-2xl border-2 p-4 text-left transition-all",
                   type === "http"
-                    ? "border-emerald-500/50 bg-emerald-500/5 shadow-sm shadow-emerald-500/10"
-                    : "border-border/60 bg-background hover:border-border hover:bg-muted/20",
+                    ? "border-success/60 bg-success/5 shadow-control shadow-success/10"
+                    : "border-border bg-background hover:border-input hover:bg-muted/20",
                 )}
               >
                 <div
                   className={cn(
-                    "flex h-10 w-10 shrink-0 items-center justify-center rounded-xl transition-colors",
+                    "flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl transition-colors",
                     type === "http"
-                      ? "bg-emerald-500/15 text-emerald-500"
+                      ? "bg-success/20 text-success"
                       : "bg-muted/60 text-muted-foreground",
                   )}
                 >
@@ -556,10 +554,8 @@ export function CronTaskModal({
                 <div className="min-w-0 flex-1">
                   <div
                     className={cn(
-                      "text-sm font-semibold",
-                      type === "http"
-                        ? "text-emerald-600 dark:text-emerald-400"
-                        : "text-foreground",
+                      "text-base font-semibold",
+                      type === "http" ? "text-success" : "text-foreground",
                     )}
                   >
                     {t("settings.cronTypeHttp")}
@@ -570,7 +566,7 @@ export function CronTaskModal({
                 </div>
                 {type === "http" ? (
                   <div className="absolute right-3 top-3">
-                    <CheckCircle2 className="h-4.5 w-4.5 text-emerald-500" />
+                    <CheckCircle2 className="h-4.5 w-4.5 text-success" />
                   </div>
                 ) : null}
               </button>
@@ -583,17 +579,17 @@ export function CronTaskModal({
                   setType("prompt");
                 }}
                 className={cn(
-                  "group relative flex items-start gap-3 rounded-xl border-2 p-4 text-left transition-all",
+                  "group relative flex items-start gap-3 rounded-2xl border-2 p-4 text-left transition-all",
                   type === "prompt"
-                    ? "border-violet-500/50 bg-violet-500/5 shadow-sm shadow-violet-500/10"
-                    : "border-border/60 bg-background hover:border-border hover:bg-muted/20",
+                    ? "border-activity/60 bg-activity/5 shadow-control shadow-activity/10"
+                    : "border-border bg-background hover:border-input hover:bg-muted/20",
                 )}
               >
                 <div
                   className={cn(
-                    "flex h-10 w-10 shrink-0 items-center justify-center rounded-xl transition-colors",
+                    "flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl transition-colors",
                     type === "prompt"
-                      ? "bg-violet-500/15 text-violet-500"
+                      ? "bg-activity/20 text-activity"
                       : "bg-muted/60 text-muted-foreground",
                   )}
                 >
@@ -602,10 +598,8 @@ export function CronTaskModal({
                 <div className="min-w-0 flex-1">
                   <div
                     className={cn(
-                      "text-sm font-semibold",
-                      type === "prompt"
-                        ? "text-violet-600 dark:text-violet-400"
-                        : "text-foreground",
+                      "text-base font-semibold",
+                      type === "prompt" ? "text-activity" : "text-foreground",
                     )}
                   >
                     {t("settings.cronTypePrompt")}
@@ -616,7 +610,7 @@ export function CronTaskModal({
                 </div>
                 {type === "prompt" ? (
                   <div className="absolute right-3 top-3">
-                    <CheckCircle2 className="h-4.5 w-4.5 text-violet-500" />
+                    <CheckCircle2 className="h-4.5 w-4.5 text-activity" />
                   </div>
                 ) : null}
               </button>
@@ -624,36 +618,36 @@ export function CronTaskModal({
 
             {/* Prompt-type run semantics belong to the type choice, not the config step */}
             {type === "prompt" ? (
-              <div className="mt-3 rounded-xl border border-violet-500/15 bg-violet-500/[0.04] px-3.5 py-3 text-xs leading-relaxed text-muted-foreground">
+              <div className="mt-3 rounded-2xl border border-activity/20 bg-activity/5 px-4 py-3 text-xs leading-relaxed text-muted-foreground">
                 {t("settings.cronPromptRunHint")}
               </div>
             ) : null}
           </div>
 
           {/* Step 3: Configuration */}
-          <div className="px-6 py-5">
+          <div className="px-6 py-4">
             <DialogSectionHeader>
               <div className="flex items-center gap-2">
-                <div className="flex h-6 w-6 items-center justify-center rounded-md bg-primary/10 text-[11px] font-bold text-primary">
+                <div className="flex h-6 w-6 items-center justify-center rounded-lg bg-primary/10 text-xs font-bold text-primary">
                   3
                 </div>
-                <span className="text-sm font-semibold">{t("settings.cronStepConfig")}</span>
+                <span className="text-base font-semibold">{t("settings.cronStepConfig")}</span>
               </div>
 
               {type === "bash" ? (
-                <span className="rounded-md bg-blue-500/10 px-2 py-0.5 text-[11px] font-medium text-blue-600 dark:text-blue-400">
+                <span className="rounded-lg bg-info/10 px-2 py-0.5 text-xs font-medium text-info">
                   {scriptLineCount} {t("settings.cronCommandsCount")}
                 </span>
               ) : type === "http" ? (
                 <div className="flex items-center gap-2">
-                  <span className="rounded-md bg-emerald-500/10 px-2 py-0.5 text-[11px] font-medium text-emerald-600 dark:text-emerald-400">
+                  <span className="rounded-lg bg-success/10 px-2 py-0.5 text-xs font-medium text-success">
                     {requests.length} {t("settings.cronRequestsCount")}
                   </span>
                   <Button
                     type="button"
                     variant="outline"
                     size="sm"
-                    className="h-7 gap-1 px-2.5 text-xs"
+                    className="h-7 gap-1 px-2 text-xs"
                     onClick={() => {
                       setFormError(null);
                       const draft = createEmptyRequestDraft();
@@ -671,7 +665,7 @@ export function CronTaskModal({
             {/* Workspace pin — first row of the config step; bash/prompt run
                 inside a directory, http does not */}
             {type !== "http" ? (
-              <div className="mb-4 space-y-1.5">
+              <div className="mb-4 space-y-2">
                 <Label className="text-xs font-medium text-muted-foreground">
                   {t("settings.cronWorkdirLabel")}
                 </Label>
@@ -696,9 +690,9 @@ export function CronTaskModal({
                     <span className="flex min-w-0 flex-1 items-center gap-2 text-left">
                       <span
                         className={cn(
-                          "flex h-6 w-6 shrink-0 items-center justify-center rounded-md transition-colors",
+                          "flex h-6 w-6 shrink-0 items-center justify-center rounded-lg transition-colors",
                           customWorkdir || workdir
-                            ? "bg-amber-500/10 text-amber-500"
+                            ? "bg-warning/10 text-warning"
                             : "bg-muted/60 text-muted-foreground",
                         )}
                       >
@@ -743,7 +737,7 @@ export function CronTaskModal({
                   </SelectContent>
                 </Select>
                 {customWorkdir ? (
-                  <div className="flex items-center gap-1.5">
+                  <div className="flex items-center gap-2">
                     <Input
                       value={workdir}
                       placeholder={t("settings.cronWorkdirCustomPlaceholder")}
@@ -781,13 +775,13 @@ export function CronTaskModal({
                   </div>
                 ) : workdir ? (
                   <div
-                    className="truncate font-mono text-[11px] text-muted-foreground/80"
+                    className="truncate font-mono text-xs text-muted-foreground/80"
                     title={workdir}
                   >
                     {workdir}
                   </div>
                 ) : (
-                  <div className="text-[11px] text-muted-foreground/60">
+                  <div className="text-xs text-muted-foreground/60">
                     {t("settings.cronWorkdirHint")}
                   </div>
                 )}
@@ -796,13 +790,13 @@ export function CronTaskModal({
 
             {/* Shell script config */}
             {type === "bash" ? (
-              <div className="overflow-hidden rounded-xl border border-border/60 bg-muted/20">
-                <div className="flex items-center justify-between border-b border-border/30 px-3 py-2">
-                  <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
+              <div className="overflow-hidden rounded-2xl border border-border bg-muted/20">
+                <div className="flex items-center justify-between border-b border-border px-3 py-2">
+                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
                     <Terminal className="h-3 w-3" />
                     <span className="font-medium">{t("settings.cronCommandList")}</span>
                   </div>
-                  <span className="text-[11px] text-muted-foreground/60">
+                  <span className="text-xs text-muted-foreground/60">
                     {t("settings.cronCommandHint")}
                   </span>
                 </div>
@@ -834,13 +828,13 @@ export function CronTaskModal({
             {type === "prompt" ? (
               <div className="space-y-3">
                 {!autoPromptSupported ? (
-                  <div className="rounded-xl border border-amber-500/20 bg-amber-500/[0.05] px-3.5 py-3 text-xs leading-relaxed text-amber-700 dark:text-amber-300">
+                  <div className="rounded-2xl border border-warning/20 bg-warning/5 px-4 py-3 text-xs leading-relaxed text-warning">
                     {t("settings.cronPromptAgentModeOnlyHint")}
                   </div>
                 ) : null}
 
                 <div className="settings-form-grid grid gap-4 sm:grid-cols-[minmax(0,1fr)_9rem]">
-                  <div className="space-y-1.5">
+                  <div className="space-y-2">
                     <Label className="text-xs font-medium text-muted-foreground">
                       {t("settings.cronPromptModelLabel")}
                     </Label>
@@ -859,7 +853,7 @@ export function CronTaskModal({
                       }}
                     />
                   </div>
-                  <div className="space-y-1.5">
+                  <div className="space-y-2">
                     <Label className="text-xs font-medium text-muted-foreground">
                       {t("settings.cronReasoningLabel")}
                     </Label>
@@ -886,20 +880,20 @@ export function CronTaskModal({
                   </div>
                 </div>
                 {promptModelOptions.length === 0 ? (
-                  <div className="rounded-lg border border-amber-500/20 bg-amber-500/[0.04] px-3 py-2 text-xs text-amber-700 dark:text-amber-300">
+                  <div className="rounded-lg border border-warning/20 bg-warning/5 px-3 py-2 text-xs text-warning">
                     {t("settings.cronPromptModelEmpty")}
                   </div>
                 ) : null}
 
-                <div className="overflow-hidden rounded-xl border border-border/60 bg-muted/20">
-                  <div className="flex items-center gap-1.5 border-b border-border/30 px-3 py-2 text-[11px] text-muted-foreground">
+                <div className="overflow-hidden rounded-2xl border border-border bg-muted/20">
+                  <div className="flex items-center gap-2 border-b border-border px-3 py-2 text-xs text-muted-foreground">
                     <MessageSquare className="h-3 w-3" />
                     <span className="font-medium">{t("settings.cronPromptLabel")}</span>
                   </div>
                   <Textarea
                     value={prompt}
                     placeholder={t("settings.cronPromptPlaceholder")}
-                    className="min-h-[180px] resize-y rounded-none border-0 bg-transparent text-sm leading-relaxed focus-visible:ring-0"
+                    className="min-h-[180px] resize-y rounded-none border-0 bg-transparent text-base leading-relaxed focus-visible:ring-0"
                     onChange={(e) => {
                       setFormError(null);
                       setPrompt(e.currentTarget.value);
@@ -915,12 +909,12 @@ export function CronTaskModal({
         <DialogFooter className="min-[821px]:justify-between">
           <div className="min-w-0 flex-1">
             {formError ? (
-              <div className="flex items-center gap-1.5 text-xs text-destructive">
+              <div className="flex items-center gap-2 text-xs text-destructive">
                 <AlertTriangle className="h-3.5 w-3.5 shrink-0" />
                 <span className="truncate">{formError}</span>
               </div>
             ) : formReady ? (
-              <div className="flex items-center gap-1.5 text-xs text-emerald-600 dark:text-emerald-400">
+              <div className="flex items-center gap-2 text-xs text-success">
                 <Check className="h-3.5 w-3.5" />
                 <span>{t("settings.agentsReady")}</span>
               </div>

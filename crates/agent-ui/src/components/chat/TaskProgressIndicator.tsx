@@ -62,7 +62,7 @@ function TaskStatusIcon({ state, className }: { state: DisplayState; className?:
             "origin-center",
             state === "running"
               ? "animate-spin stroke-[hsl(var(--tool-list-accent))] motion-reduce:animate-none"
-              : "stroke-amber-600 dark:stroke-amber-300",
+              : "stroke-warning",
           )}
           cx={ICON_SIZE / 2}
           cy={ICON_SIZE / 2}
@@ -135,12 +135,12 @@ export function TaskProgressIndicator({
       <button
         aria-describedby={panelId}
         aria-label={summaryText}
-        className="flex h-8 max-w-full items-center gap-2 rounded-full bg-background/92 px-3 text-[12px] text-muted-foreground shadow-[0_0_0_1px_rgba(0,0,0,0.07),0_1px_2px_-1px_rgba(0,0,0,0.08),0_8px_24px_-16px_rgba(15,23,42,0.38)] outline-none backdrop-blur-xl backdrop-saturate-150 transition-[background-color,box-shadow] hover:bg-background focus-visible:ring-2 focus-visible:ring-ring/55 motion-reduce:transition-none dark:shadow-[0_0_0_1px_rgba(255,255,255,0.12),0_8px_24px_-16px_rgba(0,0,0,0.72)]"
+        className="flex h-8 max-w-full items-center gap-2 rounded-full bg-background/90 px-3 text-xs text-muted-foreground shadow-overlay outline-none backdrop-blur-xl backdrop-saturate-150 transition-[background-color,box-shadow] hover:bg-background focus-visible:ring-2 focus-visible:ring-ring/60 motion-reduce:transition-none"
         data-task-progress-toggle=""
         type="button"
       >
         <TaskStatusIcon state={displayState} />
-        <span className="truncate font-medium tabular-nums text-foreground/85">
+        <span className="truncate font-medium tabular-nums text-foreground/90">
           {displayState === "completed" ? labels.completed : labels.step}
         </span>
       </button>
@@ -155,7 +155,7 @@ export function TaskProgressIndicator({
       >
         <ul
           aria-label={labels.title}
-          className="flex max-h-[min(300px,42vh)] flex-col gap-2.5 overflow-x-hidden overflow-y-auto overscroll-contain rounded-2xl bg-background/95 px-3 py-2.5 shadow-[0_0_0_1px_rgba(0,0,0,0.07),0_2px_4px_-2px_rgba(0,0,0,0.08),0_16px_40px_-20px_rgba(15,23,42,0.45)] backdrop-blur-xl backdrop-saturate-150 [scrollbar-gutter:stable] dark:shadow-[0_0_0_1px_rgba(255,255,255,0.12),0_16px_40px_-20px_rgba(0,0,0,0.8)]"
+          className="flex max-h-[min(300px,42vh)] flex-col gap-2 overflow-x-hidden overflow-y-auto overscroll-contain rounded-2xl bg-background px-3 py-2 shadow-overlay backdrop-blur-xl backdrop-saturate-150 [scrollbar-gutter:stable]"
         >
           {snapshot.tasks.map((task) => {
             const taskDisplayState = getTaskDisplayState(task, isConversationRunning);
@@ -169,11 +169,11 @@ export function TaskProgressIndicator({
             return (
               <li
                 aria-current={task.status === "in_progress" ? "step" : undefined}
-                className="flex items-start gap-2.5"
+                className="flex items-start gap-2"
                 data-task-status={task.status}
                 key={task.id}
               >
-                <TaskStatusIcon className="mt-[3px]" state={taskDisplayState} />
+                <TaskStatusIcon className="mt-1" state={taskDisplayState} />
                 {/* 标题最多两行，超长路径/URL 之类无空格串强制折行，绝不再把列表撑出横向滚动条。 */}
                 <TooltipTrigger
                   closeOnClick={false}
@@ -183,12 +183,12 @@ export function TaskProgressIndicator({
                   render={
                     <span
                       className={cn(
-                        "line-clamp-2 min-w-0 flex-1 break-words text-pretty text-[12.5px] leading-5",
+                        "line-clamp-2 min-w-0 flex-1 break-words text-pretty text-xs leading-5",
                         taskDisplayState === "completed"
                           ? "text-muted-foreground"
                           : taskDisplayState === "running"
                             ? "font-medium text-foreground"
-                            : "text-foreground/70",
+                            : "text-foreground/80",
                       )}
                     />
                   }

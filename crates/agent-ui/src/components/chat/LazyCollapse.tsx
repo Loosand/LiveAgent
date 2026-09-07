@@ -38,7 +38,7 @@ export function LazyCollapse(props: {
         // -mx-3/px-3: the collapse clips (overflow-hidden below, plus
         // `contain: paint` that callers may add on this root). Disclosure
         // headers inside bleed 6px sideways so their hover background and
-        // rounded corners sit outside the text box; without this outdent the
+        // rounded-sm corners sit outside the text box; without this outdent the
         // clip lands exactly on the text edge and erases them. Outdent equals
         // padding, so content position is unchanged.
         "-mx-3 grid h-min origin-top content-start px-3 transition-[grid-template-rows] duration-[220ms] ease-[cubic-bezier(0.16,1,0.3,1)] motion-reduce:transition-none",

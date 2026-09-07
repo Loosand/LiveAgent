@@ -31,7 +31,7 @@ export function ConversationPaneHarness(props: ConversationPaneHarnessProps) {
             key={pane.paneId}
             className={
               index === 0
-                ? "relative flex min-h-0 min-w-0 flex-1 overflow-hidden border-r border-border/60"
+                ? "relative flex min-h-0 min-w-0 flex-1 overflow-hidden border-r border-border"
                 : "relative flex min-h-0 min-w-0 flex-1 overflow-hidden"
             }
           >

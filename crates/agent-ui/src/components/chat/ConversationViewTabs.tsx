@@ -25,7 +25,7 @@ export function ConversationViewTabs(props: {
       role="tablist"
       aria-orientation="horizontal"
       className={cn(
-        "flex shrink-0 items-center gap-0.5 rounded-lg border border-border/60 bg-muted/40 p-0.5",
+        "flex shrink-0 items-center gap-0.5 rounded-lg border border-border bg-muted/40 p-0.5",
         props.className,
       )}
     >
@@ -39,9 +39,9 @@ export function ConversationViewTabs(props: {
             role="tab"
             aria-selected={selected}
             className={cn(
-              "flex h-6 items-center gap-1.5 rounded-md px-2 text-xs transition-colors",
-              "text-muted-foreground hover:bg-background/70 hover:text-foreground",
-              selected && "bg-background font-medium text-foreground shadow-sm",
+              "flex h-6 items-center gap-2 rounded-lg px-2 text-xs transition-colors",
+              "text-muted-foreground hover:bg-background/80 hover:text-foreground",
+              selected && "bg-background font-medium text-foreground shadow-control",
             )}
             onClick={() => {
               if (!selected) props.onChange(tab.id);

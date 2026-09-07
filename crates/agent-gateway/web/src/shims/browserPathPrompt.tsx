@@ -43,7 +43,7 @@ function BrowserPathPromptDialog(props: {
             <DialogTitle>{options.title}</DialogTitle>
             <DialogDescription className="mt-1 text-xs">{options.description}</DialogDescription>
           </DialogHeader>
-          <DialogBody className="space-y-2 py-5">
+          <DialogBody className="space-y-2 py-4">
             <Label htmlFor={options.inputId}>{options.label}</Label>
             <Input
               id={options.inputId}

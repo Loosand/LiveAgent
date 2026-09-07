@@ -135,11 +135,11 @@ export function AboutSection(props: AboutSectionProps) {
     <div className="space-y-6">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div className="flex min-w-0 items-start gap-3">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/10">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-primary/10">
             <Info className="h-5 w-5 text-primary" />
           </div>
           <div className="min-w-0">
-            <h3 className="text-sm font-semibold">{t("settings.aboutTitle")}</h3>
+            <h3 className="text-base font-semibold">{t("settings.aboutTitle")}</h3>
             <p className="mt-1 max-w-2xl text-xs leading-relaxed text-muted-foreground">
               {t("settings.aboutDescription")}
             </p>
@@ -176,27 +176,27 @@ export function AboutSection(props: AboutSectionProps) {
       </div>
 
       <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_360px]">
-        <section className="space-y-4 rounded-2xl border border-border/60 bg-card p-4">
+        <section className="space-y-4 rounded-2xl border border-border bg-card p-4">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div>
               <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
                 {t("settings.aboutCurrentVersion")}
               </div>
-              <div className="mt-1 text-2xl font-semibold leading-none tabular-nums">
+              <div className="mt-1 text-base font-semibold leading-none tabular-nums">
                 v{currentVersion}
               </div>
             </div>
-            <div className="inline-flex items-center gap-1.5 rounded-full border border-border/70 bg-muted/45 px-2.5 py-1 text-xs font-medium">
+            <div className="inline-flex items-center gap-2 rounded-full border border-border bg-muted/40 px-2 py-1 text-xs font-medium">
               <Sparkles className="h-3.5 w-3.5 text-primary" />
               {channelLabel}
             </div>
           </div>
 
-          <div className="rounded-xl border border-border/60 bg-background/70 p-4">
+          <div className="rounded-2xl border border-border bg-background/80 p-4">
             <div className="flex items-start gap-3">
               <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-muted">
                 {checkState.status === "error" || restartRequiredNotice ? (
-                  <AlertTriangle className="h-4 w-4 text-amber-500" />
+                  <AlertTriangle className="h-4 w-4 text-warning" />
                 ) : restarting ? (
                   <Loader2 className="h-4 w-4 animate-spin text-primary" />
                 ) : latestResult?.available || latestResult?.manualDownload ? (
@@ -204,24 +204,24 @@ export function AboutSection(props: AboutSectionProps) {
                 ) : checking ? (
                   <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
                 ) : (
-                  <CheckCircle2 className="h-4 w-4 text-emerald-500" />
+                  <CheckCircle2 className="h-4 w-4 text-success" />
                 )}
               </div>
               <div className="min-w-0 flex-1" role="status" aria-live="polite" aria-atomic="true">
-                <div className="text-sm font-semibold">{statusTitle}</div>
+                <div className="text-base font-semibold">{statusTitle}</div>
                 <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
                   {statusDescription}
                 </p>
 
                 {nextVersion ? (
                   <div className="mt-3 grid gap-2 text-xs sm:grid-cols-2">
-                    <div className="rounded-lg bg-muted/45 px-3 py-2">
+                    <div className="rounded-lg bg-muted/40 px-3 py-2">
                       <div className="text-muted-foreground">
                         {t("settings.aboutLatestVersion")}
                       </div>
                       <div className="mt-0.5 font-medium tabular-nums">v{nextVersion}</div>
                     </div>
-                    <div className="rounded-lg bg-muted/45 px-3 py-2">
+                    <div className="rounded-lg bg-muted/40 px-3 py-2">
                       <div className="text-muted-foreground">{t("settings.aboutReleaseDate")}</div>
                       <div className="mt-0.5 truncate font-medium">{releaseDate || "N/A"}</div>
                     </div>
@@ -252,8 +252,8 @@ export function AboutSection(props: AboutSectionProps) {
           </div>
 
           {latestReleaseNotes ? (
-            <div className="space-y-2 rounded-xl border border-border/60 bg-background/70 p-4">
-              <div className="text-sm font-semibold">{releaseTitle(latestResult)}</div>
+            <div className="space-y-2 rounded-2xl border border-border bg-background/80 p-4">
+              <div className="text-base font-semibold">{releaseTitle(latestResult)}</div>
               <div className="max-h-48 overflow-auto pr-2">
                 <Markdown
                   content={latestReleaseNotes}
@@ -265,10 +265,10 @@ export function AboutSection(props: AboutSectionProps) {
         </section>
 
         <aside className="space-y-4">
-          <section className="rounded-2xl border border-border/60 bg-card p-4">
+          <section className="rounded-2xl border border-border bg-card p-4">
             <div className="flex items-start justify-between gap-4">
               <div className="min-w-0">
-                <div className="flex items-center gap-2 text-sm font-medium">
+                <div className="flex items-center gap-2 text-base font-medium">
                   <Shield className="h-4 w-4 text-muted-foreground" />
                   {t("settings.aboutPrereleaseTitle")}
                 </div>
@@ -290,8 +290,8 @@ export function AboutSection(props: AboutSectionProps) {
             </div>
           </section>
 
-          <section className="space-y-3 rounded-2xl border border-border/60 bg-card p-4">
-            <div className="text-sm font-semibold">{t("settings.aboutNotesTitle")}</div>
+          <section className="space-y-3 rounded-2xl border border-border bg-card p-4">
+            <div className="text-base font-semibold">{t("settings.aboutNotesTitle")}</div>
             <p className="text-xs leading-relaxed text-muted-foreground">
               {t("settings.aboutNotesBody")}
             </p>

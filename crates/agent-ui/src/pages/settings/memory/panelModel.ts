@@ -137,15 +137,15 @@ export function organizerStatusLabel(status: MemoryOrganizeRunStatus, t: (key: s
 
 export function organizerStatusClass(status: MemoryOrganizeRunStatus) {
   if (status === "succeeded") {
-    return "border-emerald-500/20 bg-emerald-500/5 text-emerald-700 dark:text-emerald-300";
+    return "border-success/20 bg-success/5 text-success";
   }
   if (status === "failed") {
-    return "border-destructive/25 bg-destructive/[0.06] text-destructive";
+    return "border-destructive/20 bg-destructive/5 text-destructive";
   }
   if (status === "running" || status === "pending") {
-    return "border-amber-500/25 bg-amber-500/[0.06] text-amber-700 dark:text-amber-300";
+    return "border-warning/20 bg-warning/5 text-warning";
   }
-  return "border-border/60 bg-muted/40 text-muted-foreground";
+  return "border-border bg-muted/40 text-muted-foreground";
 }
 
 export function organizerTriggerLabel(
@@ -180,12 +180,12 @@ export function organizerRiskLabel(
 
 export function organizerRiskClass(risk: OrganizerSafeDecision["riskLevel"]) {
   if (risk === "high") {
-    return "border-destructive/35 bg-destructive/[0.06] text-destructive";
+    return "border-destructive/40 bg-destructive/5 text-destructive";
   }
   if (risk === "medium") {
-    return "border-amber-500/30 bg-amber-500/[0.06] text-amber-700 dark:text-amber-300";
+    return "border-warning/40 bg-warning/5 text-warning";
   }
-  return "border-emerald-500/30 bg-emerald-500/[0.06] text-emerald-700 dark:text-emerald-300";
+  return "border-success/40 bg-success/5 text-success";
 }
 
 export function organizerApplyStatusLabel(
@@ -200,15 +200,15 @@ export function organizerApplyStatusLabel(
 
 export function organizerApplyStatusClass(status: OrganizerSafeDecision["applyStatus"]) {
   if (status === "applied") {
-    return "border-emerald-500/30 bg-emerald-500/[0.06] text-emerald-700 dark:text-emerald-300";
+    return "border-success/40 bg-success/5 text-success";
   }
   if (status === "failed") {
-    return "border-destructive/35 bg-destructive/[0.06] text-destructive";
+    return "border-destructive/40 bg-destructive/5 text-destructive";
   }
   if (status === "skipped") {
-    return "border-amber-500/30 bg-amber-500/[0.06] text-amber-700 dark:text-amber-300";
+    return "border-warning/40 bg-warning/5 text-warning";
   }
-  return "border-border/60 text-muted-foreground";
+  return "border-border text-muted-foreground";
 }
 
 export function organizerReviewItemLabel(item: OrganizerReviewItem, t: (key: string) => string) {
@@ -220,12 +220,12 @@ export function organizerReviewItemLabel(item: OrganizerReviewItem, t: (key: str
 
 export function organizerReviewItemClass(item: OrganizerReviewItem) {
   if (item.severity === "error" || item.kind === "error") {
-    return "border-destructive/30 bg-destructive/[0.06] text-destructive";
+    return "border-destructive/40 bg-destructive/5 text-destructive";
   }
   if (item.kind === "skipped" || item.severity === "warning") {
-    return "border-amber-500/30 bg-amber-500/[0.06] text-amber-700 dark:text-amber-300";
+    return "border-warning/40 bg-warning/5 text-warning";
   }
-  return "border-border/60 bg-muted/30 text-muted-foreground";
+  return "border-border bg-muted/40 text-muted-foreground";
 }
 
 export function manualApplySummaryText(input: {
@@ -396,22 +396,22 @@ export function strongestQuotaLevel(items: MemoryScopeQuota[]): QuotaLevel {
 
 export function quotaPillClass(level: QuotaLevel) {
   if (level === "full" || level === "danger") {
-    return "border-red-500/25 bg-red-500/[0.06] text-red-700 dark:text-red-300";
+    return "border-destructive/20 bg-destructive/5 text-destructive";
   }
   if (level === "warning") {
-    return "border-amber-500/25 bg-amber-500/[0.06] text-amber-700 dark:text-amber-300";
+    return "border-warning/20 bg-warning/5 text-warning";
   }
-  return "border-border/60 text-muted-foreground";
+  return "border-border text-muted-foreground";
 }
 
 export function quotaStatusClass(level: QuotaLevel) {
   if (level === "full" || level === "danger") {
-    return "border-red-500/25 bg-red-500/[0.06] text-red-700 dark:text-red-300";
+    return "border-destructive/20 bg-destructive/5 text-destructive";
   }
   if (level === "warning") {
-    return "border-amber-500/25 bg-amber-500/[0.06] text-amber-700 dark:text-amber-300";
+    return "border-warning/20 bg-warning/5 text-warning";
   }
-  return "border-emerald-500/20 bg-emerald-500/5 text-emerald-700 dark:text-emerald-300";
+  return "border-success/20 bg-success/5 text-success";
 }
 
 export function quotaStatusLabelKey(level: QuotaLevel) {

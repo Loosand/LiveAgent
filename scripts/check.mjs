@@ -70,6 +70,7 @@ function buildSteps() {
   const steps = [
     commandStep("Diff hygiene", "git", ["diff", "--check", "HEAD"]),
     miseStep("Check script tests", "pnpm", ["check:script-tests"]),
+    miseStep("UI design rules", "pnpm", ["check:ui-design"]),
     miseStep("Shared UI boundaries", "pnpm", ["check:ui-boundaries"]),
     miseStep("Shared UI TypeScript check", "pnpm", ["typecheck:ui"]),
     miseStep("Virtual core TypeScript check", "pnpm", ["typecheck:virtual-core"]),

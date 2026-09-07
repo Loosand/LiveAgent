@@ -61,17 +61,7 @@ import {
 import { memo, useMemo } from "react";
 import { InstalledSkillCategoryChip } from "./SkillCategoryControls";
 
-const INSTALLED_SKILL_ICON_TONES = [
-  "border-sky-500/30 bg-sky-500/12 text-sky-700 dark:border-sky-400/30 dark:bg-sky-400/15 dark:text-sky-200",
-  "border-indigo-500/30 bg-indigo-500/12 text-indigo-700 dark:border-indigo-400/30 dark:bg-indigo-400/15 dark:text-indigo-200",
-  "border-violet-500/30 bg-violet-500/12 text-violet-700 dark:border-violet-400/30 dark:bg-violet-400/15 dark:text-violet-200",
-  "border-fuchsia-500/30 bg-fuchsia-500/12 text-fuchsia-700 dark:border-fuchsia-400/30 dark:bg-fuchsia-400/15 dark:text-fuchsia-200",
-  "border-rose-500/30 bg-rose-500/12 text-rose-700 dark:border-rose-400/30 dark:bg-rose-400/15 dark:text-rose-200",
-  "border-orange-500/30 bg-orange-500/12 text-orange-700 dark:border-orange-400/30 dark:bg-orange-400/15 dark:text-orange-200",
-  "border-amber-500/30 bg-amber-500/12 text-amber-800 dark:border-amber-400/30 dark:bg-amber-400/15 dark:text-amber-200",
-  "border-emerald-500/30 bg-emerald-500/12 text-emerald-700 dark:border-emerald-400/30 dark:bg-emerald-400/15 dark:text-emerald-200",
-  "border-cyan-500/30 bg-cyan-500/12 text-cyan-700 dark:border-cyan-400/30 dark:bg-cyan-400/15 dark:text-cyan-200",
-] as const;
+const INSTALLED_SKILL_ICON_TONES = ["border-border bg-muted text-muted-foreground"] as const;
 
 const INSTALLED_SKILL_CARD_ICONS: Record<InstalledSkillCardIconName, typeof Activity> = {
   bookOpen: BookOpen,
@@ -215,7 +205,7 @@ export const InstalledSkillCard = memo(function InstalledSkillCard(props: Instal
       <div className="flex items-start justify-between gap-3">
         <div
           className={cn(
-            "flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border",
+            "flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border",
             alwaysEnabled ? "border-border bg-muted text-foreground" : iconTone,
           )}
         >
@@ -277,25 +267,25 @@ export const InstalledSkillCard = memo(function InstalledSkillCard(props: Instal
       </div>
 
       <div className="mt-3 min-w-0 flex-1">
-        <div className="flex min-w-0 flex-wrap items-center gap-1.5">
+        <div className="flex min-w-0 flex-wrap items-center gap-2">
           <SearchHighlight
             text={skill.name}
             query={searchQuery}
-            className="truncate text-sm font-semibold text-foreground"
+            className="truncate text-base font-semibold text-foreground"
           />
           {alwaysEnabled ? (
-            <Badge variant="muted" className="h-5 gap-1 px-1.5 text-[10px]">
+            <Badge variant="muted" className="h-5 gap-1 px-2 text-2xs">
               <Lock className="h-2.5 w-2.5" />
               {t("settings.skillsAlwaysOn")}
             </Badge>
           ) : effectivelyEnabled ? (
-            <Badge variant="success" className="h-5 px-1.5 text-[10px]">
+            <Badge variant="success" className="h-5 px-2 text-2xs">
               {t("settings.skillsHubEnabledBadge")}
             </Badge>
           ) : null}
         </div>
         {skill.description ? (
-          <p className="mt-1.5 line-clamp-2 text-xs leading-5 text-muted-foreground">
+          <p className="mt-2 line-clamp-2 text-xs leading-5 text-muted-foreground">
             <SearchHighlight text={skill.description} query={searchQuery} />
           </p>
         ) : null}
@@ -307,7 +297,7 @@ export const InstalledSkillCard = memo(function InstalledSkillCard(props: Instal
           <div className="ml-auto grid min-w-0 items-center justify-items-end">
             <span
               className={cn(
-                "pointer-events-none col-start-1 row-start-1 inline-flex min-w-0 items-center gap-1 text-[10px] text-muted-foreground transition-opacity",
+                "pointer-events-none col-start-1 row-start-1 inline-flex min-w-0 items-center gap-1 text-2xs text-muted-foreground transition-opacity",
                 !bulkMode &&
                   "group-hover:opacity-0 group-focus-within:opacity-0 [@media(hover:none)]:opacity-0",
               )}
@@ -358,13 +348,13 @@ export const InstalledSkillCard = memo(function InstalledSkillCard(props: Instal
   );
 
   const cardClassName = cn(
-    "skill-card-enter group relative flex min-h-44 w-full flex-col rounded-xl border border-border bg-card p-3.5 text-left shadow-xs transition-[border-color,box-shadow,background-color]",
+    "skill-card-enter group relative flex min-h-44 w-full flex-col rounded-2xl border border-border bg-card p-4 text-left shadow-control transition-[border-color,box-shadow,background-color]",
     "[content-visibility:auto] [contain-intrinsic-size:auto_11rem]",
     bulkSelected
-      ? "border-foreground bg-muted/30 shadow-sm"
+      ? "border-ring bg-muted/40 shadow-control"
       : effectivelyEnabled
-        ? "border-emerald-600/25"
-        : cn("hover:border-foreground/20 hover:shadow-md", !skillsEnabled && "bg-muted/20"),
+        ? "border-success/20"
+        : cn("hover:border-input hover:shadow-overlay", !skillsEnabled && "bg-muted/20"),
   );
 
   if (alwaysEnabled) {

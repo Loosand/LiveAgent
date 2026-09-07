@@ -271,15 +271,15 @@ const GHK_STYLE = `
 --ghk-cap-enter:#14532d;--ghk-cap-enter-text:#86efac;
 --ghk-board1:#222b38;--ghk-board2:#161d28;--ghk-board-edge:#0b1017;--ghk-shadow:rgb(0 0 0/.5);}
 .ghk-stage{perspective:1400px;}
-.ghk-board{display:inline-flex;gap:${BLOCK_GAP}px;padding:${BOARD_PAD}px;border-radius:16px;
+.ghk-board{display:inline-flex;gap:${BLOCK_GAP}px;padding:${BOARD_PAD}px;border-radius:var(--radius-panel);
 background:linear-gradient(180deg,var(--ghk-board1),var(--ghk-board2));
-box-shadow:0 16px 0 -6px var(--ghk-board-edge),0 28px 32px var(--ghk-shadow);
+box-shadow:var(--keyboard-board-depth);
 transform:rotateX(22deg);transform-style:preserve-3d;transition:transform .35s,box-shadow .35s;}
 .ghk-board.ghk-rec{
-box-shadow:0 16px 0 -6px var(--ghk-board-edge),0 28px 34px var(--ghk-shadow),0 0 0 2px rgb(59 130 246/.45),0 0 26px rgb(59 130 246/.28);}
-.ghk-key{position:relative;height:${KEY_UNIT}px;border-radius:7px;background:var(--ghk-cap-top);
-box-shadow:0 4px 0 var(--ghk-cap-side),0 6px 5px rgb(15 23 42/.16);color:var(--ghk-cap-text);
-display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;line-height:1.1;
+box-shadow:var(--keyboard-board-depth),var(--focus-halo);}
+.ghk-key{position:relative;height:${KEY_UNIT}px;border-radius:var(--radius-control);background:var(--ghk-cap-top);
+box-shadow:var(--keyboard-key-depth);color:var(--ghk-cap-text);
+display:flex;align-items:center;justify-content:center;font-size: var(--text-xs);font-weight:600;line-height:1.1;
 text-align:center;padding:0 2px;transition:transform .05s,box-shadow .05s,background .12s,color .12s;}
 .ghk-c0{--ghk-hl:#3b82f6;--ghk-hl-bg:#dbeafe;--ghk-hl-side:#94b6ee;--ghk-hl-text:#1d4ed8;}
 .ghk-c1{--ghk-hl:#8b5cf6;--ghk-hl-bg:#ede9fe;--ghk-hl-side:#b7a6ee;--ghk-hl-text:#6d28d9;}
@@ -290,20 +290,19 @@ text-align:center;padding:0 2px;transition:transform .05s,box-shadow .05s,backgr
 .dark .ghk-c2{--ghk-hl-bg:#065f46;--ghk-hl-side:#04422f;--ghk-hl-text:#a7f3d0;}
 .dark .ghk-c3{--ghk-hl-bg:#78350f;--ghk-hl-side:#571f05;--ghk-hl-text:#fde68a;}
 .ghk-key.ghk-bound{background:var(--ghk-hl-bg);color:var(--ghk-hl-text);
-box-shadow:0 4px 0 var(--ghk-hl-side),0 6px 5px rgb(15 23 42/.16);}
+--keyboard-key-edge:var(--ghk-hl-side);}
 .ghk-key.ghk-bound .ghk-klegend{transform:translateY(-5px);}
-.ghk-tag{position:absolute;left:2px;right:2px;bottom:2px;font-size:8px;font-weight:600;line-height:1.2;
+.ghk-tag{position:absolute;left:2px;right:2px;bottom:2px;font-size: var(--text-2xs);font-weight:600;line-height:1.2;
 color:var(--ghk-hl-text);text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;pointer-events:none;}
 .ghk-dots{position:absolute;top:3px;right:4px;display:flex;gap:2px;pointer-events:none;}
-.ghk-dot{width:5px;height:5px;border-radius:9999px;box-shadow:0 0 0 1px rgb(255 255 255/.55);}
-.dark .ghk-dot{box-shadow:0 0 0 1px rgb(0 0 0/.4);}
+.ghk-dot{width:5px;height:5px;border-radius:var(--radius-full);box-shadow:var(--separator-halo);}
 .ghk-key.ghk-held{background:var(--ghk-cap-held);color:var(--ghk-cap-active-text);
-box-shadow:0 4px 0 var(--ghk-cap-held-side),0 6px 5px rgb(37 99 235/.22);}
+--keyboard-key-edge:var(--ghk-cap-held-side);}
 .ghk-key.ghk-down{transform:translateY(4px);background:var(--ghk-cap-active);color:var(--ghk-cap-active-text);
-box-shadow:0 0 0 var(--ghk-cap-side),0 1px 2px rgb(15 23 42/.2);}
+box-shadow:var(--keyboard-key-pressed);}
 .ghk-key.ghk-enter.ghk-down{background:var(--ghk-cap-enter);color:var(--ghk-cap-enter-text);}
-.ghk-kbd{display:inline-block;padding:3px 9px;font-size:12px;font-weight:600;border-radius:6px;
-border:1px solid var(--ghk-cap-side);border-bottom-width:2.5px;background:var(--ghk-cap-top);color:var(--ghk-cap-text);}
+.ghk-kbd{display:inline-block;padding:3px 9px;font-size: var(--text-xs);font-weight:600;border-radius:var(--radius-item);
+border:var(--border-width-default) solid var(--ghk-cap-side);border-bottom-width:var(--border-width-emphasis);background:var(--ghk-cap-top);color:var(--ghk-cap-text);}
 `;
 
 /** 键帽上的占用标注：bound=该键是某快捷键主键；hintDots=按下更多修饰键后此修饰键下有组合 */
@@ -336,7 +335,7 @@ function KeyCap(props: {
       style={fill ? { width: "100%", height: "100%" } : { width: keyWidth(def.units) }}
       title={bound?.title ?? decor?.hintTitle}
     >
-      <span className="ghk-klegend" style={def.label.length > 3 ? { fontSize: 9 } : undefined}>
+      <span className={def.label.length > 3 ? "ghk-klegend text-2xs" : "ghk-klegend"}>
         {def.label}
       </span>
       {bound ? <span className="ghk-tag">{bound.tag}</span> : null}
@@ -352,7 +351,7 @@ function KeyCap(props: {
 }
 
 const SHORTCUT_KEY_BUTTON_CLASS =
-  "flex shrink-0 items-center gap-1.5 rounded-md px-2 py-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
+  "flex shrink-0 items-center gap-2 rounded-lg px-2 py-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
 
 /** 发送键和应用快捷键共用行结构，保持图标、文字、键帽与编辑状态一致。 */
 function ShortcutRow({
@@ -377,16 +376,16 @@ function ShortcutRow({
     <div
       data-ghk-row={id}
       className={cn(
-        "flex w-full items-center gap-1.5 rounded-xl border pr-2.5 transition-all",
+        "flex w-full items-center gap-2 rounded-2xl border pr-2 transition-all",
         editing
-          ? "border-primary/40 bg-muted/35"
-          : "border-border/60 bg-background/80 hover:border-border hover:bg-muted/35",
+          ? "border-ring bg-muted/40"
+          : "border-border bg-background/80 hover:border-input hover:bg-muted/40",
       )}
     >
       <Label
         type={onEdit ? "button" : undefined}
         onClick={onEdit}
-        className="group flex min-w-0 flex-1 items-center justify-between gap-3 px-3.5 py-3 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring rounded-xl"
+        className="group flex min-w-0 flex-1 items-center justify-between gap-3 px-4 py-3 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring rounded-2xl"
       >
         <div className="flex min-w-0 items-center gap-3">
           <div
@@ -400,7 +399,7 @@ function ShortcutRow({
             {icon}
           </div>
           <div className="min-w-0">
-            <div className="text-sm font-semibold text-foreground">{label}</div>
+            <div className="text-base font-semibold text-foreground">{label}</div>
             <div className="mt-0.5 text-xs leading-relaxed text-muted-foreground">
               {description}
             </div>
@@ -414,7 +413,7 @@ function ShortcutRow({
 
 function ShortcutKeys({ tokens }: { tokens: string[] }) {
   return tokens.map((token, index) => (
-    <span key={token} className="flex items-center gap-1.5">
+    <span key={token} className="flex items-center gap-2">
       {index > 0 ? <span className="text-xs text-muted-foreground">+</span> : null}
       <span className="ghk-kbd">{token}</span>
     </span>
@@ -505,11 +504,11 @@ function ShortcutChoiceSwitch({
       </span>
       <span
         aria-hidden="true"
-        className="relative h-6 w-10 rounded-full border border-border/60 bg-muted/60"
+        className="relative h-6 w-10 rounded-full border border-border bg-muted/60"
       >
         <span
           className={cn(
-            "absolute left-[3px] top-[3px] h-4 w-4 rounded-full bg-primary shadow-sm transition-transform duration-200 ease-out motion-reduce:transition-none",
+            "absolute left-[3px] top-[3px] h-4 w-4 rounded-full bg-primary shadow-control transition-transform duration-200 ease-out motion-reduce:transition-none",
             checked ? "translate-x-4" : "translate-x-0",
           )}
         />
@@ -983,8 +982,8 @@ export function GlobalShortcutsSection() {
   return (
     <div className="ghk-root space-y-6">
       <style>{GHK_STYLE}</style>
-      <section className="space-y-3 rounded-2xl border border-border/60 bg-card p-4">
-        <div className="flex items-center gap-2 text-sm font-medium text-foreground">
+      <section className="space-y-3 rounded-2xl border border-border bg-card p-4">
+        <div className="flex items-center gap-2 text-base font-medium text-foreground">
           <Keyboard className="h-4 w-4 text-muted-foreground" />
           {t("settings.globalShortcuts")}
         </div>
@@ -1093,7 +1092,7 @@ export function GlobalShortcutsSection() {
                       type="button"
                       onClick={() => clearBinding(action.id)}
                       title={t("settings.shortcutClear")}
-                      className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                      className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
                     >
                       <X className="h-3.5 w-3.5" />
                     </button>
@@ -1108,7 +1107,7 @@ export function GlobalShortcutsSection() {
           <div
             className={cn(
               "text-xs font-medium",
-              status.kind === "ok" ? "text-emerald-600 dark:text-emerald-400" : "text-destructive",
+              status.kind === "ok" ? "text-success" : "text-destructive",
             )}
           >
             {status.text}
@@ -1116,22 +1115,22 @@ export function GlobalShortcutsSection() {
         ) : null}
       </section>
 
-      <section className="space-y-3 rounded-2xl border border-border/60 bg-card p-4">
+      <section className="space-y-3 rounded-2xl border border-border bg-card p-4">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2 text-sm font-medium text-foreground">
+          <div className="flex items-center gap-2 text-base font-medium text-foreground">
             <Keyboard className="h-4 w-4 text-muted-foreground" />
             {t("settings.shortcutKeyboardTitle")}
           </div>
-          <div className="flex items-center gap-0.5 rounded-lg bg-muted/50 p-0.5">
+          <div className="flex items-center gap-0.5 rounded-lg bg-muted/60 p-0.5">
             {LAYOUT_OPTIONS.map((option) => (
               <button
                 key={option}
                 type="button"
                 onClick={() => setLayout(option)}
                 className={cn(
-                  "rounded-md px-2.5 py-1 text-xs transition-all",
+                  "rounded-lg px-2 py-1 text-xs transition-all",
                   layout === option
-                    ? "bg-background font-semibold text-foreground shadow-sm"
+                    ? "bg-background font-semibold text-foreground shadow-control"
                     : "text-muted-foreground hover:text-foreground",
                 )}
               >
@@ -1146,7 +1145,7 @@ export function GlobalShortcutsSection() {
             {boundEntries.map((entry) => (
               <span
                 key={entry.action}
-                className="flex items-center gap-1.5 rounded-lg border border-border/60 bg-background/80 px-2 py-1 text-xs"
+                className="flex items-center gap-2 rounded-lg border border-border bg-background/80 px-2 py-1 text-xs"
               >
                 <span
                   className="h-2 w-2 rounded-full"

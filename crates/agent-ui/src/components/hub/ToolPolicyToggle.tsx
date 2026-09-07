@@ -9,9 +9,9 @@ import { cn } from "../../lib/shared/utils";
 const POLICY_ORDER: readonly ToolPolicy[] = ["allow", "ask", "deny"];
 
 const POLICY_ACTIVE_STYLE: Record<ToolPolicy, string> = {
-  allow: "bg-emerald-500 text-white",
-  ask: "bg-amber-500 text-white",
-  deny: "bg-red-500 text-white",
+  allow: "bg-success text-success-foreground",
+  ask: "bg-warning text-warning-foreground",
+  deny: "bg-destructive text-destructive-foreground",
 };
 
 /**
@@ -26,13 +26,13 @@ export function ToolPolicyToggle(props: {
 }) {
   const { value, ariaLabel, onChange, size = "md" } = props;
   const { t } = useLocale();
-  const buttonPad = size === "sm" ? "px-2 py-0.5" : "px-2.5 py-1";
+  const buttonPad = size === "sm" ? "px-2 py-0.5" : "px-2 py-1";
   return (
     <fieldset
       // biome-ignore lint/a11y/noNoninteractiveElementToInteractiveRole: ARIA in HTML 允许 fieldset 担任 radiogroup；互斥单选语义需要向读屏表达。
       role="radiogroup"
       aria-label={ariaLabel}
-      className="inline-flex min-w-0 shrink-0 items-center rounded-lg border border-border/60 bg-muted/40 p-0.5"
+      className="inline-flex min-w-0 shrink-0 items-center rounded-lg border border-border bg-muted/40 p-0.5"
     >
       {POLICY_ORDER.map((option) => {
         const active = value === option;
@@ -45,7 +45,7 @@ export function ToolPolicyToggle(props: {
             aria-checked={active}
             onClick={() => onChange(option)}
             className={cn(
-              "rounded-md text-[11px] font-medium leading-none transition-colors",
+              "rounded-lg text-xs font-medium leading-none transition-colors",
               buttonPad,
               active ? POLICY_ACTIVE_STYLE[option] : "text-muted-foreground hover:text-foreground",
             )}

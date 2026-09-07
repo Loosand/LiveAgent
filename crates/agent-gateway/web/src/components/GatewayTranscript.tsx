@@ -164,17 +164,13 @@ function HistoryLoadingState(props: { title?: string }) {
   return (
     <div className="gateway-transcript-shell">
       <div className="gateway-chat-column gateway-empty-state">
-        <div className="flex min-h-[280px] w-full flex-col items-center justify-center px-4 text-center">
-          <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-xl border border-border/70 bg-background/80 shadow-sm">
+        <div className="flex min-h-70 w-full flex-col items-center justify-center px-4 text-center">
+          <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-2xl border border-border bg-background/80 shadow-control">
             <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
           </div>
-          <div className="max-w-[28rem] text-[calc(14px*var(--zone-font-scale,1))] font-medium text-foreground/90">
-            正在加载会话历史
-          </div>
+          <div className="max-w-md text-base font-medium text-foreground/90">正在加载会话历史</div>
           {title ? (
-            <div className="mt-1 max-w-[28rem] truncate text-[calc(12px*var(--zone-font-scale,1))] text-muted-foreground">
-              {title}
-            </div>
+            <div className="mt-1 max-w-md truncate text-xs text-muted-foreground">{title}</div>
           ) : null}
         </div>
       </div>
@@ -214,7 +210,7 @@ function GatewayUserMessageBubbleBody(props: {
   const { visibleFiles, pastedTextFiles } = splitUserAttachmentsForDisplay(attachments, text);
 
   return (
-    <div className="chat-user-bubble ml-auto w-fit max-w-full rounded-2xl rounded-br-md bg-[hsl(var(--chat-user-bg))] px-4 py-2.5 font-chat text-[calc(14.5px*var(--zone-font-scale,1))] leading-relaxed text-[hsl(var(--chat-user-fg))]">
+    <div className="chat-user-bubble ml-auto w-fit max-w-full rounded-2xl rounded-br-lg bg-[hsl(var(--chat-user-bg))] px-4 py-2 font-chat text-base leading-relaxed text-[hsl(var(--chat-user-fg))]">
       <UserAttachmentCards
         files={visibleFiles}
         workspaceRoot={workspaceRoot}
@@ -860,7 +856,7 @@ const GatewayTranscriptListRegion = memo(function GatewayTranscriptListRegion(pr
                 type="button"
                 onClick={onLoadEarlierHistory}
                 disabled={isLoadingMoreHistory || !onLoadEarlierHistory}
-                className="rounded-full border border-border/60 bg-background/80 px-4 py-1.5 text-xs text-muted-foreground transition-colors hover:text-foreground disabled:cursor-not-allowed disabled:opacity-60"
+                className="rounded-full border border-border bg-background/80 px-4 py-2 text-xs text-muted-foreground transition-colors hover:text-foreground disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {isLoadingMoreHistory
                   ? locale === "en-US"
@@ -964,7 +960,7 @@ const GatewayTranscriptListRegion = memo(function GatewayTranscriptListRegion(pr
                 !shouldShowPendingLiveBubble &&
                 retryAttempts &&
                 retryAttempts.length > 0 ? (
-                  <div className="ml-9 pt-1">
+                  <div className="ml-8 pt-1">
                     <RetryDetailsBlock attempts={retryAttempts} />
                   </div>
                 ) : null}

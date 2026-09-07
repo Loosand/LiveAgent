@@ -45,10 +45,10 @@ type BackgroundTasksPanelProps = {
 };
 
 const ROW_ACTION_CLASS =
-  "h-6 gap-1 rounded-md px-1.5 text-[calc(11px*var(--zone-font-scale,1))] text-muted-foreground hover:text-foreground";
+  "h-6 gap-1 rounded-lg px-2 text-xs text-muted-foreground hover:text-foreground";
 
 const LOG_MENU_ITEM_CLASS =
-  "flex w-full items-center rounded-sm px-2.5 py-1.5 text-left text-xs text-popover-foreground hover:bg-muted focus-visible:bg-muted focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50";
+  "flex w-full items-center rounded-sm px-2 py-2 text-left text-xs text-popover-foreground hover:bg-muted focus-visible:bg-muted focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50";
 
 // Estimated menu box for viewport clamping; measuring after mount would
 // flash the menu at the wrong spot for one frame.
@@ -186,9 +186,9 @@ function BackgroundTaskLogDialog(props: {
       >
         <DialogHeader className="flex-row items-center gap-2 py-3">
           <div className="min-w-0 flex-1">
-            <DialogTitle className="truncate text-sm">{processDisplayName(process)}</DialogTitle>
+            <DialogTitle className="truncate text-base">{processDisplayName(process)}</DialogTitle>
             <DialogDescription
-              className="mt-0.5 truncate text-[calc(11px*var(--zone-font-scale,1))] text-muted-foreground"
+              className="mt-0.5 truncate text-xs text-muted-foreground"
               title={log?.logPath ?? process.logPath}
             >
               {log?.logPath ?? process.logPath}
@@ -200,7 +200,7 @@ function BackgroundTaskLogDialog(props: {
             variant="ghost"
             size="sm"
             disabled={actionsDisabled || loading}
-            className="h-8 shrink-0 gap-1.5 rounded-lg px-2 text-xs text-muted-foreground hover:text-foreground"
+            className="h-8 shrink-0 gap-2 rounded-lg px-2 text-xs text-muted-foreground hover:text-foreground"
             onClick={refresh}
           >
             {loading ? (
@@ -224,7 +224,7 @@ function BackgroundTaskLogDialog(props: {
         <DialogBody
           ref={logRef}
           role="log"
-          className="select-text px-3 py-3 font-mono text-[calc(11px*var(--zone-font-scale,1))] leading-4 text-muted-foreground [counter-reset:log-line]"
+          className="select-text px-3 py-3 font-mono text-xs leading-4 text-muted-foreground [counter-reset:log-line]"
           onContextMenu={handleLogContextMenu}
         >
           {lines.length === 0 ? (
@@ -264,7 +264,7 @@ function BackgroundTaskLogDialog(props: {
             <div
               role="menu"
               aria-label={t("projectTools.bgTaskViewLog")}
-              className="absolute z-10 min-w-36 rounded-lg border border-border bg-popover p-1 text-popover-foreground shadow-lg"
+              className="absolute z-10 min-w-36 rounded-lg border border-border bg-popover p-1 text-popover-foreground shadow-overlay"
               style={{ left: contextMenu.x, top: contextMenu.y }}
               onContextMenu={(event) => {
                 event.preventDefault();
@@ -372,30 +372,30 @@ function BackgroundTaskRow(props: {
   }, [process.id, runAction]);
 
   return (
-    <div className="flex flex-col gap-1.5 rounded-lg border border-border/60 bg-background/60 px-2.5 py-2">
+    <div className="flex flex-col gap-2 rounded-lg border border-border bg-background/60 px-2 py-2">
       <div className="flex min-w-0 items-center gap-2">
         <span
           aria-hidden="true"
           className={cn(
             "h-1.5 w-1.5 shrink-0 rounded-full",
-            process.running ? "bg-emerald-500" : "bg-muted-foreground/50",
+            process.running ? "bg-success" : "bg-muted-foreground/60",
           )}
         />
         <span className="min-w-0 flex-1 truncate text-xs font-medium text-foreground">
           {processDisplayName(process)}
         </span>
         {process.isolated ? (
-          <span className="shrink-0 rounded bg-amber-500/15 px-1 py-px text-[calc(10px*var(--zone-font-scale,1))] text-amber-600 dark:text-amber-400">
+          <span className="shrink-0 rounded-sm bg-warning/20 px-1 py-px text-2xs text-warning">
             {t("projectTools.bgTaskIsolated")}
           </span>
         ) : null}
         {process.restored ? (
-          <span className="shrink-0 rounded bg-sky-500/15 px-1 py-px text-[calc(10px*var(--zone-font-scale,1))] text-sky-600 dark:text-sky-400">
+          <span className="shrink-0 rounded-sm bg-info/20 px-1 py-px text-2xs text-info">
             {t("projectTools.bgTaskRestored")}
           </span>
         ) : null}
       </div>
-      <div className="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-0.5 text-[calc(11px*var(--zone-font-scale,1))] text-muted-foreground">
+      <div className="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-0.5 text-xs text-muted-foreground">
         <span className="shrink-0">PID {process.pid}</span>
         {process.running ? (
           <span className="shrink-0 tabular-nums">{formatUptime(process.startedAt, now)}</span>
@@ -410,10 +410,7 @@ function BackgroundTaskRow(props: {
           {process.command}
         </span>
       </div>
-      <div
-        className="min-w-0 truncate text-[calc(10px*var(--zone-font-scale,1))] text-muted-foreground/70"
-        title={process.cwd}
-      >
+      <div className="min-w-0 truncate text-2xs text-muted-foreground/80" title={process.cwd}>
         {process.cwd}
       </div>
       <div className="flex flex-wrap items-center gap-1">
@@ -473,9 +470,7 @@ function BackgroundTaskRow(props: {
           {copied ? t("projectTools.bgTaskCopied") : t("projectTools.bgTaskCopy")}
         </Button>
       </div>
-      {error ? (
-        <div className="text-[calc(11px*var(--zone-font-scale,1))] text-destructive">{error}</div>
-      ) : null}
+      {error ? <div className="text-xs text-destructive">{error}</div> : null}
     </div>
   );
 }
@@ -531,15 +526,15 @@ export const BackgroundTasksPanel = memo(function BackgroundTasksPanel(
   return (
     <div className="flex h-full min-h-0 flex-col">
       {actionsDisabled ? (
-        <div className="flex shrink-0 items-center gap-2 border-b border-border bg-muted/40 px-3 py-2 text-[calc(11px*var(--zone-font-scale,1))] text-muted-foreground">
-          <AlertTriangle className="h-3.5 w-3.5 shrink-0 text-amber-500" />
+        <div className="flex shrink-0 items-center gap-2 border-b border-border bg-muted/40 px-3 py-2 text-xs text-muted-foreground">
+          <AlertTriangle className="h-3.5 w-3.5 shrink-0 text-warning" />
           <span className="min-w-0 flex-1">{t("projectTools.bgTaskAgentOffline")}</span>
         </div>
       ) : null}
       {/* Fixed-height header with the clear button always mounted: its
           appearance only fades opacity, so the list below never shifts. */}
       <div className="flex h-9 shrink-0 items-center gap-2 px-3">
-        <span className="min-w-0 flex-1 truncate text-[calc(11px*var(--zone-font-scale,1))] text-muted-foreground">
+        <span className="min-w-0 flex-1 truncate text-xs text-muted-foreground">
           {t("projectTools.backgroundTasksTitle")}
         </span>
         <Button

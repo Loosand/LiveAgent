@@ -22,7 +22,7 @@ export const RetryDetailsBlock = memo(function RetryDetailsBlock({
         type="button"
         aria-expanded={isOpen}
         onClick={() => setIsOpen((prev) => !prev)}
-        className="retry-details-toggle flex w-full cursor-pointer select-none items-center gap-2 py-1.5 text-left text-[calc(13px*var(--zone-font-scale,1))] font-normal text-muted-foreground/80 hover:text-foreground"
+        className="retry-details-toggle flex w-full cursor-pointer select-none items-center gap-2 py-2 text-left text-xs font-normal text-muted-foreground/80 hover:text-foreground"
       >
         <RefreshCw className="h-3.5 w-3.5 shrink-0 text-muted-foreground/60" />
         <span>{t("chat.retryDetailsToggle").replace("{count}", String(attempts.length))}</span>
@@ -35,7 +35,7 @@ export const RetryDetailsBlock = memo(function RetryDetailsBlock({
       </button>
       <LazyCollapse open={isOpen}>
         {() => (
-          <div className="space-y-1 pb-1 pt-1.5">
+          <div className="space-y-1 pb-1 pt-2">
             {/* Index-keyed: attempt ordinals can repeat within one list (text
                 mode's tool-recovery loop restarts each wrapper's counter at 1)
                 and the list is append-only, so the index is the stable key. */}
@@ -43,7 +43,7 @@ export const RetryDetailsBlock = memo(function RetryDetailsBlock({
               <div
                 // biome-ignore lint/suspicious/noArrayIndexKey: retry attempts are append-only and their reported ordinals can repeat.
                 key={`${index}-${entry.attempt}-${entry.maxAttempts}`}
-                className="rounded-md border border-border/60 bg-muted/30 px-2.5 py-1.5 text-[calc(12px*var(--zone-font-scale,1))] text-muted-foreground"
+                className="rounded-lg border border-border bg-muted/40 px-2 py-2 text-xs text-muted-foreground"
               >
                 <div className="font-medium text-foreground/80">
                   {t("chat.retryAttemptLabel")

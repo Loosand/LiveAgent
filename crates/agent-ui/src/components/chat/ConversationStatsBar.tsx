@@ -178,7 +178,7 @@ export function ConversationStatsBar(props: {
   const row = (
     <div
       aria-hidden="true"
-      className="flex min-w-0 items-center overflow-hidden text-[calc(11px*var(--zone-font-scale,1))] leading-none whitespace-nowrap text-muted-foreground/70 tabular-nums"
+      className="flex min-w-0 items-center overflow-hidden text-xs leading-none whitespace-nowrap text-muted-foreground/80 tabular-nums"
     >
       {prefix === "" ? null : <span className="mr-1">{t("chat.stats.approximate")}</span>}
       {groups.map((group, index) => (
@@ -193,7 +193,7 @@ export function ConversationStatsBar(props: {
             group.minWidth === "52rem" && "hidden @min-[52rem]:flex",
           )}
         >
-          {index > 0 ? <span className="px-1.5 text-muted-foreground/40">｜</span> : null}
+          {index > 0 ? <span className="px-2 text-muted-foreground/40">｜</span> : null}
           <span>{group.items.join(" · ")}</span>
         </span>
       ))}
@@ -209,7 +209,7 @@ export function ConversationStatsBar(props: {
           缺口一并盖住；-z-10 让它压在卡片之下、正文之上。空态占位分支不带这层。 */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 -top-8 bottom-0 -z-10 bg-background/70 backdrop-blur-md"
+        className="pointer-events-none absolute inset-x-0 -top-8 bottom-0 -z-10 bg-background/80 backdrop-blur-md"
       />
       {/* overflow-hidden 兜底：tooltip trigger 是 shrink-0，极窄时宁可裁剪也不撑破布局。 */}
       <div className="@container flex h-5 w-full items-center justify-center overflow-hidden">
@@ -231,7 +231,7 @@ export function ConversationStatsBar(props: {
                   type="button"
                   onClick={open}
                   aria-label={t("chat.manualCompactTitle")}
-                  className="flex min-w-0 cursor-pointer items-center rounded-full px-1.5 outline-hidden transition-[background-color] hover:bg-muted/50 focus-visible:bg-muted/50"
+                  className="flex min-w-0 cursor-pointer items-center rounded-full px-2 outline-hidden transition-[background-color] hover:bg-muted/60 focus-visible:bg-muted/60"
                 >
                   {row}
                 </button>

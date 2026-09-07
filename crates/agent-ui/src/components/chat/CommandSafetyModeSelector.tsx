@@ -54,9 +54,9 @@ function modeIcon(mode: CommandSafetyMode, className: string) {
 
 function triggerIconClass(mode: CommandSafetyMode) {
   if (mode === "sandbox" || mode === "sandboxOffline") {
-    return "h-4 w-4 shrink-0 text-emerald-600 dark:text-emerald-400";
+    return "h-4 w-4 shrink-0 text-success";
   }
-  if (mode === "ask") return "h-4 w-4 shrink-0 text-sky-600 dark:text-sky-400";
+  if (mode === "ask") return "h-4 w-4 shrink-0 text-info";
   return "h-4 w-4 shrink-0 text-muted-foreground";
 }
 
@@ -131,15 +131,14 @@ export function CommandSafetyModeSelector(props: {
               disabled={entryDisabled}
               onSelect={() => onChange(mode)}
               className={cn(
-                "composer-safety-item items-start gap-2 whitespace-normal rounded-md py-1.5 text-xs",
-                isSelected &&
-                  "bg-foreground/[0.07] font-medium data-[highlighted]:bg-foreground/[0.09]",
+                "composer-safety-item items-start gap-2 whitespace-normal rounded-lg py-2 text-xs",
+                isSelected && "bg-foreground/5 font-medium data-[highlighted]:bg-foreground/10",
               )}
             >
               {modeIcon(mode, "mt-0.5 h-3.5 w-3.5 shrink-0 text-muted-foreground")}
               <span className="flex min-w-0 flex-1 flex-col">
                 <span className="font-medium leading-5">{t(MODE_I18N_KEYS[mode])}</span>
-                <span className="text-[11px] font-normal leading-4 text-muted-foreground">
+                <span className="text-xs font-normal leading-4 text-muted-foreground">
                   {entryDisabled ? disabledHint : t(modeDescKey(mode))}
                 </span>
               </span>

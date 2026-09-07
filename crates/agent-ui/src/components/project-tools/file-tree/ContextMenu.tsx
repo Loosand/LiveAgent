@@ -36,10 +36,10 @@ import { FILE_TREE_HAS_OS_INTEGRATION, type FileTreeKind } from "./model";
 const COPY_FEEDBACK_MS = 1200;
 
 const MENU_ITEM_CLASS =
-  "flex w-full items-center gap-2 rounded-lg px-2.5 py-1.5 text-left transition-colors hover:bg-accent hover:text-accent-foreground disabled:pointer-events-none disabled:opacity-45";
+  "flex w-full items-center gap-2 rounded-lg px-2 py-2 text-left transition-colors hover:bg-accent hover:text-accent-foreground disabled:pointer-events-none disabled:opacity-45";
 
 const MENU_ITEM_DESTRUCTIVE_CLASS =
-  "flex w-full items-center gap-2 rounded-lg px-2.5 py-1.5 text-left text-destructive transition-colors hover:bg-destructive/10 disabled:pointer-events-none disabled:opacity-45";
+  "flex w-full items-center gap-2 rounded-lg px-2 py-2 text-left text-destructive transition-colors hover:bg-destructive/10 disabled:pointer-events-none disabled:opacity-45";
 
 // Legacy fallback for environments where the async clipboard API is missing
 // or rejects (insecure context, denied permission).
@@ -178,7 +178,7 @@ export function FileTreeContextMenu(props: FileTreeContextMenuProps) {
     <div
       ref={menuRef}
       role="menu"
-      className="editor-context-menu layer-popover absolute min-w-52 select-none overflow-hidden rounded-xl border border-border/60 bg-popover/80 p-1 text-xs text-popover-foreground shadow-2xl ring-1 ring-black/[0.03] backdrop-blur-xl dark:ring-white/[0.06]"
+      className="editor-context-menu layer-popover absolute min-w-52 select-none overflow-hidden rounded-2xl border border-border bg-popover/80 p-1 text-xs text-popover-foreground shadow-overlay ring-1 ring-black/5 backdrop-blur-xl dark:ring-white/5"
       style={{
         left: (position ?? anchor).x,
         top: (position ?? anchor).y,
@@ -335,7 +335,7 @@ export function FileTreeContextMenu(props: FileTreeContextMenuProps) {
           onClose();
         }}
       >
-        <span className="flex h-3.5 w-3.5 items-center justify-center text-[calc(11px*var(--zone-font-scale,1))] font-semibold">
+        <span className="flex h-3.5 w-3.5 items-center justify-center text-xs font-semibold">
           @
         </span>
         {t("projectTools.fileTree.insertReference")}

@@ -91,7 +91,7 @@ export function CopyButton(props: {
               aria-label={activeLabel}
               title={activeLabel}
               className={cn(
-                "h-7 w-7 shrink-0 text-muted-foreground hover:bg-muted hover:text-foreground",
+                "size-7 text-muted-foreground hover:bg-muted hover:text-foreground",
                 className,
               )}
               onClick={() => void handleCopy()}
@@ -105,8 +105,8 @@ export function CopyButton(props: {
           }
         />
         <TooltipContent>
-          <span className="flex items-center gap-1.5">
-            {copied ? <Check className="h-3.5 w-3.5 text-emerald-600" /> : null}
+          <span className="flex items-center gap-2">
+            {copied ? <Check className="h-3.5 w-3.5 text-success" /> : null}
             <span>{activeLabel}</span>
           </span>
         </TooltipContent>

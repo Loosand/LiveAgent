@@ -26,17 +26,14 @@ export function CompactionBand(props: {
       <span
         aria-hidden="true"
         className={cn(
-          "compaction-band-icon flex h-5 w-5 shrink-0 items-center justify-center rounded-md bg-violet-500/[0.12] text-violet-600 dark:bg-violet-400/[0.14] dark:text-violet-300",
+          "compaction-band-icon flex h-5 w-5 shrink-0 items-center justify-center rounded-lg bg-activity/10 text-activity dark:bg-activity/10",
           active && "compaction-band-icon-active",
         )}
       >
         {icon ?? <FoldVertical className="h-3 w-3" />}
       </span>
       <span
-        className={cn(
-          "min-w-0 truncate text-[calc(12.5px*var(--zone-font-scale,1))] font-medium text-violet-800 dark:text-violet-200",
-          active && "shimmer",
-        )}
+        className={cn("min-w-0 truncate text-xs font-medium text-activity", active && "shimmer")}
       >
         {label}
       </span>
@@ -48,7 +45,7 @@ export function CompactionBand(props: {
     </>
   );
   const baseClass = cn(
-    "compaction-band relative flex w-full min-w-0 items-center gap-2 overflow-hidden rounded-lg border border-violet-500/[0.18] bg-violet-500/[0.06] py-1.5 pl-2.5 pr-2.5 text-left transition-colors duration-150 dark:border-violet-400/[0.16] dark:bg-violet-400/[0.07]",
+    "compaction-band relative flex w-full min-w-0 items-center gap-2 overflow-hidden rounded-lg border border-activity/20 bg-activity/5 py-2 pl-2 pr-2 text-left transition-colors duration-150 dark:border-activity/20 dark:bg-activity/5",
     active && "compaction-band-active",
     className,
   );
@@ -74,7 +71,7 @@ export function CompactionBand(props: {
 
 export function CompactionMetaChip({ children }: { children: ReactNode }) {
   return (
-    <span className="shrink-0 rounded-md bg-violet-500/[0.08] px-1.5 py-[1px] text-[calc(10.5px*var(--zone-font-scale,1))] font-medium tabular-nums text-violet-700/80 dark:bg-violet-400/[0.1] dark:text-violet-300/80">
+    <span className="shrink-0 rounded-lg bg-activity/10 px-2 py-px text-2xs font-medium tabular-nums text-activity/80 dark:bg-activity/10">
       {children}
     </span>
   );

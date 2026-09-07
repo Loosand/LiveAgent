@@ -55,7 +55,7 @@ const AlertDialogOverlay = React.forwardRef<
     ref={ref}
     data-slot="alert-dialog-overlay"
     className={cn(
-      "layer-modal fixed inset-0 bg-black/40 backdrop-blur-xs transition-opacity duration-150 data-[ending-style]:opacity-0 data-[starting-style]:opacity-0 motion-reduce:transition-none",
+      "layer-modal fixed inset-0 bg-overlay/40 backdrop-blur-xs transition-opacity duration-150 data-[ending-style]:opacity-0 data-[starting-style]:opacity-0 motion-reduce:transition-none",
       className,
     )}
     {...props}
@@ -90,7 +90,7 @@ export const AlertDialogContent = React.forwardRef<HTMLDivElement, AlertDialogCo
               // 与 dialog.tsx 同源：弹窗自成一个字号缩放 zone（portal 渲染，
               // 落在所有 zone 之外），且 padding 由 header/body/footer 各自负责。
               "zone-font-scale",
-              "relative my-auto w-full max-w-md rounded-2xl border border-border/70 bg-background text-foreground shadow-2xl outline-none transition-[transform,opacity] duration-150 ease-out data-[ending-style]:scale-95 data-[ending-style]:opacity-0 data-[starting-style]:scale-95 data-[starting-style]:opacity-0 motion-reduce:transition-none",
+              "relative my-auto w-full max-w-md rounded-overlay border border-border bg-popover text-popover-foreground shadow-overlay outline-none transition-[transform,opacity] duration-150 ease-out data-[ending-style]:scale-95 data-[ending-style]:opacity-0 data-[starting-style]:scale-95 data-[starting-style]:opacity-0 motion-reduce:transition-none",
               className,
             )}
             {...props}
@@ -114,7 +114,7 @@ export const AlertDialogHeader = React.forwardRef<
     ref={ref}
     data-slot="alert-dialog-header"
     className={cn(
-      "relative flex shrink-0 flex-col min-h-13 gap-1.5 border-b border-border/60 px-4 py-3 max-[820px]:px-3.5 max-[820px]:py-2",
+      "relative flex shrink-0 flex-col min-h-13 gap-2 border-b border-border px-4 py-3 max-[820px]:px-4 max-[820px]:py-2",
       className,
     )}
     {...props}
@@ -129,7 +129,7 @@ export const AlertDialogBody = React.forwardRef<
   <div
     ref={ref}
     data-slot="alert-dialog-body"
-    className={cn("px-4 py-3 max-[820px]:px-3.5 max-[820px]:py-3.5", className)}
+    className={cn("px-4 py-3 max-[820px]:px-4 max-[820px]:py-4", className)}
     {...props}
   />
 ));
@@ -143,7 +143,7 @@ export const AlertDialogFooter = React.forwardRef<
     ref={ref}
     data-slot="alert-dialog-footer"
     className={cn(
-      "flex shrink-0 flex-row items-center justify-end min-h-13 gap-2 border-t border-border/60 px-4 py-3 max-[820px]:flex-col-reverse max-[820px]:items-stretch max-[820px]:px-3.5 max-[820px]:py-3",
+      "flex shrink-0 items-center justify-end min-h-13 gap-2 border-t border-border px-4 py-3 max-[820px]:flex-col-reverse max-[820px]:items-stretch max-[820px]:px-4 max-[820px]:py-3",
       className,
     )}
     {...props}
@@ -174,7 +174,7 @@ export const AlertDialogTitle = React.forwardRef<
   <AlertDialogPrimitive.Title
     ref={ref}
     data-slot="alert-dialog-title"
-    className={cn("text-base font-semibold leading-none text-foreground", className)}
+    className={cn("text-base font-semibold leading-none", className)}
     {...props}
   />
 ));
@@ -187,7 +187,7 @@ export const AlertDialogDescription = React.forwardRef<
   <AlertDialogPrimitive.Description
     ref={ref}
     data-slot="alert-dialog-description"
-    className={cn("text-sm text-muted-foreground", className)}
+    className={cn("text-base text-muted-foreground", className)}
     {...props}
   />
 ));

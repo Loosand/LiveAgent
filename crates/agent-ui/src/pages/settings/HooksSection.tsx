@@ -65,9 +65,7 @@ function getHookEventLabel(t: (key: string) => string, event: HookEvent) {
 }
 
 function getHookTypeTone(type: HookType) {
-  return type === "command"
-    ? "bg-blue-500/10 text-blue-600 dark:text-blue-300"
-    : "bg-emerald-500/10 text-emerald-600 dark:text-emerald-300";
+  return type === "command" ? "bg-info/10 text-info" : "bg-success/10 text-success";
 }
 
 export function HooksSection(_props: SettingsSectionProps) {
@@ -89,40 +87,40 @@ export function HooksSection(_props: SettingsSectionProps) {
       key: "agent",
       label: t("settings.hooksPhaseAgent"),
       description: t("settings.hooksPhaseAgentDesc"),
-      color: "text-violet-500",
-      bgColor: "bg-violet-500/10",
-      borderColor: "border-violet-500/20",
-      dotColor: "bg-violet-500",
+      color: "text-activity",
+      bgColor: "bg-activity/10",
+      borderColor: "border-activity/20",
+      dotColor: "bg-activity",
       icon: <Bot className="h-3.5 w-3.5" />,
     },
     turn: {
       key: "turn",
       label: t("settings.hooksPhaseTurn"),
       description: t("settings.hooksPhaseTurnDesc"),
-      color: "text-blue-500",
-      bgColor: "bg-blue-500/10",
-      borderColor: "border-blue-500/20",
-      dotColor: "bg-blue-500",
+      color: "text-info",
+      bgColor: "bg-info/10",
+      borderColor: "border-info/20",
+      dotColor: "bg-info",
       icon: <RefreshCw className="h-3.5 w-3.5" />,
     },
     message: {
       key: "message",
       label: t("settings.hooksPhaseMessage"),
       description: t("settings.hooksPhaseMessageDesc"),
-      color: "text-emerald-500",
-      bgColor: "bg-emerald-500/10",
-      borderColor: "border-emerald-500/20",
-      dotColor: "bg-emerald-500",
+      color: "text-success",
+      bgColor: "bg-success/10",
+      borderColor: "border-success/20",
+      dotColor: "bg-success",
       icon: <MessageSquare className="h-3.5 w-3.5" />,
     },
     tool: {
       key: "tool",
       label: t("settings.hooksPhaseTool"),
       description: t("settings.hooksPhaseToolDesc"),
-      color: "text-amber-500",
-      bgColor: "bg-amber-500/10",
-      borderColor: "border-amber-500/20",
-      dotColor: "bg-amber-500",
+      color: "text-warning",
+      bgColor: "bg-warning/10",
+      borderColor: "border-warning/20",
+      dotColor: "bg-warning",
       icon: <Wrench className="h-3.5 w-3.5" />,
     },
   };
@@ -194,45 +192,45 @@ export function HooksSection(_props: SettingsSectionProps) {
   }
 
   return (
-    <div className="settings-hooks-section flex h-full flex-col gap-5">
-      <div className="settings-section-hero shrink-0 flex flex-col gap-4 rounded-2xl border border-border/60 bg-card p-5 lg:flex-row lg:items-center lg:justify-between">
+    <div className="settings-hooks-section flex h-full flex-col gap-4">
+      <div className="settings-section-hero shrink-0 flex flex-col gap-4 rounded-2xl border border-border bg-card p-4 lg:flex-row lg:items-center lg:justify-between">
         <div className="settings-section-title-group flex items-start gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-500/10 text-amber-500">
+          <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-warning/10 text-warning">
             <Zap className="h-5 w-5" />
           </div>
           <div>
             <h2 className="text-base font-semibold">{t("settings.hooksTitle")}</h2>
-            <p className="mt-0.5 text-sm leading-relaxed text-muted-foreground">
+            <p className="mt-0.5 text-base leading-relaxed text-muted-foreground">
               {t("settings.hooksDesc")}
             </p>
           </div>
         </div>
         <div className="settings-section-actions settings-hooks-stats flex flex-wrap items-center gap-3">
-          <div className="settings-hooks-stat flex items-center gap-1.5 rounded-lg border border-border/60 bg-background/80 px-3 py-1.5">
+          <div className="settings-hooks-stat flex items-center gap-2 rounded-lg border border-border bg-background/80 px-3 py-2">
             <Zap className="h-3.5 w-3.5 text-muted-foreground" />
             <span className="settings-hooks-stat-label text-xs font-medium text-muted-foreground">
               {t("settings.hooksTotalHooks")}
             </span>
-            <span className="settings-hooks-stat-value ml-0.5 text-sm font-bold tabular-nums">
+            <span className="settings-hooks-stat-value ml-0.5 text-base font-bold tabular-nums">
               {hooks.length}
             </span>
           </div>
-          <div className="settings-hooks-stat flex items-center gap-1.5 rounded-lg border border-emerald-500/20 bg-emerald-500/5 px-3 py-1.5">
-            <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" />
-            <span className="settings-hooks-stat-label text-xs font-medium text-emerald-600 dark:text-emerald-400">
+          <div className="settings-hooks-stat flex items-center gap-2 rounded-lg border border-success/20 bg-success/5 px-3 py-2">
+            <CheckCircle2 className="h-3.5 w-3.5 text-success" />
+            <span className="settings-hooks-stat-label text-xs font-medium text-success">
               {t("settings.hooksActiveHooks")}
             </span>
-            <span className="settings-hooks-stat-value ml-0.5 text-sm font-bold tabular-nums text-emerald-600 dark:text-emerald-400">
+            <span className="settings-hooks-stat-value ml-0.5 text-base font-bold tabular-nums text-success">
               {enabledCount}
             </span>
           </div>
           {disabledCount > 0 ? (
-            <div className="settings-hooks-stat flex items-center gap-1.5 rounded-lg border border-border/60 bg-muted/30 px-3 py-1.5">
+            <div className="settings-hooks-stat flex items-center gap-2 rounded-lg border border-border bg-muted/40 px-3 py-2">
               <Circle className="h-3.5 w-3.5 text-muted-foreground" />
               <span className="settings-hooks-stat-label text-xs font-medium text-muted-foreground">
                 {t("settings.hooksInactiveHooks")}
               </span>
-              <span className="settings-hooks-stat-value ml-0.5 text-sm font-bold tabular-nums text-muted-foreground">
+              <span className="settings-hooks-stat-value ml-0.5 text-base font-bold tabular-nums text-muted-foreground">
                 {disabledCount}
               </span>
             </div>
@@ -241,16 +239,16 @@ export function HooksSection(_props: SettingsSectionProps) {
       </div>
 
       {actionError ? (
-        <div className="flex shrink-0 items-center gap-2 rounded-xl border border-destructive/30 bg-destructive/5 px-4 py-3 text-xs text-destructive">
+        <div className="flex shrink-0 items-center gap-2 rounded-2xl border border-destructive/40 bg-destructive/5 px-4 py-3 text-xs text-destructive">
           <AlertTriangle className="h-3.5 w-3.5 shrink-0" />
           <span className="min-w-0 flex-1 truncate">{actionError}</span>
         </div>
       ) : null}
 
-      <div className="settings-hooks-grid grid min-h-0 flex-1 gap-5 xl:grid-cols-[300px_minmax(0,1fr)]">
-        <aside className="settings-hooks-lifecycle flex flex-col overflow-hidden rounded-2xl border border-border/60 bg-card">
-          <div className="settings-hooks-lifecycle-header shrink-0 border-b border-border/40 px-4 py-3">
-            <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
+      <div className="settings-hooks-grid grid min-h-0 flex-1 gap-4 xl:grid-cols-[300px_minmax(0,1fr)]">
+        <aside className="settings-hooks-lifecycle flex flex-col overflow-hidden rounded-2xl border border-border bg-card">
+          <div className="settings-hooks-lifecycle-header shrink-0 border-b border-border px-4 py-3">
+            <div className="flex items-center gap-2 text-base font-semibold text-foreground">
               <Play className="h-4 w-4 text-muted-foreground" />
               {t("settings.hooksLifecycle")}
             </div>
@@ -270,7 +268,7 @@ export function HooksSection(_props: SettingsSectionProps) {
                     type="button"
                     onClick={() => togglePhase(groupKey)}
                     className={cn(
-                      "settings-hooks-phase-button flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-left transition-colors hover:bg-muted/40",
+                      "settings-hooks-phase-button flex w-full items-center gap-2 rounded-2xl px-3 py-2 text-left transition-colors hover:bg-muted/40",
                       group.phase.color,
                     )}
                   >
@@ -290,7 +288,7 @@ export function HooksSection(_props: SettingsSectionProps) {
                         {phaseHookCount > 0 ? (
                           <span
                             className={cn(
-                              "rounded-full px-1.5 py-0.5 text-[10px] font-semibold leading-none",
+                              "rounded-full px-2 py-0.5 text-2xs font-semibold leading-none",
                               group.phase.bgColor,
                             )}
                           >
@@ -325,8 +323,8 @@ export function HooksSection(_props: SettingsSectionProps) {
                                 type="button"
                                 onClick={() => setActiveEvent(event)}
                                 className={cn(
-                                  "settings-hooks-event-button group relative flex w-full items-center gap-2.5 rounded-lg py-2 pl-7 pr-2.5 text-left transition-all",
-                                  selected ? "bg-primary/10 shadow-sm" : "hover:bg-muted/30",
+                                  "settings-hooks-event-button group relative flex w-full items-center gap-2 rounded-lg py-2 pl-8 pr-2 text-left transition-all",
+                                  selected ? "bg-primary/10 shadow-control" : "hover:bg-muted/40",
                                 )}
                               >
                                 <span
@@ -350,16 +348,16 @@ export function HooksSection(_props: SettingsSectionProps) {
                                         ? group.phase.dotColor
                                         : hasHooks
                                           ? `${group.phase.dotColor} opacity-80`
-                                          : "border border-border/60 bg-card",
+                                          : "border border-border bg-card",
                                     )}
                                   />
                                 </span>
 
                                 <div className="min-w-0 flex-1">
-                                  <div className="flex items-center gap-1.5">
+                                  <div className="flex items-center gap-2">
                                     <span
                                       className={cn(
-                                        "settings-hooks-event-label text-[13px] font-medium transition-colors",
+                                        "settings-hooks-event-label text-xs font-medium transition-colors",
                                         selected
                                           ? "text-foreground"
                                           : "text-muted-foreground group-hover:text-foreground",
@@ -370,9 +368,9 @@ export function HooksSection(_props: SettingsSectionProps) {
                                     {hasHooks ? (
                                       <span
                                         className={cn(
-                                          "rounded-full px-1.5 py-0.5 text-[10px] font-semibold leading-none",
+                                          "rounded-full px-2 py-0.5 text-2xs font-semibold leading-none",
                                           selected
-                                            ? "bg-primary/15 text-primary"
+                                            ? "bg-primary/20 text-primary"
                                             : "bg-muted/60 text-muted-foreground",
                                         )}
                                       >
@@ -394,8 +392,8 @@ export function HooksSection(_props: SettingsSectionProps) {
           </div>
         </aside>
 
-        <section className="settings-hooks-detail flex flex-col overflow-hidden rounded-2xl border border-border/60 bg-card">
-          <div className="settings-hooks-detail-header shrink-0 border-b border-border/40 px-5 py-4">
+        <section className="settings-hooks-detail flex flex-col overflow-hidden rounded-2xl border border-border bg-card">
+          <div className="settings-hooks-detail-header shrink-0 border-b border-border px-4 py-4">
             <div className="settings-section-heading-row settings-hooks-detail-heading flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
               <div className="settings-section-title-group flex items-center gap-3">
                 {(() => {
@@ -404,7 +402,7 @@ export function HooksSection(_props: SettingsSectionProps) {
                   return (
                     <div
                       className={cn(
-                        "settings-hooks-detail-icon flex h-9 w-9 items-center justify-center rounded-xl",
+                        "settings-hooks-detail-icon flex h-9 w-9 items-center justify-center rounded-2xl",
                         phase.bgColor,
                         phase.color,
                       )}
@@ -419,14 +417,14 @@ export function HooksSection(_props: SettingsSectionProps) {
                       {getHookEventLabel(t, activeEvent)}
                     </h3>
                   </div>
-                  <p className="settings-hooks-detail-desc mt-0.5 text-sm text-muted-foreground">
+                  <p className="settings-hooks-detail-desc mt-0.5 text-base text-muted-foreground">
                     {t(HOOK_EVENT_DESCRIPTION_TRANSLATION_KEYS[activeEvent])}
                   </p>
                 </div>
               </div>
               {activeHooks.length > 0 ? (
                 <Button
-                  className="settings-section-action settings-hooks-detail-add gap-1.5 self-start"
+                  className="settings-section-action settings-hooks-detail-add gap-2 self-start"
                   onClick={openAdd}
                 >
                   <Plus className="h-3.5 w-3.5" />
@@ -436,17 +434,17 @@ export function HooksSection(_props: SettingsSectionProps) {
             </div>
           </div>
 
-          <div className="settings-hooks-detail-body min-h-0 flex-1 overflow-y-auto p-5">
+          <div className="settings-hooks-detail-body min-h-0 flex-1 overflow-y-auto p-4">
             {activeHooks.length === 0 ? (
-              <div className="rounded-xl border border-dashed border-border/60 bg-muted/5 px-6 py-12 text-center">
-                <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-muted/30">
+              <div className="rounded-2xl border border-dashed border-border bg-muted/5 px-6 py-12 text-center">
+                <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-muted/40">
                   <Zap className="h-6 w-6 text-muted-foreground/40" />
                 </div>
-                <div className="mt-4 text-sm font-medium">{t("settings.hooksEmptyTitle")}</div>
-                <p className="mx-auto mt-1.5 max-w-sm text-sm leading-relaxed text-muted-foreground">
+                <div className="mt-4 text-base font-medium">{t("settings.hooksEmptyTitle")}</div>
+                <p className="mx-auto mt-2 max-w-sm text-base leading-relaxed text-muted-foreground">
                   {t("settings.hooksEmptyDesc")}
                 </p>
-                <Button className="mt-5 gap-1.5" size="sm" onClick={openAdd}>
+                <Button className="mt-4 gap-2" size="sm" onClick={openAdd}>
                   <Plus className="h-3.5 w-3.5" />
                   {t("settings.hooksAdd")}
                 </Button>
@@ -462,16 +460,16 @@ export function HooksSection(_props: SettingsSectionProps) {
                     <div
                       key={hook.id}
                       className={cn(
-                        "settings-hooks-card group rounded-xl border bg-background/80 p-4 transition-all hover:shadow-sm",
+                        "settings-hooks-card group rounded-2xl border bg-background/80 p-4 transition-all hover:shadow-control",
                         hook.enabled
-                          ? "border-border/60 hover:border-border"
-                          : "border-border/40 opacity-60",
+                          ? "border-border hover:border-input"
+                          : "border-border opacity-60",
                       )}
                     >
                       <div className="settings-card-row settings-hooks-card-row flex items-start gap-3">
                         <div
                           className={cn(
-                            "settings-hooks-card-icon flex h-10 w-10 shrink-0 items-center justify-center rounded-xl",
+                            "settings-hooks-card-icon flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl",
                             getHookTypeTone(hook.type),
                           )}
                         >
@@ -484,22 +482,22 @@ export function HooksSection(_props: SettingsSectionProps) {
 
                         <div className="settings-hooks-card-main min-w-0 flex-1">
                           <div className="settings-hooks-card-meta flex flex-wrap items-center gap-2">
-                            <span className="settings-hooks-card-name truncate text-sm font-semibold">
+                            <span className="settings-hooks-card-name truncate text-base font-semibold">
                               {hook.name}
                             </span>
-                            <span className="settings-hooks-card-badge rounded-md bg-muted/50 px-1.5 py-0.5 text-[10px] font-medium tabular-nums text-muted-foreground">
+                            <span className="settings-hooks-card-badge rounded-lg bg-muted/60 px-2 py-0.5 text-2xs font-medium tabular-nums text-muted-foreground">
                               {stepCount}{" "}
                               {hook.type === "command"
                                 ? t("settings.hooksScriptLinesCount")
                                 : t("settings.hooksRequestsCount")}
                             </span>
                           </div>
-                          <p className="settings-hooks-card-desc mt-1 text-sm leading-relaxed text-muted-foreground">
+                          <p className="settings-hooks-card-desc mt-1 text-base leading-relaxed text-muted-foreground">
                             {hook.description || t("settings.hooksNoDescription")}
                           </p>
                         </div>
 
-                        <div className="settings-card-actions settings-hooks-card-actions flex shrink-0 items-center gap-1.5">
+                        <div className="settings-card-actions settings-hooks-card-actions flex shrink-0 items-center gap-2">
                           <AgentActivationSwitch
                             checked={hook.enabled}
                             title={hook.enabled ? t("settings.disable") : t("settings.enable")}

@@ -230,14 +230,14 @@ export function DevicesSection({
   }
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-4">
       <div className="settings-section-heading-row flex items-center justify-between gap-4">
         <div className="settings-section-title-group flex items-center gap-3">
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-sky-500/10">
-            <MonitorSmartphone className="h-[18px] w-[18px] text-sky-500" />
+          <div className="flex h-9 w-9 items-center justify-center rounded-2xl bg-info/10">
+            <MonitorSmartphone className="h-4.5 w-4.5 text-info" />
           </div>
           <div>
-            <h3 className="text-sm font-semibold">{t("settings.devicesTitle")}</h3>
+            <h3 className="text-base font-semibold">{t("settings.devicesTitle")}</h3>
             <p className="text-xs text-muted-foreground">{t("settings.devicesDesc")}</p>
           </div>
         </div>
@@ -245,7 +245,7 @@ export function DevicesSection({
           <Button
             variant="outline"
             size="sm"
-            className="settings-section-action gap-1.5"
+            className="settings-section-action gap-2"
             onClick={openAddDialog}
           >
             <Plus className="h-3.5 w-3.5" />
@@ -255,20 +255,20 @@ export function DevicesSection({
       </div>
 
       {error ? (
-        <div className="flex items-start gap-2 rounded-xl border border-destructive/30 bg-destructive/5 px-4 py-3 text-xs text-destructive">
+        <div className="flex items-start gap-2 rounded-2xl border border-destructive/40 bg-destructive/5 px-4 py-3 text-xs text-destructive">
           <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
           <span>{error}</span>
         </div>
       ) : null}
 
       {!authed ? (
-        <div className="max-w-xl rounded-2xl border border-border/60 bg-card p-5">
+        <div className="max-w-xl rounded-2xl border border-border bg-card p-4">
           <div className="flex items-start gap-3">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-amber-500/10">
-              <Key className="h-4 w-4 text-amber-500" />
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-warning/10">
+              <Key className="h-4 w-4 text-warning" />
             </div>
             <div className="min-w-0 flex-1">
-              <h4 className="text-sm font-medium">{t("settings.devicesLoginTitle")}</h4>
+              <h4 className="text-base font-medium">{t("settings.devicesLoginTitle")}</h4>
               <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
                 {t("settings.devicesLoginDesc")}
               </p>
@@ -318,7 +318,7 @@ export function DevicesSection({
                   disabled={loading}
                   onClick={() => handleStatusFilter(value)}
                   className={cn(
-                    "inline-flex h-7 items-center justify-center whitespace-nowrap rounded-md px-3 text-xs font-medium transition-all disabled:pointer-events-none disabled:opacity-50",
+                    "inline-flex h-7 items-center justify-center whitespace-nowrap rounded-lg px-3 text-xs font-medium transition-all disabled:pointer-events-none disabled:opacity-50",
                     statusFilter === value
                       ? "bg-background text-foreground shadow"
                       : "hover:text-foreground/80",
@@ -331,7 +331,7 @@ export function DevicesSection({
             <Button
               variant="outline"
               size="sm"
-              className="gap-1.5"
+              className="gap-2"
               disabled={loading}
               onClick={() => void load(page)}
             >
@@ -420,7 +420,7 @@ function AddClientDialog({
         >
           <DialogHeader className="flex-row items-start gap-4">
             <div className="flex min-w-0 items-start gap-3">
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-sky-500/25 bg-sky-500/10 text-sky-600 dark:text-sky-400">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-info/20 bg-info/10 text-info">
                 <Plus className="h-5 w-5" />
               </div>
               <div className="min-w-0">
@@ -432,14 +432,14 @@ function AddClientDialog({
             </div>
           </DialogHeader>
 
-          <DialogBody className="space-y-4 py-5">
+          <DialogBody className="space-y-4 py-4">
             {error ? (
-              <div className="flex items-start gap-2 rounded-xl border border-destructive/30 bg-destructive/5 px-3 py-2.5 text-xs text-destructive">
+              <div className="flex items-start gap-2 rounded-2xl border border-destructive/40 bg-destructive/5 px-3 py-2 text-xs text-destructive">
                 <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
                 <span>{error}</span>
               </div>
             ) : null}
-            <div className="space-y-1.5">
+            <div className="space-y-2">
               <Label htmlFor="admin-agent-name-dialog" className="text-xs text-muted-foreground">
                 {t("settings.devicesName")}
               </Label>
@@ -452,10 +452,10 @@ function AddClientDialog({
                 onChange={(event) => onNameChange(event.currentTarget.value)}
               />
             </div>
-            <div className="space-y-1.5">
+            <div className="space-y-2">
               <Label htmlFor="admin-agent-id-dialog" className="text-xs text-muted-foreground">
                 {t("settings.devicesAgentId")}
-                <span className="ml-0.5 text-red-500">*</span>
+                <span className="ml-0.5 text-destructive">*</span>
               </Label>
               <Input
                 id="admin-agent-id-dialog"
@@ -472,7 +472,7 @@ function AddClientDialog({
               <Button type="button" variant="outline" onClick={onClose} disabled={loading}>
                 {t("settings.close")}
               </Button>
-              <Button type="submit" className="gap-1.5" disabled={loading}>
+              <Button type="submit" className="gap-2" disabled={loading}>
                 {loading ? (
                   <Loader2 className="h-3.5 w-3.5 animate-spin" />
                 ) : (
@@ -510,7 +510,7 @@ function IssuedTokenDialog({
       <DialogContent className="max-w-lg p-0" closeLabel={t("settings.close")} showCloseButton>
         <DialogHeader className="flex-row items-start gap-4">
           <div className="flex min-w-0 items-start gap-3">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-emerald-500/25 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-success/20 bg-success/10 text-success">
               <Key className="h-5 w-5" />
             </div>
             <div className="min-w-0">
@@ -522,7 +522,7 @@ function IssuedTokenDialog({
           </div>
         </DialogHeader>
 
-        <DialogBody className="space-y-3 py-5">
+        <DialogBody className="space-y-3 py-4">
           <p className="text-xs leading-5 text-muted-foreground">
             {t("settings.devicesTokenOnce")}
           </p>
@@ -530,21 +530,17 @@ function IssuedTokenDialog({
             <Input
               readOnly
               value={issuedToken.token}
-              className="pr-11 font-mono text-xs"
+              className="pr-12 font-mono text-xs"
               onFocus={(event) => event.currentTarget.select()}
             />
             <button
               type="button"
               onClick={() => void handleCopy()}
-              className="absolute right-1 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted/60 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/35"
+              className="absolute right-1 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted/60 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40"
               title={copied ? t("chat.markdown.copied") : t("chat.copy")}
               aria-label={copied ? t("chat.markdown.copied") : t("chat.copy")}
             >
-              {copied ? (
-                <Check className="h-4 w-4 text-emerald-500" />
-              ) : (
-                <Copy className="h-4 w-4" />
-              )}
+              {copied ? <Check className="h-4 w-4 text-success" /> : <Copy className="h-4 w-4" />}
             </button>
           </div>
         </DialogBody>
@@ -587,7 +583,7 @@ function DeviceDirectory(props: {
 
   if (!data) {
     return (
-      <div className="flex items-center justify-center rounded-2xl border border-dashed border-border/60 bg-muted/20 py-12 text-sm text-muted-foreground">
+      <div className="flex items-center justify-center rounded-2xl border border-dashed border-border bg-muted/20 py-12 text-base text-muted-foreground">
         {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
         {loading ? t("settings.devicesLoading") : t("settings.devicesEmpty")}
       </div>
@@ -597,13 +593,13 @@ function DeviceDirectory(props: {
   if (data.agents.length === 0) {
     const filtered = statusFilter !== "all";
     return (
-      <div className="flex flex-col items-center gap-3 rounded-2xl border border-dashed border-border/60 bg-muted/20 py-12 text-center">
-        <MonitorSmartphone className="h-8 w-8 text-muted-foreground/30" />
+      <div className="flex flex-col items-center gap-3 rounded-2xl border border-dashed border-border bg-muted/20 py-12 text-center">
+        <MonitorSmartphone className="h-8 w-8 text-muted-foreground/40" />
         <div>
-          <p className="text-sm font-medium text-muted-foreground">
+          <p className="text-base font-medium text-muted-foreground">
             {t(filtered ? "settings.devicesFilterEmpty" : "settings.devicesEmpty")}
           </p>
-          <p className="mt-1 text-xs text-muted-foreground/70">
+          <p className="mt-1 text-xs text-muted-foreground/80">
             {t(filtered ? "settings.devicesFilterEmptyDesc" : "settings.devicesEmptyDesc")}
           </p>
         </div>
@@ -659,17 +655,17 @@ function DeviceRow(props: {
   }
 
   return (
-    <div className="group rounded-xl border border-border/60 bg-card transition-colors hover:border-border hover:bg-accent/20">
+    <div className="group rounded-2xl border border-border bg-card transition-colors hover:border-input hover:bg-accent/20">
       <div className="settings-card-row settings-devices-card-row flex items-center gap-3 px-4 py-3">
         <div
           className={
             agent.online
-              ? "flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-emerald-500/10"
+              ? "flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-success/10"
               : "flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-muted/60"
           }
         >
           {agent.online ? (
-            <Wifi className="h-4 w-4 text-emerald-500" />
+            <Wifi className="h-4 w-4 text-success" />
           ) : (
             <WifiOff className="h-4 w-4 text-muted-foreground" />
           )}
@@ -679,7 +675,7 @@ function DeviceRow(props: {
           <div className="flex flex-wrap items-center gap-2">
             <span
               className={cn(
-                "min-w-0 max-w-full truncate text-sm font-medium",
+                "min-w-0 max-w-full truncate text-base font-medium",
                 displayName ? "" : "font-mono",
               )}
               title={displayName || agent.agent_id}
@@ -689,8 +685,8 @@ function DeviceRow(props: {
             <span
               className={
                 agent.online
-                  ? "rounded-full bg-emerald-500/10 px-2 py-0.5 text-[10px] font-medium text-emerald-600 dark:text-emerald-400"
-                  : "rounded-full bg-muted px-2 py-0.5 text-[10px] font-medium text-muted-foreground"
+                  ? "rounded-full bg-success/10 px-2 py-0.5 text-2xs font-medium text-success"
+                  : "rounded-full bg-muted px-2 py-0.5 text-2xs font-medium text-muted-foreground"
               }
             >
               {agent.online
@@ -729,7 +725,7 @@ function DeviceRow(props: {
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="gap-1.5 text-muted-foreground"
+                  className="gap-2 text-muted-foreground"
                   disabled={rotating || deleting}
                   onClick={open}
                 >
@@ -746,7 +742,7 @@ function DeviceRow(props: {
             <Button
               variant="ghost"
               size="sm"
-              className="gap-1.5 text-muted-foreground"
+              className="gap-2 text-muted-foreground"
               disabled={rotating || deleting}
               onClick={onRotate}
             >
@@ -761,7 +757,7 @@ function DeviceRow(props: {
           <Button
             variant="ghost"
             size="sm"
-            className="gap-1.5 text-muted-foreground"
+            className="gap-2 text-muted-foreground"
             disabled={deleting || updatingName}
             onClick={beginEditing}
           >
@@ -783,7 +779,7 @@ function DeviceRow(props: {
               <Button
                 variant="ghost"
                 size="sm"
-                className="gap-1.5 text-muted-foreground hover:text-destructive"
+                className="gap-2 text-muted-foreground hover:text-destructive"
                 disabled={deleting || rotating}
                 onClick={open}
               >
@@ -799,8 +795,8 @@ function DeviceRow(props: {
         </div>
       </div>
       {editing ? (
-        <div className="flex flex-col gap-2 border-t border-border/50 px-4 py-3 sm:flex-row sm:items-end">
-          <div className="min-w-0 flex-1 space-y-1.5">
+        <div className="flex flex-col gap-2 border-t border-border px-4 py-3 sm:flex-row sm:items-end">
+          <div className="min-w-0 flex-1 space-y-2">
             <Label
               htmlFor={`agent-name-${agent.agent_id}`}
               className="text-xs text-muted-foreground"
@@ -825,7 +821,7 @@ function DeviceRow(props: {
             <Button
               variant="outline"
               size="sm"
-              className="gap-1.5"
+              className="gap-2"
               disabled={updatingName}
               onClick={() => setEditing(false)}
             >
@@ -834,7 +830,7 @@ function DeviceRow(props: {
             </Button>
             <Button
               size="sm"
-              className="gap-1.5"
+              className="gap-2"
               disabled={updatingName}
               onClick={() => void saveName()}
             >

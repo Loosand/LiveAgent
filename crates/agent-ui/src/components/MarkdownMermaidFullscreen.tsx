@@ -49,7 +49,7 @@ function MermaidControlButton(props: {
       title={label}
       disabled={disabled}
       onClick={onClick}
-      className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md text-foreground/75 transition-colors hover:bg-foreground/[0.08] hover:text-foreground disabled:cursor-not-allowed disabled:opacity-35"
+      className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-foreground/80 transition-colors hover:bg-foreground/10 hover:text-foreground disabled:cursor-not-allowed disabled:opacity-35"
     >
       {children}
     </button>
@@ -227,12 +227,12 @@ function MermaidFullscreenDialog({ chart, onClose }: { chart: string; onClose: (
           {error ? (
             <div
               role="alert"
-              className="absolute left-1/2 top-1/2 max-w-[min(36rem,calc(100%-2rem))] -translate-x-1/2 -translate-y-1/2 rounded-md border border-destructive/30 bg-background px-4 py-3 text-sm text-destructive shadow-lg"
+              className="absolute left-1/2 top-1/2 max-w-[min(36rem,calc(100%-2rem))] -translate-x-1/2 -translate-y-1/2 rounded-lg border border-destructive/40 bg-background px-4 py-3 text-base text-destructive shadow-overlay"
             >
               {error}
             </div>
           ) : null}
-          <div className="absolute bottom-4 left-4 z-10 flex items-center rounded-md border border-border bg-background/95 p-1 shadow-md">
+          <div className="absolute bottom-4 left-4 z-10 flex items-center rounded-lg border border-border bg-background p-1 shadow-overlay">
             <MermaidControlButton
               label={t("chat.imageViewer.zoomOut")}
               disabled={!viewportState || viewportState.zoom <= MIN_ZOOM}
@@ -240,7 +240,7 @@ function MermaidFullscreenDialog({ chart, onClose }: { chart: string; onClose: (
             >
               <Minus className="h-4 w-4" />
             </MermaidControlButton>
-            <span className="w-12 text-center text-[11px] tabular-nums text-muted-foreground">
+            <span className="w-12 text-center text-xs tabular-nums text-muted-foreground">
               {Math.round((viewportState?.zoom ?? 1) * 100)}%
             </span>
             <MermaidControlButton
@@ -272,7 +272,7 @@ export function MermaidFullscreenButton({ chart, className }: MermaidFullscreenB
         title={t("chat.imageViewer.fullscreen")}
         onClick={() => setOpen(true)}
         className={cn(
-          "flex h-6 w-6 items-center justify-center rounded p-1 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground",
+          "flex h-6 w-6 items-center justify-center rounded-sm p-1 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground",
           className,
         )}
       >

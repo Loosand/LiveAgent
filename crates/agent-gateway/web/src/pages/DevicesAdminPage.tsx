@@ -8,7 +8,7 @@ export function DevicesAdminPage() {
     <div className="mx-auto flex min-h-screen max-w-5xl flex-col px-4 py-6 sm:px-6">
       <a
         href="/"
-        className="mb-5 flex w-fit items-center gap-2 rounded-md px-2 py-1 text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+        className="mb-4 flex w-fit items-center gap-2 rounded-lg px-2 py-1 text-base text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
       >
         <ArrowLeft className="h-4 w-4" />
         返回聊天

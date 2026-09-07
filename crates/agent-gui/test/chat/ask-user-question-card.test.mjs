@@ -166,14 +166,14 @@ test("card surface avoids an outer shadow that the collapse viewport would clip"
     (node) =>
       node.type === "div" &&
       typeof node.props?.className === "string" &&
-      node.props.className.includes("rounded-xl") &&
-      node.props.className.includes("border-border/60"),
+      node.props.className.includes("overflow-hidden") &&
+      node.props.className.includes("border-border"),
   )[0];
 
   assert.ok(surface);
   // 卡片改用设计 token（描边 + 淡底），不再有毛玻璃与 inset 高光；
   // 关键约束不变：不能有会被折叠视口裁掉的外阴影。
-  assert.doesNotMatch(surface.props.className, /shadow-\[/);
+  assert.doesNotMatch(surface.props.className, /shadow-(?:\[|control|overlay)/);
   assert.doesNotMatch(surface.props.className, /backdrop-blur/);
 });
 

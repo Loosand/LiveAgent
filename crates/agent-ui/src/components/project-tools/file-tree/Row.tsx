@@ -65,7 +65,7 @@ export const FileTreeRow = memo(function FileTreeRow(props: FileTreeRowProps) {
       aria-expanded={kind === "dir" ? expanded : undefined}
       tabIndex={0}
       className={cn(
-        "group flex w-full cursor-pointer select-none items-center gap-1 rounded-md pr-2 text-xs leading-5 text-muted-foreground hover:bg-muted/70 hover:text-foreground",
+        "group flex w-full cursor-pointer select-none items-center gap-1 rounded-lg pr-2 text-xs leading-5 text-muted-foreground hover:bg-muted/80 hover:text-foreground",
         selected && "bg-muted text-foreground",
       )}
       style={{ height: FILE_TREE_ROW_HEIGHT, paddingLeft: 6 + depth * 14 }}
@@ -86,7 +86,7 @@ export const FileTreeRow = memo(function FileTreeRow(props: FileTreeRowProps) {
         <button
           type="button"
           className={cn(
-            "flex h-5 w-5 shrink-0 items-center justify-center rounded hover:bg-background",
+            "flex h-5 w-5 shrink-0 items-center justify-center rounded-sm hover:bg-background",
             hidden && "opacity-60 group-hover:opacity-80",
           )}
           onClick={(event) => {
@@ -108,7 +108,7 @@ export const FileTreeRow = memo(function FileTreeRow(props: FileTreeRowProps) {
       )}
       <div
         className={cn(
-          "flex min-w-0 flex-1 items-center gap-1.5 bg-transparent p-0 text-left text-inherit leading-5",
+          "flex min-w-0 flex-1 items-center gap-2 bg-transparent p-0 text-left text-inherit leading-5",
           hidden && "opacity-60 group-hover:opacity-80",
         )}
       >
@@ -129,7 +129,7 @@ export const FileTreeErrorRow = memo(function FileTreeErrorRow(props: FileTreeEr
   const { depth, message } = props;
   return (
     <div
-      className="break-all px-3 py-1 text-[calc(11px*var(--zone-font-scale,1))] text-amber-600"
+      className="break-all px-3 py-1 text-xs text-warning"
       style={{ paddingLeft: 12 + depth * 14 }}
     >
       {message}

@@ -25,7 +25,7 @@ export function LabelTooltip(props: {
         closeOnClick={props.closeOnClick ?? true}
         render={<span className="inline-flex shrink-0">{props.children}</span>}
       />
-      <TooltipContent className="label-tooltip-popup rounded-xl px-3 py-2">
+      <TooltipContent className="label-tooltip-popup rounded-2xl px-3 py-2">
         {props.label}
       </TooltipContent>
     </Tooltip>

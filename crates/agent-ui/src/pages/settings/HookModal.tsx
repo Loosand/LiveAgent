@@ -120,7 +120,7 @@ export function HookModal({ event, initialData, onSave, onClose }: HookModalProp
         showCloseButton
       >
         <DialogHeader className="flex-row items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-500/10 text-amber-500">
+          <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-warning/10 text-warning">
             <Zap className="h-5 w-5" />
           </div>
           <div className="min-w-0 flex-1">
@@ -128,7 +128,7 @@ export function HookModal({ event, initialData, onSave, onClose }: HookModalProp
               {isEditing ? t("settings.hooksEdit") : t("settings.hooksAdd")}
             </DialogTitle>
             <DialogDescription className="mt-0.5 flex items-center gap-2 text-xs">
-              <span className="rounded-md bg-muted/60 px-2 py-0.5 font-mono text-[11px] text-muted-foreground">
+              <span className="rounded-lg bg-muted/60 px-2 py-0.5 font-mono text-xs text-muted-foreground">
                 {event}
               </span>
               <span className="text-xs text-muted-foreground">
@@ -139,17 +139,17 @@ export function HookModal({ event, initialData, onSave, onClose }: HookModalProp
         </DialogHeader>
 
         <DialogBody className="p-0 max-[820px]:p-0">
-          <div className="border-b border-border/30 px-6 py-5">
+          <div className="border-b border-border px-6 py-4">
             <div className="mb-4 flex items-center gap-2">
-              <div className="flex h-6 w-6 items-center justify-center rounded-md bg-primary/10 text-[11px] font-bold text-primary">
+              <div className="flex h-6 w-6 items-center justify-center rounded-lg bg-primary/10 text-xs font-bold text-primary">
                 1
               </div>
-              <span className="text-sm font-semibold">{t("settings.hooksName")}</span>
+              <span className="text-base font-semibold">{t("settings.hooksName")}</span>
             </div>
 
             <div className="space-y-4">
               <div className="settings-form-grid grid gap-4 sm:grid-cols-2">
-                <div className="space-y-1.5">
+                <div className="space-y-2">
                   <Label htmlFor="hook-name" className="text-xs font-medium text-muted-foreground">
                     {t("settings.hooksName")}
                   </Label>
@@ -163,7 +163,7 @@ export function HookModal({ event, initialData, onSave, onClose }: HookModalProp
                     }}
                   />
                 </div>
-                <div className="space-y-1.5">
+                <div className="space-y-2">
                   <Label
                     htmlFor="hook-description"
                     className="text-xs font-medium text-muted-foreground"
@@ -184,12 +184,12 @@ export function HookModal({ event, initialData, onSave, onClose }: HookModalProp
             </div>
           </div>
 
-          <div className="border-b border-border/30 px-6 py-5">
+          <div className="border-b border-border px-6 py-4">
             <div className="mb-4 flex items-center gap-2">
-              <div className="flex h-6 w-6 items-center justify-center rounded-md bg-primary/10 text-[11px] font-bold text-primary">
+              <div className="flex h-6 w-6 items-center justify-center rounded-lg bg-primary/10 text-xs font-bold text-primary">
                 2
               </div>
-              <span className="text-sm font-semibold">{t("settings.hooksType")}</span>
+              <span className="text-base font-semibold">{t("settings.hooksType")}</span>
             </div>
 
             <div className="settings-choice-grid grid grid-cols-2 gap-3">
@@ -200,17 +200,17 @@ export function HookModal({ event, initialData, onSave, onClose }: HookModalProp
                   setType("command");
                 }}
                 className={cn(
-                  "group relative flex items-start gap-3 rounded-xl border-2 p-4 text-left transition-all",
+                  "group relative flex items-start gap-3 rounded-2xl border-2 p-4 text-left transition-all",
                   type === "command"
-                    ? "border-blue-500/50 bg-blue-500/5 shadow-sm shadow-blue-500/10"
-                    : "border-border/60 bg-background hover:border-border hover:bg-muted/20",
+                    ? "border-info/60 bg-info/5 shadow-control shadow-info/10"
+                    : "border-border bg-background hover:border-input hover:bg-muted/20",
                 )}
               >
                 <div
                   className={cn(
-                    "flex h-10 w-10 shrink-0 items-center justify-center rounded-xl transition-colors",
+                    "flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl transition-colors",
                     type === "command"
-                      ? "bg-blue-500/15 text-blue-500"
+                      ? "bg-info/20 text-info"
                       : "bg-muted/60 text-muted-foreground",
                   )}
                 >
@@ -219,8 +219,8 @@ export function HookModal({ event, initialData, onSave, onClose }: HookModalProp
                 <div className="min-w-0 flex-1">
                   <div
                     className={cn(
-                      "text-sm font-semibold",
-                      type === "command" ? "text-blue-600 dark:text-blue-400" : "text-foreground",
+                      "text-base font-semibold",
+                      type === "command" ? "text-info" : "text-foreground",
                     )}
                   >
                     {t("settings.hooksTypeCommand")}
@@ -231,7 +231,7 @@ export function HookModal({ event, initialData, onSave, onClose }: HookModalProp
                 </div>
                 {type === "command" ? (
                   <div className="absolute right-3 top-3">
-                    <CheckCircle2 className="h-4.5 w-4.5 text-blue-500" />
+                    <CheckCircle2 className="h-4.5 w-4.5 text-info" />
                   </div>
                 ) : null}
               </button>
@@ -243,17 +243,17 @@ export function HookModal({ event, initialData, onSave, onClose }: HookModalProp
                   setType("http");
                 }}
                 className={cn(
-                  "group relative flex items-start gap-3 rounded-xl border-2 p-4 text-left transition-all",
+                  "group relative flex items-start gap-3 rounded-2xl border-2 p-4 text-left transition-all",
                   type === "http"
-                    ? "border-emerald-500/50 bg-emerald-500/5 shadow-sm shadow-emerald-500/10"
-                    : "border-border/60 bg-background hover:border-border hover:bg-muted/20",
+                    ? "border-success/60 bg-success/5 shadow-control shadow-success/10"
+                    : "border-border bg-background hover:border-input hover:bg-muted/20",
                 )}
               >
                 <div
                   className={cn(
-                    "flex h-10 w-10 shrink-0 items-center justify-center rounded-xl transition-colors",
+                    "flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl transition-colors",
                     type === "http"
-                      ? "bg-emerald-500/15 text-emerald-500"
+                      ? "bg-success/20 text-success"
                       : "bg-muted/60 text-muted-foreground",
                   )}
                 >
@@ -262,10 +262,8 @@ export function HookModal({ event, initialData, onSave, onClose }: HookModalProp
                 <div className="min-w-0 flex-1">
                   <div
                     className={cn(
-                      "text-sm font-semibold",
-                      type === "http"
-                        ? "text-emerald-600 dark:text-emerald-400"
-                        : "text-foreground",
+                      "text-base font-semibold",
+                      type === "http" ? "text-success" : "text-foreground",
                     )}
                   >
                     {t("settings.hooksTypeHttp")}
@@ -276,20 +274,20 @@ export function HookModal({ event, initialData, onSave, onClose }: HookModalProp
                 </div>
                 {type === "http" ? (
                   <div className="absolute right-3 top-3">
-                    <CheckCircle2 className="h-4.5 w-4.5 text-emerald-500" />
+                    <CheckCircle2 className="h-4.5 w-4.5 text-success" />
                   </div>
                 ) : null}
               </button>
             </div>
           </div>
 
-          <div className="px-6 py-5">
+          <div className="px-6 py-4">
             <DialogSectionHeader>
               <div className="flex items-center gap-2">
-                <div className="flex h-6 w-6 items-center justify-center rounded-md bg-primary/10 text-[11px] font-bold text-primary">
+                <div className="flex h-6 w-6 items-center justify-center rounded-lg bg-primary/10 text-xs font-bold text-primary">
                   3
                 </div>
-                <span className="text-sm font-semibold">
+                <span className="text-base font-semibold">
                   {type === "command"
                     ? t("settings.hooksCommandList")
                     : t("settings.hooksHttpRequests")}
@@ -297,23 +295,23 @@ export function HookModal({ event, initialData, onSave, onClose }: HookModalProp
               </div>
               {type === "command" ? (
                 <div className="flex items-center gap-2">
-                  <span className="rounded-md bg-blue-500/10 px-2 py-0.5 text-[11px] font-medium text-blue-600 dark:text-blue-400">
+                  <span className="rounded-lg bg-info/10 px-2 py-0.5 text-xs font-medium text-info">
                     {scriptLineCount} {t("settings.hooksScriptLinesCount")}
                   </span>
-                  <span className="rounded-md bg-muted/50 px-2 py-0.5 text-[11px] font-medium text-muted-foreground">
+                  <span className="rounded-lg bg-muted/60 px-2 py-0.5 text-xs font-medium text-muted-foreground">
                     {t("settings.hooksSequential")}
                   </span>
                 </div>
               ) : (
                 <div className="flex items-center gap-2">
-                  <span className="rounded-md bg-emerald-500/10 px-2 py-0.5 text-[11px] font-medium text-emerald-600 dark:text-emerald-400">
+                  <span className="rounded-lg bg-success/10 px-2 py-0.5 text-xs font-medium text-success">
                     {requests.length} {t("settings.hooksRequestsCount")}
                   </span>
                   <Button
                     type="button"
                     variant="outline"
                     size="sm"
-                    className="h-7 gap-1 px-2.5 text-xs"
+                    className="h-7 gap-1 px-2 text-xs"
                     onClick={() => {
                       setFormError(null);
                       const draft = createEmptyRequestDraft();
@@ -330,13 +328,13 @@ export function HookModal({ event, initialData, onSave, onClose }: HookModalProp
 
             {type === "command" ? (
               <div className="space-y-3">
-                <div className="overflow-hidden rounded-xl border border-border/60 bg-muted/20">
-                  <div className="flex items-center justify-between border-b border-border/30 px-3 py-2">
-                    <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
+                <div className="overflow-hidden rounded-2xl border border-border bg-muted/20">
+                  <div className="flex items-center justify-between border-b border-border px-3 py-2">
+                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
                       <Terminal className="h-3 w-3" />
                       <span className="font-medium">{t("settings.hooksCommandList")}</span>
                     </div>
-                    <span className="text-[11px] text-muted-foreground/60">
+                    <span className="text-xs text-muted-foreground/60">
                       {t("settings.hooksCommandHint")}
                     </span>
                   </div>
@@ -351,7 +349,7 @@ export function HookModal({ event, initialData, onSave, onClose }: HookModalProp
                   />
                 </div>
                 <div className="settings-form-grid grid gap-4 sm:grid-cols-2">
-                  <div className="space-y-1.5">
+                  <div className="space-y-2">
                     <Label
                       htmlFor="hook-timeout"
                       className="text-xs font-medium text-muted-foreground"
@@ -389,12 +387,12 @@ export function HookModal({ event, initialData, onSave, onClose }: HookModalProp
         <DialogFooter className="min-[821px]:justify-between">
           <div className="min-w-0 flex-1">
             {formError ? (
-              <div className="flex items-center gap-1.5 text-xs text-destructive">
+              <div className="flex items-center gap-2 text-xs text-destructive">
                 <AlertTriangle className="h-3.5 w-3.5 shrink-0" />
                 <span className="truncate">{formError}</span>
               </div>
             ) : name.trim() && (type !== "command" || scriptText.trim()) ? (
-              <div className="flex items-center gap-1.5 text-xs text-emerald-600 dark:text-emerald-400">
+              <div className="flex items-center gap-2 text-xs text-success">
                 <Check className="h-3.5 w-3.5" />
                 <span>{t("settings.agentsReady")}</span>
               </div>

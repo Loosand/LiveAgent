@@ -750,7 +750,7 @@ export default function App() {
             <AppErrorBoundary>
               <Suspense
                 fallback={
-                  <div className="flex h-full items-center justify-center bg-background text-sm text-muted-foreground">
+                  <div className="flex h-full items-center justify-center bg-background text-base text-muted-foreground">
                     {translate("app.loading", settings.locale)}
                   </div>
                 }
@@ -778,7 +778,7 @@ export default function App() {
               void invoke("app_toggle_window_pin").catch(() => {});
             }}
             title={translate("app.windowPinnedHint", settings.locale)}
-            className="layer-toast absolute top-3 left-1/2 flex -translate-x-1/2 items-center gap-1.5 rounded-full border border-primary/30 bg-primary/10 px-2.5 py-1 text-xs font-medium text-primary shadow-sm backdrop-blur transition-colors hover:bg-primary/20"
+            className="layer-toast absolute top-3 left-1/2 flex -translate-x-1/2 items-center gap-2 rounded-full border border-ring bg-primary/10 px-2 py-1 text-xs font-medium text-primary shadow-control backdrop-blur transition-colors hover:bg-primary/20"
           >
             <Pin className="h-3 w-3" />
             {translate("app.windowPinned", settings.locale)}

@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "../../agent-ui/src/styles/tokens.css";
 @import "../../agent-ui/src/styles/base.css";
 @import "../../agent-ui/src/styles/transcript.css";
 @import "../../agent-ui/src/styles/common.css";
@@ -31,28 +32,28 @@
     @apply my-2 text-xs leading-relaxed text-muted-foreground;
   }
   .release-notes-markdown [data-streamdown="heading-1"] {
-    @apply mb-2 mt-3 text-sm font-semibold text-foreground;
+    @apply mb-2 mt-3 text-base font-semibold text-foreground;
   }
   .release-notes-markdown [data-streamdown="heading-2"] {
-    @apply mb-2 mt-3 text-sm font-semibold text-foreground;
+    @apply mb-2 mt-3 text-base font-semibold text-foreground;
   }
   .release-notes-markdown [data-streamdown="heading-3"] {
-    @apply mb-1.5 mt-3 text-xs font-semibold text-foreground;
+    @apply mb-2 mt-3 text-xs font-semibold text-foreground;
   }
   .release-notes-markdown [data-streamdown="unordered-list"] {
-    @apply my-2 ml-0 list-disc space-y-1 pl-5;
+    @apply my-2 ml-0 list-disc space-y-1 pl-4;
   }
   .release-notes-markdown [data-streamdown="ordered-list"] {
-    @apply my-2 ml-0 list-decimal space-y-1 pl-5;
+    @apply my-2 ml-0 list-decimal space-y-1 pl-4;
   }
   .release-notes-markdown [data-streamdown="list-item"] {
     @apply pl-1 text-xs leading-relaxed text-muted-foreground;
   }
   .release-notes-markdown [data-streamdown="blockquote"] {
-    @apply my-2 border-l-2 border-border/70 pl-3 text-xs not-italic text-muted-foreground;
+    @apply my-2 border-l-2 border-border pl-3 text-xs not-italic text-muted-foreground;
   }
   .release-notes-markdown [data-streamdown="inline-code"] {
-    @apply rounded border border-border/50 bg-muted/60 px-1 py-0.5 font-mono text-[calc(11px*var(--zone-font-scale,1))] text-foreground/90;
+    @apply rounded-sm border border-border bg-muted/60 px-1 py-0.5 font-mono text-xs text-foreground/90;
   }
 
   /* Smooth entrance for chat bubbles */
@@ -79,23 +80,19 @@
   .chat-jump-to-bottom {
     transform: translateX(-50%);
     animation: chatJumpToBottomIn 0.18s cubic-bezier(0.16, 1, 0.3, 1);
-    border: 1px solid hsl(var(--border) / 0.55);
+    border: var(--border-width-default) solid hsl(var(--border));
     background: hsl(var(--background) / 0.45);
     -webkit-backdrop-filter: blur(18px) saturate(180%);
     backdrop-filter: blur(18px) saturate(180%);
-    box-shadow:
-      0 1px 0 hsl(0 0% 100% / 0.45) inset,
-      0 8px 24px -14px hsl(0 0% 0% / 0.35);
+    box-shadow: var(--elevation-overlay);
   }
   .chat-jump-to-bottom:hover {
     background: hsl(var(--background) / 0.65);
   }
   .dark .chat-jump-to-bottom {
-    border-color: hsl(0 0% 100% / 0.12);
+    border-color: hsl(var(--border));
     background: hsl(0 0% 100% / 0.06);
-    box-shadow:
-      0 1px 0 hsl(0 0% 100% / 0.08) inset,
-      0 8px 24px -14px hsl(0 0% 0% / 0.6);
+    box-shadow: var(--elevation-overlay);
   }
   .dark .chat-jump-to-bottom:hover {
     background: hsl(0 0% 100% / 0.11);
@@ -143,9 +140,7 @@
    * the trigger and enter/exit key off data-starting-style / data-ending-style
    * on the popup (data-state rules never match Base UI). */
   .composer-reasoning-trigger[data-popup-open] {
-    box-shadow:
-      0 8px 18px -14px rgba(88, 28, 135, 0.55),
-      inset 0 0 0 1px rgba(167, 139, 250, 0.12);
+    box-shadow: var(--selection-inset);
   }
 
   .composer-add-dropdown,
@@ -208,7 +203,7 @@
   .settings-section-heading-row {
     flex-direction: column;
     align-items: stretch;
-    gap: 12px;
+    gap: calc(var(--spacing) * 3);
   }
 
   .settings-section-title-group {
@@ -226,7 +221,7 @@
   }
 
   .settings-card-row {
-    padding: 12px;
+    padding: calc(var(--spacing) * 3);
   }
 }
 
@@ -294,8 +289,8 @@
 }
 .project-tools-panel-tabs {
   height: 2.5rem;
-  padding-top: 0.25rem;
-  padding-bottom: 0.25rem;
+  padding-top: calc(var(--spacing) * 1);
+  padding-bottom: calc(var(--spacing) * 1);
 }
 /* Mobile drag handle from the mirrored WebUI markup; the desktop GUI has no
  * mobile sheet presentation, so it is never shown here. */

@@ -279,17 +279,17 @@ function ToolImageStatusCard(props: {
   return (
     <div
       className={cn(
-        "relative flex min-h-28 w-full flex-col items-center justify-center gap-2 overflow-hidden rounded-md border border-dashed px-4 py-5 text-center",
+        "relative flex min-h-28 w-full flex-col items-center justify-center gap-2 overflow-hidden rounded-lg border border-dashed px-4 py-4 text-center",
         isError
-          ? "border-red-500/25 bg-red-500/[0.04] text-red-700 dark:border-red-400/25 dark:bg-red-400/[0.06] dark:text-red-300"
-          : "border-black/[0.08] bg-black/[0.025] text-muted-foreground dark:border-white/[0.1] dark:bg-white/[0.035]",
+          ? "border-destructive/20 bg-destructive/5 text-destructive dark:bg-destructive/5"
+          : "border-border bg-black/5 text-muted-foreground dark:bg-white/5",
         className,
       )}
     >
       <div
         className={cn(
-          "flex h-9 w-9 items-center justify-center rounded-md border bg-white/80 shadow-sm dark:bg-black/20",
-          isError ? "border-red-500/20" : "border-black/[0.06] dark:border-white/[0.08]",
+          "flex h-9 w-9 items-center justify-center rounded-lg border bg-white/80 shadow-control dark:bg-black/20",
+          isError ? "border-destructive/20" : "border-border",
         )}
       >
         <Icon
@@ -300,19 +300,14 @@ function ToolImageStatusCard(props: {
         />
       </div>
       <div className="max-w-full space-y-1">
-        <div
-          className={cn(
-            "text-[calc(12px*var(--zone-font-scale,1))] font-medium",
-            !isError && "shimmer",
-          )}
-        >
+        <div className={cn("text-xs font-medium", !isError && "shimmer")}>
           {title ?? (isError ? t("chat.image.unavailable") : t("chat.image.loading"))}
         </div>
         {detail ? (
           <div
             className={cn(
-              "max-w-full truncate text-[calc(11px*var(--zone-font-scale,1))]",
-              isError ? "text-red-700/75 dark:text-red-200/75" : "text-muted-foreground",
+              "max-w-full truncate text-xs",
+              isError ? "text-destructive/80" : "text-muted-foreground",
             )}
             title={detail}
           >
@@ -377,22 +372,17 @@ export function ToolResultImagePreview(props: {
     return (
       <button
         type="button"
-        className="group flex min-h-28 w-full flex-col items-center justify-center gap-2 rounded-md border border-dashed border-black/[0.12] bg-black/[0.025] px-4 py-5 text-center text-muted-foreground transition-colors hover:border-black/[0.2] hover:bg-black/[0.04] hover:text-foreground dark:border-white/[0.14] dark:bg-white/[0.035] dark:hover:border-white/[0.22] dark:hover:bg-white/[0.055]"
+        className="group flex min-h-28 w-full flex-col items-center justify-center gap-2 rounded-lg border border-dashed border-border bg-black/5 px-4 py-4 text-center text-muted-foreground transition-colors hover:border-input hover:bg-black/10 hover:text-foreground dark:bg-white/5 dark:hover:bg-white/10"
         onClick={() => setShouldLoad(true)}
         title={alt}
         aria-label={`${t("chat.image.load")} ${alt}`}
       >
-        <div className="flex h-9 w-9 items-center justify-center rounded-md border border-black/[0.06] bg-white/80 shadow-sm transition-colors group-hover:border-black/[0.12] dark:border-white/[0.08] dark:bg-black/20 dark:group-hover:border-white/[0.16]">
+        <div className="flex h-9 w-9 items-center justify-center rounded-lg border border-border bg-white/80 shadow-control transition-colors group-hover:border-input dark:bg-black/20">
           <Eye className="h-4 w-4" />
         </div>
         <div className="max-w-full space-y-1">
-          <div className="text-[calc(12px*var(--zone-font-scale,1))] font-medium">
-            {t("chat.image.clickToLoad")}
-          </div>
-          <div
-            className="max-w-full truncate text-[calc(11px*var(--zone-font-scale,1))]"
-            title={imageDetail}
-          >
+          <div className="text-xs font-medium">{t("chat.image.clickToLoad")}</div>
+          <div className="max-w-full truncate text-xs" title={imageDetail}>
             {imageDetail}
           </div>
         </div>
@@ -420,7 +410,7 @@ export function ToolResultImagePreview(props: {
           loading="lazy"
           decoding="async"
           className={cn(
-            "block max-h-[32rem] w-full rounded-md object-contain transition-opacity duration-200",
+            "block max-h-[32rem] w-full rounded-lg object-contain transition-opacity duration-200",
             imageStatus === "loaded"
               ? "opacity-100"
               : "pointer-events-none absolute inset-0 h-full max-h-none opacity-0",
@@ -437,7 +427,7 @@ export function ToolResultImagePreview(props: {
       <button
         type="button"
         className={cn(
-          "relative block w-full overflow-hidden rounded-md text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/45 disabled:opacity-100",
+          "relative block w-full overflow-hidden rounded-lg text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 disabled:opacity-100",
           canPreview ? "cursor-zoom-in" : "cursor-default",
         )}
         disabled={!canPreview}
@@ -566,11 +556,11 @@ function NativeDisplayImageTile(props: {
         : t("chat.image.loading");
 
   const className = cn(
-    "relative flex max-w-full items-center justify-center overflow-hidden rounded-lg text-left shadow-sm transition-[filter,transform]",
-    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/45 disabled:opacity-100",
+    "relative flex max-w-full items-center justify-center overflow-hidden rounded-lg text-left shadow-control transition-[filter,transform]",
+    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 disabled:opacity-100",
     canPreview ? "cursor-zoom-in hover:brightness-[0.98]" : "cursor-default hover:brightness-100",
-    isGallery && "aspect-square w-full bg-muted/30",
-    !isGallery && (isSvgImage || isWaiting) && "min-h-28 w-full max-w-3xl bg-muted/30",
+    isGallery && "aspect-square w-full bg-muted/40",
+    !isGallery && (isSvgImage || isWaiting) && "min-h-28 w-full max-w-3xl bg-muted/40",
     imageStatus === "error" && "shadow-none",
   );
   const content = (

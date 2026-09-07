@@ -134,16 +134,16 @@ export function ModelPicker({
           disabled={disabled}
           aria-label={ariaLabel}
           className={cn(
-            "flex h-10 w-full cursor-pointer items-center justify-between gap-2 rounded-md border border-input bg-background px-3 py-2 text-sm shadow-xs focus:outline-none focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50",
+            "flex h-10 w-full cursor-pointer items-center justify-between gap-2 rounded-lg border border-input bg-background px-3 py-2 text-xs shadow-control focus:outline-none focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50",
             triggerClassName,
           )}
         >
           <span className="flex min-w-0 flex-1 items-center gap-2 text-left">
             <span
               className={cn(
-                "flex h-6 w-6 shrink-0 items-center justify-center rounded-md transition-colors",
+                "flex h-6 w-6 shrink-0 items-center justify-center rounded-lg transition-colors",
                 selectedOption
-                  ? "bg-violet-500/10 text-violet-500"
+                  ? "bg-activity/10 text-activity"
                   : "bg-muted/60 text-muted-foreground",
               )}
             >
@@ -168,11 +168,11 @@ export function ModelPicker({
           align="start"
           sideOffset={4}
           collisionPadding={8}
-          className="w-(--anchor-width) overflow-hidden rounded-xl p-0 text-xs"
+          className="w-(--anchor-width) overflow-hidden rounded-2xl p-0 text-xs"
         >
-          <div className="px-2 py-1.5">
-            <div className="flex items-center gap-1.5 rounded-md border border-border/50 bg-muted/40 px-2 py-1">
-              <Search className="h-3.5 w-3.5 shrink-0 text-muted-foreground/70" />
+          <div className="px-2 py-2">
+            <div className="flex items-center gap-2 rounded-lg border border-border bg-muted/40 px-2 py-1">
+              <Search className="h-3.5 w-3.5 shrink-0 text-muted-foreground/80" />
               <input
                 ref={searchInputRef}
                 value={search}
@@ -188,9 +188,8 @@ export function ModelPicker({
               <DropdownMenuItem
                 onSelect={() => onChange("")}
                 className={cn(
-                  "h-[30px] max-w-full shrink-0 justify-between gap-3 overflow-hidden rounded-md py-0 text-xs font-normal leading-5 text-foreground transition-none data-[highlighted]:bg-foreground/[0.05]",
-                  value === "" &&
-                    "bg-foreground/[0.07] font-medium data-[highlighted]:bg-foreground/[0.09]",
+                  "h-[30px] max-w-full shrink-0 justify-between gap-3 overflow-hidden rounded-lg py-0 text-xs font-normal leading-5 text-foreground transition-none data-[highlighted]:bg-foreground/5",
+                  value === "" && "bg-foreground/5 font-medium data-[highlighted]:bg-foreground/10",
                 )}
               >
                 <span className="flex min-w-0 items-center gap-2">
@@ -212,7 +211,7 @@ export function ModelPicker({
                 return (
                   <div key={group.id} className="flex flex-col gap-0.5">
                     {groupIndex > 0 || (noneLabel && !normalizedSearch) ? (
-                      <DropdownMenuSeparator className="bg-border/30" />
+                      <DropdownMenuSeparator className="bg-border/40" />
                     ) : null}
                     {collapsibleGroups ? (
                       <DropdownMenuItem
@@ -220,14 +219,14 @@ export function ModelPicker({
                         onSelect={() => toggleGroup(group.id)}
                         aria-expanded={expanded}
                         title={expanded ? t("chat.collapseProvider") : t("chat.expandProvider")}
-                        className="sticky top-0 z-10 flex h-[30px] shrink-0 cursor-pointer items-center gap-1.5 rounded-md bg-popover/60 px-2 py-0 text-xs font-medium text-muted-foreground/80 backdrop-blur-xl transition-colors data-[highlighted]:bg-muted/40 supports-[backdrop-filter]:bg-popover/40"
+                        className="sticky top-0 z-10 flex h-[30px] shrink-0 cursor-pointer items-center gap-2 rounded-lg bg-popover/60 px-2 py-0 text-xs font-medium text-muted-foreground/80 backdrop-blur-xl transition-colors data-[highlighted]:bg-muted/40 supports-[backdrop-filter]:bg-popover/40"
                       >
                         <ProviderBrandIcon
                           type={group.providerType}
                           className="h-3.5 w-3.5 opacity-90"
                         />
                         <span className="min-w-0 flex-1 truncate">{group.name}</span>
-                        <span className="inline-flex h-4 min-w-[1.1rem] shrink-0 items-center justify-center rounded-full bg-muted/70 px-1 text-[10px] tabular-nums">
+                        <span className="inline-flex h-4 min-w-[1.1rem] shrink-0 items-center justify-center rounded-full bg-muted/80 px-1 text-2xs tabular-nums">
                           {group.opts.length}
                         </span>
                         <ChevronDown
@@ -246,9 +245,9 @@ export function ModelPicker({
                               key={option.value}
                               onSelect={() => onChange(option.value)}
                               className={cn(
-                                "h-[30px] max-w-full shrink-0 justify-between gap-3 overflow-hidden rounded-md py-0 text-xs font-normal leading-5 text-foreground transition-none data-[highlighted]:bg-foreground/[0.05]",
+                                "h-[30px] max-w-full shrink-0 justify-between gap-3 overflow-hidden rounded-lg py-0 text-xs font-normal leading-5 text-foreground transition-none data-[highlighted]:bg-foreground/5",
                                 isSelected &&
-                                  "bg-foreground/[0.07] font-medium data-[highlighted]:bg-foreground/[0.09]",
+                                  "bg-foreground/5 font-medium data-[highlighted]:bg-foreground/10",
                               )}
                             >
                               <span className="flex min-w-0 items-center gap-2">
@@ -258,7 +257,7 @@ export function ModelPicker({
                                 />
                                 <span className="min-w-0 truncate">{option.label}</span>
                                 {option.description ? (
-                                  <span className="min-w-0 truncate text-[11px] text-muted-foreground/70">
+                                  <span className="min-w-0 truncate text-xs text-muted-foreground/80">
                                     {option.description}
                                   </span>
                                 ) : null}

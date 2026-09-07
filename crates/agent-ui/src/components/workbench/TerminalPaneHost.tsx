@@ -359,7 +359,7 @@ export function TerminalPaneHost(props: TerminalPaneHostProps) {
           type="button"
           variant="outline"
           size="sm"
-          className="h-7 shrink-0 px-2.5 text-xs"
+          className="h-7 shrink-0 px-2 text-xs"
           disabled={closeRequest.busy}
           onClick={closeRequest.onCancel}
         >
@@ -369,7 +369,7 @@ export function TerminalPaneHost(props: TerminalPaneHostProps) {
           type="button"
           variant="destructive"
           size="sm"
-          className="h-7 shrink-0 px-2.5 text-xs"
+          className="h-7 shrink-0 px-2 text-xs"
           disabled={closeRequest.busy}
           onClick={closeRequest.onConfirm}
         >

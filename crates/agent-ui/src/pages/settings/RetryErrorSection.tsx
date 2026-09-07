@@ -78,14 +78,14 @@ export function RetryErrorSection(props: SettingsSectionProps) {
   }
 
   return (
-    <section className="py-5 last:pb-0">
+    <section className="py-4 last:pb-0">
       <DrawerSectionHeader
         icon={<RefreshCw className="h-3.5 w-3.5" />}
         title={t("settings.retryError")}
         hint={t("settings.retryErrorDesc")}
       />
 
-      <div className="mt-3.5 space-y-5">
+      <div className="mt-4 space-y-4">
         {/* Preset Cloudflare 5xx toggles — compact selectable chips; the full
             Cloudflare wording lives in the title tooltip of each chip. */}
         <div className="space-y-2">
@@ -93,7 +93,7 @@ export function RetryErrorSection(props: SettingsSectionProps) {
             label={t("settings.retryErrorPresets")}
             hint={t("settings.retryErrorBuiltinNote")}
           />
-          <div className="grid grid-cols-2 gap-1.5">
+          <div className="grid grid-cols-2 gap-2">
             {RETRYABLE_PRESET_HTTP_STATUS_CODES.map((code) => {
               const enabled = isPresetEnabled(code);
               return (
@@ -106,23 +106,23 @@ export function RetryErrorSection(props: SettingsSectionProps) {
                   aria-label={t(`settings.retryError.preset.${code}`)}
                   onClick={() => togglePresetCode(code, !enabled)}
                   className={cn(
-                    "flex h-8 items-center gap-1.5 rounded-lg border px-2 text-left transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring",
+                    "flex h-8 items-center gap-2 rounded-lg border px-2 text-left transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring",
                     enabled
-                      ? "border-primary/25 bg-primary/[0.06] text-foreground"
-                      : "border-foreground/[0.07] text-muted-foreground/75 hover:border-foreground/[0.15] hover:text-foreground/80",
+                      ? "border-ring bg-primary/5 text-foreground"
+                      : "border-border text-muted-foreground/80 hover:border-input hover:text-foreground/80",
                   )}
                 >
                   <code
                     className={cn(
-                      "flex shrink-0 items-center rounded px-1 py-0.5 font-mono text-[10px] leading-none tabular-nums transition-colors",
+                      "flex shrink-0 items-center rounded-sm px-1 py-0.5 font-mono text-2xs leading-none tabular-nums transition-colors",
                       enabled
-                        ? "bg-primary/15 text-primary"
-                        : "bg-foreground/[0.06] text-muted-foreground",
+                        ? "bg-primary/20 text-primary"
+                        : "bg-foreground/5 text-muted-foreground",
                     )}
                   >
                     {code}
                   </code>
-                  <span className="min-w-0 flex-1 truncate text-[11.5px] font-medium">
+                  <span className="min-w-0 flex-1 truncate text-xs font-medium">
                     {t(`settings.retryError.presetShort.${code}`)}
                   </span>
                   <Check
@@ -143,7 +143,7 @@ export function RetryErrorSection(props: SettingsSectionProps) {
             label={t("settings.retryErrorCustomPatterns")}
             hint={t("settings.retryErrorCustomPatternsDesc")}
           />
-          <div className="flex items-center gap-1.5">
+          <div className="flex items-center gap-2">
             <Input
               value={patternDraft}
               placeholder={t("settings.retryErrorCustomPatternPlaceholder")}
@@ -159,7 +159,7 @@ export function RetryErrorSection(props: SettingsSectionProps) {
             <Button
               variant="outline"
               size="sm"
-              className="h-8 shrink-0 gap-1 rounded-lg px-2.5"
+              className="h-8 shrink-0 gap-1 rounded-lg px-2"
               onClick={addPattern}
               disabled={!patternDraft.trim()}
             >
@@ -168,17 +168,17 @@ export function RetryErrorSection(props: SettingsSectionProps) {
             </Button>
           </div>
           {retryErrorSettings.customPatterns.length > 0 ? (
-            <div className="flex flex-wrap gap-1.5 pt-0.5">
+            <div className="flex flex-wrap gap-2 pt-0.5">
               {retryErrorSettings.customPatterns.map((pattern) => (
                 <button
                   key={pattern}
                   type="button"
                   onClick={() => removePattern(pattern)}
-                  className="group flex items-center gap-1 rounded-full border border-border/60 bg-background/60 py-1 pl-2.5 pr-1.5 text-xs text-foreground/90 transition-colors hover:border-destructive/40 hover:bg-destructive/5"
+                  className="group flex items-center gap-1 rounded-full border border-border bg-background/60 py-1 pl-2 pr-2 text-xs text-foreground/90 transition-colors hover:border-destructive/40 hover:bg-destructive/5"
                   title={t("settings.retryErrorRemovePattern")}
                   aria-label={`${t("settings.retryErrorRemovePattern")} ${pattern}`}
                 >
-                  <span className="font-mono text-[11px] leading-none">{pattern}</span>
+                  <span className="font-mono text-xs leading-none">{pattern}</span>
                   <span className="flex h-4 w-4 items-center justify-center rounded-full text-muted-foreground transition-colors group-hover:text-destructive">
                     <X className="h-3 w-3" />
                   </span>

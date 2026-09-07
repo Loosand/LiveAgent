@@ -60,7 +60,7 @@ export function CompactionSeamRow(props: {
           "aria-expanded": open,
           "aria-label": t("chat.contextCheckpoint.title"),
           className:
-            "cursor-pointer select-none hover:bg-violet-500/[0.1] hover:border-violet-500/[0.28] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500/40 dark:hover:bg-violet-400/[0.11] dark:hover:border-violet-400/[0.26]",
+            "cursor-pointer select-none hover:bg-activity/10 hover:border-activity/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-activity/40 dark:hover:bg-activity/10 dark:hover:border-activity/20",
           onClick: () => setOpen((previous) => !previous),
         }}
         label={t("chat.contextCheckpoint.seam")}
@@ -68,7 +68,7 @@ export function CompactionSeamRow(props: {
         trailing={
           <ChevronRight
             className={cn(
-              "ml-auto h-3 w-3 shrink-0 text-violet-600/60 transition-transform duration-150 ease-out dark:text-violet-300/60",
+              "ml-auto h-3 w-3 shrink-0 text-activity/60 transition-transform duration-150 ease-out",
               open ? "rotate-90" : "",
             )}
           />
@@ -77,9 +77,9 @@ export function CompactionSeamRow(props: {
 
       <LazyCollapse open={open}>
         {() => (
-          <div className="overflow-hidden px-0.5 pb-1 pt-1.5">
-            <div className="border-l border-violet-500/25 pl-3 dark:border-violet-400/25">
-              <div className="mb-1 text-[calc(11px*var(--zone-font-scale,1))] text-muted-foreground/70">
+          <div className="overflow-hidden px-0.5 pb-1 pt-2">
+            <div className="border-l border-activity/20 pl-3">
+              <div className="mb-1 text-xs text-muted-foreground/80">
                 {seam.generatedBy.providerId} · {seam.generatedBy.model}
               </div>
               <Markdown

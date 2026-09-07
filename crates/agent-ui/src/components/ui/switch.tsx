@@ -6,7 +6,7 @@ import { cn } from "../../lib/shared/utils";
 type SwitchProps = React.ComponentPropsWithoutRef<typeof SwitchPrimitive.Root> & {
   tone?: "default" | "success";
   /** `sm` is for switches that sit inline with a label rather than owning a row. */
-  size?: "default" | "sm";
+  size?: "default" | "sm" | "lg";
 };
 
 // Track and thumb have to move together: the thumb's travel is
@@ -14,6 +14,7 @@ type SwitchProps = React.ComponentPropsWithoutRef<typeof SwitchPrimitive.Root> &
 // would leave the thumb overshooting or short of the far edge.
 const SWITCH_SIZES = {
   default: { track: "h-5 w-9", thumb: "h-4 w-4 data-[checked]:translate-x-[18px]" },
+  lg: { track: "h-6 w-11", thumb: "h-5 w-5 data-[checked]:translate-x-[22px]" },
   sm: { track: "h-4 w-7", thumb: "h-3 w-3 data-[checked]:translate-x-[14px]" },
 } as const;
 
@@ -23,11 +24,11 @@ export const Switch = React.forwardRef<HTMLElement, SwitchProps>(
       ref={ref}
       data-slot="switch"
       className={cn(
-        "peer inline-flex shrink-0 cursor-pointer items-center rounded-full bg-muted-foreground/20 transition-colors focus-visible:outline-none focus-visible:ring-2 data-[disabled]:cursor-not-allowed data-[disabled]:opacity-60 data-[unchecked]:hover:bg-muted-foreground/30",
+        "peer inline-flex shrink-0 cursor-pointer items-center rounded-full bg-muted-foreground/20 transition-colors motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 data-[disabled]:cursor-not-allowed data-[disabled]:opacity-60 data-[unchecked]:hover:bg-muted-foreground/40",
         SWITCH_SIZES[size].track,
         tone === "success"
-          ? "data-[checked]:bg-emerald-500 focus-visible:ring-emerald-500/30"
-          : "data-[checked]:bg-sky-500 focus-visible:ring-sky-500/30",
+          ? "data-[checked]:bg-success focus-visible:ring-success/40"
+          : "data-[checked]:bg-primary focus-visible:ring-ring",
         className,
       )}
       {...props}
@@ -35,7 +36,8 @@ export const Switch = React.forwardRef<HTMLElement, SwitchProps>(
       <SwitchPrimitive.Thumb
         data-slot="switch-thumb"
         className={cn(
-          "pointer-events-none block translate-x-0.5 rounded-full bg-white shadow-sm transition-transform",
+          "pointer-events-none block translate-x-0.5 rounded-full bg-muted-foreground data-[checked]:bg-primary-foreground shadow-control transition-[transform,background-color] motion-reduce:transition-none",
+          tone === "success" && "data-[checked]:bg-success-foreground",
           SWITCH_SIZES[size].thumb,
         )}
       />

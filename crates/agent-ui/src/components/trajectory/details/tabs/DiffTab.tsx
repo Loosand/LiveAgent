@@ -19,7 +19,7 @@ export function DiffTab(props: DetailTabProps) {
   })).filter(({ beforeRef, afterRef }) => beforeRef !== afterRef);
   if (changed.length === 0) return <Empty t={props.t} />;
   return (
-    <div className="space-y-5">
+    <div className="space-y-4">
       {changed.map(({ slot, index, beforeRef, afterRef }) => {
         const before = sectionContentAt(props.previousHeader, index, props.sectionById) ?? "";
         const after = sectionContentAt(props.header, index, props.sectionById) ?? "";
@@ -32,17 +32,16 @@ export function DiffTab(props: DetailTabProps) {
         return (
           <section key={slot} className="space-y-1">
             <p className="font-medium">{props.t(`trajectory.details.slot.${slot}`)}</p>
-            <p className="break-all font-mono text-[9px] text-muted-foreground">
+            <p className="break-all font-mono text-2xs text-muted-foreground">
               {beforeRef ?? "∅"} → {afterRef ?? "∅"}
             </p>
-            <pre className="max-h-96 overflow-auto rounded bg-muted/40 p-2 font-mono text-[10px] leading-4">
+            <pre className="max-h-96 overflow-auto rounded-sm bg-muted/40 p-2 font-mono text-2xs leading-4">
               {lines.map(({ key, line }) => (
                 <span
                   key={key}
                   className={cn(
                     "block whitespace-pre-wrap break-words",
-                    line.kind === "added" &&
-                      "bg-emerald-500/10 text-emerald-700 dark:text-emerald-300",
+                    line.kind === "added" && "bg-success/10 text-success",
                     line.kind === "removed" && "bg-destructive/10 text-destructive",
                   )}
                 >

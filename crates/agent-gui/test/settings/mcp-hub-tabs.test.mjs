@@ -101,7 +101,7 @@ test("MCP import tabs keep source icons and compact count badges", () => {
 });
 
 test("installed MCP resources use a compact settings list while Store keeps its card grid", () => {
-  assert.match(serversFormSource, /divide-y[^"\n]*overflow-hidden[^"\n]*rounded-xl[^"\n]*border/);
+  assert.match(serversFormSource, /divide-y[^"\n]*overflow-hidden[^"\n]*rounded-2xl[^"\n]*border/);
   assert.match(serverCardSource, /min-h-16[^"\n]*items-center/);
   assert.match(serverCardSource, /ResourceActivationSwitch/);
   assert.match(serverCardSource, /ToolPolicyToggle/);

@@ -29,7 +29,7 @@ test("installed Skill cards follow the global Skills activation state", () => {
     /<ResourceActivationSwitch[\s\S]*checked=\{effectivelyEnabled\}[\s\S]*disabled=\{!skillsEnabled\}/,
   );
   assert.match(cardSource, /effectivelyEnabled \? \([\s\S]*settings\.skillsHubEnabledBadge/);
-  assert.match(cardSource, /: effectivelyEnabled\s*\? "border-emerald-600\/25"/);
+  assert.match(cardSource, /: effectivelyEnabled\s*\? "border-success\/20"/);
   assert.match(pageSource, /<InstalledSkillCard[\s\S]*skillsEnabled=\{skillsEnabled\}/);
 });
 
@@ -68,7 +68,7 @@ test("resource switches isolate pointer, mouse, click, and keyboard events when 
   assert.match(source, /onPointerDown=\{stopEventPropagation\}/);
   assert.match(source, /onMouseDown=\{stopEventPropagation\}/);
   assert.match(source, /onKeyDown=\{stopEventPropagation\}/);
-  assert.match(source, /onClick=\{\(event\) => \{[\s\S]*stopEventPropagation\(event\)/);
+  assert.match(source, /onClick=\{stopEventPropagation\}/);
 });
 
 test("confirmation popovers isolate cancel and confirm actions from parent cards", () => {

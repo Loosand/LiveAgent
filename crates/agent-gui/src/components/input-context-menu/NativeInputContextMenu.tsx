@@ -33,7 +33,7 @@ function resolveMenuTarget(target: EventTarget | null): MenuTarget | null {
 }
 
 const MENU_ITEM_CLASS = cn(
-  "flex w-full items-center gap-2 rounded-md px-2.5 py-1.5 text-left text-[calc(13px*var(--zone-font-scale,1))] text-foreground/90 transition-colors hover:bg-accent hover:text-accent-foreground",
+  "flex w-full items-center gap-2 rounded-lg px-2 py-2 text-left text-xs text-foreground/90 transition-colors hover:bg-accent hover:text-accent-foreground",
   "disabled:pointer-events-none disabled:opacity-45",
 );
 
@@ -401,7 +401,7 @@ export function useNativeInputContextMenu(): {
             ref={menuRef}
             role="menu"
             className={cn(
-              "editor-context-menu layer-popover fixed w-max min-w-[9.5rem] max-w-[calc(100vw-1.5rem)] select-none overflow-hidden rounded-lg border border-border/70 bg-popover p-1.5 text-popover-foreground shadow-[0_20px_60px_-20px_rgba(15,23,42,0.35)]",
+              "editor-context-menu layer-popover fixed w-max min-w-[9.5rem] max-w-[calc(100vw-1.5rem)] select-none overflow-hidden rounded-lg border border-border bg-popover p-2 text-popover-foreground shadow-overlay",
               isExiting && "editor-context-menu-exit",
             )}
             style={{ left: renderedSnapshot.x, top: renderedSnapshot.y }}
@@ -444,7 +444,7 @@ export function useNativeInputContextMenu(): {
               <ClipboardPaste className="h-3.5 w-3.5 shrink-0" />
               <span className="min-w-0 flex-1 truncate">{t("inputContextMenu.paste")}</span>
             </button>
-            <div className="my-1 h-px bg-border/70" />
+            <div className="my-1 h-px bg-border/80" />
             <button
               type="button"
               role="menuitem"

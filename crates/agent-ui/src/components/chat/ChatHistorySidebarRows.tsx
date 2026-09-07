@@ -577,21 +577,21 @@ export const HistoryRow = memo(function HistoryRow(props: HistoryRowProps) {
 
   if (isPendingDelete) {
     return (
-      <div className="chat-history-row rounded-2xl border border-border/70 bg-background px-3 py-2.5 shadow-xs shadow-black/5">
-        <p className="truncate text-sm leading-5 text-foreground/80">
+      <div className="chat-history-row rounded-2xl border border-border bg-background px-3 py-2 shadow-control">
+        <p className="truncate text-base leading-5 text-foreground/80">
           {t("chat.conversationDeleteConfirm").replace("{title}", item.title)}
         </p>
-        <p className="mt-0.5 text-[calc(11px*var(--zone-font-scale,1))] leading-4 text-muted-foreground">
+        <p className="mt-0.5 text-xs leading-4 text-muted-foreground">
           {t("chat.conversationDeleteWarning")}
         </p>
-        <div className="mt-2 grid grid-cols-2 gap-1.5">
+        <div className="mt-2 grid grid-cols-2 gap-2">
           <Button
             type="button"
             variant="outline"
             size="sm"
             onClick={handleCancelDelete}
             disabled={isInteractionDisabled}
-            className="h-7 rounded-xl border-border/60 text-xs font-normal text-muted-foreground hover:text-foreground"
+            className="h-7 rounded-2xl border-border text-xs font-normal text-muted-foreground hover:text-foreground"
           >
             {t("chat.cancel")}
           </Button>
@@ -600,7 +600,7 @@ export const HistoryRow = memo(function HistoryRow(props: HistoryRowProps) {
             size="sm"
             onClick={handleConfirmDelete}
             disabled={isInteractionDisabled || isBusy || isDeleteDisabled}
-            className="h-7 rounded-xl bg-destructive text-xs font-medium text-destructive-foreground hover:bg-destructive/90"
+            className="h-7 rounded-2xl bg-destructive text-xs font-medium text-destructive-foreground hover:bg-destructive/90"
           >
             {t("chat.delete")}
           </Button>
@@ -614,12 +614,12 @@ export const HistoryRow = memo(function HistoryRow(props: HistoryRowProps) {
       className={cn(
         "chat-history-row group/item grid h-[30px] grid-cols-[minmax(0,1fr)_auto] items-center rounded-lg pl-1 transition-colors",
         isSelectionMode && isSelected
-          ? "bg-primary/10 text-foreground hover:bg-primary/[0.14]"
+          ? "bg-primary/10 text-foreground hover:bg-primary/20"
           : isActive
-            ? "bg-foreground/[0.07] text-foreground hover:bg-foreground/[0.09]"
-            : "text-foreground/85 hover:bg-foreground/[0.05] hover:text-foreground",
+            ? "bg-foreground/5 text-foreground hover:bg-foreground/10"
+            : "text-foreground/90 hover:bg-foreground/5 hover:text-foreground",
         isSelectionMode && isSelectionDisabled && "opacity-50",
-        !isSelectionMode && shouldShowMobilePressFeedback && "bg-foreground/[0.09] text-foreground",
+        !isSelectionMode && shouldShowMobilePressFeedback && "bg-foreground/10 text-foreground",
       )}
     >
       {isRenaming ? (
@@ -648,7 +648,7 @@ export const HistoryRow = memo(function HistoryRow(props: HistoryRowProps) {
               }
             }}
             onClick={(e) => e.stopPropagation()}
-            className="h-7 min-w-0 flex-1 rounded-none border-0 bg-transparent p-0 text-[calc(14px*var(--zone-font-scale,1))] font-normal shadow-none outline-none focus-visible:border-0 focus-visible:bg-transparent"
+            className="h-7 min-w-0 flex-1 rounded-none border-0 bg-transparent p-0 text-xs font-normal shadow-none outline-none focus-visible:border-0 focus-visible:bg-transparent"
             disabled={isInteractionDisabled || isBusy}
           />
         </div>
@@ -698,17 +698,17 @@ export const HistoryRow = memo(function HistoryRow(props: HistoryRowProps) {
                 onPointerLeave={handleTitlePointerCancel}
                 aria-pressed={isSelectionMode ? isSelected : undefined}
                 disabled={isInteractionDisabled || (isSelectionMode && isSelectionDisabled)}
-                className="chat-history-row-title-button flex h-[30px] w-full min-w-0 items-center gap-2 rounded-md px-2 text-left outline-hidden transition-colors focus-visible:ring-2 focus-visible:ring-ring"
+                className="chat-history-row-title-button flex h-[30px] w-full min-w-0 items-center gap-2 rounded-lg px-2 text-left outline-hidden transition-colors focus-visible:ring-2 focus-visible:ring-ring"
                 title={item.title}
               >
                 {isSelectionMode ? (
                   <span
                     aria-hidden="true"
                     className={cn(
-                      "flex h-4 w-4 shrink-0 items-center justify-center rounded-xs border transition-colors",
+                      "flex h-4 w-4 shrink-0 items-center justify-center rounded-sm border transition-colors",
                       isSelected
-                        ? "border-primary bg-primary text-primary-foreground"
-                        : "border-muted-foreground/45 bg-background/50",
+                        ? "border-ring bg-primary text-primary-foreground"
+                        : "border-input bg-background/60",
                     )}
                   >
                     {isSelected ? <Check className="h-3 w-3" /> : null}
@@ -723,11 +723,11 @@ export const HistoryRow = memo(function HistoryRow(props: HistoryRowProps) {
                     <ProviderBrandIcon type={item.providerId} />
                   </span>
                 ) : null}
-                <span className="sidebar-project-name-fade min-w-0 flex-1 overflow-hidden whitespace-nowrap text-[calc(14px*var(--zone-font-scale,1))] font-normal leading-5">
+                <span className="sidebar-project-name-fade min-w-0 flex-1 overflow-hidden whitespace-nowrap text-base font-normal leading-5">
                   {item.title}
                 </span>
                 {!isSelectionMode && blockedBadgeLabel ? (
-                  <span className="inline-flex h-5 shrink-0 items-center rounded-full bg-emerald-500/[0.14] px-2 text-[calc(10.5px*var(--zone-font-scale,1))] font-medium leading-none text-emerald-700 dark:bg-emerald-400/[0.13] dark:text-emerald-300">
+                  <span className="inline-flex h-5 shrink-0 items-center rounded-full bg-success/10 px-2 text-2xs font-medium leading-none text-success dark:bg-success/10">
                     {blockedBadgeLabel}
                   </span>
                 ) : null}
@@ -772,7 +772,7 @@ export const HistoryRow = memo(function HistoryRow(props: HistoryRowProps) {
                 <span
                   aria-hidden="true"
                   className={cn(
-                    "pointer-events-none absolute right-1.5 flex h-4 w-4 items-center justify-center text-amber-500/90 transition-opacity duration-200",
+                    "pointer-events-none absolute right-1.5 flex h-4 w-4 items-center justify-center text-warning/90 transition-opacity duration-200",
                     isMobileMenuLayout
                       ? "opacity-100"
                       : [
@@ -852,7 +852,7 @@ export const HistoryRow = memo(function HistoryRow(props: HistoryRowProps) {
                   }
                   return true;
                 }}
-                className="sidebar-context-menu min-w-[10rem] rounded-xl border-border/60 bg-background/95 backdrop-blur-xl"
+                className="sidebar-context-menu min-w-[10rem] rounded-2xl border-border bg-background backdrop-blur-xl"
               >
                 {isMobileMenuLayout && !item.isPending ? (
                   <DropdownMenuItem
@@ -904,7 +904,7 @@ export const HistoryRow = memo(function HistoryRow(props: HistoryRowProps) {
                     <Folder className="h-3.5 w-3.5" />
                     {t("chat.conversationMoveToWorkspace")}
                   </DropdownMenuSubTrigger>
-                  <DropdownMenuSubContent className="sidebar-context-menu max-h-[18rem] min-w-[12rem] overflow-y-auto rounded-xl border-border/60 bg-background/95 backdrop-blur-xl">
+                  <DropdownMenuSubContent className="sidebar-context-menu max-h-[18rem] min-w-[12rem] overflow-y-auto rounded-2xl border-border bg-background backdrop-blur-xl">
                     {moveWorkspaces.map((workspace) => (
                       <DropdownMenuItem
                         key={workspace.id}
@@ -1029,7 +1029,7 @@ export function ProjectGroupHeader(props: {
                 onCancelRename();
               }
             }}
-            className="h-7 min-w-0 flex-1 rounded-none border-0 bg-transparent p-0 text-[calc(13px*var(--zone-font-scale,1))] font-semibold shadow-none outline-none focus-visible:border-0 focus-visible:bg-transparent"
+            className="h-7 min-w-0 flex-1 rounded-none border-0 bg-transparent p-0 text-xs font-semibold shadow-none outline-none focus-visible:border-0 focus-visible:bg-transparent"
           />
         </div>
       </div>
@@ -1037,10 +1037,10 @@ export function ProjectGroupHeader(props: {
   }
 
   return (
-    <div className="group/project-group flex h-[30px] items-center rounded-lg pl-1 transition-colors hover:bg-foreground/[0.04]">
+    <div className="group/project-group flex h-[30px] items-center rounded-lg pl-1 transition-colors hover:bg-foreground/5">
       <button
         type="button"
-        className="flex h-[30px] min-w-0 flex-1 items-center gap-2 rounded-md px-2 text-left outline-hidden transition-colors hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring"
+        className="flex h-[30px] min-w-0 flex-1 items-center gap-2 rounded-lg px-2 text-left outline-hidden transition-colors hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring"
         onClick={onToggleCollapsed}
         title={t("chat.workspaceGroupToggle")}
       >
@@ -1055,10 +1055,10 @@ export function ProjectGroupHeader(props: {
             )}
           />
         </span>
-        <span className="min-w-0 flex-1 truncate text-[calc(13px*var(--zone-font-scale,1))] font-semibold leading-5">
+        <span className="min-w-0 flex-1 truncate text-xs font-semibold leading-5">
           {group.name}
         </span>
-        <span className="shrink-0 rounded-full bg-muted px-1.5 py-px text-[10px] leading-4 text-muted-foreground">
+        <span className="shrink-0 rounded-full bg-muted px-2 py-px text-2xs leading-4 text-muted-foreground">
           {memberCount}
         </span>
       </button>
@@ -1067,7 +1067,7 @@ export function ProjectGroupHeader(props: {
           render={
             <button
               type="button"
-              className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-foreground/[0.06] hover:text-foreground"
+              className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-foreground/5 hover:text-foreground"
             />
           }
           aria-label={t("chat.workspaceGroupActions")}
@@ -1281,15 +1281,15 @@ export const ProjectRow = memo(function ProjectRow(props: {
   if (pendingAction) {
     const deletingWorktree = pendingAction === "deleteWorktree" && Boolean(project.worktree);
     return (
-      <div className="rounded-lg border border-destructive/25 bg-destructive/5 px-3 py-2.5 text-sm text-destructive shadow-xs shadow-black/5">
-        <p className="truncate font-medium leading-5 text-destructive">
+      <div className="rounded-lg border border-destructive/20 bg-destructive/5 px-3 py-2 text-base text-destructive shadow-control">
+        <p className="truncate font-medium leading-5">
           {t(
             deletingWorktree
               ? "chat.workspaceDeleteWorktreeConfirm"
               : "chat.workspaceRemoveConfirm",
           ).replace("{name}", project.name)}
         </p>
-        <p className="mt-0.5 text-[calc(11px*var(--zone-font-scale,1))] leading-4 text-destructive/75">
+        <p className="mt-0.5 text-xs leading-4 text-destructive/80">
           {isRunning
             ? t("chat.workspaceRemoveRunning")
             : t(
@@ -1300,17 +1300,17 @@ export const ProjectRow = memo(function ProjectRow(props: {
         </p>
         {deletingWorktree ? (
           <>
-            <p className="mt-1 break-all font-mono text-[10px] leading-4 text-destructive/70">
+            <p className="mt-1 break-all font-mono text-2xs leading-4 text-destructive/80">
               {project.path}
             </p>
             {project.worktree?.branch ? (
-              <label className="mt-2 flex cursor-pointer items-start gap-2 text-[11px] leading-4 text-foreground">
+              <label className="mt-2 flex cursor-pointer items-start gap-2 text-xs leading-4 text-foreground">
                 <input
                   type="checkbox"
                   checked={deleteBranchWithWorktree}
                   onChange={(event) => setDeleteBranchWithWorktree(event.currentTarget.checked)}
                   disabled={isInteractionDisabled || isRunning}
-                  className="mt-0.5 h-3.5 w-3.5 rounded border-border accent-destructive"
+                  className="mt-0.5 h-3.5 w-3.5 rounded-sm border-border accent-destructive"
                 />
                 <span>
                   {t("chat.workspaceDeleteWorktreeBranch").replace(
@@ -1322,14 +1322,14 @@ export const ProjectRow = memo(function ProjectRow(props: {
             ) : null}
           </>
         ) : null}
-        <div className="mt-2 grid grid-cols-2 gap-1.5">
+        <div className="mt-2 grid grid-cols-2 gap-2">
           <Button
             type="button"
             variant="outline"
             size="sm"
             onClick={handleCancelPendingAction}
             disabled={isInteractionDisabled}
-            className="h-7 rounded-xl border-border/60 bg-background text-xs font-normal text-muted-foreground hover:text-foreground"
+            className="h-7 rounded-2xl border-border bg-background text-xs font-normal text-muted-foreground hover:text-foreground"
           >
             {t("chat.cancel")}
           </Button>
@@ -1338,7 +1338,7 @@ export const ProjectRow = memo(function ProjectRow(props: {
             size="sm"
             onClick={handleConfirmPendingAction}
             disabled={isInteractionDisabled || isRunning}
-            className="h-7 rounded-xl bg-destructive text-xs font-medium text-destructive-foreground hover:bg-destructive/90"
+            className="h-7 rounded-2xl bg-destructive text-xs font-medium text-destructive-foreground hover:bg-destructive/90"
           >
             {t(deletingWorktree ? "chat.workspaceDeleteWorktree" : "chat.remove")}
           </Button>
@@ -1352,14 +1352,14 @@ export const ProjectRow = memo(function ProjectRow(props: {
       ref={rowRef}
       className={cn(
         "group/project grid h-[30px] grid-cols-[minmax(0,1fr)_auto] items-center rounded-lg pl-1 transition-colors",
-        indented && "pl-5",
+        indented && "pl-4",
         isMissing
           ? "text-destructive hover:bg-destructive/10"
           : isArchived
-            ? "text-muted-foreground/60 hover:bg-foreground/[0.03]"
+            ? "text-muted-foreground/60 hover:bg-foreground/5"
             : isActive
-              ? "bg-foreground/[0.07] text-foreground hover:bg-foreground/[0.09]"
-              : "text-foreground/85 hover:bg-foreground/[0.05] hover:text-foreground",
+              ? "bg-foreground/5 text-foreground hover:bg-foreground/10"
+              : "text-foreground/90 hover:bg-foreground/5 hover:text-foreground",
       )}
     >
       <Tooltip disabled={isInteractionDisabled}>
@@ -1371,12 +1371,12 @@ export const ProjectRow = memo(function ProjectRow(props: {
               type="button"
               aria-disabled={isArchived || undefined}
               className={cn(
-                "flex h-[30px] min-w-0 items-center gap-2 rounded-md px-2 text-left outline-hidden transition-colors focus-visible:ring-2 focus-visible:ring-ring",
+                "flex h-[30px] min-w-0 items-center gap-2 rounded-lg px-2 text-left outline-hidden transition-colors focus-visible:ring-2 focus-visible:ring-ring",
                 isMissing
                   ? "hover:text-destructive focus-visible:bg-destructive/10"
                   : isArchived
                     ? "cursor-default"
-                    : "hover:text-foreground focus-visible:bg-foreground/[0.06]",
+                    : "hover:text-foreground focus-visible:bg-foreground/5",
               )}
               onClick={() => {
                 // Archived workspaces cannot be selected, so no new
@@ -1421,13 +1421,13 @@ export const ProjectRow = memo(function ProjectRow(props: {
                     : isArchived
                       ? "text-muted-foreground/40"
                       : isActive
-                        ? "text-amber-500"
-                        : "text-foreground/65",
+                        ? "text-warning"
+                        : "text-foreground/60",
                 )}
               />
               <span
                 className={cn(
-                  "sidebar-project-name-fade min-w-0 flex-1 overflow-hidden whitespace-nowrap text-[calc(14px*var(--zone-font-scale,1))] font-normal leading-5",
+                  "sidebar-project-name-fade min-w-0 flex-1 overflow-hidden whitespace-nowrap text-base font-normal leading-5",
                   isMissing ? "text-destructive" : undefined,
                 )}
               >
@@ -1440,9 +1440,9 @@ export const ProjectRow = memo(function ProjectRow(props: {
           anchor={rowRef}
           side="right"
           sideOffset={10}
-          className="w-64 rounded-xl px-3 py-2.5"
+          className="w-64 rounded-2xl px-3 py-2"
         >
-          <p className="truncate text-sm font-semibold leading-5">{project.name}</p>
+          <p className="truncate text-base font-semibold leading-5">{project.name}</p>
           <p className="mt-1 break-all text-xs leading-4 text-muted-foreground">{project.path}</p>
         </TooltipContent>
       </Tooltip>
@@ -1474,7 +1474,7 @@ export const ProjectRow = memo(function ProjectRow(props: {
           <span
             aria-hidden="true"
             className={cn(
-              "pointer-events-none absolute right-1.5 flex h-4 w-4 items-center justify-center text-amber-500/80 transition-opacity duration-200",
+              "pointer-events-none absolute right-1.5 flex h-4 w-4 items-center justify-center text-warning/80 transition-opacity duration-200",
               "opacity-100 group-hover/project:opacity-0 group-focus-within/project:opacity-0",
               menuOpen && "opacity-0",
             )}

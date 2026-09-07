@@ -2,6 +2,10 @@
 
 `agent-ui` 是 GUI 与 WebUI 共用的应用 UI 源码，不是只存放基础组件的组件库。
 
+## UI 规范
+
+视觉与组件约定见 [design.md](../../design.md)。共享 tokens 位于 `src/styles/tokens.css`；标准组件位于 `src/components/ui`。两端开发服务器的 `/design.html` 是组件样板入口。运行 `pnpm check:ui-design` 防止新增硬编码，`pnpm audit:ui-design` 查看遗留迁移清单。
+
 ## 目录职责
 
 - `src/application/`：共享应用视图和页面路由框架。

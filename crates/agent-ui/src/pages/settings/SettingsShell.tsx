@@ -1,5 +1,8 @@
 import { ArrowLeft, Search } from "@liveagent/ui/components/IconSet";
 import { useEffect, useMemo, useState } from "react";
+import { Button } from "../../components/ui/button";
+import { Empty } from "../../components/ui/empty";
+import { Input } from "../../components/ui/input";
 import type { SettingsSaveState, UiExtensionRegistry } from "../../contracts/registry";
 import { useLocale } from "../../i18n";
 import { cn } from "../../lib/shared/utils";
@@ -43,7 +46,7 @@ function getSaveIndicator(state: SettingsSaveState, t: (key: string) => string) 
   switch (state.status) {
     case "saving":
       return {
-        dotClass: "bg-amber-500 animate-pulse",
+        dotClass: "bg-warning animate-pulse",
         text: t("settings.saving"),
         title: t("settings.savingDesc"),
       };
@@ -56,7 +59,7 @@ function getSaveIndicator(state: SettingsSaveState, t: (key: string) => string) 
     case "saved":
     case "idle":
       return {
-        dotClass: "bg-emerald-500",
+        dotClass: "bg-success",
         text: t("settings.saved"),
         title: t("settings.savedDesc"),
       };
@@ -134,63 +137,67 @@ export function SettingsShell<Context>(props: SettingsShellProps<Context>) {
       }
     >
       <div className={web ? "contents" : "flex min-h-0 flex-1"}>
-        <aside className="settings-sidebar flex w-64 shrink-0 flex-col border-r border-border/60 bg-muted/30">
+        <aside className="settings-sidebar flex w-settings-nav shrink-0 flex-col bg-sidebar">
           {registry.slots.sidebarLeading}
           {web ? (
             <div className="settings-back-bar">
-              <button
+              <Button
+                variant="ghost"
                 type="button"
                 onClick={onBack}
-                className="settings-back-button flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-accent/60 hover:text-foreground"
+                className="settings-back-button flex justify-start rounded-lg px-3 text-xs text-muted-foreground hover:bg-accent/60 hover:text-foreground"
               >
                 <ArrowLeft className="h-3.5 w-3.5 shrink-0" />
                 <span>{t("settings.backToChat")}</span>
-              </button>
+              </Button>
             </div>
           ) : null}
           <div className="settings-sidebar-header px-3 pb-2 pt-3">
-            <button
+            <Button
+              variant="ghost"
               type="button"
               onClick={onBack}
-              className="settings-back-button flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-accent/60 hover:text-foreground"
+              className="settings-back-button flex w-full justify-start rounded-lg px-3 text-xs text-muted-foreground hover:bg-accent/60 hover:text-foreground"
             >
               <ArrowLeft className="h-4 w-4 shrink-0" />
               <span>{t("settings.backToChat")}</span>
-            </button>
+            </Button>
             <div className="relative mt-2">
-              <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground/75" />
-              <input
+              <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground/80" />
+              <Input
                 type="search"
                 value={navQuery}
                 onChange={(event) => setNavQuery(event.currentTarget.value)}
                 placeholder={t("settings.searchPlaceholder")}
                 aria-label={t("settings.searchPlaceholder")}
-                className="h-9 w-full rounded-xl border border-border/70 bg-background/85 pl-9 pr-3 text-sm shadow-xs outline-none placeholder:text-muted-foreground/70 focus:border-border focus:ring-2 focus:ring-foreground/5"
+                className="pl-8"
               />
             </div>
           </div>
           <nav className="settings-nav flex-1 overflow-y-auto px-3 py-3">
             {visibleGroups.map(([groupKey, definitions], groupIndex) => (
-              <div key={groupKey} className={cn("settings-nav-group", groupIndex > 0 && "mt-5")}>
-                <div className="settings-nav-group-label mb-1 px-3 text-xs font-medium text-muted-foreground/65">
+              <div key={groupKey} className={cn("settings-nav-group", groupIndex > 0 && "mt-4")}>
+                <div className="settings-nav-group-label mb-1 px-3 text-xs font-medium text-muted-foreground/60">
                   {t(groupKey)}
                 </div>
                 <div className="space-y-0.5">
                   {definitions.map((definition) => {
                     const active = definition.id === activeSection.id;
                     return (
-                      <button
+                      <Button
+                        variant="ghost"
                         key={definition.id}
                         type="button"
                         onClick={() => setSection(definition.id)}
                         data-testid={`settings-nav-${definition.id}`}
                         data-settings-nav-id={definition.id}
                         data-active={active ? "true" : "false"}
+                        aria-current={active ? "page" : undefined}
                         className={cn(
-                          "settings-nav-item group relative flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-left text-sm transition-all duration-150",
+                          "settings-nav-item group relative flex w-full justify-start gap-2 rounded-lg px-3 text-left text-xs transition-all",
                           active
-                            ? "settings-nav-item-active bg-accent font-medium text-foreground"
-                            : "text-foreground/75 hover:bg-accent/60 hover:text-foreground",
+                            ? "settings-nav-item-active bg-accent text-foreground"
+                            : "text-foreground/80 hover:bg-accent/60 hover:text-foreground",
                         )}
                       >
                         <span className="settings-nav-icon flex h-5 w-5 shrink-0 items-center justify-center text-muted-foreground transition-colors group-hover:text-foreground">
@@ -199,22 +206,20 @@ export function SettingsShell<Context>(props: SettingsShellProps<Context>) {
                         <span className="settings-nav-label min-w-0 truncate leading-tight">
                           {t(definition.labelKey)}
                         </span>
-                      </button>
+                      </Button>
                     );
                   })}
                 </div>
               </div>
             ))}
             {visibleGroups.length === 0 ? (
-              <div className="px-3 py-6 text-center text-xs text-muted-foreground">
-                {t("settings.searchNoResults")}
-              </div>
+              <Empty title={t("settings.searchNoResults")} className="px-3 py-6" />
             ) : null}
           </nav>
           {!web && showSaveIndicator ? (
-            <div className="border-t border-border/60 px-3 py-2.5">
+            <div className="border-t border-border px-3 py-2">
               <div
-                className="flex items-center gap-1.5 px-2.5 text-[11px] text-muted-foreground"
+                className="flex items-center gap-2 px-2 text-xs text-muted-foreground"
                 title={saveIndicator.title}
               >
                 <div className={cn("h-1.5 w-1.5 rounded-full", saveIndicator.dotClass)} />
@@ -234,12 +239,12 @@ export function SettingsShell<Context>(props: SettingsShellProps<Context>) {
             <div
               className={cn(
                 "settings-main-title w-full overflow-hidden",
-                activeSection.id === "system" && "mx-auto max-w-[920px]",
+                activeSection.id === "system" && "mx-auto max-w-settings",
               )}
             >
               <div
                 key={activeSection.id}
-                className="settings-section-title-enter text-[28px] font-semibold tracking-tight"
+                className="settings-section-title-enter text-base font-semibold tracking-tight"
                 data-anim-suspended={isDocumentHidden ? "true" : undefined}
                 style={
                   isDocumentHidden
@@ -252,7 +257,7 @@ export function SettingsShell<Context>(props: SettingsShellProps<Context>) {
             </div>
             {web && showSaveIndicator ? (
               <div
-                className="settings-save-indicator flex shrink-0 items-center gap-1.5 whitespace-nowrap text-xs text-muted-foreground"
+                className="settings-save-indicator flex shrink-0 items-center gap-2 whitespace-nowrap text-xs text-muted-foreground"
                 title={saveIndicator.title}
               >
                 <div className={cn("h-1.5 w-1.5 shrink-0 rounded-full", saveIndicator.dotClass)} />
@@ -276,7 +281,7 @@ export function SettingsShell<Context>(props: SettingsShellProps<Context>) {
               className={cn(
                 "settings-section-shell",
                 `settings-section-shell-${activeSection.id}`,
-                activeSection.id === "system" && "mx-auto w-full max-w-[920px]",
+                activeSection.id === "system" && "mx-auto w-full max-w-settings",
                 fillContent ? "flex min-h-0 flex-1 flex-col" : "min-h-full",
               )}
             >

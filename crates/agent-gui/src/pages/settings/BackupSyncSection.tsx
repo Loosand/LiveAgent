@@ -124,10 +124,10 @@ function FeedbackStrip({ status }: { status: Status }) {
   const ok = status.kind === "ok";
   return (
     <div
-      className={`flex items-start gap-2 rounded-xl border px-3 py-2.5 text-xs leading-relaxed ${
+      className={`flex items-start gap-2 rounded-2xl border px-3 py-2 text-xs leading-relaxed ${
         ok
-          ? "border-emerald-600/25 bg-emerald-500/10 text-emerald-700 dark:border-emerald-400/25 dark:text-emerald-300"
-          : "border-destructive/30 bg-destructive/10 text-destructive"
+          ? "border-success/20 bg-success/10 text-success"
+          : "border-destructive/40 bg-destructive/10 text-destructive"
       }`}
     >
       {ok ? (
@@ -165,9 +165,9 @@ function SyncStatusBanner({
 }) {
   if (loading && !view) {
     return (
-      <div className="flex items-center gap-3 rounded-2xl border border-border/60 bg-card px-5 py-4">
+      <div className="flex items-center gap-3 rounded-2xl border border-border bg-card px-4 py-4">
         <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
-        <span className="text-sm text-muted-foreground">{t("settings.backupSyncLoading")}</span>
+        <span className="text-base text-muted-foreground">{t("settings.backupSyncLoading")}</span>
       </div>
     );
   }
@@ -179,19 +179,19 @@ function SyncStatusBanner({
   const iconWrap = failed
     ? "bg-destructive/10 text-destructive"
     : configured
-      ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
+      ? "bg-success/10 text-success"
       : "bg-muted text-muted-foreground";
 
   return (
-    <div className="rounded-2xl border border-border/60 bg-card px-5 py-4">
+    <div className="rounded-2xl border border-border bg-card px-4 py-4">
       <div className="flex flex-wrap items-center gap-x-4 gap-y-3">
         <div
-          className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl ${iconWrap}`}
+          className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl ${iconWrap}`}
         >
           {failed ? <AlertTriangle className="h-5 w-5" /> : <Cloud className="h-5 w-5" />}
         </div>
         <div className="min-w-0 flex-1">
-          <div className="text-sm font-semibold text-foreground">
+          <div className="text-base font-semibold text-foreground">
             {failed
               ? t("settings.backupSyncAutoErrorTitle")
               : configured
@@ -208,10 +208,10 @@ function SyncStatusBanner({
         </div>
         {configured ? (
           <span
-            className={`inline-flex shrink-0 items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px] font-medium leading-none ${
+            className={`inline-flex shrink-0 items-center gap-2 rounded-full border px-2 py-1 text-xs font-medium leading-none ${
               view?.autoSync
-                ? "border-emerald-600/25 bg-emerald-500/10 text-emerald-700 dark:border-emerald-400/25 dark:text-emerald-300"
-                : "border-border/70 bg-muted/45 text-muted-foreground"
+                ? "border-success/20 bg-success/10 text-success"
+                : "border-border bg-muted/40 text-muted-foreground"
             }`}
           >
             <Zap className="h-3 w-3" />
@@ -220,7 +220,7 @@ function SyncStatusBanner({
         ) : null}
       </div>
       {failed && view?.lastError ? (
-        <p className="mt-3 break-all rounded-xl bg-destructive/10 px-3 py-2 text-xs leading-relaxed text-destructive/90">
+        <p className="mt-3 break-all rounded-2xl bg-destructive/10 px-3 py-2 text-xs leading-relaxed text-destructive/90">
           {view.lastError}
         </p>
       ) : null}
@@ -249,13 +249,13 @@ function ActionTile({
       type="button"
       disabled={disabled}
       onClick={onClick}
-      className="group flex w-full items-center gap-3 rounded-xl border border-border/60 bg-background/60 px-3.5 py-3 text-left transition-colors hover:border-border hover:bg-muted/40 disabled:cursor-not-allowed disabled:opacity-55"
+      className="group flex w-full items-center gap-3 rounded-2xl border border-border bg-background/60 px-4 py-3 text-left transition-colors hover:border-input hover:bg-muted/40 disabled:cursor-not-allowed disabled:opacity-55"
     >
       <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
         {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : icon}
       </span>
       <span className="min-w-0">
-        <span className="block text-sm font-medium text-foreground">{title}</span>
+        <span className="block text-base font-medium text-foreground">{title}</span>
         <span className="mt-0.5 block truncate text-xs text-muted-foreground">{hint}</span>
       </span>
     </button>
@@ -279,8 +279,8 @@ function ScopeItem({
 }) {
   return (
     <span
-      className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-medium leading-none ${
-        excluded ? "bg-muted/30 text-muted-foreground/70" : "bg-muted/45 text-foreground/85"
+      className={`inline-flex items-center gap-2 rounded-full px-2 py-1 text-xs font-medium leading-none ${
+        excluded ? "bg-muted/40 text-muted-foreground/80" : "bg-muted/40 text-foreground/90"
       }`}
     >
       <span
@@ -575,32 +575,32 @@ export function BackupSyncSection(props: SettingsSectionProps) {
   const presetOptions: { id: PresetId }[] = [...SYNC_PRESETS, { id: "custom" as const }];
 
   return (
-    <div className="mx-auto w-full max-w-[980px] space-y-5">
+    <div className="mx-auto w-full max-w-[980px] space-y-4">
       <SyncStatusBanner view={syncView} loading={syncBusy === "load"} t={t} />
 
       {/* 两栏等高拉伸（默认 stretch），保证左右卡片底边始终对齐。 */}
-      <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_300px]">
+      <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_300px]">
         {/* 左栏：WebDAV 同步配置。弹性布局把底部操作区钉在底边，撑高时中间留白。 */}
-        <section className="flex flex-col rounded-2xl border border-border/60 bg-card">
-          <header className="flex flex-wrap items-center justify-between gap-2 border-b border-border/60 px-5 py-4">
-            <div className="flex items-center gap-2.5">
+        <section className="flex flex-col rounded-2xl border border-border bg-card">
+          <header className="flex flex-wrap items-center justify-between gap-2 border-b border-border px-4 py-4">
+            <div className="flex items-center gap-2">
               <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 text-primary">
                 <Cloud className="h-4 w-4" />
               </span>
-              <h3 className="text-sm font-semibold text-foreground">
+              <h3 className="text-base font-semibold text-foreground">
                 {t("settings.backupSyncTitle")}
               </h3>
             </div>
-            <span className="inline-flex items-center gap-1.5 rounded-full border border-border/70 bg-muted/45 px-2.5 py-1 text-[11px] font-medium leading-none text-muted-foreground">
+            <span className="inline-flex items-center gap-2 rounded-full border border-border bg-muted/40 px-2 py-1 text-xs font-medium leading-none text-muted-foreground">
               <Lock className="h-3 w-3" />
               {t("settings.backupSyncCredentialNote")}
             </span>
           </header>
 
-          <div className="flex-1 space-y-4 px-5 py-4">
-            <div className="space-y-1.5">
+          <div className="flex-1 space-y-4 px-4 py-4">
+            <div className="space-y-2">
               <FieldLabel>{t("settings.backupSyncPreset")}</FieldLabel>
-              <div className="flex flex-wrap gap-1.5">
+              <div className="flex flex-wrap gap-2">
                 {presetOptions.map((item) => {
                   const active = preset === item.id;
                   return (
@@ -610,10 +610,10 @@ export function BackupSyncSection(props: SettingsSectionProps) {
                       disabled={syncLocked}
                       aria-pressed={active}
                       onClick={() => handlePresetChange(item.id)}
-                      className={`rounded-full border px-3 py-1.5 text-xs font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-55 ${
+                      className={`rounded-full border px-3 py-2 text-xs font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-55 ${
                         active
-                          ? "border-primary/40 bg-primary/10 text-primary"
-                          : "border-border/70 bg-background/60 text-muted-foreground hover:border-border hover:text-foreground"
+                          ? "border-ring bg-primary/10 text-primary"
+                          : "border-border bg-background/60 text-muted-foreground hover:border-input hover:text-foreground"
                       }`}
                     >
                       {t(`settings.backupSyncPreset_${item.id}`)}
@@ -623,7 +623,7 @@ export function BackupSyncSection(props: SettingsSectionProps) {
               </div>
             </div>
 
-            <div className="space-y-1.5">
+            <div className="space-y-2">
               <FieldLabel>{t("settings.backupSyncUrl")}</FieldLabel>
               <div className="relative">
                 <Server className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground/60" />
@@ -631,14 +631,14 @@ export function BackupSyncSection(props: SettingsSectionProps) {
                   value={form.url}
                   disabled={syncLocked}
                   placeholder="https://dav.example.com/dav/"
-                  className="pl-9"
+                  className="pl-8"
                   onChange={(event) => patchForm({ url: event.target.value })}
                 />
               </div>
             </div>
 
             <div className="grid gap-3 sm:grid-cols-2">
-              <div className="space-y-1.5">
+              <div className="space-y-2">
                 <FieldLabel>{t("settings.backupSyncUsername")}</FieldLabel>
                 <Input
                   value={form.username}
@@ -647,7 +647,7 @@ export function BackupSyncSection(props: SettingsSectionProps) {
                   onChange={(event) => patchForm({ username: event.target.value })}
                 />
               </div>
-              <div className="space-y-1.5">
+              <div className="space-y-2">
                 <FieldLabel>{t("settings.backupSyncPassword")}</FieldLabel>
                 <div className="relative">
                   <Key className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground/60" />
@@ -656,7 +656,7 @@ export function BackupSyncSection(props: SettingsSectionProps) {
                     value={form.password}
                     disabled={syncLocked}
                     autoComplete="new-password"
-                    className="pl-9"
+                    className="pl-8"
                     placeholder={
                       syncView?.hasPassword && !form.passwordTouched
                         ? t("settings.backupSyncPasswordSaved")
@@ -678,7 +678,7 @@ export function BackupSyncSection(props: SettingsSectionProps) {
             </div>
 
             <div className="grid gap-3 sm:grid-cols-2">
-              <div className="space-y-1.5">
+              <div className="space-y-2">
                 <FieldLabel>{t("settings.backupSyncRemoteDir")}</FieldLabel>
                 <Input
                   value={form.remoteDir}
@@ -687,7 +687,7 @@ export function BackupSyncSection(props: SettingsSectionProps) {
                   onChange={(event) => patchForm({ remoteDir: event.target.value })}
                 />
               </div>
-              <div className="space-y-1.5">
+              <div className="space-y-2">
                 <FieldLabel hint={t("settings.backupSyncProfileHint")}>
                   {t("settings.backupSyncProfile")}
                 </FieldLabel>
@@ -700,8 +700,8 @@ export function BackupSyncSection(props: SettingsSectionProps) {
               </div>
             </div>
 
-            <div className="flex items-center justify-between gap-3 rounded-xl border border-border/60 bg-background/60 px-3.5 py-3">
-              <div className="flex min-w-0 items-center gap-2.5">
+            <div className="flex items-center justify-between gap-3 rounded-2xl border border-border bg-background/60 px-4 py-3">
+              <div className="flex min-w-0 items-center gap-2">
                 <Zap className="h-4 w-4 shrink-0 text-muted-foreground" />
                 <div className="min-w-0">
                   <div className="text-xs font-medium text-foreground">
@@ -722,7 +722,7 @@ export function BackupSyncSection(props: SettingsSectionProps) {
             </div>
           </div>
 
-          <footer className="space-y-3 border-t border-border/60 px-5 py-4">
+          <footer className="space-y-3 border-t border-border px-4 py-4">
             <div className="flex flex-wrap items-center gap-2">
               <Button size="sm" disabled={syncLocked} onClick={() => void handleSaveSync()}>
                 {syncBusy === "save" ? (
@@ -745,7 +745,7 @@ export function BackupSyncSection(props: SettingsSectionProps) {
                 )}
                 {t("settings.backupSyncTest")}
               </Button>
-              <div className="mx-1 h-4 w-px bg-border/70" />
+              <div className="mx-1 h-4 w-px bg-border/80" />
               <Button
                 variant="outline"
                 size="sm"
@@ -775,7 +775,7 @@ export function BackupSyncSection(props: SettingsSectionProps) {
             </div>
 
             {dirty && !syncLocked ? (
-              <div className="flex items-center gap-1.5 text-xs font-medium text-amber-700 dark:text-amber-300">
+              <div className="flex items-center gap-2 text-xs font-medium text-warning">
                 <AlertTriangle className="h-3.5 w-3.5 shrink-0" />
                 {t("settings.backupSyncDirtyHint")}
               </div>
@@ -786,13 +786,13 @@ export function BackupSyncSection(props: SettingsSectionProps) {
         </section>
 
         {/* 右栏：本地备份 + 备份范围。范围卡弹性补足高度，与左栏底边对齐。 */}
-        <aside className="flex flex-col gap-5">
-          <section className="space-y-3 rounded-2xl border border-border/60 bg-card p-4">
-            <div className="flex items-center gap-2.5">
+        <aside className="flex flex-col gap-4">
+          <section className="space-y-3 rounded-2xl border border-border bg-card p-4">
+            <div className="flex items-center gap-2">
               <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 text-primary">
                 <HardDrive className="h-4 w-4" />
               </span>
-              <h3 className="text-sm font-semibold text-foreground">
+              <h3 className="text-base font-semibold text-foreground">
                 {t("settings.backupLocalTitle")}
               </h3>
             </div>
@@ -816,7 +816,7 @@ export function BackupSyncSection(props: SettingsSectionProps) {
               />
             </div>
 
-            <div className="flex items-start gap-2 text-[11px] leading-relaxed text-muted-foreground">
+            <div className="flex items-start gap-2 text-xs leading-relaxed text-muted-foreground">
               <ArchiveRestore className="mt-0.5 h-3.5 w-3.5 shrink-0" />
               <span>{t("settings.backupAutoBackupHint")}</span>
             </div>
@@ -824,21 +824,21 @@ export function BackupSyncSection(props: SettingsSectionProps) {
             <FeedbackStrip status={status} />
           </section>
 
-          <section className="flex-1 space-y-3 rounded-2xl border border-border/60 bg-card p-4">
-            <div className="flex items-center gap-2.5">
+          <section className="flex-1 space-y-3 rounded-2xl border border-border bg-card p-4">
+            <div className="flex items-center gap-2">
               <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 text-primary">
                 <Shield className="h-4 w-4" />
               </span>
-              <h3 className="text-sm font-semibold text-foreground">
+              <h3 className="text-base font-semibold text-foreground">
                 {t("settings.backupScopeTitle")}
               </h3>
             </div>
 
-            <div className="space-y-1.5">
-              <div className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground/70">
+            <div className="space-y-2">
+              <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground/80">
                 {t("settings.backupScopeIncluded")}
               </div>
-              <div className="flex flex-wrap gap-1.5">
+              <div className="flex flex-wrap gap-2">
                 <ScopeItem
                   icon={<Server className="h-3.5 w-3.5" />}
                   label={t("settings.backupDomainProviders")}
@@ -866,11 +866,11 @@ export function BackupSyncSection(props: SettingsSectionProps) {
               </div>
             </div>
 
-            <div className="space-y-1.5">
-              <div className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground/70">
+            <div className="space-y-2">
+              <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground/80">
                 {t("settings.backupScopeExcluded")}
               </div>
-              <div className="flex flex-wrap gap-1.5">
+              <div className="flex flex-wrap gap-2">
                 <ScopeItem
                   excluded
                   icon={<MessageSquare className="h-3.5 w-3.5" />}

@@ -203,8 +203,8 @@ export function WorkspaceCloneModal({
                   aria-pressed={isActive}
                   onClick={() => setMode(value)}
                   className={cn(
-                    "flex flex-col gap-1.5 rounded-lg p-3 text-left transition-colors focus-visible:outline-hidden",
-                    isActive ? "bg-primary/[0.08]" : "bg-muted/40 hover:bg-muted/70",
+                    "flex flex-col gap-2 rounded-lg p-3 text-left transition-colors focus-visible:outline-hidden",
+                    isActive ? "bg-primary/10" : "bg-muted/40 hover:bg-muted/80",
                   )}
                 >
                   <span className="flex items-center gap-2">
@@ -214,7 +214,7 @@ export function WorkspaceCloneModal({
                         isActive && "text-primary",
                       )}
                     />
-                    <span className="text-sm font-medium">{t(titleKey)}</span>
+                    <span className="text-base font-medium">{t(titleKey)}</span>
                   </span>
                   <span className="text-xs leading-relaxed text-muted-foreground">
                     {t(descriptionKey)}

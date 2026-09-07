@@ -90,7 +90,7 @@ export const AssistantBubbleUnit = memo(function AssistantBubbleUnit(props: {
           >
             {workEntries.map((entry) => renderWorkEntry(entry))}
             {isCompactionRunning ? (
-              <LiveAssistantStatus status={toolStatus} isCompaction className="w-full py-1.5" />
+              <LiveAssistantStatus status={toolStatus} isCompaction className="w-full py-2" />
             ) : null}
           </AssistantWorkTrace>
         ) : null}

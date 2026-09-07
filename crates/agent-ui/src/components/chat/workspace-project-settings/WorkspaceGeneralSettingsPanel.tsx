@@ -28,11 +28,11 @@ export function WorkspaceGeneralSettingsPanel(props: {
 
   return (
     <section className="space-y-4 p-6 max-[720px]:p-4">
-      <h3 className="text-sm font-semibold">{t("chat.workspaceSettingsGeneral")}</h3>
+      <h3 className="text-base font-semibold">{t("chat.workspaceSettingsGeneral")}</h3>
 
-      <div className="overflow-hidden rounded-xl border border-border/60">
-        <div className="flex items-center justify-between gap-3 px-3 py-2.5 max-[560px]:flex-col max-[560px]:items-stretch max-[560px]:gap-2">
-          <label htmlFor="workspace-project-name" className="shrink-0 text-sm font-medium">
+      <div className="overflow-hidden rounded-2xl border border-border">
+        <div className="flex items-center justify-between gap-3 px-3 py-2 max-[560px]:flex-col max-[560px]:items-stretch max-[560px]:gap-2">
+          <label htmlFor="workspace-project-name" className="shrink-0 text-xs font-medium">
             {t("chat.workspaceSettingsProjectName")}
           </label>
           <div className="w-[280px] max-w-full max-[560px]:w-full">
@@ -55,7 +55,7 @@ export function WorkspaceGeneralSettingsPanel(props: {
             {projectNameInvalid ? (
               <p
                 id="workspace-project-name-description"
-                className="mt-1.5 text-xs leading-5 text-destructive"
+                className="mt-2 text-xs leading-5 text-destructive"
               >
                 {t("chat.workspaceSettingsProjectNameRequired")}
               </p>
@@ -63,16 +63,16 @@ export function WorkspaceGeneralSettingsPanel(props: {
           </div>
         </div>
 
-        <div className="flex items-center justify-between gap-3 border-t border-border/40 px-3 py-2.5">
-          <span className="text-sm font-medium">{t("chat.workspaceSettingsProjectType")}</span>
+        <div className="flex items-center justify-between gap-3 border-t border-border px-3 py-2">
+          <span className="text-base font-medium">{t("chat.workspaceSettingsProjectType")}</span>
           <Badge variant="muted">{projectKindLabel}</Badge>
         </div>
 
-        <div className="flex items-center justify-between gap-3 border-t border-border/40 px-3 py-2.5 max-[560px]:flex-col max-[560px]:items-stretch max-[560px]:gap-1.5">
-          <span className="shrink-0 text-sm font-medium">
+        <div className="flex items-center justify-between gap-3 border-t border-border px-3 py-2 max-[560px]:flex-col max-[560px]:items-stretch max-[560px]:gap-2">
+          <span className="shrink-0 text-base font-medium">
             {t("chat.workspaceSettingsPrimaryDirectory")}
           </span>
-          <div className="flex min-w-0 items-center gap-1.5">
+          <div className="flex min-w-0 items-center gap-2">
             <span
               className="min-w-0 truncate font-mono text-xs text-muted-foreground"
               title={project.path}

@@ -173,24 +173,24 @@ export function WindowsTitleBar() {
   return (
     <header
       className={cn(
-        "relative z-50 flex h-8 shrink-0 select-none items-center border-b border-black/[0.06] bg-white/65 text-foreground/90 backdrop-blur-2xl backdrop-saturate-150 supports-[backdrop-filter]:bg-white/55 dark:border-white/[0.06] dark:bg-neutral-900/70 dark:supports-[backdrop-filter]:bg-neutral-900/55",
-        "shadow-[inset_0_1px_0_rgba(255,255,255,0.7)] dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]",
-        !isFocused && "text-foreground/55",
+        "relative z-50 flex h-8 shrink-0 select-none items-center border-b border-border bg-white/60 text-foreground/90 backdrop-blur-2xl backdrop-saturate-150 supports-[backdrop-filter]:bg-white/60 dark:bg-card/80 dark:supports-[backdrop-filter]:bg-card/60",
+        "shadow-none",
+        !isFocused && "text-foreground/60",
       )}
     >
       {/* biome-ignore lint/a11y/noStaticElementInteractions: The native titlebar drag/maximize region is intentionally pointer-only; adjacent window buttons provide keyboard controls. */}
       <div
-        className="flex h-full min-w-0 flex-1 items-center gap-1.5 pl-2.5 pr-3"
+        className="flex h-full min-w-0 flex-1 items-center gap-2 pl-2 pr-3"
         onDoubleClick={handleTitleDoubleClick}
         onMouseDown={startDragging}
       >
         <img
           src={iconSimpleUrl}
           alt=""
-          className="h-[15px] w-[15px] shrink-0 rounded-xs"
+          className="h-[15px] w-[15px] shrink-0 rounded-sm"
           draggable={false}
         />
-        <span className="truncate text-[12px] font-medium leading-[1.45] tracking-[0.01em] text-foreground/80">
+        <span className="truncate text-xs font-medium leading-[1.45] tracking-[0.01em] text-foreground/80">
           {t("app.name")}
         </span>
       </div>
@@ -201,7 +201,7 @@ export function WindowsTitleBar() {
       >
         <button
           type="button"
-          className="group flex h-full w-[38px] items-center justify-center text-foreground/55 transition-colors duration-150 hover:bg-black/[0.05] hover:text-foreground/90 focus-visible:outline-hidden focus-visible:bg-black/[0.05] focus-visible:text-foreground/90 dark:hover:bg-white/[0.07] dark:focus-visible:bg-white/[0.07]"
+          className="group flex h-full w-[38px] items-center justify-center text-foreground/60 transition-colors duration-150 hover:bg-black/5 hover:text-foreground/90 focus-visible:outline-hidden focus-visible:bg-black/5 focus-visible:text-foreground/90 dark:hover:bg-white/5 dark:focus-visible:bg-white/5"
           aria-label={t("window.minimize")}
           title={t("window.minimize")}
           onClick={minimizeWindow}
@@ -210,7 +210,7 @@ export function WindowsTitleBar() {
         </button>
         <button
           type="button"
-          className="group flex h-full w-[38px] items-center justify-center text-foreground/55 transition-colors duration-150 hover:bg-black/[0.05] hover:text-foreground/90 focus-visible:outline-hidden focus-visible:bg-black/[0.05] focus-visible:text-foreground/90 dark:hover:bg-white/[0.07] dark:focus-visible:bg-white/[0.07]"
+          className="group flex h-full w-[38px] items-center justify-center text-foreground/60 transition-colors duration-150 hover:bg-black/5 hover:text-foreground/90 focus-visible:outline-hidden focus-visible:bg-black/5 focus-visible:text-foreground/90 dark:hover:bg-white/5 dark:focus-visible:bg-white/5"
           aria-label={maximizeLabel}
           title={maximizeLabel}
           onClick={toggleMaximize}
@@ -223,7 +223,7 @@ export function WindowsTitleBar() {
         </button>
         <button
           type="button"
-          className="group flex h-full w-[42px] items-center justify-center text-foreground/55 transition-colors duration-150 hover:bg-[#e81123] hover:text-white focus-visible:outline-hidden focus-visible:bg-[#e81123] focus-visible:text-white"
+          className="group flex h-full w-[42px] items-center justify-center text-foreground/60 transition-colors duration-150 hover:bg-window-close hover:text-window-close-foreground focus-visible:outline-hidden focus-visible:bg-window-close focus-visible:text-window-close-foreground"
           aria-label={t("window.close")}
           title={t("window.close")}
           onClick={closeWindow}

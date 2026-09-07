@@ -81,7 +81,7 @@ export function ComposerAttachmentCard(props: {
     return (
       <div
         title={fileName}
-        className="group relative h-12 w-12 shrink-0 overflow-hidden rounded-lg border border-black/[0.075] bg-black/[0.035] transition-[border-color] hover:border-black/[0.16] dark:border-white/[0.11] dark:bg-white/[0.065] dark:hover:border-white/[0.22]"
+        className="group relative h-12 w-12 shrink-0 overflow-hidden rounded-lg border border-border bg-black/5 transition-[border-color] hover:border-input dark:bg-white/5"
       >
         {imageSrc && !imageLoadFailed ? (
           <button
@@ -117,13 +117,13 @@ export function ComposerAttachmentCard(props: {
             {fallbackIcon}
           </span>
         ) : (
-          <span className="block h-full w-full animate-pulse bg-black/[0.055] dark:bg-white/[0.09]" />
+          <span className="block h-full w-full animate-pulse bg-black/5 dark:bg-white/10" />
         )}
         <button
           type="button"
           disabled={disabled}
           onClick={onRemove}
-          className="absolute right-0.5 top-0.5 z-10 inline-flex h-4 w-4 items-center justify-center rounded-full bg-black/50 text-white/95 backdrop-blur-sm transition-[background-color,scale] hover:bg-black/70 active:scale-90 focus-visible:bg-black/70 disabled:pointer-events-none disabled:opacity-35"
+          className="absolute right-0.5 top-0.5 z-10 inline-flex h-4 w-4 items-center justify-center rounded-full bg-black/60 text-white backdrop-blur-sm transition-[background-color,scale] hover:bg-black/80 active:scale-90 focus-visible:bg-black/80 disabled:pointer-events-none disabled:opacity-35"
           aria-label={`${removeLabel} ${fileName}`}
           title={removeLabel}
         >
@@ -154,13 +154,13 @@ export function ComposerAttachmentCard(props: {
   return (
     <div
       title={pathTitle}
-      className="group flex h-9 w-36 max-w-[calc(100vw-5rem)] shrink-0 items-center gap-1 rounded-lg border border-black/[0.075] bg-black/[0.035] p-1 pr-1.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.64)] transition-[border-color,background-color] hover:border-black/[0.11] hover:bg-black/[0.05] dark:border-white/[0.11] dark:bg-white/[0.065] dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.055)] dark:hover:border-white/[0.16] dark:hover:bg-white/[0.09]"
+      className="group flex h-9 w-36 max-w-[calc(100vw-5rem)] shrink-0 items-center gap-1 rounded-lg border border-border bg-black/5 p-1 pr-2 shadow-none transition-[border-color,background-color] hover:border-input hover:bg-black/10 dark:bg-white/5 dark:hover:bg-white/10"
     >
-      <span className="flex h-7 w-7 shrink-0 items-center justify-center overflow-hidden rounded-md bg-black/[0.045] text-muted-foreground dark:bg-white/[0.08]">
+      <span className="flex h-7 w-7 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-black/5 text-muted-foreground dark:bg-white/10">
         {fallbackIcon}
       </span>
 
-      <span className="min-w-0 flex-1 truncate text-[calc(11px*var(--zone-font-scale,1))] font-medium leading-4 tracking-tight text-foreground/90">
+      <span className="min-w-0 flex-1 truncate text-xs font-medium leading-4 tracking-tight text-foreground/90">
         {fileName}
       </span>
 
@@ -168,7 +168,7 @@ export function ComposerAttachmentCard(props: {
         type="button"
         disabled={disabled}
         onClick={onRemove}
-        className="inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-muted-foreground/75 outline-hidden transition-[background-color,color,scale] hover:bg-foreground/[0.07] hover:text-foreground active:scale-90 focus-visible:bg-foreground/[0.07] focus-visible:text-foreground disabled:pointer-events-none disabled:opacity-35"
+        className="inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-muted-foreground/80 outline-hidden transition-[background-color,color,scale] hover:bg-foreground/5 hover:text-foreground active:scale-90 focus-visible:bg-foreground/5 focus-visible:text-foreground disabled:pointer-events-none disabled:opacity-35"
         aria-label={`${removeLabel} ${fileName}`}
         title={removeLabel}
       >

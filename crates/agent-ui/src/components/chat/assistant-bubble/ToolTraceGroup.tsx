@@ -195,10 +195,10 @@ function ToolTraceGroupInner(props: {
         type="button"
         aria-expanded={open}
         aria-label={open ? t("chat.tool.collapseActivity") : t("chat.tool.expandActivity")}
-        className="-mx-1.5 flex w-fit max-w-[calc(100%+0.75rem)] cursor-pointer select-none items-center gap-1.5 rounded-lg px-1.5 py-1 text-left text-[calc(13px*var(--zone-font-scale,1))] font-[450] text-foreground/60 transition-colors duration-150 hover:bg-foreground/[0.04] hover:text-foreground/75"
+        className="-mx-2 flex w-fit max-w-[calc(100%+1rem)] cursor-pointer select-none items-center gap-2 rounded-lg px-2 py-1 text-left text-xs font-[450] text-foreground/60 transition-colors duration-150 hover:bg-foreground/5 hover:text-foreground/80"
         onClick={() => setOpen((prev) => !prev)}
       >
-        <BatchIcon className="h-3 w-3 shrink-0 text-foreground/45" />
+        <BatchIcon className="h-3 w-3 shrink-0 text-foreground/40" />
         <span className="min-w-0 truncate">{headerLabel}</span>
         <ChevronRight
           className={cn(
@@ -207,9 +207,9 @@ function ToolTraceGroupInner(props: {
           )}
         />
         {showStatus ? (
-          <span className="shrink-0 text-[calc(11px*var(--zone-font-scale,1))] text-foreground/45">
+          <span className="shrink-0 text-xs text-foreground/40">
             {showTurnStatus && counts.running > 0 ? (
-              <AssistantStatus className="min-h-0 text-[calc(11px*var(--zone-font-scale,1))] text-foreground/45">
+              <AssistantStatus className="min-h-0 text-xs text-foreground/40">
                 {statusLabel}
               </AssistantStatus>
             ) : (

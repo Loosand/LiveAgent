@@ -3824,7 +3824,7 @@ export function ChatPage(props: ChatPageProps) {
           const blockedBanner = blockedMessage ? (
             <div
               data-workbench-pane-blocked=""
-              className="flex shrink-0 items-center gap-2 border-b border-amber-500/30 bg-amber-500/10 px-3 py-1.5 text-xs text-amber-600 dark:text-amber-400"
+              className="flex shrink-0 items-center gap-2 border-b border-warning/40 bg-warning/10 px-3 py-2 text-xs text-warning"
             >
               {blockedMessage}
             </div>
@@ -3890,7 +3890,7 @@ export function ChatPage(props: ChatPageProps) {
       <div
         ref={workbenchDragGhostRef}
         data-workbench-drag-ghost=""
-        className="layer-popover pointer-events-none fixed max-w-[220px] truncate rounded-md border border-border bg-background/95 px-2.5 py-1 text-xs text-foreground shadow-md"
+        className="layer-popover pointer-events-none fixed max-w-[220px] truncate rounded-lg border border-border bg-background px-2 py-1 text-xs text-foreground shadow-overlay"
         style={{
           left: 0,
           top: 0,

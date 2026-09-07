@@ -107,7 +107,7 @@ const BRANCH_FILTER_THRESHOLD = 8;
 const COPY_FEEDBACK_MS = 1500;
 
 const HEADER_ICON_BUTTON_CLASS =
-  "rounded p-1 text-muted-foreground hover:bg-muted hover:text-foreground disabled:pointer-events-none disabled:opacity-45";
+  "rounded-sm p-1 text-muted-foreground hover:bg-muted hover:text-foreground disabled:pointer-events-none disabled:opacity-45";
 
 type GitBranchRefreshOptions = {
   force?: boolean;
@@ -981,7 +981,7 @@ export function GitBranchSelector(props: {
         tabIndex={-1}
         aria-label={t("git.branchSelector.branchActions")}
         title={t("git.branchSelector.branchActions")}
-        className="pointer-events-none ml-auto inline-flex shrink-0 rounded p-0.5 text-muted-foreground opacity-0 hover:bg-muted hover:text-foreground group-hover/branch:pointer-events-auto group-hover/branch:opacity-100 group-data-[highlighted]/branch:pointer-events-auto group-data-[highlighted]/branch:opacity-100"
+        className="pointer-events-none ml-auto inline-flex shrink-0 rounded-sm p-0.5 text-muted-foreground opacity-0 hover:bg-muted hover:text-foreground group-hover/branch:pointer-events-auto group-hover/branch:opacity-100 group-data-[highlighted]/branch:pointer-events-auto group-data-[highlighted]/branch:opacity-100"
         onPointerDown={(event) => {
           // Swallow every selection trigger the menu items listen to (Base UI
           // selects on click plus mouseup for drag-release gestures, Radix on
@@ -1032,8 +1032,8 @@ export function GitBranchSelector(props: {
           side="top"
           align="start"
         >
-          <div className="flex shrink-0 items-center gap-1 border-b border-border/60 px-2 py-1.5">
-            <div className="flex min-w-0 flex-1 items-center gap-1.5 text-xs font-medium text-foreground">
+          <div className="flex shrink-0 items-center gap-1 border-b border-border px-2 py-2">
+            <div className="flex min-w-0 flex-1 items-center gap-2 text-xs font-medium text-foreground">
               <Github className="h-3.5 w-3.5 shrink-0" />
               <span>Git</span>
             </div>
@@ -1073,7 +1073,7 @@ export function GitBranchSelector(props: {
                     )}
                   </button>
                   {showSyncBadges && state.behind > 0 ? (
-                    <span className="pointer-events-none absolute -right-0.5 -top-0.5 rounded-full bg-primary px-1 text-[9px] font-medium leading-3 text-primary-foreground">
+                    <span className="pointer-events-none absolute -right-0.5 -top-0.5 rounded-full bg-primary px-1 text-2xs font-medium leading-3 text-primary-foreground">
                       {state.behind > 9 ? "9+" : state.behind}
                     </span>
                   ) : null}
@@ -1096,7 +1096,7 @@ export function GitBranchSelector(props: {
                     )}
                   </button>
                   {showSyncBadges && state.ahead > 0 ? (
-                    <span className="pointer-events-none absolute -right-0.5 -top-0.5 rounded-full bg-primary px-1 text-[9px] font-medium leading-3 text-primary-foreground">
+                    <span className="pointer-events-none absolute -right-0.5 -top-0.5 rounded-full bg-primary px-1 text-2xs font-medium leading-3 text-primary-foreground">
                       {state.ahead > 9 ? "9+" : state.ahead}
                     </span>
                   ) : null}
@@ -1119,7 +1119,7 @@ export function GitBranchSelector(props: {
             </button>
           </div>
           {repositories.length > 1 ? (
-            <div className="shrink-0 border-b border-border/60 p-1">
+            <div className="shrink-0 border-b border-border p-1">
               <DropdownMenuSub open={repoMenuOpen} onOpenChange={setRepoMenuOpen}>
                 <DropdownMenuSubTrigger
                   clickToggle
@@ -1135,7 +1135,7 @@ export function GitBranchSelector(props: {
                     {selectedGitRepositoryLabel(repositories, selectedRepoRoot) ||
                       t("git.branchSelector.switchRepository")}
                   </span>
-                  <span className="ml-auto shrink-0 rounded-full bg-muted px-1.5 py-px text-[10px] leading-4 text-muted-foreground">
+                  <span className="ml-auto shrink-0 rounded-full bg-muted px-2 py-px text-2xs leading-4 text-muted-foreground">
                     {repositories.length}
                   </span>
                   <ChevronRight className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
@@ -1154,7 +1154,7 @@ export function GitBranchSelector(props: {
                         type="button"
                         disabled={mutating}
                         className={cn(
-                          "flex w-full cursor-default select-none items-center gap-2 rounded-xs px-2 py-1.5 text-left text-xs outline-hidden transition-colors hover:bg-accent hover:text-accent-foreground disabled:pointer-events-none disabled:opacity-50",
+                          "flex w-full cursor-default select-none items-center gap-2 rounded-sm px-2 py-2 text-left text-xs outline-hidden transition-colors hover:bg-accent hover:text-accent-foreground disabled:pointer-events-none disabled:opacity-50",
                           isCurrent && "text-muted-foreground",
                         )}
                         title={repo.root}
@@ -1184,7 +1184,7 @@ export function GitBranchSelector(props: {
             </div>
           ) : null}
           {showFilter ? (
-            <div className="shrink-0 border-b border-border/60 px-2 py-1.5">
+            <div className="shrink-0 border-b border-border px-2 py-2">
               <div className="relative">
                 <Search className="pointer-events-none absolute left-2 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
                 <Input
@@ -1201,7 +1201,7 @@ export function GitBranchSelector(props: {
                     }
                   }}
                   placeholder={t("git.branchSelector.filterBranches")}
-                  className="h-8 pl-7 text-xs"
+                  className="h-8 pl-8 text-xs"
                 />
               </div>
             </div>
@@ -1236,7 +1236,7 @@ export function GitBranchSelector(props: {
             ) : noRepo ? null : (
               <>
                 {filteredLocalBranches.length > 0 ? (
-                  <DropdownMenuLabel className="px-2 py-1 text-[11px] uppercase tracking-wide text-muted-foreground">
+                  <DropdownMenuLabel className="px-2 py-1 text-xs uppercase tracking-wide text-muted-foreground">
                     {t("git.branchSelector.localBranches")}
                   </DropdownMenuLabel>
                 ) : null}
@@ -1244,7 +1244,7 @@ export function GitBranchSelector(props: {
                   renderBranchRow(branch, branch.current, branch.name),
                 )}
                 {filteredRemoteBranches.length > 0 ? (
-                  <DropdownMenuLabel className="px-2 py-1 text-[11px] uppercase tracking-wide text-muted-foreground">
+                  <DropdownMenuLabel className="px-2 py-1 text-xs uppercase tracking-wide text-muted-foreground">
                     {t("git.branchSelector.remoteBranches")}
                   </DropdownMenuLabel>
                 ) : null}
@@ -1255,7 +1255,7 @@ export function GitBranchSelector(props: {
                   return renderBranchRow(branch, isCurrentUpstream, branch.fullName);
                 })}
                 {filteredRemoteBranches.length > REMOTE_BRANCH_DISPLAY_LIMIT ? (
-                  <div className="px-2 py-1 text-[11px] text-muted-foreground">
+                  <div className="px-2 py-1 text-xs text-muted-foreground">
                     {t("git.branchSelector.moreRemoteBranches").replace(
                       "{count}",
                       String(filteredRemoteBranches.length - REMOTE_BRANCH_DISPLAY_LIMIT),
@@ -1273,7 +1273,7 @@ export function GitBranchSelector(props: {
             )}
           </div>
           {noRepo ? null : (
-            <div className="shrink-0 border-t border-border/60 p-1">
+            <div className="shrink-0 border-t border-border p-1">
               {creating ? (
                 <div className="flex items-center gap-1 px-1 py-0.5">
                   <Input
@@ -1298,7 +1298,7 @@ export function GitBranchSelector(props: {
                   />
                   <button
                     type="button"
-                    className="inline-flex h-8 shrink-0 items-center justify-center whitespace-nowrap rounded bg-foreground px-2 text-xs text-background"
+                    className="inline-flex h-8 shrink-0 items-center justify-center whitespace-nowrap rounded-sm bg-foreground px-2 text-xs text-background"
                     onClick={createBranch}
                   >
                     {t("git.branchSelector.create")}
@@ -1311,7 +1311,7 @@ export function GitBranchSelector(props: {
                       type="button"
                       disabled={!canWrite || mutating}
                       title={!canWrite ? disabledMessage : undefined}
-                      className="relative flex min-w-0 flex-1 cursor-default select-none items-center gap-2 rounded-xs px-2 py-1.5 text-left text-xs outline-hidden transition-colors hover:bg-accent hover:text-accent-foreground disabled:pointer-events-none disabled:opacity-50"
+                      className="relative flex min-w-0 flex-1 cursor-default select-none items-center gap-2 rounded-sm px-2 py-2 text-left text-xs outline-hidden transition-colors hover:bg-accent hover:text-accent-foreground disabled:pointer-events-none disabled:opacity-50"
                       onClick={(event) => {
                         event.preventDefault();
                         event.stopPropagation();
@@ -1324,7 +1324,7 @@ export function GitBranchSelector(props: {
                     <DropdownMenuSub>
                       <DropdownMenuSubTrigger
                         clickToggle
-                        className="shrink-0 px-1.5 text-xs"
+                        className="shrink-0 px-2 text-xs"
                         aria-label={t("git.branchSelector.moreActions")}
                         title={t("git.branchSelector.moreActions")}
                       >
@@ -1366,7 +1366,7 @@ export function GitBranchSelector(props: {
                       type="button"
                       disabled={!canWrite || mutating}
                       title={!canWrite ? disabledMessage : undefined}
-                      className="relative flex min-w-0 w-full cursor-default select-none items-center gap-2 rounded-xs px-2 py-1.5 text-left text-xs outline-hidden transition-colors hover:bg-accent hover:text-accent-foreground disabled:pointer-events-none disabled:opacity-50"
+                      className="relative flex min-w-0 w-full cursor-default select-none items-center gap-2 rounded-sm px-2 py-2 text-left text-xs outline-hidden transition-colors hover:bg-accent hover:text-accent-foreground disabled:pointer-events-none disabled:opacity-50"
                       onClick={(event) => {
                         event.preventDefault();
                         event.stopPropagation();

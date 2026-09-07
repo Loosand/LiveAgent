@@ -280,7 +280,7 @@ function CcsImportModal(props: {
         <DialogHeader className="flex-row items-center gap-3 px-6">
           {sourceLogo("ccswitch", "h-9 w-9")}
           <div className="min-w-0 flex-1">
-            <DialogTitle className="text-sm leading-normal">从 CC Switch 导入</DialogTitle>
+            <DialogTitle className="text-base leading-normal">从 CC Switch 导入</DialogTitle>
             <DialogDescription className="mt-0.5 text-xs">
               导入当前供应商类型的配置，并在后台获取模型列表
             </DialogDescription>
@@ -311,26 +311,24 @@ function CcsImportModal(props: {
                     onChange={() => toggle(item)}
                   />
                   <div className="min-w-0 flex-1">
-                    <div className="truncate text-sm font-medium">{item.name}</div>
+                    <div className="truncate text-base font-medium">{item.name}</div>
                     <div className="truncate text-xs text-muted-foreground">
                       {item.baseUrl || "未配置 Base URL"}
                     </div>
                   </div>
                   {item.apiKey.trim() ? <Key className="h-3.5 w-3.5" /> : null}
-                  {alreadyImported ? (
-                    <span className="text-xs text-emerald-600">已导入</span>
-                  ) : null}
+                  {alreadyImported ? <span className="text-xs text-success">已导入</span> : null}
                 </label>
               );
             })
           ) : (
-            <div className="flex h-full items-center justify-center text-sm text-muted-foreground">
+            <div className="flex h-full items-center justify-center text-base text-muted-foreground">
               当前类型未发现可导入配置
             </div>
           )}
         </DialogBody>
         {result ? (
-          <div className="flex items-start gap-2 border-t px-6 py-3 text-xs text-emerald-600">
+          <div className="flex items-start gap-2 border-t px-6 py-3 text-xs text-success">
             <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 shrink-0" />
             <span>{result}</span>
           </div>
@@ -341,7 +339,7 @@ function CcsImportModal(props: {
               关闭
             </Button>
             <Button
-              className="gap-1.5"
+              className="gap-2"
               onClick={() => onImport(selectedItems)}
               disabled={importing || selectedItems.length === 0}
             >
@@ -634,7 +632,7 @@ export function ProviderSettingsExtension(props: {
             <DropdownMenuItem
               disabled={scanning || ccsCount === 0}
               onSelect={() => setCcsModalOpen(true)}
-              className="gap-3 py-2.5"
+              className="gap-3 py-2"
             >
               {sourceLogo("ccswitch", "h-8 w-8")}
               <span className="min-w-0 flex-1">
@@ -647,7 +645,7 @@ export function ProviderSettingsExtension(props: {
             <DropdownMenuItem
               disabled={scanning || cherryCount === 0}
               onSelect={() => setCherryModalOpen(true)}
-              className="gap-3 py-2.5"
+              className="gap-3 py-2"
             >
               {sourceLogo("cherry", "h-8 w-8")}
               <span className="min-w-0 flex-1">

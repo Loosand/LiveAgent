@@ -60,19 +60,19 @@ function RunningTerminalWarning(props: { count: number; t: (key: string) => stri
   const { count, t } = props;
   return (
     <div className="flex items-start gap-3">
-      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-amber-500/25 bg-amber-500/10 text-amber-700 dark:text-amber-300">
+      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl border border-warning/20 bg-warning/10 text-warning">
         <Terminal className="h-4 w-4" />
       </div>
       <div className="min-w-0 flex-1">
         <div className="flex min-w-0 flex-wrap items-center gap-2">
-          <span className="text-sm font-semibold text-foreground">
+          <span className="text-base font-semibold text-foreground">
             {t("chat.exitConfirmRunningLabel")}
           </span>
-          <span className="inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-amber-500/15 px-1.5 text-[calc(11px*var(--zone-font-scale,1))] font-semibold text-amber-700 dark:text-amber-300">
+          <span className="inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-warning/20 px-2 text-xs font-semibold text-warning">
             {count}
           </span>
         </div>
-        <p className="mt-1.5 text-xs leading-5 text-muted-foreground">
+        <p className="mt-2 text-xs leading-5 text-muted-foreground">
           {t("chat.workspaceDeleteWorktreeTerminalDescription")}
         </p>
       </div>

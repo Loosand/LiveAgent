@@ -184,7 +184,7 @@ export function DividerLayer(props: DividerLayerProps) {
               aria-hidden="true"
               className={cn(
                 "bg-border/80 transition-colors duration-100 motion-reduce:transition-none",
-                "group-hover/divider:bg-primary/50 group-focus-visible/divider:bg-primary/60",
+                "group-hover/divider:bg-primary/60 group-focus-visible/divider:bg-primary/60",
                 // Forced-colors modes drop the themed backgrounds entirely, so
                 // the divider needs a system colour to stay visible at all.
                 "forced-colors:bg-[CanvasText]",

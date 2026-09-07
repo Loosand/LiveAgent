@@ -18,7 +18,10 @@ const commonStyles = readFileSync(
 test("folder import notifications adapt to locale, theme, and narrow screens", () => {
   assert.match(toastSource, /useLocale\(\)/);
   assert.match(toastSource, /t\("common\.dismissNotification"\)/);
-  assert.match(toastSource, /dark:bg-(?:amber|emerald|red)-950/);
+  assert.match(toastSource, /bg-popover/);
+  assert.match(toastSource, /text-warning/);
+  assert.match(toastSource, /text-success/);
+  assert.match(toastSource, /text-destructive/);
   assert.match(toastSource, /w-\[min\(18rem,calc\(100vw-2rem\)\)\]/);
   assert.match(toastSource, /whitespace-pre-wrap break-words/);
 });

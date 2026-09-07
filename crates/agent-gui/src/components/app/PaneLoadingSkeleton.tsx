@@ -22,32 +22,32 @@ export function PaneLoadingSkeleton(props: PaneLoadingSkeletonProps) {
       aria-busy="true"
     >
       <div
-        className="flex h-10 shrink-0 items-center gap-2 border-b border-border/45 px-4"
+        className="flex h-10 shrink-0 items-center gap-2 border-b border-border px-4"
         aria-hidden
       >
-        <span className="h-1.5 w-1.5 rounded-full bg-muted-foreground/25" />
-        <span className="h-1.5 w-20 rounded-full bg-muted-foreground/15" />
+        <span className="h-1.5 w-1.5 rounded-full bg-muted-foreground/20" />
+        <span className="h-1.5 w-20 rounded-full bg-muted-foreground/20" />
       </div>
       {variant === "terminal" ? (
-        <div className="space-y-3 px-4 py-5 font-mono" aria-hidden>
+        <div className="space-y-3 px-4 py-4 font-mono" aria-hidden>
           <div className="flex items-center gap-2">
-            <span className="h-2 w-2 rounded-sm bg-emerald-500/35" />
-            <span className="h-2 w-40 rounded-sm bg-muted-foreground/12" />
+            <span className="h-2 w-2 rounded-sm bg-success/40" />
+            <span className="h-2 w-40 rounded-sm bg-muted-foreground/10" />
           </div>
           <div className="h-2 w-56 rounded-sm bg-muted-foreground/10" />
           <div className="h-2 w-36 rounded-sm bg-muted-foreground/10" />
         </div>
       ) : (
-        <div className="flex flex-1 flex-col gap-5 px-[8%] py-7" aria-hidden>
+        <div className="flex flex-1 flex-col gap-4 px-[8%] py-8" aria-hidden>
           <div className="space-y-2">
-            <div className="h-2 w-[58%] rounded-full bg-muted-foreground/12" />
-            <div className="h-2 w-[42%] rounded-full bg-muted-foreground/9" />
+            <div className="h-2 w-[58%] rounded-full bg-muted-foreground/10" />
+            <div className="h-2 w-[42%] rounded-full bg-muted-foreground/10" />
           </div>
-          <div className="ml-auto h-10 w-[36%] rounded-2xl rounded-br-md bg-muted-foreground/8" />
+          <div className="ml-auto h-10 w-[36%] rounded-2xl rounded-br-lg bg-muted-foreground/10" />
           <div className="space-y-2">
-            <div className="h-2 w-[72%] rounded-full bg-muted-foreground/12" />
-            <div className="h-2 w-[64%] rounded-full bg-muted-foreground/9" />
-            <div className="h-2 w-[48%] rounded-full bg-muted-foreground/9" />
+            <div className="h-2 w-[72%] rounded-full bg-muted-foreground/10" />
+            <div className="h-2 w-[64%] rounded-full bg-muted-foreground/10" />
+            <div className="h-2 w-[48%] rounded-full bg-muted-foreground/10" />
           </div>
         </div>
       )}

@@ -684,7 +684,7 @@ function CommitReferenceTooltip({
     // biome-ignore lint/a11y/noStaticElementInteractions: Hover handlers keep this descriptive tooltip open; it has no activation behavior.
     <div
       ref={tooltipRef}
-      className="layer-popover fixed overflow-y-auto rounded-xl border border-border bg-popover px-3 py-2.5 text-xs text-popover-foreground shadow-xl"
+      className="layer-popover fixed overflow-y-auto rounded-2xl border border-border bg-popover px-3 py-2 text-xs text-popover-foreground shadow-overlay"
       style={{
         left,
         top,
@@ -704,41 +704,37 @@ function CommitReferenceTooltip({
             <>
               <div className="break-words font-medium leading-tight">{authorLabel}</div>
               {date ? (
-                <div className="mt-0.5 text-[11px] leading-tight text-muted-foreground">
+                <div className="mt-0.5 text-xs leading-tight text-muted-foreground">
                   {date.relative} ({date.absolute})
                 </div>
               ) : null}
             </>
           ) : (
-            <div className="font-mono text-[11px] leading-tight text-muted-foreground">
-              {shortSha}
-            </div>
+            <div className="font-mono text-xs leading-tight text-muted-foreground">{shortSha}</div>
           )}
         </div>
       </div>
       <div className="mt-2 whitespace-pre-wrap break-words font-medium leading-snug">{subject}</div>
       {body ? (
-        <div className="mt-1.5 whitespace-pre-wrap break-words leading-snug text-muted-foreground">
+        <div className="mt-2 whitespace-pre-wrap break-words leading-snug text-muted-foreground">
           {body}
         </div>
       ) : null}
       {detailed ? (
-        <div className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-[11px] leading-tight">
+        <div className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs leading-tight">
           <span className="text-muted-foreground">{filesChangedLabel}</span>
-          <span className="font-medium text-emerald-600 dark:text-emerald-400">
-            {insertionsLabel}
-          </span>
-          <span className="font-medium text-rose-600 dark:text-rose-400">{deletionsLabel}</span>
+          <span className="font-medium text-success">{insertionsLabel}</span>
+          <span className="font-medium text-destructive">{deletionsLabel}</span>
         </div>
       ) : null}
       {commit.githubUrl ? (
-        <div className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 border-t border-border/70 pt-1.5 text-[11px] leading-tight text-muted-foreground">
+        <div className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 border-t border-border pt-2 text-xs leading-tight text-muted-foreground">
           <span className="font-mono text-foreground">{shortSha}</span>
           {commit.remoteName ? <span>{commit.remoteName}</span> : null}
           <span className="text-border">|</span>
           <button
             type="button"
-            className="inline-flex items-center gap-1 rounded px-1 py-0.5 text-primary hover:bg-primary/10"
+            className="inline-flex items-center gap-1 rounded-sm px-1 py-0.5 text-primary hover:bg-primary/10"
             onClick={() => commit.githubUrl && void openUrl(commit.githubUrl)}
           >
             <GitHubMarkIcon className="h-3 w-3" />
@@ -746,7 +742,7 @@ function CommitReferenceTooltip({
           </button>
         </div>
       ) : detailed ? (
-        <div className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 border-t border-border/70 pt-1.5 text-[11px] leading-tight text-muted-foreground">
+        <div className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 border-t border-border pt-2 text-xs leading-tight text-muted-foreground">
           <span className="font-mono text-foreground">{shortSha}</span>
           {commit.remoteName ? <span>{commit.remoteName}</span> : null}
         </div>
@@ -865,7 +861,7 @@ function GitFileMentionChip({ file }: { file: GitFileDisplayReference }) {
     >
       <Icon className="h-3 w-3 shrink-0 self-center" />
       <span>{fileName}</span>
-      <span className="max-w-[8rem] truncate text-[10px] opacity-70">@{refLabel}</span>
+      <span className="max-w-[8rem] truncate text-2xs opacity-70">@{refLabel}</span>
     </span>
   );
 }
@@ -894,7 +890,7 @@ function AppMentionChip({ app }: { app: AppDisplayReference }) {
           src={iconDataUrl}
           alt=""
           draggable={false}
-          className="h-3 w-3 shrink-0 self-center rounded-xs"
+          className="h-3 w-3 shrink-0 self-center rounded-sm"
         />
       ) : (
         <AppWindow className="h-3 w-3 shrink-0 self-center" />

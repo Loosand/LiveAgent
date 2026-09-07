@@ -62,17 +62,17 @@ export function McpServersForm(props: McpServersFormProps) {
   }, [query, servers]);
 
   return (
-    <div className="h-full min-h-0 overflow-y-auto px-0.5 pb-4 pr-1 pt-1.5">
+    <div className="h-full min-h-0 overflow-y-auto px-0.5 pb-4 pr-1 pt-2">
       <div className="flex flex-col gap-4">
         {serverCount === 0 ? (
-          <div className="hub-panel-enter rounded-2xl border border-dashed border-border/70 bg-card px-6 py-12 text-center shadow-xs">
-            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl border border-border/70 bg-background text-foreground shadow-xs">
+          <div className="hub-panel-enter rounded-2xl border border-dashed border-border bg-card px-6 py-12 text-center shadow-control">
+            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl border border-border bg-background text-foreground shadow-control">
               <Server className="h-6 w-6" />
             </div>
-            <p className="mt-4 text-sm font-medium text-foreground">{t("mcpHub.noServers")}</p>
+            <p className="mt-4 text-base font-medium text-foreground">{t("mcpHub.noServers")}</p>
             <p className="mt-1 text-xs text-muted-foreground">{t("mcpHub.noServersHint")}</p>
             {onAddServer ? (
-              <Button variant="outline" size="sm" className="mt-4 gap-1.5" onClick={onAddServer}>
+              <Button variant="outline" size="sm" className="mt-4 gap-2" onClick={onAddServer}>
                 <Plus className="h-3.5 w-3.5" />
                 {t("mcpHub.add")}
               </Button>
@@ -81,14 +81,14 @@ export function McpServersForm(props: McpServersFormProps) {
         ) : null}
 
         {query.trim() && filtered.length === 0 && serverCount > 0 ? (
-          <div className="hub-panel-enter rounded-2xl border border-border/70 bg-card px-6 py-8 text-center shadow-xs">
+          <div className="hub-panel-enter rounded-2xl border border-border bg-card px-6 py-8 text-center shadow-control">
             <Plug className="mx-auto h-5 w-5 text-muted-foreground" />
-            <p className="mt-3 text-sm text-muted-foreground">{t("mcpHub.noMatchInstalled")}</p>
+            <p className="mt-3 text-base text-muted-foreground">{t("mcpHub.noMatchInstalled")}</p>
           </div>
         ) : null}
 
         {filtered.length > 0 ? (
-          <div className="hub-panel-enter divide-y divide-border/70 overflow-hidden rounded-xl border border-border bg-card shadow-xs">
+          <div className="hub-panel-enter divide-y divide-border/70 overflow-hidden rounded-2xl border border-border bg-card shadow-control">
             {filtered.map(({ server, idx }) => (
               <McpServerCard
                 key={`${server.id}:${idx}`}

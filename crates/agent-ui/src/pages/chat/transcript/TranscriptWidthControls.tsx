@@ -320,7 +320,7 @@ export function TranscriptWidthControls(props: TranscriptWidthControlsProps) {
         <span
           aria-hidden="true"
           className={cn(
-            "h-10 w-0.5 rounded-full bg-muted-foreground/25 opacity-0 shadow-sm transition-[height,background-color,opacity] duration-150",
+            "h-10 w-0.5 rounded-full bg-muted-foreground/20 opacity-0 shadow-control transition-[height,background-color,opacity] duration-150",
             "group-hover:h-16 group-hover:bg-primary/60 group-hover:opacity-100 group-focus-visible:h-16 group-focus-visible:bg-primary group-focus-visible:opacity-100",
             resizingWidth !== null && "h-20 bg-primary opacity-100",
           )}
@@ -347,7 +347,7 @@ export function TranscriptWidthControls(props: TranscriptWidthControlsProps) {
       {handlesVisible ? renderHandle("left") : null}
       {handlesVisible ? renderHandle("right") : null}
       {handlesVisible && resizingWidth !== null ? (
-        <div className="absolute left-1/2 top-2 -translate-x-1/2 rounded-md border border-border/70 bg-background px-2 py-1 text-[11px] font-medium tabular-nums text-muted-foreground shadow-sm">
+        <div className="absolute left-1/2 top-2 -translate-x-1/2 rounded-lg border border-border bg-background px-2 py-1 text-xs font-medium tabular-nums text-muted-foreground shadow-control">
           {effectiveWidth} px
         </div>
       ) : null}

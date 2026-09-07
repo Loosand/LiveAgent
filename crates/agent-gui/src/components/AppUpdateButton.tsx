@@ -45,12 +45,12 @@ export function AppUpdateButton({
   return (
     <Button
       type="button"
-      variant="default"
+      variant="info"
       size="sm"
       className={cn(
         iconOnly
-          ? "group/update relative h-6 w-6 shrink-0 gap-0 overflow-hidden rounded-full bg-[#4096ff] px-0 text-[11px] font-medium leading-none text-white shadow-none transition-[width,background-color] duration-150 hover:w-10 hover:bg-[#1677ff] hover:text-white active:bg-[#0958d9]"
-          : "h-[22px] shrink-0 gap-[3px] rounded-full bg-[#4096ff] px-2 text-[11px] font-medium leading-none text-white shadow-none hover:bg-[#1677ff] hover:text-white active:bg-[#0958d9]",
+          ? "group/update relative h-6 w-6 shrink-0 gap-0 overflow-hidden rounded-full px-0 text-xs font-medium leading-none shadow-none transition-[width,background-color] duration-150 hover:w-10"
+          : "h-[22px] shrink-0 gap-1 rounded-full px-2 text-xs font-medium leading-none shadow-none",
         className,
       )}
       disabled={busy}

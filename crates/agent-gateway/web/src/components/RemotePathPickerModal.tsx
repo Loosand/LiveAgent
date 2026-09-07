@@ -539,7 +539,7 @@ export function RemotePathPickerModal(props: RemotePathPickerModalProps) {
         showCloseButton
       >
         <DialogHeader className="flex-row items-center gap-3 px-6">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
+          <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-primary/10 text-primary">
             {mode === "file" ? <File className="h-5 w-5" /> : <FolderOpen className="h-5 w-5" />}
           </div>
           <div className="min-w-0 flex-1">
@@ -553,25 +553,25 @@ export function RemotePathPickerModal(props: RemotePathPickerModalProps) {
             <div className="w-24 shrink-0 text-xs font-medium text-muted-foreground">
               {mode === "file" ? t("settings.pathPickerPathLabel") : t("settings.workdir")}
             </div>
-            <Input value={headerPath} readOnly className="font-mono text-[13px]" />
+            <Input value={headerPath} readOnly className="font-mono text-xs" />
           </div>
         </DialogSubheader>
 
         <DialogBody className="flex flex-col gap-3 px-6">
           <div className="flex items-center gap-2 text-xs text-muted-foreground">
-            <div className="flex items-center gap-1.5">
+            <div className="flex items-center gap-2">
               <Home className="h-3.5 w-3.5" />
               <span>~</span>
             </div>
             <span className="text-muted-foreground/40">·</span>
-            <div className="flex items-center gap-1.5">
+            <div className="flex items-center gap-2">
               <HardDrive className="h-3.5 w-3.5" />
               <span>Root</span>
             </div>
           </div>
 
           {mode === "directory" ? (
-            <div className="rounded-xl border border-border/60 bg-background/70 p-2">
+            <div className="rounded-2xl border border-border bg-background/80 p-2">
               <div className="grid grid-cols-[minmax(0,1fr)_auto] gap-2">
                 <Input
                   value={newFolderName}
@@ -611,7 +611,7 @@ export function RemotePathPickerModal(props: RemotePathPickerModalProps) {
                 </Button>
               </div>
               {createFolderError ? (
-                <div className="mt-2 flex items-start gap-2 rounded-lg border border-destructive/30 bg-destructive/5 px-3 py-2 text-xs text-destructive">
+                <div className="mt-2 flex items-start gap-2 rounded-lg border border-destructive/40 bg-destructive/5 px-3 py-2 text-xs text-destructive">
                   <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
                   <span className="min-w-0 flex-1">{createFolderError}</span>
                 </div>
@@ -619,7 +619,7 @@ export function RemotePathPickerModal(props: RemotePathPickerModalProps) {
             </div>
           ) : null}
 
-          <div className="workdir-picker-tree min-h-0 flex-1 overflow-auto rounded-xl border border-border/60 bg-muted/20 p-2">
+          <div className="workdir-picker-tree min-h-0 flex-1 overflow-auto rounded-2xl border border-border bg-muted/20 p-2">
             <ControlledTreeEnvironment
               items={items}
               getItemTitle={(item) => item.data.label}
@@ -663,12 +663,12 @@ export function RemotePathPickerModal(props: RemotePathPickerModalProps) {
           {statusLine ? (
             <div
               className={cn(
-                "flex items-start gap-2 rounded-lg border px-3 py-2.5 text-xs",
+                "flex items-start gap-2 rounded-lg border px-3 py-2 text-xs",
                 statusLine.kind === "error"
-                  ? "border-destructive/30 bg-destructive/5 text-destructive"
+                  ? "border-destructive/40 bg-destructive/5 text-destructive"
                   : statusLine.kind === "warn"
-                    ? "border-amber-500/30 bg-amber-500/5 text-amber-700 dark:text-amber-300"
-                    : "border-border/60 bg-background/70 text-muted-foreground",
+                    ? "border-warning/40 bg-warning/5 text-warning"
+                    : "border-border bg-background/80 text-muted-foreground",
               )}
             >
               {statusLine.kind === "loading" ? (

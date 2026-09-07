@@ -168,7 +168,7 @@ for (const { label, loader, sources } of implementations) {
       /max-w-full[^"]*overflow-x-auto[^"]*\[scrollbar-width:none\] \[&::-webkit-scrollbar\]:hidden/,
     );
     assert.match(source, /max-sm:max-w-\[8rem\]/);
-    assert.match(source, /hub-panel-enter relative mb-5/);
+    assert.match(source, /hub-panel-enter relative mb-4/);
     assert.equal(source.match(/2xl:grid-cols-5/g)?.length, 5);
     assert.match(source, /pb-\[calc\(10rem\+env\(safe-area-inset-bottom\)\)\] sm:pb-24/);
     assert.equal(
@@ -182,12 +182,12 @@ for (const { label, loader, sources } of implementations) {
     assert.match(source, /from "@liveagent\/ui\/components\/ui\/sheet"/);
     assert.doesNotMatch(source, /createPortal/);
     assert.equal(
-      source.match(/hub-panel-enter pointer-events-auto[^"]*bg-background\/95/g)?.length,
+      source.match(/hub-panel-enter pointer-events-auto[^"]*bg-background(?!\/)/g)?.length,
       3,
     );
     assert.match(
       source,
-      /notify-toast-enter[^"]*border-amber-500\/30[^"]*bg-background/,
+      /notify-toast-enter[^"]*border-warning\/40[^"]*bg-background/,
     );
     assert.doesNotMatch(source, /<select[^>]*backdrop-blur/);
     assert.doesNotMatch(source, /<input[^>]*backdrop-blur/);

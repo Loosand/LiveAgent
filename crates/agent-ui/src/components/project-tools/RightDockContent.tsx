@@ -122,11 +122,11 @@ export function RightDockContent(props: RightDockContentProps) {
         // RightDockPanel renders RightDockChooser instead, which is where the
         // drag-to-workbench affordance for "new terminal" lives.
         <div className="flex flex-1 flex-col items-center justify-center gap-4 px-6 text-center">
-          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-muted/80">
+          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-muted/80">
             <Terminal className="h-6 w-6 text-muted-foreground" />
           </div>
           <div className="flex flex-col gap-1">
-            <div className="text-sm font-medium text-foreground">
+            <div className="text-base font-medium text-foreground">
               {t("projectTools.newTerminal")}
             </div>
             {error ? (

@@ -48,7 +48,7 @@ test("an opened skill detail is shown from cache and refreshed only when stale",
 
 test("background catalog refresh does not move the tabs or disable the card grid", () => {
   assert.match(storeSource, /absolute inset-x-0 -bottom-1 h-px/);
-  assert.match(storeSource, /hub-loading-progress h-full rounded-full bg-foreground\/45/);
+  assert.match(storeSource, /hub-loading-progress h-full rounded-full bg-foreground\/40/);
   assert.doesNotMatch(storeSource, /Loader2 aria-hidden=\{!refreshing\}/);
   assert.doesNotMatch(storeSource, /blur-\[1px\]/);
   assert.doesNotMatch(storeSource, /pointer-events-none saturate/);
@@ -60,10 +60,10 @@ test("store cards keep a static surface on pointer hover", () => {
   assert.doesNotMatch(storeSource, /group-hover:bg-muted\/80/);
 });
 
-test("store cards keep the spacious original information hierarchy", () => {
+test("store cards keep the content hierarchy with the compact design scale", () => {
   assert.match(storeSource, /flex h-full cursor-pointer flex-col rounded-2xl/);
-  assert.match(storeSource, /line-clamp-3 text-\[11\.5px\]/);
-  assert.match(storeSource, /border-t border-border\/60 pt-2 text-\[10\.5px\]/);
-  assert.match(storeSource, /mt-auto h-9 w-full gap-1\.5 rounded-xl/);
+  assert.match(storeSource, /line-clamp-3 text-xs/);
+  assert.match(storeSource, /border-t border-border pt-2 text-2xs/);
+  assert.match(storeSource, /mt-auto h-9 w-full gap-2 rounded-2xl/);
   assert.doesNotMatch(storeSource, /w-fit self-end/);
 });

@@ -33,7 +33,7 @@ export function ResourceTabsList<Value extends string>(props: {
             key={item.value}
             value={item.value}
             className={cn(
-              "group relative shrink-0 gap-1.5 rounded-md px-3 hover:text-foreground data-[active]:bg-background data-[active]:text-foreground data-[active]:shadow-sm",
+              "group relative shrink-0 gap-2 rounded-lg px-3 hover:text-foreground data-[active]:bg-background data-[active]:text-foreground data-[active]:shadow-control",
               props.triggerClassName,
             )}
           >
@@ -42,7 +42,7 @@ export function ResourceTabsList<Value extends string>(props: {
             {item.countLabel !== null && item.countLabel !== undefined ? (
               <Badge
                 variant={active ? "secondary" : "muted"}
-                className="ml-0.5 h-5 px-1.5 text-[10px] tabular-nums"
+                className="ml-0.5 h-5 px-2 text-2xs tabular-nums"
               >
                 {item.countLabel}
               </Badge>

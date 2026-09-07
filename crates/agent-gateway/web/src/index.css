@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "../../../agent-ui/src/styles/tokens.css";
 @import "../../../agent-ui/src/styles/base.css";
 @import "../../../agent-ui/src/styles/transcript.css";
 @import "../../../agent-ui/src/styles/common.css";
@@ -83,9 +84,7 @@
   }
 
   .composer-reasoning-trigger[data-state="open"] {
-    box-shadow:
-      0 8px 18px -14px rgba(88, 28, 135, 0.55),
-      inset 0 0 0 1px rgba(167, 139, 250, 0.12);
+    box-shadow: var(--selection-inset);
   }
 
   .composer-add-dropdown,
@@ -135,6 +134,7 @@
     .composer-safety-dropdown {
       /* biome-ignore lint/complexity/noImportantStyles: Reduced-motion overrides dropdown open/close animations. */
       animation: none !important;
+      /* biome-ignore lint/complexity/noImportantStyles: Reduced-motion also overrides the primitive transition. */
       transition: none !important;
     }
 

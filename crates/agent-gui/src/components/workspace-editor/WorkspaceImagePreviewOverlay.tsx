@@ -130,23 +130,23 @@ export function WorkspaceImagePreviewOverlay(props: WorkspaceImagePreviewOverlay
       className={cn(
         "workspace-image-preview-overlay absolute inset-0 z-50 flex min-h-0 min-w-0 transform-gpu flex-col overflow-hidden border-r border-border bg-background transition-[opacity,transform,box-shadow] duration-200 ease-out motion-reduce:transition-none",
         isVisible
-          ? "pointer-events-auto translate-x-0 opacity-100 shadow-2xl"
-          : "pointer-events-none -translate-x-2 opacity-0 shadow-lg",
+          ? "pointer-events-auto translate-x-0 opacity-100 shadow-overlay"
+          : "pointer-events-none -translate-x-2 opacity-0 shadow-overlay",
       )}
     >
-      <MacOsTitleBarSpacer className="bg-muted/45" />
-      <div className="flex h-11 shrink-0 items-center gap-2 border-b border-border bg-muted/45 px-3">
+      <MacOsTitleBarSpacer className="bg-muted/40" />
+      <div className="flex h-11 shrink-0 items-center gap-2 border-b border-border bg-muted/40 px-3">
         <ImageIcon className="h-4 w-4 shrink-0 text-primary" />
         <div className="min-w-0 flex-1">
-          <div className="truncate text-sm font-semibold leading-tight">
+          <div className="truncate text-base font-semibold leading-tight">
             {t("workspaceImagePreview.title")}
           </div>
-          <div className="truncate text-[11px] text-muted-foreground">{activePath}</div>
+          <div className="truncate text-xs text-muted-foreground">{activePath}</div>
         </div>
         <div className="flex shrink-0 items-center gap-1">
           <button
             type="button"
-            className="inline-flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground disabled:pointer-events-none disabled:opacity-45"
+            className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground disabled:pointer-events-none disabled:opacity-45"
             title={t("workspaceImagePreview.reload")}
             aria-label={t("workspaceImagePreview.reload")}
             disabled={!openRequest || loading}
@@ -156,7 +156,7 @@ export function WorkspaceImagePreviewOverlay(props: WorkspaceImagePreviewOverlay
           </button>
           <button
             type="button"
-            className="inline-flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+            className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
             title={t("workspaceImagePreview.close")}
             aria-label={t("workspaceImagePreview.close")}
             onClick={onRequestClose}
@@ -167,13 +167,13 @@ export function WorkspaceImagePreviewOverlay(props: WorkspaceImagePreviewOverlay
       </div>
 
       {error ? (
-        <div className="flex shrink-0 items-center gap-2 border-b border-amber-500/20 bg-amber-500/10 px-3 py-2 text-xs text-amber-700 dark:text-amber-300">
+        <div className="flex shrink-0 items-center gap-2 border-b border-warning/20 bg-warning/10 px-3 py-2 text-xs text-warning">
           <AlertTriangle className="h-4 w-4 shrink-0" />
           <div className="min-w-0 flex-1 truncate">{error}</div>
         </div>
       ) : null}
 
-      <div className="flex min-h-0 flex-1 items-center justify-center overflow-auto bg-muted/25 p-4 sm:p-6">
+      <div className="flex min-h-0 flex-1 items-center justify-center overflow-auto bg-muted/20 p-4 sm:p-6">
         {loading ? (
           <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
         ) : source ? (
@@ -183,14 +183,14 @@ export function WorkspaceImagePreviewOverlay(props: WorkspaceImagePreviewOverlay
             alt={basename(activePath)}
           />
         ) : (
-          <div className="flex flex-col items-center gap-3 text-center text-sm text-muted-foreground">
+          <div className="flex flex-col items-center gap-3 text-center text-base text-muted-foreground">
             <ImageOff className="h-7 w-7" />
             <span>{t("workspaceImagePreview.empty")}</span>
           </div>
         )}
       </div>
 
-      <div className="flex h-8 shrink-0 items-center justify-between gap-3 border-t border-border bg-muted/35 px-3 text-[11px] text-muted-foreground">
+      <div className="flex h-8 shrink-0 items-center justify-between gap-3 border-t border-border bg-muted/40 px-3 text-xs text-muted-foreground">
         <span className="min-w-0 truncate">{activePath}</span>
         {image ? (
           <span className="shrink-0">

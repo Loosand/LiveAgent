@@ -25,7 +25,7 @@ export const SearchHighlight = memo(function SearchHighlight(props: {
             {prefix}
             <mark
               className={cn(
-                "rounded-xs bg-amber-300/45 text-inherit dark:bg-amber-400/25",
+                "rounded-sm bg-warning/40 text-inherit dark:bg-warning/20",
                 markClassName,
               )}
             >

@@ -36,8 +36,8 @@ export const NumberInput = React.forwardRef<HTMLInputElement, NumberInputProps>(
     <NumberField.Root className={cn("w-full", rootClassName)} {...props}>
       <NumberField.Group
         className={cn(
-          "relative inline-flex h-9 w-full items-stretch overflow-hidden whitespace-nowrap rounded-md border border-input bg-background text-sm shadow-xs outline-none transition-[color,box-shadow]",
-          "focus-within:border-input focus-within:outline-hidden focus-within:ring-0 focus-within:ring-offset-0",
+          "relative inline-flex h-9 w-full items-stretch overflow-hidden whitespace-nowrap rounded-control border border-input bg-background text-xs shadow-control outline-none transition-[color,box-shadow]",
+          "focus-within:outline-hidden focus-within:ring-2 focus-within:ring-ring",
           "data-[invalid]:border-destructive data-[invalid]:ring-3 data-[invalid]:ring-destructive/20 dark:data-[invalid]:ring-destructive/40",
           "data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50",
           className,

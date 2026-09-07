@@ -33,7 +33,7 @@ export function LocalTerminalPaneSurface(props: LocalTerminalPaneSurfaceProps) {
     session && phase === "error" ? (
       <div
         data-terminal-pane-banner="error"
-        className="flex shrink-0 items-center gap-2 border-b border-destructive/20 bg-destructive/10 px-3 py-1.5 text-xs text-destructive"
+        className="flex shrink-0 items-center gap-2 border-b border-destructive/20 bg-destructive/10 px-3 py-2 text-xs text-destructive"
       >
         <span className="min-w-0 flex-1 truncate">
           {errorMessage || t("workbench.terminalError")}
@@ -47,12 +47,12 @@ export function LocalTerminalPaneSurface(props: LocalTerminalPaneSurfaceProps) {
     ) : session && phase === "exited" ? (
       <div
         data-terminal-pane-banner="exited"
-        className="flex shrink-0 items-center gap-2 border-b border-border/60 bg-muted/60 px-3 py-1.5 text-xs text-muted-foreground"
+        className="flex shrink-0 items-center gap-2 border-b border-border bg-muted/60 px-3 py-2 text-xs text-muted-foreground"
       >
         <span className="min-w-0 flex-1 truncate">
           {t("workbench.terminalExited")}
           {session.exitCode != null ? (
-            <span className="ml-1.5 font-mono">({session.exitCode})</span>
+            <span className="ml-2 font-mono">({session.exitCode})</span>
           ) : null}
         </span>
         {onRetry ? (
@@ -83,8 +83,8 @@ export function LocalTerminalPaneSurface(props: LocalTerminalPaneSurfaceProps) {
           />
         </div>
       ) : (
-        <div className="flex h-full flex-col items-center justify-center gap-3 p-6 text-center text-sm text-muted-foreground">
-          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-muted/70">
+        <div className="flex h-full flex-col items-center justify-center gap-3 p-6 text-center text-base text-muted-foreground">
+          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-muted/80">
             {phase === "connecting" ? (
               <Loader2 className="h-5 w-5 animate-spin" />
             ) : (

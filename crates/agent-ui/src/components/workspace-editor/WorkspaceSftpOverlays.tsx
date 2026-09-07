@@ -69,7 +69,7 @@ export function CreateFolderDialog(props: {
           <DialogHeader>
             <DialogTitle>{title}</DialogTitle>
             {path ? (
-              <DialogDescription className="mt-1 truncate font-mono text-[11px]">
+              <DialogDescription className="mt-1 truncate font-mono text-xs">
                 {path}
               </DialogDescription>
             ) : null}
@@ -147,8 +147,8 @@ export function CopyPathDialog(props: {
 export function CopyPathToast(props: { message: string }) {
   return (
     <div className="layer-raised pointer-events-none absolute bottom-14 right-4">
-      <div className="notify-toast-enter flex min-w-56 items-center gap-2 rounded-lg border border-emerald-500/25 bg-background/95 px-3 py-2 text-sm font-medium text-foreground shadow-2xl backdrop-blur-xl">
-        <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-600 dark:text-emerald-300" />
+      <div className="notify-toast-enter flex min-w-56 items-center gap-2 rounded-lg border border-success/20 bg-background px-3 py-2 text-base font-medium text-foreground shadow-overlay backdrop-blur-xl">
+        <CheckCircle2 className="h-4 w-4 shrink-0 text-success" />
         <span>{props.message}</span>
       </div>
     </div>
@@ -203,7 +203,7 @@ export function RenameEntryDialog(props: {
           <DialogHeader>
             <DialogTitle>{title}</DialogTitle>
             {path ? (
-              <DialogDescription className="mt-1 truncate font-mono text-[11px]">
+              <DialogDescription className="mt-1 truncate font-mono text-xs">
                 {path}
               </DialogDescription>
             ) : null}
@@ -257,11 +257,7 @@ export function TransferToast(props: {
   const isCompleted = transfer.status === "completed";
   const isFailed = transfer.status === "failed";
   const StatusIcon = isRunning ? Loader2 : isCompleted ? CheckCircle2 : TransferIcon;
-  const iconClass = isFailed
-    ? "text-destructive"
-    : isCompleted
-      ? "text-emerald-600 dark:text-emerald-300"
-      : "text-sky-600 dark:text-sky-300";
+  const iconClass = isFailed ? "text-destructive" : isCompleted ? "text-success" : "text-info";
 
   return (
     <div className="pointer-events-auto relative ml-auto flex h-full w-[340px] max-w-[50%] shrink-0 items-center gap-2 pl-3 text-foreground before:absolute before:bottom-2 before:left-0 before:top-2 before:w-px before:bg-border/60">
@@ -269,23 +265,23 @@ export function TransferToast(props: {
         <StatusIcon className={cn("h-3.5 w-3.5", iconClass, isRunning && "animate-spin")} />
       </div>
       <div className="min-w-0 flex-1">
-        <div className="flex items-center gap-1.5">
-          <span className="shrink-0 text-[11px] font-medium leading-none text-foreground">
+        <div className="flex items-center gap-2">
+          <span className="shrink-0 text-xs font-medium leading-none text-foreground">
             {statusLabel}
           </span>
-          <span className="min-w-0 flex-1 truncate font-mono text-[11px] leading-none text-muted-foreground/90">
+          <span className="min-w-0 flex-1 truncate font-mono text-xs leading-none text-muted-foreground/90">
             {currentPath}
           </span>
-          <span className="shrink-0 font-mono text-[10px] leading-none text-muted-foreground">
+          <span className="shrink-0 font-mono text-2xs leading-none text-muted-foreground">
             {progress}%
           </span>
         </div>
         {transfer.error ? (
-          <div className="mt-1.5 truncate text-[11px] leading-none text-destructive">
+          <div className="mt-2 truncate text-xs leading-none text-destructive">
             {transfer.error}
           </div>
         ) : (
-          <div className="mt-1.5 flex items-center gap-1.5">
+          <div className="mt-2 flex items-center gap-2">
             <div className="h-1 min-w-16 flex-1 overflow-hidden rounded-full bg-border/60">
               <div
                 className={cn(
@@ -295,10 +291,10 @@ export function TransferToast(props: {
                 style={{ width: `${progress}%` }}
               />
             </div>
-            <span className="shrink-0 text-[10px] leading-none text-muted-foreground">
+            <span className="shrink-0 text-2xs leading-none text-muted-foreground">
               {transfer.filesDone}/{transfer.filesTotal || queueCount || 1} {filesLabel}
             </span>
-            <span className="shrink-0 font-mono text-[10px] leading-none text-muted-foreground">
+            <span className="shrink-0 font-mono text-2xs leading-none text-muted-foreground">
               {formatBytes(transfer.bytesDone)} / {formatBytes(transfer.bytesTotal)}
             </span>
           </div>
@@ -307,7 +303,7 @@ export function TransferToast(props: {
       {onCancel ? (
         <button
           type="button"
-          className="shrink-0 rounded px-1.5 py-0.5 text-[11px] text-destructive hover:bg-destructive/10"
+          className="shrink-0 rounded-sm px-2 py-0.5 text-xs text-destructive hover:bg-destructive/10"
           onClick={onCancel}
         >
           {cancelLabel}
@@ -336,32 +332,32 @@ export function DragPreview(props: {
 
   return (
     <div
-      className="layer-toast pointer-events-none fixed flex w-[260px] max-w-[calc(100vw-32px)] items-center gap-2 rounded-md bg-sky-500/90 px-2.5 py-2 text-xs text-white shadow-xl ring-1 ring-sky-200/50 backdrop-blur-sm"
+      className="layer-toast pointer-events-none fixed flex w-[260px] max-w-[calc(100vw-32px)] items-center gap-2 rounded-lg bg-info/90 px-2 py-2 text-xs text-white shadow-overlay ring-1 ring-info/60 backdrop-blur-sm"
       style={{
         left: x + 18,
         top: y + 14,
         transform: "translateY(-50%)",
       }}
     >
-      <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded bg-white/15 text-white">
-        {entryIcon(previewEntry, "h-4 w-4 text-white")}
+      <span className="flex size-7 shrink-0 items-center justify-center rounded-sm bg-white/20">
+        {entryIcon(previewEntry, "size-4")}
       </span>
       <span className="min-w-0 flex-1">
         <span className="block truncate font-medium leading-4">
           {previewEntry.name}
           {count > 1 ? ` +${count - 1}` : ""}
         </span>
-        <span className="block truncate text-[10px] leading-3 text-white/75">
+        <span className="block truncate text-2xs leading-3 text-white/80">
           {typeLabel(previewEntry)}
           {previewEntry.kind === "directory" ? "" : ` · ${formatBytes(previewEntry.sizeBytes)}`}
         </span>
       </span>
       {count > 1 ? (
-        <span className="shrink-0 rounded bg-white/15 px-1.5 py-0.5 font-mono text-[10px] text-white/90">
+        <span className="shrink-0 rounded-sm bg-white/20 px-2 py-0.5 font-mono text-2xs text-white/90">
           {count}
         </span>
       ) : previewEntry.kind === "directory" ? null : (
-        <span className="shrink-0 rounded bg-white/15 px-1.5 py-0.5 font-mono text-[10px] text-white/90">
+        <span className="shrink-0 rounded-sm bg-white/20 px-2 py-0.5 font-mono text-2xs text-white/90">
           {formatBytes(previewEntry.sizeBytes)}
         </span>
       )}
@@ -383,7 +379,7 @@ export function MenuItem(props: {
       role="menuitem"
       disabled={disabled}
       className={cn(
-        "flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-left transition-colors",
+        "flex w-full items-center gap-2 rounded-lg px-2 py-2 text-left transition-colors",
         destructive
           ? "text-destructive hover:bg-destructive/10"
           : "text-popover-foreground hover:bg-accent hover:text-accent-foreground",

@@ -15,13 +15,13 @@ import {
 import type { TrajectoryRecord, TrajectoryRecordKind } from "../../lib/trajectory/types";
 
 const KIND_BADGE: Record<TrajectoryRecordKind, string> = {
-  system: "bg-slate-500/15 text-slate-600 dark:text-slate-300",
-  user: "bg-blue-500/15 text-blue-600 dark:text-blue-300",
-  context: "bg-emerald-500/15 text-emerald-600 dark:text-emerald-300",
-  compacted: "bg-amber-500/15 text-amber-600 dark:text-amber-300",
-  message: "bg-violet-500/15 text-violet-600 dark:text-violet-300",
-  tool: "bg-orange-500/15 text-orange-600 dark:text-orange-300",
-  subtool: "bg-orange-500/10 text-orange-600/80 dark:text-orange-300/80",
+  system: "bg-muted-foreground/20 text-muted-foreground dark:text-muted-foreground",
+  user: "bg-info/20 text-info",
+  context: "bg-success/20 text-success",
+  compacted: "bg-warning/20 text-warning",
+  message: "bg-activity/20 text-activity",
+  tool: "bg-warning/20 text-warning",
+  subtool: "bg-warning/10 text-warning/80",
 };
 
 export function TrajectoryRow(props: {
@@ -43,18 +43,18 @@ export function TrajectoryRow(props: {
       aria-current={props.selected ? "true" : undefined}
       onClick={() => props.onSelect(record.index)}
       className={cn(
-        "flex h-[30px] w-full min-w-0 items-center gap-2 px-3 text-left text-[12px] transition-colors @max-[520px]:gap-1.5 @max-[520px]:px-2",
-        "border-l-2 border-transparent hover:bg-muted/50",
-        props.selected && "border-primary bg-muted/70",
+        "flex h-[30px] w-full min-w-0 items-center gap-2 px-3 text-left text-xs transition-colors @max-[520px]:gap-2 @max-[520px]:px-2",
+        "border-l-2 border-transparent hover:bg-muted/60",
+        props.selected && "border-ring bg-muted/80",
         props.focused && !props.selected && "bg-muted/40",
         props.dimmed && "opacity-35",
-        record.kind === "subtool" && "pl-8 @max-[520px]:pl-5",
+        record.kind === "subtool" && "pl-8 @max-[520px]:pl-4",
       )}
     >
       <span
         className={cn(
-          "shrink-0 rounded px-1.5 py-px font-medium text-[10px] tracking-wide",
-          record.isError ? "bg-red-500/15 text-red-600 dark:text-red-300" : KIND_BADGE[record.kind],
+          "shrink-0 rounded-sm px-2 py-px font-medium text-2xs tracking-wide",
+          record.isError ? "bg-destructive/20 text-destructive" : KIND_BADGE[record.kind],
         )}
       >
         {t(trajectoryKindLabelKey(record.kind))}
@@ -65,7 +65,7 @@ export function TrajectoryRow(props: {
           <span className="font-medium">{record.toolName}</span>
         )}
         {record.toolName !== undefined && label !== record.toolName && label !== "" && (
-          <span className="ml-1.5 text-muted-foreground">{label}</span>
+          <span className="ml-2 text-muted-foreground">{label}</span>
         )}
         {record.toolName === undefined && label}
       </span>
@@ -80,12 +80,12 @@ export function TrajectoryRow(props: {
       )}
 
       {record.status === "running" && (
-        <span className="shrink-0 text-[10px] text-muted-foreground">
+        <span className="shrink-0 text-2xs text-muted-foreground">
           {t("trajectory.status.running")}
         </span>
       )}
 
-      <span className="w-16 shrink-0 text-right tabular-nums text-muted-foreground @max-[520px]:w-12 @max-[520px]:text-[11px]">
+      <span className="w-16 shrink-0 text-right tabular-nums text-muted-foreground @max-[520px]:w-12 @max-[520px]:text-xs">
         {record.timeSeconds === null ? "" : formatTrajectorySeconds(record.timeSeconds, locale)}
       </span>
     </button>

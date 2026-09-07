@@ -116,38 +116,36 @@ export function AgentsSection(props: SettingsSectionProps) {
 
   return (
     <>
-      <div className="settings-agents-section space-y-5">
+      <div className="settings-agents-section space-y-4">
         <div className="settings-section-heading-row flex items-center justify-between gap-4">
           <div className="settings-section-title-group flex items-center gap-3">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-sky-500/10">
-              <BookOpen className="h-[18px] w-[18px] text-sky-500" />
+            <div className="flex h-9 w-9 items-center justify-center rounded-2xl bg-info/10">
+              <BookOpen className="h-[18px] w-[18px] text-info" />
             </div>
             <div>
-              <h3 className="text-sm font-semibold">{t("settings.agentsTitle")}</h3>
+              <h3 className="text-base font-semibold">{t("settings.agentsTitle")}</h3>
               <p className="text-xs text-muted-foreground">{t("settings.agentsDesc")}</p>
             </div>
           </div>
 
           <div className="settings-section-actions flex items-center gap-2">
             {templates.length > 0 ? (
-              <div className="flex items-center gap-2 rounded-lg bg-muted/50 px-2.5 py-1.5 text-xs text-muted-foreground">
+              <div className="flex items-center gap-2 rounded-lg bg-muted/60 px-2 py-2 text-xs text-muted-foreground">
                 <span className="tabular-nums font-medium text-foreground">{templates.length}</span>
                 {t("settings.agentsCount")}
                 {enabledCount > 0 ? (
                   <>
                     <span className="text-border">|</span>
                     <span className="flex items-center gap-1">
-                      <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-                      <span className="tabular-nums font-medium text-emerald-600 dark:text-emerald-400">
-                        {enabledCount}
-                      </span>
+                      <span className="h-1.5 w-1.5 rounded-full bg-success" />
+                      <span className="tabular-nums font-medium text-success">{enabledCount}</span>
                       {t("settings.agentsActive")}
                     </span>
                   </>
                 ) : null}
               </div>
             ) : null}
-            <Button variant="outline" size="sm" className="gap-1.5" onClick={openAdd}>
+            <Button variant="outline" size="sm" className="gap-2" onClick={openAdd}>
               <Plus className="h-3.5 w-3.5" />
               {t("settings.agentsAdd")}
             </Button>
@@ -157,30 +155,30 @@ export function AgentsSection(props: SettingsSectionProps) {
         <section className="space-y-3">
           <div className="flex items-center justify-between gap-4">
             <div>
-              <h4 className="text-sm font-semibold">{t("settings.agentsGlobalTab")}</h4>
+              <h4 className="text-base font-semibold">{t("settings.agentsGlobalTab")}</h4>
               <p className="mt-0.5 text-xs text-muted-foreground">
                 {t("settings.agentsGlobalConfigHint")}
               </p>
             </div>
-            <span className="shrink-0 rounded-full border border-sky-500/20 bg-sky-500/[0.06] px-2.5 py-1 text-xs text-sky-600 dark:text-sky-300">
+            <span className="shrink-0 rounded-full border border-info/20 bg-info/5 px-2 py-1 text-xs text-info">
               {enabledCount} {t("settings.agentsActive")}
             </span>
           </div>
 
           {templates.length === 0 ? (
-            <div className="flex flex-col items-center gap-4 rounded-2xl border border-dashed border-border/60 bg-muted/20 py-14 text-center">
-              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-sky-500/10">
-                <BookOpen className="h-6 w-6 text-sky-400" />
+            <div className="flex flex-col items-center gap-4 rounded-2xl border border-dashed border-border bg-muted/20 py-12 text-center">
+              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-info/10">
+                <BookOpen className="h-6 w-6 text-info" />
               </div>
-              <div className="space-y-1.5">
-                <p className="text-sm font-medium text-foreground">
+              <div className="space-y-2">
+                <p className="text-base font-medium text-foreground">
                   {t("settings.agentsNoTemplates")}
                 </p>
                 <p className="mx-auto max-w-xs text-xs leading-relaxed text-muted-foreground">
                   {t("settings.agentsNoTemplatesHint")}
                 </p>
               </div>
-              <Button size="sm" className="mt-1 gap-1.5" onClick={openAdd}>
+              <Button size="sm" className="mt-1 gap-2" onClick={openAdd}>
                 <Plus className="h-3.5 w-3.5" />
                 {t("settings.agentsAdd")}
               </Button>
@@ -192,27 +190,27 @@ export function AgentsSection(props: SettingsSectionProps) {
                   <div
                     key={template.id}
                     className={cn(
-                      "group rounded-xl border transition-all",
+                      "group rounded-2xl border transition-all",
                       template.enabled
-                        ? "border-sky-500/30 bg-sky-500/[0.03] shadow-sm shadow-sky-500/5"
-                        : "border-border/60 bg-card hover:border-border",
+                        ? "border-info/40 bg-info/5 shadow-control shadow-info/5"
+                        : "border-border bg-card hover:border-input",
                     )}
                   >
                     <div className="settings-card-row flex items-center gap-3 px-4 py-3">
-                      <div className="relative flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-sky-500/10 text-sky-500">
+                      <div className="relative flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-info/10 text-info">
                         <BookOpen className="h-4 w-4" />
                         {template.enabled ? (
-                          <span className="absolute -right-0.5 -top-0.5 h-2.5 w-2.5 rounded-full border-2 border-card bg-emerald-500" />
+                          <span className="absolute -right-0.5 -top-0.5 h-2.5 w-2.5 rounded-full border-2 border-card bg-success" />
                         ) : null}
                       </div>
 
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center gap-2">
-                          <span className="truncate text-sm font-medium text-foreground">
+                          <span className="truncate text-base font-medium text-foreground">
                             {template.name}
                           </span>
                           {template.enabled ? (
-                            <span className="shrink-0 rounded-full bg-emerald-500/10 px-1.5 py-0.5 text-[10px] font-medium leading-none text-emerald-600 dark:text-emerald-400">
+                            <span className="shrink-0 rounded-full bg-success/10 px-2 py-0.5 text-2xs font-medium leading-none text-success">
                               {t("settings.agentsGlobalDefault")}
                             </span>
                           ) : null}
@@ -227,7 +225,7 @@ export function AgentsSection(props: SettingsSectionProps) {
                         ) : null}
                       </div>
 
-                      <div className="settings-card-actions flex items-center gap-1.5">
+                      <div className="settings-card-actions flex items-center gap-2">
                         <AgentActivationSwitch
                           checked={template.enabled}
                           title={template.enabled ? t("settings.disable") : t("settings.enable")}
@@ -279,26 +277,26 @@ export function AgentsSection(props: SettingsSectionProps) {
           )}
         </section>
 
-        <section className="space-y-3 border-t border-border/60 pt-5">
+        <section className="space-y-3 border-t border-border pt-4">
           <div className="flex items-center justify-between gap-4">
             <div>
-              <h4 className="text-sm font-semibold">{t("settings.agentsProjectsTab")}</h4>
+              <h4 className="text-base font-semibold">{t("settings.agentsProjectsTab")}</h4>
               <p className="mt-0.5 text-xs text-muted-foreground">
                 {t("chat.projectPromptStrategyHint")}
               </p>
             </div>
-            <span className="shrink-0 rounded-full border border-violet-500/20 bg-violet-500/[0.06] px-2.5 py-1 text-xs text-violet-600 dark:text-violet-300">
+            <span className="shrink-0 rounded-full border border-activity/20 bg-activity/5 px-2 py-1 text-xs text-activity">
               {configuredProjectCount}/{projects.length}
             </span>
           </div>
 
           {projects.length === 0 ? (
-            <div className="flex flex-col items-center gap-4 rounded-2xl border border-dashed border-border/60 bg-muted/20 py-14 text-center">
-              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-violet-500/10">
-                <FolderTree className="h-6 w-6 text-violet-400" />
+            <div className="flex flex-col items-center gap-4 rounded-2xl border border-dashed border-border bg-muted/20 py-12 text-center">
+              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-activity/10">
+                <FolderTree className="h-6 w-6 text-activity" />
               </div>
-              <div className="space-y-1.5">
-                <p className="text-sm font-medium">{t("settings.agentsNoProjects")}</p>
+              <div className="space-y-2">
+                <p className="text-base font-medium">{t("settings.agentsNoProjects")}</p>
                 <p className="mx-auto max-w-xs text-xs leading-relaxed text-muted-foreground">
                   {t("settings.agentsNoProjectsHint")}
                 </p>
@@ -314,30 +312,30 @@ export function AgentsSection(props: SettingsSectionProps) {
                   <div
                     key={project.id}
                     className={cn(
-                      "group rounded-xl border transition-all",
+                      "group rounded-2xl border transition-all",
                       configured
-                        ? "border-violet-500/30 bg-violet-500/[0.03] shadow-sm shadow-violet-500/5"
-                        : "border-border/60 bg-card hover:border-border",
+                        ? "border-activity/40 bg-activity/5 shadow-control shadow-activity/5"
+                        : "border-border bg-card hover:border-input",
                     )}
                   >
                     <div className="settings-card-row flex items-center gap-3 px-4 py-3">
-                      <div className="relative flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-violet-500/10 text-violet-600 dark:text-violet-300">
+                      <div className="relative flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-activity/10 text-activity">
                         <FolderTree className="h-4 w-4" />
                         {configured ? (
-                          <span className="absolute -right-0.5 -top-0.5 h-2.5 w-2.5 rounded-full border-2 border-card bg-violet-500" />
+                          <span className="absolute -right-0.5 -top-0.5 h-2.5 w-2.5 rounded-full border-2 border-card bg-activity" />
                         ) : null}
                       </div>
 
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center gap-2">
-                          <span className="truncate text-sm font-medium text-foreground">
+                          <span className="truncate text-base font-medium text-foreground">
                             {project.name}
                           </span>
                           <span
                             className={cn(
-                              "shrink-0 rounded-full px-1.5 py-0.5 text-[10px] font-medium leading-none",
+                              "shrink-0 rounded-full px-2 py-0.5 text-2xs font-medium leading-none",
                               configured
-                                ? "bg-violet-500/10 text-violet-600 dark:text-violet-300"
+                                ? "bg-activity/10 text-activity"
                                 : "bg-muted text-muted-foreground",
                             )}
                           >
@@ -356,9 +354,9 @@ export function AgentsSection(props: SettingsSectionProps) {
                         </p>
                       </div>
 
-                      <div className="settings-card-actions flex items-center gap-1.5">
+                      <div className="settings-card-actions flex items-center gap-2">
                         {configured ? (
-                          <span className="shrink-0 rounded-full border border-border/60 bg-muted/40 px-2 py-1 text-[10px] font-medium text-muted-foreground">
+                          <span className="shrink-0 rounded-full border border-border bg-muted/40 px-2 py-1 text-2xs font-medium text-muted-foreground">
                             {t(
                               entry?.projectPromptStrategy === "replace"
                                 ? "settings.agentsProjectReplace"
@@ -501,22 +499,22 @@ function AgentPromptViewModal({
     (template.enabled ? t("settings.agentsActiveLabel") : t("settings.agentsInactiveLabel"));
   const statusBadgeClass =
     tone === "emerald"
-      ? "border-emerald-500/20 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
+      ? "border-success/20 bg-success/10 text-success"
       : tone === "violet"
-        ? "border-violet-500/20 bg-violet-500/10 text-violet-600 dark:text-violet-300"
-        : "border-border/60 bg-muted/40 text-muted-foreground";
+        ? "border-activity/20 bg-activity/10 text-activity"
+        : "border-border bg-muted/40 text-muted-foreground";
   const statusTextClass =
     tone === "emerald"
-      ? "text-emerald-600 dark:text-emerald-400"
+      ? "text-success"
       : tone === "violet"
-        ? "text-violet-600 dark:text-violet-300"
+        ? "text-activity"
         : "text-muted-foreground";
   const statusDotClass =
     tone === "emerald"
-      ? "bg-emerald-500"
+      ? "bg-success"
       : tone === "violet"
-        ? "bg-violet-500"
-        : "bg-muted-foreground/50";
+        ? "bg-activity"
+        : "bg-muted-foreground/60";
 
   return (
     <Dialog open onOpenChange={(open) => !open && onClose()}>
@@ -525,8 +523,8 @@ function AgentPromptViewModal({
         closeLabel={t("settings.cancel")}
         showCloseButton
       >
-        <DialogHeader className="flex-row items-center gap-3.5">
-          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-border/60 bg-muted/50 text-muted-foreground shadow-xs">
+        <DialogHeader className="flex-row items-center gap-4">
+          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-border bg-muted/60 text-muted-foreground shadow-control">
             <Eye className="h-5 w-5" />
           </div>
           <div className="min-w-0 flex-1">
@@ -537,7 +535,7 @@ function AgentPromptViewModal({
           </div>
           <span
             className={cn(
-              "hidden shrink-0 items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px] font-medium sm:inline-flex",
+              "hidden shrink-0 items-center gap-2 rounded-full border px-2 py-1 text-xs font-medium sm:inline-flex",
               statusBadgeClass,
             )}
           >
@@ -548,12 +546,12 @@ function AgentPromptViewModal({
 
         <DialogBody>
           <div className="grid min-h-0 gap-4 md:grid-cols-[minmax(0,16rem)_minmax(0,1fr)]">
-            <aside className="min-w-0 overflow-hidden rounded-2xl border border-border/60 bg-card p-5 shadow-xs">
-              <div className="flex items-center gap-2.5">
-                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border border-border/60 bg-muted/40 text-muted-foreground">
+            <aside className="min-w-0 overflow-hidden rounded-2xl border border-border bg-card p-4 shadow-control">
+              <div className="flex items-center gap-2">
+                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-2xl border border-border bg-muted/40 text-muted-foreground">
                   <BookOpen className="h-4 w-4" />
                 </div>
-                <h3 className="text-sm font-semibold">
+                <h3 className="text-base font-semibold">
                   {detailsTitle ?? t("settings.agentsTemplateDetails")}
                 </h3>
               </div>
@@ -562,14 +560,14 @@ function AgentPromptViewModal({
                 {template.description || t("settings.agentsNoDescription")}
               </p>
 
-              <div className="mt-6 space-y-3 border-t border-border/60 pt-4 text-xs">
+              <div className="mt-6 space-y-3 border-t border-border pt-4 text-xs">
                 <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3">
                   <span className="min-w-0 leading-5 text-muted-foreground">
                     {statusTitle ?? t("settings.agentsStatus")}
                   </span>
                   <span
                     className={cn(
-                      "inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap pt-0.5 font-medium",
+                      "inline-flex shrink-0 items-center gap-2 whitespace-nowrap pt-0.5 font-medium",
                       statusTextClass,
                     )}
                   >
@@ -586,33 +584,33 @@ function AgentPromptViewModal({
               </div>
             </aside>
 
-            <section className="flex flex-col overflow-hidden rounded-2xl border border-border/60 bg-card shadow-xs md:min-h-[420px]">
+            <section className="flex flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-control md:min-h-[420px]">
               {!hidePromptHeader ? (
-                <div className="flex items-center justify-between gap-3 border-b border-border/60 bg-muted/30 px-4 py-3">
-                  <div className="flex items-center gap-2.5">
-                    <div className="flex h-8 w-8 items-center justify-center rounded-xl border border-border/60 bg-muted/40 text-muted-foreground">
+                <div className="flex items-center justify-between gap-3 border-b border-border bg-muted/40 px-4 py-3">
+                  <div className="flex items-center gap-2">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-2xl border border-border bg-muted/40 text-muted-foreground">
                       <FileText className="h-4 w-4" />
                     </div>
                     <span className="text-xs font-semibold">{t("settings.agentsPrompt")}</span>
                   </div>
-                  <span className="rounded-full border border-border/60 bg-muted/40 px-2.5 py-1 text-xs tabular-nums text-muted-foreground">
+                  <span className="rounded-full border border-border bg-muted/40 px-2 py-1 text-xs tabular-nums text-muted-foreground">
                     {template.prompt.length.toLocaleString()} {t("settings.agentsCharacters")}
                   </span>
                 </div>
               ) : null}
-              <div className="min-h-0 flex-1 overflow-y-auto bg-muted/20 p-5">
+              <div className="min-h-0 flex-1 overflow-y-auto bg-muted/20 p-4">
                 {promptSegments ? (
                   promptSegments.map((segment, index) => (
                     <div key={segment.tone}>
-                      {index > 0 ? <div className="my-5 h-px w-full bg-border/70" /> : null}
+                      {index > 0 ? <div className="my-4 h-px w-full bg-border/80" /> : null}
                       <PromptScopeLabel label={segment.label} tone={segment.tone} />
-                      <pre className="mt-4 whitespace-pre-wrap break-words font-mono text-[13px] leading-6 text-foreground/90">
+                      <pre className="mt-4 whitespace-pre-wrap break-words font-mono text-xs leading-6 text-foreground/90">
                         {segment.prompt}
                       </pre>
                     </div>
                   ))
                 ) : (
-                  <pre className="whitespace-pre-wrap break-words font-mono text-[13px] leading-6 text-foreground/90">
+                  <pre className="whitespace-pre-wrap break-words font-mono text-xs leading-6 text-foreground/90">
                     {template.prompt}
                   </pre>
                 )}
@@ -630,17 +628,14 @@ function PromptScopeLabel(props: { label: string; tone: "global" | "project" }) 
   return (
     <span
       className={cn(
-        "inline-flex shrink-0 items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px] font-medium",
+        "inline-flex shrink-0 items-center gap-2 rounded-full border px-2 py-1 text-xs font-medium",
         tone === "global"
-          ? "border-sky-500/20 bg-sky-500/10 text-sky-600 dark:text-sky-300"
-          : "border-violet-500/20 bg-violet-500/10 text-violet-600 dark:text-violet-300",
+          ? "border-info/20 bg-info/10 text-info"
+          : "border-activity/20 bg-activity/10 text-activity",
       )}
     >
       <span
-        className={cn(
-          "h-1.5 w-1.5 rounded-full",
-          tone === "global" ? "bg-sky-500" : "bg-violet-500",
-        )}
+        className={cn("h-1.5 w-1.5 rounded-full", tone === "global" ? "bg-info" : "bg-activity")}
       />
       {label}
     </span>

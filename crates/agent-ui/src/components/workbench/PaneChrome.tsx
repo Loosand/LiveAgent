@@ -79,7 +79,7 @@ export function PaneChrome(props: PaneChromeProps) {
           className={cn(
             "h-1 rounded-full transition-all duration-150 motion-reduce:transition-none",
             isCompact ? "w-6" : "w-9",
-            isFocused ? "bg-muted-foreground/45" : "bg-muted-foreground/25",
+            isFocused ? "bg-muted-foreground/40" : "bg-muted-foreground/20",
             isCompact
               ? "group-hover/pane-grip:h-[6px] group-hover/pane-grip:w-7 group-hover/pane-grip:bg-muted-foreground/60"
               : "group-hover/pane-grip:h-[6px] group-hover/pane-grip:w-11 group-hover/pane-grip:bg-muted-foreground/60",
@@ -102,8 +102,8 @@ export function PaneChrome(props: PaneChromeProps) {
           className={cn(
             revealClass,
             "absolute left-1.5 top-1/2 flex h-3.5 w-3.5 -translate-y-1/2 items-center justify-center rounded-full",
-            "bg-muted-foreground/25 text-background",
-            "hover:bg-muted-foreground/55 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring",
+            "bg-muted-foreground/20 text-background",
+            "hover:bg-muted-foreground/60 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring",
           )}
         >
           {/* Icon previews the view the click switches to, not the current one. */}
@@ -124,8 +124,8 @@ export function PaneChrome(props: PaneChromeProps) {
           className={cn(
             revealClass,
             "absolute right-1.5 top-1/2 flex h-3.5 w-3.5 -translate-y-1/2 items-center justify-center rounded-full",
-            "bg-muted-foreground/25 text-background",
-            "hover:bg-muted-foreground/55 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring",
+            "bg-muted-foreground/20 text-background",
+            "hover:bg-muted-foreground/60 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring",
           )}
         >
           <X className="h-2 w-2" />

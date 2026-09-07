@@ -36,7 +36,7 @@ function WorkPixelGrid({ active }: { active: boolean }) {
       className="flex w-3 shrink-0 items-center justify-center"
       data-chat-work-grid=""
     >
-      <span className="grid shrink-0 grid-cols-[repeat(3,4px)] gap-[1.5px]">
+      <span className="grid shrink-0 grid-cols-[repeat(3,4px)] gap-0.5">
         {PIXEL_DELAYS.map((delay, index) => (
           <span
             key={PIXEL_KEYS[index]}
@@ -131,7 +131,7 @@ export function AssistantWorkTrace({
   const header = (
     <>
       {running ? <WorkPixelGrid active={!awaitingDecision} /> : null}
-      <span className={cn(running && !awaitingDecision ? "shimmer" : "text-foreground/65")}>
+      <span className={cn(running && !awaitingDecision ? "shimmer" : "text-foreground/60")}>
         {label}
       </span>
       {hasDetails ? (
@@ -156,16 +156,14 @@ export function AssistantWorkTrace({
       {hasDetails ? (
         <button
           type="button"
-          className="group/work-trace flex w-full items-center gap-2 rounded-lg py-1 text-[calc(13px*var(--zone-font-scale,1))] font-[450] transition-colors hover:text-foreground/75 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          className="group/work-trace flex w-full items-center gap-2 rounded-lg py-1 text-xs font-[450] transition-colors hover:text-foreground/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           aria-expanded={expanded}
           onClick={() => setExpanded((current) => !current)}
         >
           {header}
         </button>
       ) : (
-        <div className="flex items-center gap-2 py-1 text-[calc(13px*var(--zone-font-scale,1))] font-[450]">
-          {header}
-        </div>
+        <div className="flex items-center gap-2 py-1 text-xs font-[450]">{header}</div>
       )}
 
       {hasDetails ? (

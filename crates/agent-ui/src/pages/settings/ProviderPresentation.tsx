@@ -17,6 +17,7 @@ import {
 } from "@liveagent/ui/lib/providers/customHeaders";
 import { cn } from "@liveagent/ui/lib/shared/utils";
 import type { ReactNode } from "react";
+import { Switch } from "../../components/ui/switch";
 
 // 脚本编写说明里的示例代码(纯代码,locale 无关);语义须与 Rust 沙箱执行
 // 契约一致:声明式单请求 + extractor 接收响应 JSON。
@@ -66,7 +67,7 @@ export function UsagePlanLine({ plan }: { plan: UsagePlanDisplay }) {
   const title = usagePlanTitleText(t, plan.title);
   if (plan.invalid) {
     return (
-      <span className="flex min-w-0 items-baseline gap-1.5 text-destructive">
+      <span className="flex min-w-0 items-baseline gap-2 text-destructive">
         {title ? <span className="truncate">{title}</span> : null}
         <span className="truncate">
           {plan.invalidMessage ?? t("settings.providerUsageInvalid")}
@@ -75,14 +76,12 @@ export function UsagePlanLine({ plan }: { plan: UsagePlanDisplay }) {
     );
   }
   return (
-    <span className="flex min-w-0 items-baseline gap-1.5">
+    <span className="flex min-w-0 items-baseline gap-2">
       {title ? <span className="truncate">{title}</span> : null}
       <span
         className={cn(
           "whitespace-nowrap font-medium",
-          plan.severity === "low"
-            ? "text-amber-500 dark:text-amber-400"
-            : "text-emerald-600 dark:text-emerald-400",
+          plan.severity === "low" ? "text-warning" : "text-success",
         )}
       >
         {plan.amount ?? "—"}
@@ -141,7 +140,7 @@ export function HintTip(props: { text: string; label?: string }) {
           <button
             type="button"
             aria-label={label ?? text}
-            className="inline-flex h-4 w-4 shrink-0 cursor-help items-center justify-center rounded-full text-muted-foreground/55 transition-colors hover:text-foreground/80 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+            className="inline-flex h-4 w-4 shrink-0 cursor-help items-center justify-center rounded-full text-muted-foreground/60 transition-colors hover:text-foreground/80 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
           />
         }
       >
@@ -150,7 +149,7 @@ export function HintTip(props: { text: string; label?: string }) {
       <TooltipContent
         side="bottom"
         align="start"
-        className="max-w-60 px-2.5 py-2 text-[11px] font-normal leading-relaxed text-popover-foreground/90"
+        className="max-w-60 px-2 py-2 text-xs font-normal leading-relaxed text-popover-foreground/90"
       >
         {text}
       </TooltipContent>
@@ -163,7 +162,7 @@ export function DrawerFieldLabel(props: { label: string; hint?: string }) {
   const { label, hint } = props;
   return (
     <div className="flex items-center gap-1">
-      <span className="text-xs font-medium text-foreground/75">{label}</span>
+      <span className="text-xs font-medium text-foreground/80">{label}</span>
       {hint ? <HintTip text={hint} label={label} /> : null}
     </div>
   );
@@ -178,11 +177,11 @@ export function DrawerGroupLabel(props: { label: string; hint?: string }) {
   const { label, hint } = props;
   return (
     <div className="flex items-center gap-2">
-      <span className="flex shrink-0 items-center gap-1 text-[10.5px] font-semibold uppercase leading-none tracking-[0.08em] text-muted-foreground/65">
+      <span className="flex shrink-0 items-center gap-1 text-2xs font-semibold uppercase leading-none tracking-[0.08em] text-muted-foreground/60">
         {label}
         {hint ? <HintTip text={hint} label={label} /> : null}
       </span>
-      <span aria-hidden="true" className="h-px min-w-4 flex-1 bg-foreground/[0.07]" />
+      <span aria-hidden="true" className="h-px min-w-4 flex-1 bg-foreground/5" />
     </div>
   );
 }
@@ -197,12 +196,12 @@ export function DrawerSectionHeader(props: {
 }) {
   const { icon, title, hint, badge, action } = props;
   return (
-    <div className="flex items-center gap-2.5">
-      <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-foreground/[0.05] bg-foreground/[0.04] text-foreground/70">
+    <div className="flex items-center gap-2">
+      <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-border bg-foreground/5 text-foreground/80">
         {icon}
       </span>
-      <div className="flex min-w-0 flex-1 items-center gap-1.5">
-        <h3 className="truncate text-[13px] font-semibold tracking-tight text-foreground/90">
+      <div className="flex min-w-0 flex-1 items-center gap-2">
+        <h3 className="truncate text-xs font-semibold tracking-tight text-foreground/90">
           {title}
         </h3>
         {hint ? <HintTip text={hint} label={title} /> : null}
@@ -218,33 +217,13 @@ export function DialogSwitch(props: {
   onCheckedChange: (checked: boolean) => void;
   ariaLabel: string;
 }) {
-  const { checked, onCheckedChange, ariaLabel } = props;
   return (
-    <button
-      type="button"
-      role="switch"
-      aria-checked={checked}
-      aria-label={ariaLabel}
-      className="relative inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-      onClick={() => onCheckedChange(!checked)}
-    >
-      <span
-        className={cn(
-          "relative block h-4 w-7 rounded-full bg-muted-foreground/35 transition-colors",
-          checked && "bg-primary",
-        )}
-      >
-        {/* The thumb is placed with left-0.5 and then translated, so the travel
-            is trackWidth - thumbWidth - both insets (28 - 12 - 2 - 2), not the
-            single-inset figure the transform-only Switch primitive uses. */}
-        <span
-          className={cn(
-            "absolute left-0.5 top-0.5 h-3 w-3 rounded-full bg-background shadow-sm transition-transform",
-            checked && "translate-x-3",
-          )}
-        />
-      </span>
-    </button>
+    <Switch
+      size="sm"
+      checked={props.checked}
+      onCheckedChange={props.onCheckedChange}
+      aria-label={props.ariaLabel}
+    />
   );
 }
 

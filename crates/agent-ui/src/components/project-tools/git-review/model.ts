@@ -138,9 +138,9 @@ export type GitFileContextPayload = {
 };
 
 export const CHANGE_CONTEXT_MENU_ITEM_CLASS =
-  "flex w-full items-center gap-2 rounded-lg px-2.5 py-1.5 text-left text-xs transition-colors hover:bg-accent hover:text-accent-foreground disabled:pointer-events-none disabled:opacity-45";
+  "flex w-full items-center gap-2 rounded-lg px-2 py-2 text-left text-xs transition-colors hover:bg-accent hover:text-accent-foreground disabled:pointer-events-none disabled:opacity-45";
 export const CONTEXT_MENU_CONTAINER_CLASS =
-  "editor-context-menu select-none overflow-hidden rounded-xl border border-border/60 bg-popover/80 p-1 text-xs text-popover-foreground shadow-2xl ring-1 ring-black/[0.03] backdrop-blur-xl dark:ring-white/[0.06]";
+  "editor-context-menu select-none overflow-hidden rounded-2xl border border-border bg-popover/80 p-1 text-xs text-popover-foreground shadow-overlay ring-1 ring-black/5 backdrop-blur-xl dark:ring-white/5";
 export const CONTEXT_MENU_SEPARATOR_CLASS = "mx-1 my-1 h-px bg-border/60";
 
 // Clamp a rendered context menu into its bounds using measured rects (no
@@ -425,10 +425,10 @@ export function buildPatchChunks(patch: string, title: string): PatchChunk[] {
 
 export function statusTone(entry: GitStatusEntry) {
   if (entry.conflicted) return "text-destructive";
-  if (entry.untracked) return "text-sky-600 dark:text-sky-300";
-  if (isDeletedStatusEntry(entry)) return "text-rose-600 dark:text-rose-300";
-  if (entry.staged) return "text-emerald-600 dark:text-emerald-300";
-  return "text-amber-600 dark:text-amber-300";
+  if (entry.untracked) return "text-info";
+  if (isDeletedStatusEntry(entry)) return "text-destructive";
+  if (entry.staged) return "text-success";
+  return "text-warning";
 }
 
 export function isDeletedStatusEntry(entry: GitStatusEntry) {
@@ -451,10 +451,10 @@ export function statusLabel(entry: GitStatusEntry) {
 
 export function commitFileStatusTone(file: GitCommitFile) {
   const status = file.status.charAt(0).toUpperCase();
-  if (status === "A") return "text-emerald-600 dark:text-emerald-300";
-  if (status === "D") return "text-rose-600 dark:text-rose-300";
-  if (status === "R" || status === "C") return "text-sky-600 dark:text-sky-300";
-  return "text-amber-600 dark:text-amber-300";
+  if (status === "A") return "text-success";
+  if (status === "D") return "text-destructive";
+  if (status === "R" || status === "C") return "text-info";
+  return "text-warning";
 }
 
 export function commitFileStatusLabel(file: GitCommitFile) {

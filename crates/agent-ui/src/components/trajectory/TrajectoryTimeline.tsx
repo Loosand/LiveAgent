@@ -38,13 +38,13 @@ const LANE_LABEL_KEYS = [
 ] as const;
 
 const SPAN_TONE: Record<TrajectoryRecordKind, string> = {
-  system: "bg-slate-500/80",
-  user: "bg-slate-700 dark:bg-slate-300",
-  context: "bg-emerald-500/80",
-  compacted: "bg-amber-500/80",
-  message: "bg-violet-500/80",
-  tool: "bg-orange-500/85",
-  subtool: "bg-orange-400/70",
+  system: "bg-muted-foreground/80",
+  user: "bg-foreground dark:bg-foreground",
+  context: "bg-success/80",
+  compacted: "bg-warning/80",
+  message: "bg-activity/80",
+  tool: "bg-warning/90",
+  subtool: "bg-warning/80",
 };
 
 /** 已中断的条目叠一层斜纹，和「完成了但很短」一眼区分。 */
@@ -143,7 +143,7 @@ export function TrajectoryTimeline(props: {
   return (
     <section
       aria-label={t("trajectory.timeline.aria")}
-      className="flex shrink-0 gap-2 border-b border-border/60 px-3 pt-1.5 pb-2 @max-[520px]:gap-1 @max-[520px]:px-2"
+      className="flex shrink-0 gap-2 border-b border-border px-3 pt-2 pb-2 @max-[520px]:gap-1 @max-[520px]:px-2"
     >
       <div
         className="flex w-11 shrink-0 flex-col @max-[520px]:w-8"
@@ -152,7 +152,7 @@ export function TrajectoryTimeline(props: {
         {LANE_LABEL_KEYS.map((key, lane) => (
           <div
             key={key}
-            className="flex items-center text-[10px] leading-[14px] text-muted-foreground"
+            className="flex items-center text-2xs leading-[14px] text-muted-foreground"
             style={{ height: model.laneRows[lane] * LANE_ROW_PITCH }}
           >
             <span className="truncate">{t(key)}</span>
@@ -207,11 +207,11 @@ export function TrajectoryTimeline(props: {
                     statusLabel: t(`trajectory.status.${status}`),
                   })}
                   className={cn(
-                    "absolute top-0 flex h-[12px] items-center gap-1 overflow-hidden rounded-xs px-1 text-[9px] leading-none",
+                    "absolute top-0 flex h-[12px] items-center gap-1 overflow-hidden rounded-sm px-1 text-2xs leading-none",
                     status === "running"
-                      ? "bg-primary/15 text-primary"
+                      ? "bg-primary/20 text-primary"
                       : status === "error"
-                        ? "bg-red-500/15 text-red-500"
+                        ? "bg-destructive/20 text-destructive"
                         : "bg-muted text-muted-foreground",
                   )}
                   style={{ left: `${left}%`, width: `${Math.min(width, 100 - left)}%` }}
@@ -254,8 +254,8 @@ export function TrajectoryTimeline(props: {
                 key={span.index}
                 aria-hidden="true"
                 className={cn(
-                  "absolute overflow-hidden rounded-xs transition-opacity",
-                  span.isError ? "bg-red-500/85" : SPAN_TONE[span.kind],
+                  "absolute overflow-hidden rounded-sm transition-opacity",
+                  span.isError ? "bg-destructive/90" : SPAN_TONE[span.kind],
                   span.status === "running" && "animate-pulse",
                   dimmed && "opacity-25",
                   props.selectedIndex === span.index && "ring-1 ring-primary",
@@ -273,7 +273,7 @@ export function TrajectoryTimeline(props: {
                   // TTFT 与解码在同一块里分色：等模型和真正出字是两回事，合成一段
                   // 会让「慢在哪」这个问题失去答案。
                   <span
-                    className="absolute inset-y-0 left-0 bg-black/25"
+                    className="absolute inset-y-0 left-0 bg-black/20"
                     style={{ width: `${ttftShare * 100}%` }}
                   />
                 )}
@@ -318,7 +318,7 @@ export function TrajectoryTimeline(props: {
             <span
               aria-hidden="true"
               title={t("trajectory.timeline.now")}
-              className="absolute top-0 bottom-0 w-px animate-pulse bg-primary/70"
+              className="absolute top-0 bottom-0 w-px animate-pulse bg-primary/80"
               style={{ left: `${pct(nowAt)}%` }}
             />
           )}
@@ -326,7 +326,7 @@ export function TrajectoryTimeline(props: {
           {gestures.draft !== null && (
             <span
               aria-hidden="true"
-              className="absolute top-0 bottom-0 border-x border-primary/60 bg-primary/10"
+              className="absolute top-0 bottom-0 border-x border-ring bg-primary/10"
               style={{
                 left: `${gestures.draft.start * 100}%`,
                 width: `${Math.max(0, gestures.draft.end - gestures.draft.start) * 100}%`,
@@ -339,7 +339,7 @@ export function TrajectoryTimeline(props: {
         {hoveredRecord !== null && gestures.draft === null && hovered !== null && (
           <div
             aria-hidden="true"
-            className="pointer-events-none absolute top-0 z-10 max-w-[320px] -translate-x-1/2 -translate-y-full whitespace-pre-wrap break-all rounded-md border bg-popover px-2 py-1 text-[11px] leading-snug text-popover-foreground shadow-md"
+            className="pointer-events-none absolute top-0 z-10 max-w-[320px] -translate-x-1/2 -translate-y-full whitespace-pre-wrap break-all rounded-lg border bg-popover px-2 py-1 text-xs leading-snug text-popover-foreground shadow-overlay"
             style={{ left: `${hovered.leftPct}%`, top: trackHeight + 4 }}
           >
             {spanTooltip({
@@ -355,12 +355,12 @@ export function TrajectoryTimeline(props: {
         )}
 
         {/* 时间刻度尺 */}
-        <div className="relative w-full border-t border-border/60" style={{ height: RULER_HEIGHT }}>
+        <div className="relative w-full border-t border-border" style={{ height: RULER_HEIGHT }}>
           {ticks.map((tick) => (
             <span
               key={tick.at}
               aria-hidden="true"
-              className="absolute bottom-0 top-0 text-[9px] leading-[13px] text-muted-foreground"
+              className="absolute bottom-0 top-0 text-2xs leading-[13px] text-muted-foreground"
               style={{ left: `${pct(tick.at)}%` }}
             >
               <span className="absolute bottom-0 left-0 h-[3px] w-px bg-border" />
@@ -375,7 +375,7 @@ export function TrajectoryTimeline(props: {
           type="button"
           aria-label={t("trajectory.timeline.minimapHint")}
           title={t("trajectory.timeline.minimapHint")}
-          className="relative block w-full cursor-pointer touch-none select-none rounded-xs bg-muted/40"
+          className="relative block w-full cursor-pointer touch-none select-none rounded-sm bg-muted/40"
           style={{ height: MINIMAP_HEIGHT }}
           onPointerDown={minimap.onPointerDown}
           onPointerMove={minimap.onPointerMove}
@@ -408,7 +408,7 @@ export function TrajectoryTimeline(props: {
                 aria-hidden="true"
                 className={cn(
                   "absolute rounded-full",
-                  span.isError ? "bg-red-500/80" : SPAN_TONE[span.kind],
+                  span.isError ? "bg-destructive/80" : SPAN_TONE[span.kind],
                 )}
                 style={{
                   left: `${left}%`,
@@ -443,7 +443,7 @@ export function TrajectoryTimeline(props: {
             return (
               <span
                 aria-hidden="true"
-                className="absolute inset-y-0 rounded-xs border-x border-primary/80 bg-primary/10"
+                className="absolute inset-y-0 rounded-sm border-x border-ring bg-primary/10"
                 style={{ left: `${left}%`, width: `${width}%` }}
               />
             );

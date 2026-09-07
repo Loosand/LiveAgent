@@ -150,7 +150,7 @@ test("STT connection test saves the current form and identifies the active runti
   assert.match(section, /const displayedStt = settings\.stt/);
   assert.match(section, /checked=\{displayedStt\.enabled\}/);
   assert.match(section, /stt: \{ \.\.\.previous\.stt, enabled, allowIncomplete: true \}/);
-  assert.match(section, /className="w-full min-w-0 space-y-5"/);
+  assert.match(section, /className="w-full min-w-0 space-y-4"/);
   assert.doesNotMatch(webSettingsSync, /receivedSyncedStt/);
   assert.match(webSettingsSync, /const stt = await webSttSettingsService\.get\(\)/);
   assert.match(

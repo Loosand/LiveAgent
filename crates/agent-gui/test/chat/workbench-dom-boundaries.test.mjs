@@ -133,7 +133,7 @@ test("multi-pane conversation panes reveal trajectory and close controls togethe
   );
   // Both dots share the hover-reveal treatment and palette.
   assert.equal(
-    paneChromeSource.match(/bg-muted-foreground\/25 text-background/g)?.length,
+    paneChromeSource.match(/bg-muted-foreground\/20 text-background/g)?.length,
     2,
   );
   // Every conversation pane mounts its own toggle. Focus only selects the pane;

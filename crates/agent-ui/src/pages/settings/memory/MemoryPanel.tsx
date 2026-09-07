@@ -227,22 +227,22 @@ export function MemoryPanel(props: {
         aria-pressed={active}
         onClick={() => openEntry(entry)}
         className={cn(
-          "h-auto w-full flex-col items-stretch justify-start whitespace-normal rounded-lg px-3 py-2.5 text-left font-normal",
+          "h-auto w-full flex-col items-stretch justify-start whitespace-normal rounded-lg px-3 py-2 text-left font-normal",
           nested ? "ml-3 w-[calc(100%-0.75rem)]" : "",
           active
-            ? "border-primary/50 bg-primary/5 shadow-xs"
+            ? "border-ring bg-primary/5 shadow-control"
             : entry.unreviewed
-              ? "border-amber-500/20 bg-amber-500/[0.05] hover:bg-amber-500/[0.08]"
-              : "border-border/50 bg-background/70 hover:bg-muted/35",
+              ? "border-warning/20 bg-warning/5 hover:bg-warning/10"
+              : "border-border bg-background/80 hover:bg-muted/40",
         )}
       >
         <div className="flex items-center justify-between gap-2">
           <div className="min-w-0 truncate text-xs font-semibold">{entryTitle(entry)}</div>
-          <div className="shrink-0 rounded bg-muted px-1.5 py-0.5 text-[10px] text-muted-foreground">
+          <div className="shrink-0 rounded-sm bg-muted px-2 py-0.5 text-2xs text-muted-foreground">
             {memoryTypeLabel(entry.memoryType, t)}
           </div>
         </div>
-        <div className="mt-1 truncate font-mono text-[11px] text-muted-foreground/70">
+        <div className="mt-1 truncate font-mono text-xs text-muted-foreground/80">
           id: {entry.slug}
         </div>
       </Button>
@@ -252,21 +252,21 @@ export function MemoryPanel(props: {
   function renderFlatEntries(items: MemoryMeta[], emptyKey: string) {
     if (items.length === 0) {
       return (
-        <div className="rounded-lg border border-dashed border-border/60 px-4 py-8 text-center text-xs text-muted-foreground">
+        <div className="rounded-lg border border-dashed border-border px-4 py-8 text-center text-xs text-muted-foreground">
           {t(emptyKey)}
         </div>
       );
     }
-    return <div className="space-y-1.5">{items.map((entry) => renderEntryButton(entry))}</div>;
+    return <div className="space-y-2">{items.map((entry) => renderEntryButton(entry))}</div>;
   }
 
   return (
     <>
       <div className="settings-memory-panel flex min-h-0 flex-1 flex-col gap-4">
-        <div className="settings-memory-summary-card shrink-0 rounded-xl border border-border/60 bg-card p-4">
+        <div className="settings-memory-summary-card shrink-0 rounded-2xl border border-border bg-card p-4">
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div className="min-w-0 space-y-1">
-              <div className="flex items-center gap-2 text-sm font-semibold">
+              <div className="flex items-center gap-2 text-base font-semibold">
                 <Brain className="h-4 w-4 text-muted-foreground" />
                 {t("settings.memoryTitle")}
               </div>
@@ -284,17 +284,14 @@ export function MemoryPanel(props: {
                 return (
                   <div
                     key={`${item.scope}:${item.workdirHash}`}
-                    className={cn("rounded-md border px-2.5 py-1.5 text-xs", quotaPillClass(level))}
+                    className={cn("rounded-lg border px-2 py-2 text-xs", quotaPillClass(level))}
                   >
                     {label} {item.used} / {item.limit}
                   </div>
                 );
               })}
               <div
-                className={cn(
-                  "rounded-md border px-2.5 py-1.5 text-xs",
-                  quotaStatusClass(quotaStatus),
-                )}
+                className={cn("rounded-lg border px-2 py-2 text-xs", quotaStatusClass(quotaStatus))}
               >
                 {t(quotaStatusLabelKey(quotaStatus))}
               </div>
@@ -304,9 +301,9 @@ export function MemoryPanel(props: {
                 className={cn(
                   "min-w-[112px] disabled:opacity-100",
                   refreshState === "success"
-                    ? "border-emerald-500/30 bg-emerald-500/[0.08] text-emerald-700 dark:text-emerald-300"
+                    ? "border-success/40 bg-success/10 text-success"
                     : refreshState === "error"
-                      ? "border-destructive/30 bg-destructive/[0.06] text-destructive"
+                      ? "border-destructive/40 bg-destructive/5 text-destructive"
                       : "",
                 )}
                 onClick={() => void handleRefresh()}
@@ -348,19 +345,19 @@ export function MemoryPanel(props: {
           </div>
 
           {unreviewedCount > 0 ? (
-            <div className="mt-3 rounded-lg border border-amber-500/20 bg-amber-500/[0.06] px-3 py-2 text-xs text-amber-700 dark:text-amber-300">
+            <div className="mt-3 rounded-lg border border-warning/20 bg-warning/5 px-3 py-2 text-xs text-warning">
               {unreviewedCount} {t("settings.memoryAwaitingReview")}
             </div>
           ) : null}
           {pathsInfo?.isInCloud ? (
-            <div className="mt-3 flex items-start gap-2 rounded-lg border border-amber-500/20 bg-amber-500/[0.06] px-3 py-2 text-xs text-amber-700 dark:text-amber-300">
+            <div className="mt-3 flex items-start gap-2 rounded-lg border border-warning/20 bg-warning/5 px-3 py-2 text-xs text-warning">
               <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
               {t("settings.memoryCloudWarningPrefix")}{" "}
               {pathsInfo.cloudProvider ?? t("settings.memoryCloudSyncFolder")}
             </div>
           ) : null}
           {quotaStatus === "full" || quotaStatus === "danger" ? (
-            <div className="mt-3 flex items-start gap-2 rounded-lg border border-red-500/20 bg-red-500/[0.06] px-3 py-2 text-xs text-red-700 dark:text-red-300">
+            <div className="mt-3 flex items-start gap-2 rounded-lg border border-destructive/20 bg-destructive/5 px-3 py-2 text-xs text-destructive">
               <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
               {t(
                 quotaStatus === "full"
@@ -369,21 +366,21 @@ export function MemoryPanel(props: {
               )}
             </div>
           ) : quotaStatus === "warning" ? (
-            <div className="mt-3 flex items-start gap-2 rounded-lg border border-amber-500/20 bg-amber-500/[0.06] px-3 py-2 text-xs text-amber-700 dark:text-amber-300">
+            <div className="mt-3 flex items-start gap-2 rounded-lg border border-warning/20 bg-warning/5 px-3 py-2 text-xs text-warning">
               <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
               {t("settings.memoryQuotaWarningMessage")}
             </div>
           ) : null}
           {error ? (
-            <div className="mt-3 whitespace-pre-wrap rounded-lg border border-destructive/20 bg-destructive/[0.05] px-3 py-2 text-xs text-destructive">
+            <div className="mt-3 whitespace-pre-wrap rounded-lg border border-destructive/20 bg-destructive/5 px-3 py-2 text-xs text-destructive">
               {error}
             </div>
           ) : null}
         </div>
 
         <div className="settings-memory-layout grid min-h-0 flex-1 gap-4 lg:grid-cols-[380px_minmax(0,1fr)]">
-          <section className="settings-memory-list-section flex min-h-0 flex-col rounded-xl border border-border/60 bg-card">
-            <div className="shrink-0 space-y-3 border-b border-border/40 p-3">
+          <section className="settings-memory-list-section flex min-h-0 flex-col rounded-2xl border border-border bg-card">
+            <div className="shrink-0 space-y-3 border-b border-border p-3">
               <Tabs
                 value={tab}
                 onValueChange={(value) => {
@@ -394,35 +391,35 @@ export function MemoryPanel(props: {
               >
                 <TabsList
                   aria-label={t("settings.memoryTitle")}
-                  className="grid h-auto w-full grid-cols-3 gap-1 rounded-lg bg-muted/50 p-1"
+                  className="grid h-auto w-full grid-cols-3 gap-1 rounded-lg bg-muted/60 p-1"
                 >
                   <TabsTrigger
                     value="global"
-                    className="min-w-0 gap-1.5 px-2 py-1.5 text-xs text-muted-foreground data-[active]:text-foreground"
+                    className="min-w-0 gap-2 px-2 py-2 text-xs text-muted-foreground data-[active]:text-foreground"
                   >
                     <Globe2 className="h-3.5 w-3.5 shrink-0" />
                     <span className="truncate">{t("settings.memoryCategoryGlobal")}</span>
-                    <span className="shrink-0 text-[10px] text-muted-foreground">
+                    <span className="shrink-0 text-2xs text-muted-foreground">
                       {globalEntryCount}
                     </span>
                   </TabsTrigger>
                   <TabsTrigger
                     value="project"
-                    className="min-w-0 gap-1.5 px-2 py-1.5 text-xs text-muted-foreground data-[active]:text-foreground"
+                    className="min-w-0 gap-2 px-2 py-2 text-xs text-muted-foreground data-[active]:text-foreground"
                   >
                     <Folder className="h-3.5 w-3.5 shrink-0" />
                     <span className="truncate">{t("settings.memoryCategoryProject")}</span>
-                    <span className="shrink-0 text-[10px] text-muted-foreground">
+                    <span className="shrink-0 text-2xs text-muted-foreground">
                       {projectEntryCount}
                     </span>
                   </TabsTrigger>
                   <TabsTrigger
                     value="journal"
-                    className="min-w-0 gap-1.5 px-2 py-1.5 text-xs text-muted-foreground data-[active]:text-foreground"
+                    className="min-w-0 gap-2 px-2 py-2 text-xs text-muted-foreground data-[active]:text-foreground"
                   >
                     <BookOpen className="h-3.5 w-3.5 shrink-0" />
                     <span className="truncate">{t("settings.memoryCategoryJournal")}</span>
-                    <span className="shrink-0 text-[10px] text-muted-foreground">
+                    <span className="shrink-0 text-2xs text-muted-foreground">
                       {dailyEntryCount}
                     </span>
                   </TabsTrigger>
@@ -455,7 +452,7 @@ export function MemoryPanel(props: {
               ) : tab === "journal" ? (
                 renderFlatEntries(dailyEntries, "settings.memoryNoJournalEntries")
               ) : projectGroups.length === 0 ? (
-                <div className="rounded-lg border border-dashed border-border/60 px-4 py-8 text-center text-xs text-muted-foreground">
+                <div className="rounded-lg border border-dashed border-border px-4 py-8 text-center text-xs text-muted-foreground">
                   {t("settings.memoryNoProjectEntries")}
                 </div>
               ) : (
@@ -463,20 +460,20 @@ export function MemoryPanel(props: {
                   {projectGroups.map((group) => (
                     <details
                       key={group.key}
-                      className="group rounded-lg border border-border/50 bg-muted/15"
+                      className="group rounded-lg border border-border bg-muted/20"
                       open
                     >
-                      <summary className="flex cursor-pointer list-none items-center gap-2 px-3 py-2.5 text-left text-xs [&::-webkit-details-marker]:hidden">
+                      <summary className="flex cursor-pointer list-none items-center gap-2 px-3 py-2 text-left text-xs [&::-webkit-details-marker]:hidden">
                         <ChevronDown className="h-3.5 w-3.5 shrink-0 text-muted-foreground transition-transform group-open:rotate-0 -rotate-90" />
                         <Folder className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
                         <span className="min-w-0 flex-1 truncate font-medium" title={group.label}>
                           {group.label}
                         </span>
-                        <span className="shrink-0 rounded bg-background px-1.5 py-0.5 text-[10px] text-muted-foreground">
+                        <span className="shrink-0 rounded-sm bg-background px-2 py-0.5 text-2xs text-muted-foreground">
                           {group.entries.length}
                         </span>
                       </summary>
-                      <div className="space-y-1.5 border-t border-border/40 px-2 py-2">
+                      <div className="space-y-2 border-t border-border px-2 py-2">
                         {group.entries.map((entry) => renderEntryButton(entry, true))}
                       </div>
                     </details>
@@ -486,10 +483,10 @@ export function MemoryPanel(props: {
             </div>
           </section>
 
-          <section className="settings-memory-detail-section flex min-h-0 flex-col rounded-xl border border-border/60 bg-card">
+          <section className="settings-memory-detail-section flex min-h-0 flex-col rounded-2xl border border-border bg-card">
             {showCreate ? (
-              <div className="shrink-0 border-b border-border/40 p-4">
-                <div className="mb-3 text-sm font-semibold">{t("settings.memoryNew")}</div>
+              <div className="shrink-0 border-b border-border p-4">
+                <div className="mb-3 text-base font-semibold">{t("settings.memoryNew")}</div>
                 <div className="grid gap-3 md:grid-cols-2">
                   <Input
                     value={draft.slug}
@@ -568,21 +565,21 @@ export function MemoryPanel(props: {
 
             {selected ? (
               <>
-                <div className="shrink-0 border-b border-border/40 p-4">
+                <div className="shrink-0 border-b border-border p-4">
                   <div className="flex flex-wrap items-start justify-between gap-3">
                     <div className="min-w-0">
                       <div className="flex flex-wrap items-center gap-2">
-                        <div className="truncate text-sm font-semibold">
+                        <div className="truncate text-base font-semibold">
                           {selectedTitle(selected)}
                         </div>
-                        <span className="rounded bg-muted px-1.5 py-0.5 text-[10px] text-muted-foreground">
+                        <span className="rounded-sm bg-muted px-2 py-0.5 text-2xs text-muted-foreground">
                           {memoryScopeLabel(selected.scope, t)}
                         </span>
-                        <span className="rounded bg-muted px-1.5 py-0.5 text-[10px] text-muted-foreground">
+                        <span className="rounded-sm bg-muted px-2 py-0.5 text-2xs text-muted-foreground">
                           {memoryTypeLabel(selected.memoryType, t)}
                         </span>
                         {selected.meta.unreviewed ? (
-                          <span className="rounded bg-amber-500/10 px-1.5 py-0.5 text-[10px] text-amber-700 dark:text-amber-300">
+                          <span className="rounded-sm bg-warning/10 px-2 py-0.5 text-2xs text-warning">
                             {t("settings.memoryUnreviewed")}
                           </span>
                         ) : null}
@@ -590,11 +587,11 @@ export function MemoryPanel(props: {
                       <div className="mt-1 text-xs text-muted-foreground">
                         {t("settings.memoryUpdated")} {formatTime(selected.meta.updatedAt)}
                       </div>
-                      <div className="mt-1 truncate font-mono text-[11px] text-muted-foreground/70">
+                      <div className="mt-1 truncate font-mono text-xs text-muted-foreground/80">
                         id: {selected.slug}
                       </div>
                       {selectedEntry?.scope === "project" ? (
-                        <div className="mt-1 truncate font-mono text-[11px] text-muted-foreground/70">
+                        <div className="mt-1 truncate font-mono text-xs text-muted-foreground/80">
                           {selectedEntry.workdirPath || selectedEntry.workdirHash}
                         </div>
                       ) : null}
@@ -638,7 +635,7 @@ export function MemoryPanel(props: {
                         className="min-h-24 resize-y"
                         placeholder={t("settings.memoryAppendBlockPlaceholder")}
                       />
-                      <div className="rounded-lg border border-border/50 bg-muted/20 p-3">
+                      <div className="rounded-lg border border-border bg-muted/20 p-3">
                         <pre className="whitespace-pre-wrap break-words text-xs leading-relaxed text-foreground">
                           {selected.body || t("settings.memoryEmptyBody")}
                         </pre>
@@ -670,7 +667,7 @@ export function MemoryPanel(props: {
                   )}
                 </div>
 
-                <div className="shrink-0 border-t border-border/40 p-4">
+                <div className="shrink-0 border-t border-border p-4">
                   <div className="flex justify-between gap-3">
                     <div className="flex items-center gap-2">
                       <Button
@@ -689,7 +686,7 @@ export function MemoryPanel(props: {
                 </div>
               </>
             ) : (
-              <div className="flex min-h-0 flex-1 items-center justify-center p-8 text-center text-sm text-muted-foreground">
+              <div className="flex min-h-0 flex-1 items-center justify-center p-8 text-center text-base text-muted-foreground">
                 {t("settings.memorySelectEntry")}
               </div>
             )}
@@ -722,7 +719,7 @@ export function MemoryPanel(props: {
                 <AlertTriangle className="h-4 w-4 text-destructive" />
               </div>
               <div className="min-w-0 flex-1">
-                <AlertDialogTitle className="text-sm">
+                <AlertDialogTitle className="text-base">
                   {t("settings.memoryWipeConfirmTitle")}
                 </AlertDialogTitle>
                 <AlertDialogDescription className="mt-1 text-xs leading-relaxed">

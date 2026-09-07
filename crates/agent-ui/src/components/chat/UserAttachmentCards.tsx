@@ -91,7 +91,7 @@ function UserImageAttachmentCard(props: {
     <div
       title={file.relativePath}
       className={cn(
-        "group relative overflow-hidden rounded-xl border border-white/60 bg-white/75 dark:border-white/[0.12] dark:bg-white/[0.06]",
+        "group relative overflow-hidden rounded-2xl border border-border bg-white/80 dark:bg-white/5",
         compact ? "min-w-0 basis-[calc(33.333%-5.33px)] grow" : "w-full max-w-[280px]",
       )}
     >
@@ -99,7 +99,7 @@ function UserImageAttachmentCard(props: {
         <button
           type="button"
           onClick={() => onRemove(file.relativePath)}
-          className="absolute top-1.5 right-1.5 z-10 flex h-5 w-5 items-center justify-center rounded-full bg-black/30 text-white/90 opacity-0 backdrop-blur-sm transition-all hover:bg-black/45 group-hover:opacity-100"
+          className="absolute top-1.5 right-1.5 z-10 flex h-5 w-5 items-center justify-center rounded-full bg-black/40 text-white/90 opacity-0 backdrop-blur-sm transition-all hover:bg-black/60 group-hover:opacity-100"
           aria-label={removeLabel ?? file.fileName}
           title={removeLabel}
         >
@@ -111,7 +111,7 @@ function UserImageAttachmentCard(props: {
           {imageLoadFailed ? (
             <div
               className={cn(
-                "flex w-full items-center justify-center bg-black/[0.02] dark:bg-white/5",
+                "flex w-full items-center justify-center bg-black/0 dark:bg-white/5",
                 compact ? "h-28" : "h-36",
               )}
             >
@@ -121,7 +121,7 @@ function UserImageAttachmentCard(props: {
             <button
               type="button"
               className={cn(
-                "block w-full overflow-hidden text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/45",
+                "block w-full overflow-hidden text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40",
                 canPreview ? "cursor-zoom-in" : "cursor-default",
               )}
               aria-label={labeledPreview}
@@ -138,7 +138,7 @@ function UserImageAttachmentCard(props: {
                 src={imageSrc}
                 alt={file.fileName}
                 className={cn(
-                  "block w-full bg-black/[0.02] dark:bg-white/5",
+                  "block w-full bg-black/0 dark:bg-white/5",
                   compact ? "h-28 object-cover" : "max-h-56 object-contain",
                 )}
                 onLoad={() => setImageLoadState({ src: imageSrc, status: "loaded" })}
@@ -174,28 +174,28 @@ function UserImageAttachmentCard(props: {
       ) : (
         <div
           className={cn(
-            "flex w-full items-center justify-center bg-black/[0.02] dark:bg-white/5",
+            "flex w-full items-center justify-center bg-black/0 dark:bg-white/5",
             compact ? "h-28" : "h-36",
           )}
         >
           <div
             className={
               isLoading
-                ? "h-16 w-16 animate-pulse rounded-xl bg-black/5 dark:bg-white/10"
-                : "flex h-10 w-10 items-center justify-center rounded-xl bg-black/[0.03] dark:bg-white/10"
+                ? "h-16 w-16 animate-pulse rounded-2xl bg-black/5 dark:bg-white/10"
+                : "flex h-10 w-10 items-center justify-center rounded-2xl bg-black/5 dark:bg-white/10"
             }
           >
             {isLoading ? null : <FallbackIcon className="h-5 w-5" />}
           </div>
         </div>
       )}
-      <div className="flex items-center gap-1.5 px-2.5 py-1.5">
+      <div className="flex items-center gap-2 px-2 py-2">
         <div className="min-w-0 flex-1">
-          <div className="truncate text-[calc(11px*var(--zone-font-scale,1))] font-medium leading-tight text-[hsl(var(--chat-user-fg)/0.85)]">
+          <div className="truncate text-xs font-medium leading-tight text-[hsl(var(--chat-user-fg)/0.85)]">
             {file.fileName}
           </div>
         </div>
-        <span className="shrink-0 text-[calc(10px*var(--zone-font-scale,1))] tabular-nums text-[hsl(var(--chat-user-fg)/0.4)]">
+        <span className="shrink-0 text-2xs tabular-nums text-[hsl(var(--chat-user-fg)/0.4)]">
           {formatUploadedFileSize(file.sizeBytes)}
         </span>
       </div>
@@ -216,18 +216,18 @@ function UserFileAttachmentCard(props: {
     <div
       title={file.relativePath}
       className={cn(
-        "group relative flex items-center gap-2 rounded-xl border border-white/60 bg-white/75 px-2.5 py-2 text-left shadow-[0_1px_3px_rgba(0,0,0,0.06),0_1px_2px_rgba(0,0,0,0.04)] transition-shadow hover:shadow-[0_2px_8px_rgba(0,0,0,0.1)] dark:border-white/[0.12] dark:bg-white/[0.06]",
+        "group relative flex items-center gap-2 rounded-2xl border border-border bg-white/80 px-2 py-2 text-left shadow-control transition-shadow hover:shadow-control dark:bg-white/5",
         compact ? "min-w-0 basis-[calc(33.333%-5.33px)] grow" : "w-full",
       )}
     >
-      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-gradient-to-b from-black/[0.03] to-black/[0.06] dark:from-white/[0.06] dark:to-white/[0.1]">
+      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-gradient-to-b from-black/5 to-black/5 dark:from-white/5 dark:to-white/10">
         <TypeIcon className="h-4.5 w-4.5" />
       </div>
       <div className="min-w-0 flex-1">
-        <div className="truncate text-[calc(11px*var(--zone-font-scale,1))] font-medium leading-tight text-[hsl(var(--chat-user-fg)/0.85)]">
+        <div className="truncate text-xs font-medium leading-tight text-[hsl(var(--chat-user-fg)/0.85)]">
           {file.fileName}
         </div>
-        <div className="mt-0.5 text-[calc(10px*var(--zone-font-scale,1))] tabular-nums leading-tight text-[hsl(var(--chat-user-fg)/0.4)]">
+        <div className="mt-0.5 text-2xs tabular-nums leading-tight text-[hsl(var(--chat-user-fg)/0.4)]">
           {formatUploadedFileSize(file.sizeBytes)}
         </div>
       </div>

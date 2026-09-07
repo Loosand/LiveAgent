@@ -37,7 +37,7 @@ export function McpRegistryToolbar(props: {
             <TabsTrigger
               key={option.value}
               value={option.value}
-              className="shrink-0 rounded-md border border-transparent px-2.5 text-[11.5px] font-medium text-muted-foreground shadow-none hover:bg-muted/60 hover:text-foreground data-[active]:bg-muted data-[active]:text-foreground data-[active]:shadow-none"
+              className="shrink-0 rounded-lg border border-transparent px-2 text-xs font-medium text-muted-foreground shadow-none hover:bg-muted/60 hover:text-foreground data-[active]:bg-muted data-[active]:text-foreground data-[active]:shadow-none"
             >
               {option.label}
             </TabsTrigger>
@@ -49,7 +49,7 @@ export function McpRegistryToolbar(props: {
         size="sm"
         variant="outline"
         type="button"
-        className="h-8 w-8 shrink-0 rounded-lg px-0 sm:w-auto sm:gap-1.5 sm:px-3"
+        className="h-8 w-8 shrink-0 rounded-lg px-0 sm:w-auto sm:gap-2 sm:px-3"
         disabled={props.loading || props.loadingMore}
         onClick={props.onRefresh}
         title={t("mcpHub.storeRefresh")}

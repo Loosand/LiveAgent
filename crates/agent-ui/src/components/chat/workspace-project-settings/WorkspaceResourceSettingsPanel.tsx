@@ -94,8 +94,8 @@ export function WorkspaceResourceSettingsPanel(props: {
   const readonly = mode !== "custom";
   return (
     <section className="flex min-h-full flex-col">
-      <div className="px-6 py-5 max-[720px]:px-4">
-        <h3 className="text-sm font-semibold">{t("chat.workspaceSettingsResources")}</h3>
+      <div className="px-6 py-4 max-[720px]:px-4">
+        <h3 className="text-base font-semibold">{t("chat.workspaceSettingsResources")}</h3>
         <p className="mt-1 text-xs leading-5 text-muted-foreground">
           {t("chat.workspaceSettingsResourcesDescription")}
         </p>
@@ -119,8 +119,8 @@ export function WorkspaceResourceSettingsPanel(props: {
                 aria-checked={isActive}
                 onClick={() => onModeChange(value)}
                 className={cn(
-                  "flex flex-col gap-1 rounded-lg p-2.5 text-left transition-colors focus-visible:outline-hidden",
-                  isActive ? "bg-primary/[0.08]" : "bg-muted/40 hover:bg-muted/70",
+                  "flex flex-col gap-1 rounded-lg p-2 text-left transition-colors focus-visible:outline-hidden",
+                  isActive ? "bg-primary/10" : "bg-muted/40 hover:bg-muted/80",
                 )}
               >
                 <span className="flex items-center gap-2">
@@ -130,7 +130,7 @@ export function WorkspaceResourceSettingsPanel(props: {
                       isActive && "text-primary",
                     )}
                   />
-                  <span className="text-sm font-medium">{t(labelKey)}</span>
+                  <span className="text-base font-medium">{t(labelKey)}</span>
                 </span>
                 <span className="text-xs leading-relaxed text-muted-foreground">{t(hintKey)}</span>
               </button>
@@ -148,7 +148,7 @@ export function WorkspaceResourceSettingsPanel(props: {
               value={query}
               onChange={(event) => onQueryChange(event.currentTarget.value)}
               placeholder={t("chat.workspaceResourcesSearch")}
-              className="h-8 rounded-lg border-border bg-background pl-9 pr-3 text-sm shadow-none placeholder:text-muted-foreground"
+              className="h-8 rounded-lg border-border bg-background pl-8 pr-3 text-xs shadow-none placeholder:text-muted-foreground"
             />
           </div>
           <Tabs
@@ -179,7 +179,7 @@ export function WorkspaceResourceSettingsPanel(props: {
         ) : null}
 
         <div className="mt-3 min-h-0 flex-1 overflow-y-auto pr-1">
-          <div className="space-y-1.5">
+          <div className="space-y-2">
             {tab === "skills"
               ? filteredSkills.map(({ skill, missing }) => {
                   const alwaysEnabled = isAlwaysEnabledSkillName(skill.name);
@@ -200,7 +200,7 @@ export function WorkspaceResourceSettingsPanel(props: {
                       warning={missing}
                       metadata={
                         alwaysEnabled ? (
-                          <Badge variant="muted" className="h-5 px-1.5 text-[10px]">
+                          <Badge variant="muted" className="h-5 px-2 text-2xs">
                             {t("settings.skillsAlwaysOn")}
                           </Badge>
                         ) : null
@@ -236,7 +236,7 @@ export function WorkspaceResourceSettingsPanel(props: {
                       metadata={
                         <Badge
                           variant="muted"
-                          className="h-5 px-1.5 text-[10px] uppercase tracking-wide"
+                          className="h-5 px-2 text-2xs uppercase tracking-wide"
                         >
                           {transportLabel}
                         </Badge>

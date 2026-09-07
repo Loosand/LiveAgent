@@ -43,7 +43,7 @@ export function ProjectPromptSettingsPanel(props: {
           the gap between them. */}
       <div className="flex flex-wrap items-start justify-between gap-x-4 gap-y-2">
         <div className="min-w-0">
-          <h3 className="text-sm font-semibold">{t("chat.projectPromptTitle")}</h3>
+          <h3 className="text-base font-semibold">{t("chat.projectPromptTitle")}</h3>
           {/* 只解释当前选中的组合策略，随切换实时更新。 */}
           <p className="mt-1 text-xs leading-5 text-muted-foreground">
             {t(
@@ -75,11 +75,11 @@ export function ProjectPromptSettingsPanel(props: {
         value={projectPrompt}
         placeholder={t("chat.projectPromptPlaceholder")}
         aria-label={t("chat.projectPromptTitle")}
-        className="mt-3 min-h-52 flex-1 resize-none overflow-y-auto rounded-xl p-4 font-mono text-[13px] leading-6"
+        className="mt-3 min-h-52 flex-1 resize-none overflow-y-auto rounded-2xl p-4 font-mono text-xs leading-6"
         onChange={(event) => onProjectPromptChange(event.currentTarget.value)}
       />
 
-      <div className="mt-2 flex items-baseline justify-between gap-3 px-1 text-[11px] text-muted-foreground">
+      <div className="mt-2 flex items-baseline justify-between gap-3 px-1 text-xs text-muted-foreground">
         <span className="min-w-0 truncate">
           {projectPrompt ? null : t("chat.projectPromptContentHint")}
         </span>
@@ -133,8 +133,8 @@ export function ProjectPromptEditorModal(props: {
         layout="fullscreen-mobile"
         showCloseButton
       >
-        <DialogHeader className="flex-row items-center gap-3.5">
-          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-violet-500/20 bg-violet-500/10 text-violet-600 dark:text-violet-300">
+        <DialogHeader className="flex-row items-center gap-4">
+          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-activity/20 bg-activity/10 text-activity">
             <BookOpen className="h-5 w-5" />
           </div>
           <div className="min-w-0 flex-1">
@@ -151,7 +151,7 @@ export function ProjectPromptEditorModal(props: {
             strategy={strategy}
             onProjectPromptChange={setProjectPrompt}
             onStrategyChange={setStrategy}
-            className="px-6 py-5"
+            className="px-6 py-4"
           />
 
           {error ? <p className="px-6 pb-4 text-xs text-destructive">{error}</p> : null}

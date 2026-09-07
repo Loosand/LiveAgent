@@ -97,7 +97,7 @@ export function McpHubPage(props: McpHubPageProps) {
               <Button
                 variant="outline"
                 size="sm"
-                className="h-8 gap-1.5 px-3"
+                className="h-8 gap-2 px-3"
                 onClick={openAdd}
                 title={t("mcpHub.add")}
               >
@@ -108,7 +108,7 @@ export function McpHubPage(props: McpHubPageProps) {
           }
         />
 
-        <div className="hub-scroll min-h-0 flex-1 overflow-hidden px-5 pb-6 sm:px-6 lg:px-8 xl:px-10">
+        <div className="hub-scroll min-h-0 flex-1 overflow-hidden px-4 pb-6 sm:px-6 lg:px-8 xl:px-8">
           <div className="hub-content-stage mx-auto flex h-full min-h-0 w-full max-w-[1320px] flex-col">
             <Tabs
               value={view}
@@ -117,7 +117,7 @@ export function McpHubPage(props: McpHubPageProps) {
               }}
               className="flex min-h-0 flex-1 flex-col"
             >
-              <div className="hub-panel-enter relative mb-5">
+              <div className="hub-panel-enter relative mb-4">
                 <Search className="pointer-events-none absolute left-4 top-1/2 z-10 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                 <Input
                   type="search"
@@ -128,7 +128,7 @@ export function McpHubPage(props: McpHubPageProps) {
                   }}
                   placeholder={searchPlaceholder}
                   aria-label={searchPlaceholder}
-                  className="h-11 rounded-full border-border bg-background pl-11 pr-4 text-sm shadow-none placeholder:text-muted-foreground"
+                  className="h-11 rounded-full border-border bg-background pl-12 pr-4 text-xs shadow-none placeholder:text-muted-foreground"
                 />
               </div>
 

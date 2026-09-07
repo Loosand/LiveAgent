@@ -87,7 +87,7 @@ function FileOperationTarget({
     <button
       type="button"
       data-chat-file-link=""
-      className="min-w-0 flex-1 cursor-pointer truncate text-left underline decoration-foreground/20 underline-offset-[3px] transition-colors hover:text-foreground hover:decoration-foreground/45"
+      className="min-w-0 flex-1 cursor-pointer truncate text-left underline decoration-foreground/20 underline-offset-[3px] transition-colors hover:text-foreground hover:decoration-foreground/40"
       title={operation.path}
       aria-label={`${actionLabel} ${operation.path}`}
       onClick={() => onOpenFileLink(fileLink)}
@@ -266,7 +266,7 @@ function ToolCallItem({
                 : t("chat.tool.waiting");
 
   const statusTextClass =
-    result?.isError || shellSessionFailed ? "text-[hsl(var(--chat-error))]" : "text-foreground/45";
+    result?.isError || shellSessionFailed ? "text-[hsl(var(--chat-error))]" : "text-foreground/40";
 
   useEffect(() => {
     if (readOnly || isRedactedToolContent) return;
@@ -294,21 +294,19 @@ function ToolCallItem({
       ? firstLinePreview
       : toolArgsSummary || title.action;
   const summaryClassName = cn(
-    "flex select-none items-center gap-1.5 text-left",
+    "flex select-none items-center gap-2 text-left",
     compactChip
-      ? "group/tool -mx-1.5 min-h-7 w-[calc(100%+0.75rem)] rounded-lg px-1.5 py-1 transition-colors duration-150 hover:bg-foreground/[0.04]"
+      ? "group/tool -mx-2 min-h-7 w-[calc(100%+0.75rem)] rounded-lg px-2 py-1 transition-colors duration-150 hover:bg-foreground/5"
       : "min-h-7 w-full py-1",
     canExpand ? "cursor-pointer" : "cursor-default",
   );
   const summaryContent = simpleFileOperation ? (
     <>
-      <ToolIcon className="h-3 w-3 shrink-0 text-foreground/45" />
+      <ToolIcon className="h-3 w-3 shrink-0 text-foreground/40" />
       <span
         className={cn(
-          "shrink-0 font-[450] text-foreground/62",
-          compactChip
-            ? "text-[calc(13px*var(--zone-font-scale,1))]"
-            : "text-[calc(13px*var(--zone-font-scale,1))]",
+          "shrink-0 font-[450] text-foreground/60",
+          compactChip ? "text-xs" : "text-xs",
           displayIsRunning && "animate-pulse",
         )}
       >
@@ -316,10 +314,8 @@ function ToolCallItem({
       </span>
       <span
         className={cn(
-          "inline-flex min-w-0 flex-1 items-center gap-2 font-mono text-foreground/52",
-          compactChip
-            ? "h-[22px] text-[calc(11.5px*var(--zone-font-scale,1))]"
-            : "text-[calc(11.5px*var(--zone-font-scale,1))]",
+          "inline-flex min-w-0 flex-1 items-center gap-2 font-mono text-foreground/60",
+          compactChip ? "h-[22px] text-xs" : "text-xs",
         )}
       >
         <FileOperationTarget
@@ -340,7 +336,7 @@ function ToolCallItem({
     <>
       {/* 宽度锁在图标列的 12px 上（高度仍留 14px 呼吸感），否则悬停切换用的
           居中盒会把图标整体右推 1px，和同组里的简单文件操作行错开。 */}
-      <span className="relative flex h-3.5 w-3 shrink-0 items-center justify-center text-foreground/45">
+      <span className="relative flex h-3.5 w-3 shrink-0 items-center justify-center text-foreground/40">
         <ToolIcon className="h-3 w-3 transition-opacity duration-150 group-hover/tool:opacity-0 group-focus-within/tool:opacity-0" />
         {canExpand ? (
           <ChevronRight
@@ -352,12 +348,10 @@ function ToolCallItem({
         ) : null}
       </span>
 
-      <span className="shrink-0 text-[calc(13px*var(--zone-font-scale,1))] font-[450] text-foreground/62">
-        {summaryTitleName}
-      </span>
+      <span className="shrink-0 text-xs font-[450] text-foreground/60">{summaryTitleName}</span>
 
       {compactChipText || fileChangeStats ? (
-        <span className="inline-flex h-[22px] min-w-0 flex-1 items-center gap-2 font-mono text-[calc(11.5px*var(--zone-font-scale,1))] text-foreground/48">
+        <span className="inline-flex h-[22px] min-w-0 flex-1 items-center gap-2 font-mono text-xs text-foreground/40">
           {compactChipText ? (
             <span
               className="min-w-0 flex-1 truncate"
@@ -379,31 +373,27 @@ function ToolCallItem({
       )}
 
       {displayIsRunning || result?.isError || shellSessionFailed ? (
-        <span
-          className={cn("shrink-0 text-[calc(10.5px*var(--zone-font-scale,1))]", statusTextClass)}
-        >
-          {statusLabel}
-        </span>
+        <span className={cn("shrink-0 text-2xs", statusTextClass)}>{statusLabel}</span>
       ) : null}
     </>
   ) : (
     <>
-      <ToolIcon className="h-3 w-3 shrink-0 text-foreground/45 group-hover/tool:text-foreground/65" />
+      <ToolIcon className="h-3 w-3 shrink-0 text-foreground/40 group-hover/tool:text-foreground/60" />
 
       {/* Tool name + inline summary on same line. Name and summary must stay in
           one inline context (shared baseline): centering them as separate flex
           boxes drifts up to ~1.5px per device with the resolved font metrics. */}
-      <div className="flex min-w-0 flex-1 items-center gap-1.5">
+      <div className="flex min-w-0 flex-1 items-center gap-2">
         {/* Container carries the summary styling so the truncation ellipsis
             (styled per the block container) matches the summary text */}
         <div
-          className="min-w-0 truncate font-mono text-[calc(11.5px*var(--zone-font-scale,1))] leading-5 text-foreground/48"
+          className="min-w-0 truncate font-mono text-xs leading-5 text-foreground/40"
           title={inlineCommandTitle || toolArgsSummary || undefined}
         >
-          <span className="font-sans text-[calc(13px*var(--zone-font-scale,1))] font-[450] text-foreground/62 group-hover/tool:text-foreground/75">
+          <span className="font-sans text-xs font-[450] text-foreground/60 group-hover/tool:text-foreground/80">
             {summaryTitleName}
             {title.action ? (
-              <span className="font-mono text-[calc(11.5px*var(--zone-font-scale,1))] font-normal text-foreground/48">
+              <span className="font-mono text-xs font-normal text-foreground/40">
                 {" · "}
                 {title.action}
               </span>
@@ -411,9 +401,9 @@ function ToolCallItem({
           </span>
 
           {firstLinePreview ? (
-            <span className="ml-1.5">{firstLinePreview}</span>
+            <span className="ml-2">{firstLinePreview}</span>
           ) : toolArgsSummary ? (
-            <span className="ml-1.5">{toolArgsSummary}</span>
+            <span className="ml-2">{toolArgsSummary}</span>
           ) : null}
         </div>
 
@@ -425,15 +415,13 @@ function ToolCallItem({
       <div className="flex shrink-0 items-center gap-2">
         {displayIsRunning ? (
           <AssistantStatus
-            className="min-h-0 gap-1.5 text-[calc(11px*var(--zone-font-scale,1))] text-foreground/45"
+            className="min-h-0 gap-2 text-xs text-foreground/40"
             iconClassName="h-3 w-3"
           >
             {statusLabel}
           </AssistantStatus>
         ) : (
-          <span className={cn("text-[calc(11px*var(--zone-font-scale,1))]", statusTextClass)}>
-            {statusLabel}
-          </span>
+          <span className={cn("text-xs", statusTextClass)}>{statusLabel}</span>
         )}
         {canExpand ? (
           <ChevronRight
@@ -451,7 +439,7 @@ function ToolCallItem({
     !isShellSessionTool &&
     (!isAskUser || !askDetails) &&
     (!isPlanCard || !planDetails) ? (
-      <div className="space-y-1.5">
+      <div className="space-y-2">
         <ToolResultDisplay item={item} result={result} readOnly={readOnly} />
 
         {(() => {
@@ -461,7 +449,7 @@ function ToolCallItem({
 
           if (readOnly) {
             return (
-              <ToolScrollablePre className="max-h-56 bg-black/[0.02] dark:bg-white/[0.03]">
+              <ToolScrollablePre className="max-h-56 bg-black/0 dark:bg-white/5">
                 {previewText(resultText, 6000)}
               </ToolScrollablePre>
             );
@@ -471,7 +459,7 @@ function ToolCallItem({
           // collapsed "view return" toggle.
           if (result.isError) {
             return (
-              <ToolScrollablePre className="max-h-56 bg-red-500/[0.05] text-red-700/90 dark:bg-red-500/[0.08] dark:text-red-300/90">
+              <ToolScrollablePre className="max-h-56 bg-destructive/5 text-destructive/90 dark:bg-destructive/10">
                 {previewText(resultText, 6000)}
               </ToolScrollablePre>
             );
@@ -479,11 +467,11 @@ function ToolCallItem({
 
           return (
             <details className="group/result">
-              <summary className="flex cursor-pointer select-none items-center gap-1 text-[calc(10.5px*var(--zone-font-scale,1))] text-muted-foreground/50 transition-colors duration-150 hover:text-foreground/60">
+              <summary className="flex cursor-pointer select-none items-center gap-1 text-2xs text-muted-foreground/60 transition-colors duration-150 hover:text-foreground/60">
                 <ChevronRight className="h-2.5 w-2.5 transition-transform duration-200 group-open/result:rotate-90" />
                 {t("chat.tool.viewReturn")}
               </summary>
-              <ToolScrollablePre className="mt-1.5 max-h-56 bg-black/[0.02] dark:bg-white/[0.03]">
+              <ToolScrollablePre className="mt-2 max-h-56 bg-black/0 dark:bg-white/5">
                 {previewText(resultText, 6000)}
               </ToolScrollablePre>
             </details>
@@ -501,8 +489,8 @@ function ToolCallItem({
           className={cn(
             "pb-2 pt-1",
             compactChip
-              ? "mb-1 space-y-1.5 border-l border-border/55 pl-3"
-              : "space-y-3 border-l border-border/55 pl-3",
+              ? "mb-1 space-y-2 border-l border-border pl-3"
+              : "space-y-3 border-l border-border pl-3",
           )}
         >
           {isShellSessionTool ? <ShellToolDisplay item={item} result={result} /> : null}
@@ -529,7 +517,7 @@ function ToolCallItem({
 
           {/* 提问卡/计划卡自带应答态展示；仅参数校验失败（无 details）时回落默认错误区。 */}
           {resultContent && compactChip ? (
-            <div className="min-w-0 py-1 text-foreground/78 [&_.tool-text-scroll]:max-h-44 [&_.tool-text-scroll]:bg-foreground/[0.025]">
+            <div className="min-w-0 py-1 text-foreground/80 [&_.tool-text-scroll]:max-h-44 [&_.tool-text-scroll]:bg-foreground/5">
               {resultContent}
             </div>
           ) : resultContent ? (
@@ -537,7 +525,7 @@ function ToolCallItem({
               label={t("chat.tool.return")}
               trailing={
                 result?.isError ? (
-                  <span className="text-[calc(11px*var(--zone-font-scale,1))] font-medium text-red-500">
+                  <span className="text-xs font-medium text-destructive">
                     {t("chat.tool.error")}
                   </span>
                 ) : null
@@ -557,7 +545,7 @@ function ToolCallItem({
   if (isPlanCard && planSettled && planMarkdown) {
     return (
       <div className={containerClassName}>
-        <div className="py-1.5">
+        <div className="py-2">
           <PlanModeCard
             plan={planMarkdown}
             approved={planState.approved || planDetails?.decision === "approve"}

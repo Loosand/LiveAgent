@@ -20,8 +20,8 @@ export function RenderedTab(props: DetailTabProps) {
   return (
     <div className="space-y-4">
       {hasThinking && (
-        <section className="space-y-1 rounded border border-border/50 bg-muted/20 p-2">
-          <p className="text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
+        <section className="space-y-1 rounded-sm border border-border bg-muted/20 p-2">
+          <p className="text-2xs font-medium uppercase tracking-wide text-muted-foreground">
             thinking
           </p>
           <MarkdownBlock

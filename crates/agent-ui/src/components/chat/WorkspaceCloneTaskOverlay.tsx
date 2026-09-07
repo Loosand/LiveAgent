@@ -37,11 +37,10 @@ type WorkspaceCloneTaskOverlayProps = {
 };
 
 function TaskIcon({ task }: { task: WorkspaceCloneTask }) {
-  if (task.status === "completed")
-    return <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-emerald-300" />;
+  if (task.status === "completed") return <CheckCircle2 className="h-4 w-4 text-success" />;
   if (task.status === "failed") return <XCircle className="h-4 w-4 text-destructive" />;
   if (task.status === "cancelled") return <Ban className="h-4 w-4 text-muted-foreground" />;
-  return <Loader2 className="h-4 w-4 animate-spin text-sky-600 dark:text-sky-300" />;
+  return <Loader2 className="h-4 w-4 animate-spin text-info" />;
 }
 
 function CloneTaskCard({
@@ -57,20 +56,20 @@ function CloneTaskCard({
 
   return (
     <section
-      className="pointer-events-auto w-80 overflow-hidden rounded-xl border border-border/70 bg-background/95 shadow-2xl backdrop-blur-xl"
+      className="pointer-events-auto w-80 overflow-hidden rounded-2xl border border-border bg-background shadow-overlay backdrop-blur-xl"
       aria-live="polite"
     >
-      <div className="flex items-start gap-2.5 px-3.5 pb-2 pt-3">
-        <div className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-muted/70">
+      <div className="flex items-start gap-2 px-4 pb-2 pt-3">
+        <div className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-muted/80">
           <TaskIcon task={task} />
         </div>
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2">
             <GitBranch className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
-            <span className="min-w-0 flex-1 truncate text-sm font-medium">
+            <span className="min-w-0 flex-1 truncate text-base font-medium">
               {task.repositoryName}
             </span>
-            <span className="shrink-0 text-[11px] tabular-nums text-muted-foreground">
+            <span className="shrink-0 text-xs tabular-nums text-muted-foreground">
               {progress === null || !active ? "" : `${progress}%`}
             </span>
           </div>
@@ -97,21 +96,19 @@ function CloneTaskCard({
         ) : null}
       </div>
       {active ? (
-        <div className="px-3.5 pb-3">
+        <div className="px-4 pb-3">
           <div className="h-1.5 overflow-hidden rounded-full bg-muted">
             {progress === null ? (
-              <div className="h-full w-2/5 animate-[hubLoadingProgress_1.45s_cubic-bezier(0.4,0,0.2,1)_infinite] rounded-full bg-sky-500" />
+              <div className="h-full w-2/5 animate-[hubLoadingProgress_1.45s_cubic-bezier(0.4,0,0.2,1)_infinite] rounded-full bg-info" />
             ) : (
               <div
-                className="h-full rounded-full bg-sky-500 transition-[width] duration-200"
+                className="h-full rounded-full bg-info transition-[width] duration-200"
                 style={{ width: `${progress}%` }}
               />
             )}
           </div>
           <div className="mt-2 flex items-center justify-between gap-2">
-            <span className="min-w-0 truncate text-[11px] text-muted-foreground">
-              {task.detail}
-            </span>
+            <span className="min-w-0 truncate text-xs text-muted-foreground">{task.detail}</span>
             {task.status === "running" ? (
               <Button
                 type="button"
@@ -127,11 +124,11 @@ function CloneTaskCard({
           </div>
         </div>
       ) : task.status === "completed" ? (
-        <div className="flex justify-end border-t border-border/60 bg-muted/20 px-3.5 py-2.5">
+        <div className="flex justify-end border-t border-border bg-muted/20 px-4 py-2">
           <Button
             type="button"
             size="sm"
-            className="h-7 px-2.5 text-xs"
+            className="h-7 px-2 text-xs"
             onClick={() => onOpenWorkspace(task.targetPath)}
           >
             <FolderOpen className="h-3.5 w-3.5" />

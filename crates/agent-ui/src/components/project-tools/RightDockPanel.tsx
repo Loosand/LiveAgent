@@ -852,7 +852,7 @@ export const RightDockPanel = memo(function RightDockPanel(props: RightDockPanel
         data-state={isOpen ? "open" : "closed"}
         data-project-tools-resizing={isResizing ? "true" : undefined}
         className={cn(
-          "project-tools-panel zone-font-scale fixed inset-x-0 bottom-0 z-40 flex h-[min(72vh,34rem)] min-h-0 w-full shrink-0 flex-col overflow-hidden bg-background shadow-2xl transition-[width,opacity,transform] duration-200 ease-out motion-reduce:transition-none md:relative md:inset-auto md:z-10 md:h-full md:overflow-visible md:shadow-none",
+          "project-tools-panel zone-font-scale fixed inset-x-0 bottom-0 z-40 flex h-[min(72vh,34rem)] min-h-0 w-full shrink-0 flex-col overflow-hidden bg-background shadow-overlay transition-[width,opacity,transform] duration-200 ease-out motion-reduce:transition-none md:relative md:inset-auto md:z-10 md:h-full md:overflow-visible md:shadow-none",
           isOpen
             ? "pointer-events-auto translate-y-0 border-t border-border opacity-100 md:w-[var(--project-tools-panel-width)] md:translate-x-0 md:border-l md:border-t-0"
             : "pointer-events-none translate-y-full border-t border-transparent opacity-0 md:translate-x-3 md:translate-y-0 md:border-l-0 md:border-t-0",
@@ -885,7 +885,7 @@ export const RightDockPanel = memo(function RightDockPanel(props: RightDockPanel
                 <span
                   aria-hidden="true"
                   className={cn(
-                    "h-10 w-0.5 rounded-full bg-muted-foreground/25 opacity-70 shadow-sm transition-[height,background-color,opacity]",
+                    "h-10 w-0.5 rounded-full bg-muted-foreground/20 opacity-70 shadow-control transition-[height,background-color,opacity]",
                     "group-hover:h-16 group-hover:bg-primary/60 group-hover:opacity-100 group-focus-visible:h-16 group-focus-visible:bg-primary group-focus-visible:opacity-100",
                     isResizing && "h-20 bg-primary opacity-100",
                   )}
@@ -968,7 +968,7 @@ export const RightDockPanel = memo(function RightDockPanel(props: RightDockPanel
                     type="button"
                     variant="outline"
                     size="sm"
-                    className="h-7 shrink-0 px-2.5 text-xs"
+                    className="h-7 shrink-0 px-2 text-xs"
                     onClick={clearPendingCloseSession}
                   >
                     {t("settings.cancel")}
@@ -977,7 +977,7 @@ export const RightDockPanel = memo(function RightDockPanel(props: RightDockPanel
                     type="button"
                     variant="destructive"
                     size="sm"
-                    className="h-7 shrink-0 px-2.5 text-xs"
+                    className="h-7 shrink-0 px-2 text-xs"
                     disabled={closingSessionIds.has(pendingCloseSession.id)}
                     onClick={() => closeSession(pendingCloseSession)}
                   >
@@ -987,7 +987,7 @@ export const RightDockPanel = memo(function RightDockPanel(props: RightDockPanel
               ) : null}
 
               {showDisabledMessage ? (
-                <div className="flex flex-1 items-center justify-center px-6 text-center text-sm text-muted-foreground">
+                <div className="flex flex-1 items-center justify-center px-6 text-center text-base text-muted-foreground">
                   {disabledMessage}
                 </div>
               ) : showRightDockChooser ? (

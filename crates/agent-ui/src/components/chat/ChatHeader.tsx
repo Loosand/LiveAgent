@@ -56,12 +56,12 @@ export const ChatHeader = memo(function ChatHeader(props: ChatHeaderProps) {
     <header
       data-tauri-drag-region
       className={cn(
-        "flex items-center justify-between gap-2 py-2.5 pr-4",
+        "flex items-center justify-between gap-2 py-2 pr-4",
         !sidebarOpen && desktopTitleBarInset ? "pl-[232px]" : "pl-4",
         className,
       )}
     >
-      <div className="flex min-w-0 items-center gap-1.5">
+      <div className="flex min-w-0 items-center gap-2">
         {!sidebarOpen && !desktopTitleBarInset ? (
           <Button
             variant="ghost"

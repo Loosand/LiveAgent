@@ -142,10 +142,7 @@ function useAnswerCountdown(active: boolean, deadlineAt?: number) {
 
 function RecommendedTag({ label }: { label: string }) {
   return (
-    <Badge
-      variant="success"
-      className="border-transparent px-1.5 text-[calc(11px*var(--zone-font-scale,1))]"
-    >
+    <Badge variant="success" className="border-transparent px-2 text-xs">
       {label}
     </Badge>
   );
@@ -285,7 +282,7 @@ export function AskUserQuestionCard({
 
   return (
     <div className="tool-expand w-full max-w-[min(100%,36rem)]">
-      <div className="overflow-hidden rounded-xl border border-border/60 bg-muted/20">
+      <div className="overflow-hidden rounded-2xl border border-border bg-muted/20">
         <div className="px-4 pb-3 pt-4">
           {/* 只渲染当前题、高度自然撑开。此前用「固定高度视口 + transform
               轨道 + offsetTop 测量」实现纵向滑动，但 offsetTop 依赖
@@ -309,7 +306,7 @@ export function AskUserQuestionCard({
                     switchDirection === "backward" ? "ask-question-enter-backward" : "",
                   )}
                 >
-                  <div className="text-[calc(13px*var(--zone-font-scale,1))] font-medium leading-[1.5] text-foreground">
+                  <div className="text-xs font-medium leading-[1.5] text-foreground">
                     {question.prompt}
                   </div>
 
@@ -317,7 +314,7 @@ export function AskUserQuestionCard({
                     // biome-ignore lint/a11y/noNoninteractiveElementToInteractiveRole: ARIA permits fieldset as the radiogroup context for rich radio rows.
                     role="radiogroup"
                     aria-label={question.prompt}
-                    className="mt-2.5 flex min-w-0 flex-col gap-1 border-0 p-0"
+                    className="mt-2 flex min-w-0 flex-col gap-1 border-0 p-0"
                   >
                     {question.options.map((option) => {
                       const selected =
@@ -336,9 +333,9 @@ export function AskUserQuestionCard({
                           className={cn(
                             "group/option relative flex w-full items-start gap-2 rounded-lg px-2 py-2 text-left transition-colors duration-150",
                             selected
-                              ? "bg-foreground/[0.06]"
+                              ? "bg-foreground/5"
                               : active && canInteract
-                                ? "hover:bg-foreground/[0.04]"
+                                ? "hover:bg-foreground/5"
                                 : "",
                             !selected && (isSettled || cancelled || countdownExpired)
                               ? "opacity-50"
@@ -350,8 +347,8 @@ export function AskUserQuestionCard({
                             className={cn(
                               "mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full border transition-[background-color,border-color] duration-200",
                               selected
-                                ? "border-foreground bg-foreground text-background"
-                                : "border-muted-foreground/40 group-hover/option:border-muted-foreground/70",
+                                ? "border-ring bg-foreground text-background"
+                                : "border-input group-hover/option:border-input",
                             )}
                           >
                             <span
@@ -362,11 +359,11 @@ export function AskUserQuestionCard({
                             />
                           </span>
                           <span className="flex min-w-0 flex-1 flex-col gap-0.5">
-                            <span className="flex flex-wrap items-center gap-1.5">
+                            <span className="flex flex-wrap items-center gap-2">
                               <span
                                 className={cn(
-                                  "text-[calc(12.5px*var(--zone-font-scale,1))] leading-[1.45]",
-                                  selected ? "font-medium text-foreground" : "text-foreground/78",
+                                  "text-xs leading-[1.45]",
+                                  selected ? "font-medium text-foreground" : "text-foreground/80",
                                 )}
                               >
                                 {option.label}
@@ -376,7 +373,7 @@ export function AskUserQuestionCard({
                               ) : null}
                             </span>
                             {option.description ? (
-                              <span className="text-[calc(11px*var(--zone-font-scale,1))] leading-[1.5] text-muted-foreground/72">
+                              <span className="text-xs leading-[1.5] text-muted-foreground/80">
                                 {option.description}
                               </span>
                             ) : null}
@@ -393,7 +390,7 @@ export function AskUserQuestionCard({
                       <div
                         className={cn(
                           "group/option flex w-full items-center gap-2 rounded-lg px-2 py-2 transition-colors duration-150",
-                          questionCustomSelected ? "bg-foreground/[0.06]" : "",
+                          questionCustomSelected ? "bg-foreground/5" : "",
                         )}
                       >
                         {/* biome-ignore lint/a11y/useSemanticElements: The radio sits beside its own text field; a native input would nest a control inside the label row. */}
@@ -407,8 +404,8 @@ export function AskUserQuestionCard({
                           className={cn(
                             "flex h-4 w-4 shrink-0 items-center justify-center rounded-full border transition-[background-color,border-color] duration-200",
                             questionCustomSelected
-                              ? "border-foreground bg-foreground text-background"
-                              : "border-muted-foreground/40 group-hover/option:border-muted-foreground/70",
+                              ? "border-ring bg-foreground text-background"
+                              : "border-input group-hover/option:border-input",
                             canInteract ? "cursor-pointer" : "cursor-default",
                           )}
                         >
@@ -442,17 +439,17 @@ export function AskUserQuestionCard({
                             }));
                           }}
                           className={cn(
-                            "h-8 min-w-0 flex-1 bg-transparent text-[calc(12.5px*var(--zone-font-scale,1))] shadow-none",
-                            questionCustomSelected ? "border-foreground/35" : "border-border/60",
+                            "h-8 min-w-0 flex-1 bg-transparent text-xs shadow-none",
+                            questionCustomSelected ? "border-ring" : "border-border",
                           )}
                         />
                       </div>
                     ) : questionCustomSelected && questionCustomText ? (
                       <div className="flex w-full items-center gap-2 rounded-lg px-2 py-2">
-                        <span className="flex h-4 w-4 shrink-0 items-center justify-center rounded-full border border-foreground bg-foreground">
+                        <span className="flex h-4 w-4 shrink-0 items-center justify-center rounded-full border border-ring bg-foreground">
                           <span className="h-1.5 w-1.5 rounded-full bg-background" />
                         </span>
-                        <span className="min-w-0 flex-1 break-words text-[calc(12.5px*var(--zone-font-scale,1))] font-medium leading-[1.45] text-foreground">
+                        <span className="min-w-0 flex-1 break-words text-xs font-medium leading-[1.45] text-foreground">
                           {questionCustomText}
                         </span>
                       </div>
@@ -464,17 +461,14 @@ export function AskUserQuestionCard({
           </div>
 
           {errorText ? (
-            <div
-              role="alert"
-              className="mt-2 text-[calc(11px*var(--zone-font-scale,1))] leading-[1.5] text-destructive"
-            >
+            <div role="alert" className="mt-2 text-xs leading-[1.5] text-destructive">
               {errorText}
             </div>
           ) : null}
         </div>
 
-        <div className="flex min-h-11 items-center justify-between gap-3 border-t border-border/60 px-3 py-2">
-          <div className="flex min-w-0 items-center gap-1.5 text-muted-foreground/70">
+        <div className="flex min-h-11 items-center justify-between gap-3 border-t border-border px-3 py-2">
+          <div className="flex min-w-0 items-center gap-2 text-muted-foreground/80">
             {questions.length > 1 ? (
               <>
                 <button
@@ -482,11 +476,11 @@ export function AskUserQuestionCard({
                   aria-label={t("chat.askUser.previousQuestion")}
                   disabled={safeActiveIndex === 0}
                   onClick={() => goToQuestion(safeActiveIndex - 1)}
-                  className="flex h-[18px] w-[18px] items-center justify-center rounded-md transition-colors enabled:hover:bg-foreground/[0.05] enabled:hover:text-foreground disabled:opacity-30"
+                  className="flex h-[18px] w-[18px] items-center justify-center rounded-lg transition-colors enabled:hover:bg-foreground/5 enabled:hover:text-foreground disabled:opacity-30"
                 >
                   <ChevronUp className="h-3.5 w-3.5" />
                 </button>
-                <span className="inline-flex items-center text-[calc(11px*var(--zone-font-scale,1))] font-medium tabular-nums leading-none">
+                <span className="inline-flex items-center text-xs font-medium tabular-nums leading-none">
                   <RollingDigits value={`${safeActiveIndex + 1} / ${questions.length}`} />
                 </span>
                 <button
@@ -494,17 +488,14 @@ export function AskUserQuestionCard({
                   aria-label={t("chat.askUser.nextQuestion")}
                   disabled={safeActiveIndex === questions.length - 1}
                   onClick={() => goToQuestion(safeActiveIndex + 1)}
-                  className="flex h-[18px] w-[18px] items-center justify-center rounded-md transition-colors enabled:hover:bg-foreground/[0.05] enabled:hover:text-foreground disabled:opacity-30"
+                  className="flex h-[18px] w-[18px] items-center justify-center rounded-lg transition-colors enabled:hover:bg-foreground/5 enabled:hover:text-foreground disabled:opacity-30"
                 >
                   <ChevronDown className="h-3.5 w-3.5" />
                 </button>
               </>
             ) : null}
             {interactive && !isSettled && !cancelled ? (
-              <span
-                role="timer"
-                className="truncate text-[calc(11px*var(--zone-font-scale,1))] tabular-nums text-muted-foreground/60"
-              >
+              <span role="timer" className="truncate text-xs tabular-nums text-muted-foreground/60">
                 {questions.length > 1 ? "· " : null}
                 {formatCountdown(remainingMs)} {t("chat.askUser.timeoutHint")}
               </span>
@@ -512,22 +503,22 @@ export function AskUserQuestionCard({
           </div>
 
           {cancelled ? (
-            <span className="text-right text-[calc(11px*var(--zone-font-scale,1))] leading-[1.35] text-muted-foreground/70">
+            <span className="text-right text-xs leading-[1.35] text-muted-foreground/80">
               {t("chat.askUser.cancelled")}
             </span>
           ) : isSettled ? (
             timedOut ? (
-              <span className="text-right text-[calc(11px*var(--zone-font-scale,1))] leading-[1.35] text-amber-600 dark:text-amber-400">
+              <span className="text-right text-xs leading-[1.35] text-warning">
                 {t("chat.askUser.timedOut")}
               </span>
             ) : (
-              <Badge variant="success" className="text-[calc(11px*var(--zone-font-scale,1))]">
+              <Badge variant="success" className="text-xs">
                 <Check className="h-3 w-3" />
                 {t("chat.askUser.answered")}
               </Badge>
             )
           ) : interactive ? (
-            <div className="flex shrink-0 items-center gap-1.5">
+            <div className="flex shrink-0 items-center gap-2">
               {questions.length > 1 && safeActiveIndex < questions.length - 1 ? (
                 <Button
                   type="button"
@@ -535,7 +526,7 @@ export function AskUserQuestionCard({
                   size="sm"
                   disabled={!canInteract}
                   onClick={() => goToQuestion(safeActiveIndex + 1)}
-                  className="h-7 rounded-full px-3 text-[calc(11px*var(--zone-font-scale,1))] text-muted-foreground hover:text-foreground"
+                  className="h-7 rounded-full px-3 text-xs text-muted-foreground hover:text-foreground"
                 >
                   {t("chat.askUser.skip")}
                 </Button>
@@ -552,7 +543,7 @@ export function AskUserQuestionCard({
                   if (safeActiveIndex === questions.length - 1) void submit();
                   else goToQuestion(safeActiveIndex + 1);
                 }}
-                className="h-7 gap-1.5 rounded-full px-3.5 text-[calc(11px*var(--zone-font-scale,1))]"
+                className="h-7 gap-2 rounded-full px-4 text-xs"
               >
                 {submitting
                   ? t("chat.askUser.submitting")

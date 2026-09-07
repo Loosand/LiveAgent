@@ -107,9 +107,9 @@ export function StoreCategoryChips(props: {
                 value={value}
                 aria-label={`${t(storeCategoryLabelKey(value))}: ${count}`}
                 className={cn(
-                  "group shrink-0 gap-1 rounded-md px-2 text-[11.5px] font-medium text-muted-foreground shadow-none hover:text-foreground data-[active]:text-foreground data-[active]:shadow-none",
+                  "group shrink-0 gap-1 rounded-lg px-2 text-xs font-medium text-muted-foreground shadow-none hover:text-foreground data-[active]:text-foreground data-[active]:shadow-none",
                   appearance === "outlined"
-                    ? "border border-border/70 bg-background hover:border-foreground/20 hover:bg-muted/50 data-[active]:border-foreground/25 data-[active]:bg-muted data-[active]:shadow-xs"
+                    ? "border border-border bg-background hover:border-input hover:bg-muted/60 data-[active]:border-ring data-[active]:bg-muted data-[active]:shadow-control"
                     : "border border-transparent hover:bg-muted/60 data-[active]:bg-muted",
                 )}
               >
@@ -117,7 +117,7 @@ export function StoreCategoryChips(props: {
                 <span>{t(storeCategoryLabelKey(value))}</span>
                 <Badge
                   variant="muted"
-                  className="h-4 min-w-4 rounded-full px-1 text-[9.5px] font-semibold tabular-nums group-data-[active]:bg-foreground/[0.08] group-data-[active]:text-foreground"
+                  className="h-4 min-w-4 rounded-full px-1 text-2xs font-semibold tabular-nums group-data-[active]:bg-foreground/10 group-data-[active]:text-foreground"
                 >
                   {count}
                 </Badge>
@@ -145,7 +145,7 @@ export function InstalledSkillCategoryChip(props: {
         props.onSelect(props.category);
       }}
       onKeyDown={(event) => event.stopPropagation()}
-      className="h-6 shrink-0 gap-1 px-1.5 text-[10px] font-medium text-muted-foreground hover:text-foreground"
+      className="h-6 shrink-0 gap-1 px-2 text-2xs font-medium text-muted-foreground hover:text-foreground"
     >
       <CategoryIcon className="h-2.5 w-2.5" />
       <span>{t(storeCategoryLabelKey(props.category))}</span>
@@ -174,7 +174,7 @@ export function SkillCategoryBadges(props: {
               props.onSelect(category);
             }}
             onKeyDown={(event) => event.stopPropagation()}
-            className="h-6 shrink-0 gap-1 px-1.5 text-[10px] font-medium text-muted-foreground hover:text-foreground"
+            className="h-6 shrink-0 gap-1 px-2 text-2xs font-medium text-muted-foreground hover:text-foreground"
           >
             <BadgeIcon className="h-2.5 w-2.5" />
             <span>{t(storeCategoryLabelKey(category))}</span>
@@ -184,7 +184,7 @@ export function SkillCategoryBadges(props: {
       {(props.topics ?? []).slice(0, 3).map((topic) => (
         <span
           key={topic}
-          className="shrink-0 rounded-md bg-muted px-1.5 py-1 text-[10px] text-muted-foreground"
+          className="shrink-0 rounded-lg bg-muted px-2 py-1 text-2xs text-muted-foreground"
         >
           <SearchHighlight text={topic} query={props.searchQuery ?? ""} />
         </span>

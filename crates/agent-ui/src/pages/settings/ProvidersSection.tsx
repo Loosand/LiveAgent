@@ -84,7 +84,7 @@ function FailoverNumberField(props: {
   }
 
   return (
-    <div className="space-y-1.5">
+    <div className="space-y-2">
       <DrawerFieldLabel label={label} hint={hint} />
       <NumberInput
         aria-label={ariaLabel}
@@ -98,7 +98,7 @@ function FailoverNumberField(props: {
         onValueChange={setDraft}
         onValueCommitted={commitDraft}
         className="h-8 rounded-lg"
-        inputClassName="px-2 py-1 text-[12.5px]"
+        inputClassName="px-2 py-1 text-xs"
       />
     </div>
   );
@@ -196,13 +196,13 @@ function FailoverSettingsCard(props: SettingsSectionProps & { providerType: Prov
   });
 
   return (
-    <section className="py-5">
+    <section className="py-4">
       <DrawerSectionHeader
         icon={<Shield className="h-3.5 w-3.5" />}
         title={t("settings.failoverTitle")}
         hint={t("settings.failoverToggleHint").replaceAll("{vendor}", vendorLabel)}
         badge={
-          <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-foreground/[0.05] px-2 py-0.5 text-[10.5px] font-medium text-foreground/60">
+          <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-foreground/5 px-2 py-0.5 text-2xs font-medium text-foreground/60">
             <ProviderBrandIcon type={providerType} />
             {vendorLabel}
           </span>
@@ -226,42 +226,42 @@ function FailoverSettingsCard(props: SettingsSectionProps & { providerType: Prov
           inert={!failover.enabled}
           aria-hidden={!failover.enabled}
         >
-          <div className="space-y-5 pt-4">
+          <div className="space-y-4 pt-4">
             <div className="space-y-2">
               <DrawerGroupLabel
                 label={t("settings.failoverQueueTitle")}
                 hint={t("settings.failoverQueueHint").replaceAll("{vendor}", vendorLabel)}
               />
               {failover.queue.length > 0 ? (
-                <div ref={queueListRef} className="space-y-1.5">
+                <div ref={queueListRef} className="space-y-2">
                   {failover.queue.map((entry, index) => (
                     <div
                       key={entry}
                       {...getQueueReorderProps(entry)}
                       className={cn(
-                        "flex items-center gap-1.5 rounded-lg border border-foreground/[0.06] bg-background/60 py-1.5 pl-1 pr-1.5 transition-colors",
+                        "flex items-center gap-2 rounded-lg border border-border bg-background/60 py-2 pl-1 pr-2 transition-colors",
                         draggingQueueId === entry
-                          ? "border-foreground/[0.14] bg-accent shadow-lg"
-                          : "hover:border-foreground/[0.12]",
+                          ? "border-ring bg-accent shadow-control"
+                          : "hover:border-input",
                       )}
                     >
                       {renderQueueDragHandle(entry, queueEntryLabel(entry))}
-                      <span className="flex h-5 w-6 shrink-0 items-center justify-center rounded-md bg-foreground/[0.05] font-mono text-[10px] font-semibold text-foreground/55">
+                      <span className="flex h-5 w-6 shrink-0 items-center justify-center rounded-lg bg-foreground/5 font-mono text-2xs font-semibold text-foreground/60">
                         P{index + 1}
                       </span>
                       <span className="min-w-0 flex-1 leading-tight">
-                        <span className="block truncate text-[12.5px] font-medium text-foreground/90">
+                        <span className="block truncate text-xs font-medium text-foreground/90">
                           {queueEntryLabel(entry)}
                         </span>
                         {queueEntryDetail(entry) ? (
-                          <span className="block truncate text-[10.5px] text-muted-foreground/70">
+                          <span className="block truncate text-2xs text-muted-foreground/80">
                             {queueEntryDetail(entry)}
                           </span>
                         ) : null}
                       </span>
                       <button
                         type="button"
-                        className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md text-muted-foreground/50 transition-colors hover:bg-destructive/10 hover:text-destructive"
+                        className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg text-muted-foreground/60 transition-colors hover:bg-destructive/10 hover:text-destructive"
                         onClick={() => removeQueueEntry(index)}
                         title={t("settings.failoverQueueRemove")}
                         aria-label={`${t("settings.failoverQueueRemove")} ${queueEntryLabel(entry)}`}
@@ -272,7 +272,7 @@ function FailoverSettingsCard(props: SettingsSectionProps & { providerType: Prov
                   ))}
                 </div>
               ) : (
-                <div className="rounded-lg border border-amber-500/25 bg-amber-500/[0.06] px-3 py-2 text-[11px] leading-relaxed text-amber-700 dark:text-amber-300">
+                <div className="rounded-lg border border-warning/20 bg-warning/5 px-3 py-2 text-xs leading-relaxed text-warning">
                   {t("settings.failoverQueueEmpty")}
                 </div>
               )}
@@ -286,11 +286,11 @@ function FailoverSettingsCard(props: SettingsSectionProps & { providerType: Prov
                   collapsibleGroups={false}
                   searchPlaceholder={t("settings.failoverQueueSearch")}
                   emptyLabel={t("settings.failoverQueueNoMatch")}
-                  triggerClassName="h-8 rounded-lg border-dashed border-foreground/[0.13] bg-transparent py-0 text-xs text-muted-foreground shadow-none transition-colors hover:border-foreground/[0.24] hover:bg-foreground/[0.02]"
+                  triggerClassName="h-8 rounded-lg border-dashed border-border bg-transparent py-0 text-xs text-muted-foreground shadow-none transition-colors hover:border-input hover:bg-foreground/0"
                 />
               ) : null}
               {unavailableProviderCount > 0 ? (
-                <p className="text-[10.5px] leading-relaxed text-amber-700/90 dark:text-amber-300/90">
+                <p className="text-2xs leading-relaxed text-warning/90">
                   {t("settings.failoverQueueUnavailableCandidates").replace(
                     "{count}",
                     String(unavailableProviderCount),
@@ -298,7 +298,7 @@ function FailoverSettingsCard(props: SettingsSectionProps & { providerType: Prov
                 </p>
               ) : null}
               {unavailableQueuedProviderCount > 0 ? (
-                <p className="text-[10.5px] leading-relaxed text-amber-700/90 dark:text-amber-300/90">
+                <p className="text-2xs leading-relaxed text-warning/90">
                   {t("settings.failoverQueueUnavailableExisting").replace(
                     "{count}",
                     String(unavailableQueuedProviderCount),
@@ -371,7 +371,7 @@ function CustomSettingsModelField(props: {
       : modelOptions;
 
   return (
-    <div className="space-y-1.5">
+    <div className="space-y-2">
       <DrawerFieldLabel label={label} hint={hint} />
       <ModelPicker
         options={options}
@@ -380,7 +380,7 @@ function CustomSettingsModelField(props: {
         placeholder={followCurrentLabel}
         noneLabel={followCurrentLabel}
         ariaLabel={label}
-        triggerClassName="h-9 rounded-lg border-foreground/10 bg-white/70 text-[13px] shadow-sm dark:bg-background/40"
+        triggerClassName="h-9 rounded-lg border-border bg-white/80 text-xs shadow-control dark:bg-background/40"
       />
     </div>
   );
@@ -419,14 +419,14 @@ function CustomSettingsDrawer(
         closeLabel={t("settings.closeCustomSettings")}
         showCloseButton={false}
       >
-        <div className="settings-provider-custom-sheet-header relative flex items-center gap-3 px-6 pb-4 pt-[22px]">
-          <SheetTitle className="min-w-0 flex-1 text-[17px] leading-tight tracking-tight text-foreground/95">
+        <div className="settings-provider-custom-sheet-header relative flex items-center gap-3 px-6 pb-4 pt-6">
+          <SheetTitle className="min-w-0 flex-1 text-base leading-tight tracking-tight text-foreground">
             {t("settings.customSettings")}
           </SheetTitle>
           <button
             type="button"
             onClick={onClose}
-            className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-foreground/[0.06] text-muted-foreground/80 transition-colors hover:bg-foreground/[0.12] hover:text-foreground"
+            className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-foreground/5 text-muted-foreground/80 transition-colors hover:bg-foreground/10 hover:text-foreground"
             title={t("settings.closeCustomSettings")}
             aria-label={t("settings.closeCustomSettings")}
           >
@@ -436,17 +436,17 @@ function CustomSettingsDrawer(
 
         <div
           aria-hidden="true"
-          className="relative mx-6 h-px bg-gradient-to-r from-transparent via-foreground/[0.08] to-transparent"
+          className="relative mx-6 h-px bg-gradient-to-r from-transparent via-foreground/10 to-transparent"
         />
 
         <div className="settings-provider-custom-sheet-body relative min-h-0 flex-1 overflow-y-auto px-6 pb-6">
           <div className="divide-y divide-foreground/[0.06]">
-            <section className="py-5 first:pt-4">
+            <section className="py-4 first:pt-4">
               <DrawerSectionHeader
                 icon={<WandSparkles className="h-3.5 w-3.5" />}
                 title={t("settings.customSettingsModelsTitle")}
               />
-              <div className="mt-3.5 space-y-3">
+              <div className="mt-4 space-y-3">
                 <CustomSettingsModelField
                   label={t("settings.conversationTitleModel")}
                   hint={t("settings.conversationTitleModelHint")}
@@ -464,7 +464,7 @@ function CustomSettingsDrawer(
                   onChange={(value) => handleModelSettingChange("commitMessageModel", value)}
                 />
                 {modelOptions.length === 0 ? (
-                  <div className="rounded-lg border border-amber-500/25 bg-amber-500/[0.06] px-3 py-2 text-[11px] leading-relaxed text-amber-700 dark:text-amber-300">
+                  <div className="rounded-lg border border-warning/20 bg-warning/5 px-3 py-2 text-xs leading-relaxed text-warning">
                     {t("settings.customSettingsModelEmpty")}
                   </div>
                 ) : null}
@@ -473,7 +473,7 @@ function CustomSettingsDrawer(
             {/* 澄清提示词（composer clarify）：总开关直接控制两端输入框魔杖按钮
                 的显隐；展开区选澄清对话用的模型，未选跟随当前对话模型（与
                 commitMessageModel 同一回退契约）。开关-展开模式同 failover。 */}
-            <section className="py-5">
+            <section className="py-4">
               <DrawerSectionHeader
                 icon={<WandSparkles className="h-3.5 w-3.5" />}
                 title={t("settings.promptClarifyTitle")}
@@ -501,7 +501,7 @@ function CustomSettingsDrawer(
                   inert={!settings.customSettings.promptClarifyEnabled}
                   aria-hidden={!settings.customSettings.promptClarifyEnabled}
                 >
-                  <div className="space-y-3 pt-3.5">
+                  <div className="space-y-3 pt-4">
                     <CustomSettingsModelField
                       label={t("settings.promptClarifyModel")}
                       hint={t("settings.promptClarifyModelHint")}
@@ -517,13 +517,13 @@ function CustomSettingsDrawer(
             {/* Composer 上下文占用展示样式（三档滑块，docs/design/composer-context-stats-bar.md §4.7）：
                 从左到右 状态栏 / 都显示 / 用量环，对应 statsBar / both / ring。
                 通用说明收进分区头的提示气泡，滑块下方只保留当前档位的一行动态描述。 */}
-            <section className="py-5">
+            <section className="py-4">
               <DrawerSectionHeader
                 icon={<Activity className="h-3.5 w-3.5" />}
                 title={t("settings.composerContextDisplay")}
                 hint={t("settings.composerContextDisplayHint")}
               />
-              <div className="mt-3.5 space-y-2">
+              <div className="mt-4 space-y-2">
                 <SegmentedSlider
                   aria-label={t("settings.composerContextDisplay")}
                   className="w-full"
@@ -539,7 +539,7 @@ function CustomSettingsDrawer(
                     )
                   }
                 />
-                <p className="text-[11px] leading-relaxed text-muted-foreground/70">
+                <p className="text-xs leading-relaxed text-muted-foreground/80">
                   {contextDisplayModeDesc[settings.customSettings.composerContextDisplay]}
                 </p>
               </div>
@@ -558,7 +558,7 @@ function CustomSettingsDrawer(
 }
 
 const PROVIDER_ACTION_CLASS =
-  "settings-provider-action h-full min-w-0 gap-1.5 rounded-md px-2.5 text-[12.5px] font-medium shadow-none";
+  "settings-provider-action h-full min-w-0 gap-2 rounded-lg px-2 text-xs font-medium shadow-none";
 
 function ProviderActionGroup(props: {
   activeTab: ProviderId;
@@ -653,22 +653,19 @@ function ProviderCardRow(props: {
     <div
       {...reorderProps}
       className={cn(
-        "settings-card-row settings-provider-card-row group flex items-center gap-3 rounded-xl border bg-card px-4 py-3 transition-colors hover:bg-accent/30",
-        dragging && "bg-accent shadow-lg",
+        "settings-card-row settings-provider-card-row group flex items-center gap-3 rounded-2xl border bg-card px-4 py-3 transition-colors hover:bg-accent/40",
+        dragging && "bg-accent shadow-overlay",
       )}
     >
       {dragHandle}
-      <div className="flex w-5 shrink-0 items-center justify-center text-lg text-foreground">
+      <div className="flex w-5 shrink-0 items-center justify-center text-base text-foreground">
         <ProviderBrandIcon type={type} />
       </div>
       <div className="settings-provider-card-main min-w-0 flex-1">
-        <div className="flex items-center gap-1.5">
-          <span className="truncate text-sm font-medium">{provider.name}</span>
+        <div className="flex items-center gap-2">
+          <span className="truncate text-base font-medium">{provider.name}</span>
           {provider.useSystemProxy ? (
-            <span
-              className="shrink-0 text-blue-500 dark:text-blue-400"
-              title={t("settings.providerUseSystemProxy")}
-            >
+            <span className="shrink-0 text-info" title={t("settings.providerUseSystemProxy")}>
               <Waypoints className="h-3 w-3" />
             </span>
           ) : null}
@@ -692,7 +689,7 @@ function ProviderCardRow(props: {
               ) : usageDisplay.loading ? (
                 <span
                   aria-hidden="true"
-                  className="h-2 w-32 max-w-full animate-pulse rounded-full bg-foreground/[0.08] motion-reduce:animate-none"
+                  className="h-2 w-32 max-w-full animate-pulse rounded-full bg-foreground/10 motion-reduce:animate-none"
                 />
               ) : (
                 <span
@@ -730,7 +727,7 @@ function ProviderCardRow(props: {
               {usageDisplay.loading ? (
                 <span
                   aria-hidden="true"
-                  className="h-2 w-16 animate-pulse rounded-full bg-foreground/[0.06] motion-reduce:animate-none"
+                  className="h-2 w-16 animate-pulse rounded-full bg-foreground/5 motion-reduce:animate-none"
                 />
               ) : (
                 <span className="settings-usage-reveal flex min-w-0 flex-wrap items-center gap-x-2 gap-y-0.5">
@@ -876,15 +873,15 @@ function ProviderList(props: {
         className="settings-provider-list-scroll min-h-0 flex-1 overflow-y-auto pr-1"
       >
         {filtered.length === 0 ? (
-          <div className="settings-provider-empty flex flex-col items-center justify-center rounded-xl border border-dashed py-12 text-center">
-            <div className="mb-3 flex items-center justify-center text-3xl text-foreground">
+          <div className="settings-provider-empty flex flex-col items-center justify-center rounded-2xl border border-dashed py-12 text-center">
+            <div className="mb-3 flex items-center justify-center text-base text-foreground">
               <ProviderBrandIcon type={type} />
             </div>
-            <p className="text-sm font-medium">{t("settings.noProvidersHint")}</p>
+            <p className="text-base font-medium">{t("settings.noProvidersHint")}</p>
             <Button
               variant="outline"
               size="sm"
-              className="settings-provider-empty-add mt-4 gap-1.5"
+              className="settings-provider-empty-add mt-4 gap-2"
               onClick={onAdd}
             >
               <Plus className="h-3.5 w-3.5" />
@@ -1037,7 +1034,7 @@ export function ProvidersSection(
                 type="button"
                 onClick={() => setActiveTab(tab)}
                 className={cn(
-                  "settings-provider-tab inline-flex shrink-0 items-center justify-center gap-1.5 whitespace-nowrap rounded-md px-3 py-1 text-sm font-medium transition-all",
+                  "settings-provider-tab inline-flex shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-lg px-3 py-1 text-xs font-medium transition-all",
                   activeTab === tab
                     ? "bg-background text-foreground shadow"
                     : "hover:text-foreground/80",
@@ -1048,10 +1045,10 @@ export function ProvidersSection(
                 {providerCountByType[tab] > 0 ? (
                   <span
                     className={cn(
-                      "inline-flex h-4 min-w-4 items-center justify-center rounded-full px-1 text-[10px] font-semibold leading-none tabular-nums transition-colors",
+                      "inline-flex h-4 min-w-4 items-center justify-center rounded-full px-1 text-2xs font-semibold leading-none tabular-nums transition-colors",
                       activeTab === tab
-                        ? "bg-foreground/[0.08] text-foreground/70"
-                        : "bg-foreground/[0.06] text-muted-foreground/80",
+                        ? "bg-foreground/10 text-foreground/80"
+                        : "bg-foreground/5 text-muted-foreground/80",
                     )}
                   >
                     {providerCountByType[tab]}

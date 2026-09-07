@@ -72,14 +72,14 @@ function BrowserModeRow(props: {
   const showGuide = needsExtension && info !== null && !info.connected;
 
   return (
-    <div className="space-y-2 bg-muted/20 px-3 py-2.5">
-      <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5">
+    <div className="space-y-2 bg-muted/20 px-3 py-2">
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
         <span className="text-xs text-muted-foreground">{t("settings.browserMode.label")}</span>
         <fieldset
           // biome-ignore lint/a11y/noNoninteractiveElementToInteractiveRole: 同 ToolPolicyToggle——互斥单选语义需要向读屏表达。
           role="radiogroup"
           aria-label={t("settings.browserMode.label")}
-          className="inline-flex min-w-0 shrink-0 items-center rounded-lg border border-border/60 bg-muted/40 p-0.5"
+          className="inline-flex min-w-0 shrink-0 items-center rounded-lg border border-border bg-muted/40 p-0.5"
         >
           {BROWSER_AUTOMATION_MODES.map((option) => {
             const active = mode === option;
@@ -93,8 +93,8 @@ function BrowserModeRow(props: {
                 onClick={() => onChange(option)}
                 className={
                   active
-                    ? "rounded-md bg-primary px-2.5 py-1 text-[11px] font-medium leading-none text-primary-foreground transition-colors"
-                    : "rounded-md px-2.5 py-1 text-[11px] font-medium leading-none text-muted-foreground transition-colors hover:text-foreground"
+                    ? "rounded-lg bg-primary px-2 py-1 text-xs font-medium leading-none text-primary-foreground transition-colors"
+                    : "rounded-lg px-2 py-1 text-xs font-medium leading-none text-muted-foreground transition-colors hover:text-foreground"
                 }
               >
                 {t(`settings.browserMode.${option}`)}
@@ -106,8 +106,8 @@ function BrowserModeRow(props: {
           <span
             className={
               info.connected
-                ? "rounded-full bg-emerald-500/10 px-2 py-0.5 text-[10px] leading-none text-emerald-500"
-                : "rounded-full bg-amber-500/10 px-2 py-0.5 text-[10px] leading-none text-amber-500"
+                ? "rounded-full bg-success/10 px-2 py-0.5 text-2xs leading-none text-success"
+                : "rounded-full bg-warning/10 px-2 py-0.5 text-2xs leading-none text-warning"
             }
           >
             {t(
@@ -118,22 +118,22 @@ function BrowserModeRow(props: {
           </span>
         ) : null}
       </div>
-      <p className="text-[11px] leading-relaxed text-muted-foreground/80">
+      <p className="text-xs leading-relaxed text-muted-foreground/80">
         {t(`settings.browserMode.${mode}.desc`)}
       </p>
       {showGuide ? (
-        <div className="space-y-1.5 rounded-lg border border-amber-500/30 bg-amber-500/5 px-2.5 py-2">
-          <p className="text-[11px] leading-relaxed text-muted-foreground">
+        <div className="space-y-2 rounded-lg border border-warning/40 bg-warning/5 px-2 py-2">
+          <p className="text-xs leading-relaxed text-muted-foreground">
             {t("settings.browserMode.installGuide")}
           </p>
           {info.extensionDir ? (
             <div className="flex flex-wrap items-center gap-2">
-              <code className="min-w-0 flex-1 truncate rounded bg-muted/60 px-1.5 py-1 font-mono text-[10px] leading-none text-muted-foreground">
+              <code className="min-w-0 flex-1 truncate rounded-sm bg-muted/60 px-2 py-1 font-mono text-2xs leading-none text-muted-foreground">
                 {info.extensionDir}
               </code>
               <button
                 type="button"
-                className="shrink-0 rounded-md border border-border/60 px-2 py-1 text-[11px] font-medium leading-none text-foreground transition-colors hover:bg-muted/60"
+                className="shrink-0 rounded-lg border border-border px-2 py-1 text-xs font-medium leading-none text-foreground transition-colors hover:bg-muted/60"
                 onClick={() => {
                   void invoke("browser_extension_reveal_dir", {}).catch(() => {});
                 }}
@@ -194,17 +194,17 @@ export function SystemToolsSection(props: SettingsSectionProps) {
   return (
     <div className="space-y-4">
       <div className="flex items-start gap-3">
-        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary/10">
+        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl bg-primary/10">
           <Wrench className="h-[18px] w-[18px] text-primary" />
         </div>
         <div className="min-w-0">
-          <h3 className="text-sm font-semibold">{t("settings.systemTools")}</h3>
+          <h3 className="text-base font-semibold">{t("settings.systemTools")}</h3>
           <p className="mt-0.5 text-xs leading-relaxed text-muted-foreground">
             {t("settings.systemToolsDesc")}
           </p>
         </div>
         {overriddenCount > 0 ? (
-          <span className="ml-auto shrink-0 rounded-full bg-primary/10 px-2 py-0.5 text-[11px] font-medium leading-none text-primary">
+          <span className="ml-auto shrink-0 rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium leading-none text-primary">
             {t("settings.toolPermissionsOverridden").replace("{count}", String(overriddenCount))}
           </span>
         ) : null}
@@ -212,26 +212,26 @@ export function SystemToolsSection(props: SettingsSectionProps) {
 
       <div className="space-y-4">
         {groups.map(({ category, entries }) => (
-          <div key={category.id} className="space-y-1.5">
-            <div className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground/70">
+          <div key={category.id} className="space-y-2">
+            <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground/80">
               {t(category.labelKey)}
             </div>
-            <div className="divide-y divide-border/40 overflow-hidden rounded-xl border border-border/50 bg-background/60">
+            <div className="divide-y divide-border/40 overflow-hidden rounded-2xl border border-border bg-background/60">
               {entries.map((entry) => {
                 const policy = effectivePolicy(entry);
                 return (
                   <div key={entry.id}>
-                    <div className="flex items-center gap-3 px-3 py-2.5">
+                    <div className="flex items-center gap-3 px-3 py-2">
                       <div className="min-w-0 flex-1">
                         <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
-                          <span className="text-sm font-medium">
+                          <span className="text-base font-medium">
                             {t(`settings.builtinTool.${entry.id}.name`)}
                           </span>
-                          <code className="rounded bg-muted/60 px-1.5 py-0.5 font-mono text-[10px] leading-none text-muted-foreground">
+                          <code className="rounded-sm bg-muted/60 px-2 py-0.5 font-mono text-2xs leading-none text-muted-foreground">
                             {entry.toolName}
                           </code>
                           {entry.isReadOnly ? (
-                            <span className="rounded-full bg-emerald-500/10 px-1.5 py-0.5 text-[10px] leading-none text-emerald-500">
+                            <span className="rounded-full bg-success/10 px-2 py-0.5 text-2xs leading-none text-success">
                               {t("settings.toolDetailReadOnly")}
                             </span>
                           ) : null}
@@ -241,7 +241,7 @@ export function SystemToolsSection(props: SettingsSectionProps) {
                         </div>
                       </div>
                       {entry.isReadOnly ? (
-                        <span className="shrink-0 text-[11px] text-muted-foreground/60">
+                        <span className="shrink-0 text-xs text-muted-foreground/60">
                           {t("settings.toolPolicy.allow")}
                         </span>
                       ) : (

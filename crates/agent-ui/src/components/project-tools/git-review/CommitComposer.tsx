@@ -240,12 +240,12 @@ export function GitCommitComposer(props: {
         : t("projectTools.gitReview.generateCommitMessage");
 
   return (
-    <div className="@container shrink-0 border-t border-border/60 p-2">
+    <div className="@container shrink-0 border-t border-border p-2">
       <div
         className={cn(
-          "relative overflow-hidden rounded-xl border border-border/70 bg-muted/25 transition-[border-color,background-color,box-shadow] duration-150",
-          "focus-within:border-primary/40 focus-within:bg-background focus-within:shadow-[0_0_0_3px_hsl(var(--primary)/0.08)]",
-          generating && "border-primary/30",
+          "relative overflow-hidden rounded-2xl border border-border bg-muted/20 transition-[border-color,background-color,box-shadow] duration-150",
+          "focus-within:border-ring focus-within:bg-background focus-within:shadow-focus",
+          generating && "border-ring",
         )}
       >
         {generating ? <div aria-hidden="true" className="git-review-generate-progress" /> : null}
@@ -258,17 +258,17 @@ export function GitCommitComposer(props: {
           placeholder={t("projectTools.gitReview.commitMessagePlaceholder")}
           disabled={writeDisabled || operationBusy}
           aria-busy={generating}
-          className="max-h-[min(10rem,30dvh)] min-h-8 resize-none overflow-y-auto border-0 bg-transparent px-2.5 pb-1 pt-2 text-xs leading-5 shadow-none placeholder:text-xs placeholder:text-muted-foreground/70"
+          className="max-h-[min(10rem,30dvh)] min-h-8 resize-none overflow-y-auto border-0 bg-transparent px-2 pb-1 pt-2 text-xs leading-5 shadow-none placeholder:text-xs placeholder:text-muted-foreground/80"
         />
-        <div className="flex items-center gap-1.5 px-1.5 pb-1.5">
+        <div className="flex items-center gap-2 px-2 pb-2">
           {textGenerationClient ? (
             <Button
               size="sm"
               variant="ghost"
               disabled={generateDisabled}
               className={cn(
-                "h-7 shrink-0 gap-1 rounded-full border border-border/60 bg-background/70 px-2 text-[calc(11px*var(--zone-font-scale,1))] font-medium text-muted-foreground hover:border-primary/35 hover:text-foreground",
-                generating && "border-primary/40 text-primary hover:text-primary",
+                "h-7 shrink-0 gap-1 rounded-full border border-border bg-background/80 px-2 text-xs font-medium text-muted-foreground hover:border-ring hover:text-foreground",
+                generating && "border-ring text-primary hover:text-primary",
                 COARSE_POINTER_BUTTON_CLASS,
               )}
               title={generateLabel}
@@ -287,10 +287,7 @@ export function GitCommitComposer(props: {
               </span>
             </Button>
           ) : null}
-          <div
-            role="status"
-            className="min-w-0 flex-1 text-[calc(11px*var(--zone-font-scale,1))] leading-4"
-          >
+          <div role="status" className="min-w-0 flex-1 text-xs leading-4">
             {generationError ? (
               <p className="truncate text-destructive" title={generationError}>
                 {generationError}
@@ -311,7 +308,7 @@ export function GitCommitComposer(props: {
                 </span>
               </button>
             ) : stagedEntries.length === 0 && !writeDisabled ? (
-              <p className="truncate text-muted-foreground/70">
+              <p className="truncate text-muted-foreground/80">
                 {t("projectTools.gitReview.commitRequiresStaged")}
               </p>
             ) : null}
@@ -319,7 +316,7 @@ export function GitCommitComposer(props: {
           <Button
             size="sm"
             disabled={!canCommit}
-            className={cn("h-7 shrink-0 gap-1.5 px-2.5", COARSE_POINTER_BUTTON_CLASS)}
+            className={cn("h-7 shrink-0 gap-2 px-2", COARSE_POINTER_BUTTON_CLASS)}
             title={`${t("projectTools.gitReview.commitStaged")} (${COMMIT_SHORTCUT_HINT})`}
             onClick={handleCommit}
           >
@@ -329,11 +326,11 @@ export function GitCommitComposer(props: {
               <>
                 <span>{t("projectTools.gitReview.commit")}</span>
                 {stagedEntries.length > 0 ? (
-                  <span className="rounded-sm bg-primary-foreground/25 px-1 py-0.5 text-[calc(10px*var(--zone-font-scale,1))] font-semibold leading-none tabular-nums">
+                  <span className="rounded-sm bg-primary-foreground/20 px-1 py-0.5 text-2xs font-semibold leading-none tabular-nums">
                     {stagedEntries.length}
                   </span>
                 ) : null}
-                <kbd className="hidden font-sans text-[calc(10px*var(--zone-font-scale,1))] font-normal leading-none opacity-70 @min-[19rem]:inline">
+                <kbd className="hidden font-sans text-2xs font-normal leading-none opacity-70 @min-[19rem]:inline">
                   {COMMIT_SHORTCUT_HINT}
                 </kbd>
               </>

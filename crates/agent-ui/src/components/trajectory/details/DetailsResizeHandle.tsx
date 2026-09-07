@@ -187,7 +187,7 @@ export function DetailsResizeHandle(props: {
       <span
         aria-hidden="true"
         className={cn(
-          "h-12 w-0.5 -translate-x-px rounded-full bg-muted-foreground/30 opacity-0 shadow-sm transition-[height,background-color,opacity] duration-150",
+          "h-12 w-0.5 -translate-x-px rounded-full bg-muted-foreground/40 opacity-0 shadow-control transition-[height,background-color,opacity] duration-150",
           "group-hover:h-20 group-hover:bg-primary/60 group-hover:opacity-100 group-focus-visible:h-20 group-focus-visible:bg-primary group-focus-visible:opacity-100",
           dragging && "h-24 bg-primary opacity-100",
         )}

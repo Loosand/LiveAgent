@@ -274,7 +274,7 @@ test("chat attachment sources preserve verified metadata and keep menus scoped t
   assert.match(composerSource, /className="block h-full w-full object-cover"/);
   assert.match(composerSource, /const \[imageLoadState, setImageLoadState\] = useState<\{/);
   assert.match(composerSource, /if \(!canPreview\) return;/);
-  assert.match(userImageAttachmentSource, /"block w-full bg-black\/\[0\.02\] dark:bg-white\/5"/);
+  assert.match(userImageAttachmentSource, /"block w-full bg-black\/0 dark:bg-white\/5"/);
   assert.match(userImageAttachmentSource, /imageLoadState\?\.src === imageSrc/);
   assert.match(userImageAttachmentSource, /disabled=\{!canPreview\}/);
   assert.match(userImageAttachmentSource, /onError=\{\(\) => \{/);
@@ -282,7 +282,7 @@ test("chat attachment sources preserve verified metadata and keep menus scoped t
   assert.doesNotMatch(userImageAttachmentSource, /hover:shadow-\[0_2px_8px_rgba\(0,0,0,0\.1\)\]/);
   assert.match(toolImages, /dataBase64: image\.data/);
   assert.match(toolImages, /src: imageSources\[index\]\?\.src \?\? ""/);
-  assert.match(toolImages, /"block max-h-\[32rem\] w-full rounded-md object-contain/);
+  assert.match(toolImages, /"block max-h-\[32rem\] w-full rounded-lg object-contain/);
   assert.match(toolImages, /onContextMenu=\{\(\{ x, y \}\) => setContextMenu\(\{ index, x, y \}\)\}/);
   assert.match(toolImages, /if \(!canPreview\) return;/);
   assert.match(viewerSource, /@liveagent\/ui\/components\/ui\/dialog/);

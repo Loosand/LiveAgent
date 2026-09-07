@@ -46,7 +46,7 @@ test("document Markdown keeps its typography separate from chat Markdown in both
   assert.match(sharedStyles, /\.document-markdown \[data-streamdown="code-block-body"\]/);
   assert.match(
     sharedStyles,
-    /\.document-markdown \[data-streamdown="heading-1"\] \{\s*@apply[^;]*text-lg/,
+    /\.document-markdown \[data-streamdown="heading-1"\] \{\s*@apply[^;]*text-base/,
   );
 });
 

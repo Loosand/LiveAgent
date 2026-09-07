@@ -63,11 +63,11 @@ export function SshTerminalPaneSurface(props: SshTerminalPaneSurfaceProps) {
   // 延迟着色沿用状态点三色:<100ms 绿 / <300ms 黄 / 其余红;未知灰。
   const latencyKnown = typeof latencyMs === "number" && Number.isFinite(latencyMs);
   const latencyClass = !latencyKnown
-    ? "text-muted-foreground/70"
+    ? "text-muted-foreground/80"
     : latencyMs < 100
-      ? "text-emerald-500"
+      ? "text-success"
       : latencyMs < 300
-        ? "text-amber-500"
+        ? "text-warning"
         : "text-destructive";
 
   return (
@@ -78,16 +78,16 @@ export function SshTerminalPaneSurface(props: SshTerminalPaneSurfaceProps) {
       {session ? (
         <div
           data-terminal-pane-ssh-status={status ?? "unknown"}
-          className="flex h-7 shrink-0 items-center gap-2 border-b border-border/60 bg-muted/40 px-3 text-[11px] text-muted-foreground"
+          className="flex h-7 shrink-0 items-center gap-2 border-b border-border bg-muted/40 px-3 text-xs text-muted-foreground"
         >
           <span
             aria-hidden="true"
             className={cn(
               "h-1.5 w-1.5 shrink-0 rounded-full",
               status === "connected"
-                ? "bg-emerald-500"
+                ? "bg-success"
                 : status === "reconnecting"
-                  ? "bg-amber-500"
+                  ? "bg-warning"
                   : "bg-destructive",
             )}
           />
@@ -115,7 +115,7 @@ export function SshTerminalPaneSurface(props: SshTerminalPaneSurfaceProps) {
             <Button
               variant="ghost"
               size="sm"
-              className="h-5 gap-1 px-1.5 text-[11px]"
+              className="h-5 gap-1 px-2 text-xs"
               title={t("workbench.sshReconnect")}
               aria-label={t("workbench.sshReconnect")}
               disabled={reconnecting}

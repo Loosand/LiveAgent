@@ -128,7 +128,7 @@ export function Popup({
       ref={popupRef}
       className={cn(
         "mention-popup-enter layer-popover fixed overflow-hidden rounded-2xl",
-        "border border-black/[0.075] bg-popover text-popover-foreground shadow-sm ring-0 dark:border-white/[0.15]",
+        "border border-border bg-popover text-popover-foreground shadow-control ring-0",
       )}
       onMouseDown={(event) => {
         // Any mousedown inside the popup must not blur the editor (blur closes
@@ -146,7 +146,7 @@ export function Popup({
         event.preventDefault();
       }}
     >
-      <div className="flex min-h-10 items-center px-3.5 pb-1 pt-2 text-xs font-medium text-muted-foreground">
+      <div className="flex min-h-10 items-center px-4 pb-1 pt-2 text-xs font-medium text-muted-foreground">
         {trigger === "skill" ? (
           "Skills"
         ) : mode === "root" ? (
@@ -154,7 +154,7 @@ export function Popup({
         ) : (
           <button
             type="button"
-            className="-ml-1 flex min-h-8 items-center gap-1 rounded-md px-1.5 transition-colors hover:bg-foreground/[0.05] hover:text-foreground"
+            className="-ml-1 flex min-h-8 items-center gap-1 rounded-lg px-2 transition-colors hover:bg-foreground/5 hover:text-foreground"
             onMouseDown={(event) => {
               event.preventDefault();
               onBack();
@@ -260,8 +260,8 @@ export function Popup({
                 // the max-h flex column from compressing rows before it scrolls.
                 "mention-popup-item group flex h-[38px] shrink-0 cursor-pointer items-center gap-3 rounded-lg border-y-2 border-transparent bg-clip-padding px-3 text-left text-xs leading-5 transition-colors",
                 i === highlightIndex
-                  ? "bg-foreground/[0.07] text-foreground"
-                  : "text-foreground/85 hover:bg-foreground/[0.05] dark:text-foreground/90",
+                  ? "bg-foreground/5 text-foreground"
+                  : "text-foreground/90 hover:bg-foreground/5 dark:text-foreground/90",
               )}
               onMouseDown={(e) => {
                 e.preventDefault();
@@ -274,9 +274,9 @@ export function Popup({
                   isCategory || conversation
                     ? "text-muted-foreground"
                     : isSkill || isApp
-                      ? "text-foreground/85"
+                      ? "text-foreground/90"
                       : isDir
-                        ? "text-amber-600 dark:text-amber-300"
+                        ? "text-warning"
                         : "text-muted-foreground",
                 )}
               >
@@ -293,20 +293,20 @@ export function Popup({
                 )}
               </span>
               <span className="min-w-0 flex-1 truncate text-left">
-                <span className="font-normal text-foreground/95">{title}</span>
+                <span className="font-normal text-foreground">{title}</span>
                 {subtitle && (
-                  <span className="ml-2 text-xs text-muted-foreground/75">{subtitle}</span>
+                  <span className="ml-2 text-xs text-muted-foreground/80">{subtitle}</span>
                 )}
               </span>
               {isCategory ? (
-                <ChevronRight className="h-3.5 w-3.5 shrink-0 text-muted-foreground/65" />
+                <ChevronRight className="h-3.5 w-3.5 shrink-0 text-muted-foreground/60" />
               ) : isSkill ? (
-                <span className="shrink-0 text-[10px] uppercase tracking-wider text-muted-foreground/60">
+                <span className="shrink-0 text-2xs uppercase tracking-wider text-muted-foreground/60">
                   skill
                 </span>
               ) : (
                 isDir && (
-                  <span className="shrink-0 text-[10px] uppercase tracking-wider text-muted-foreground/60">
+                  <span className="shrink-0 text-2xs uppercase tracking-wider text-muted-foreground/60">
                     dir
                   </span>
                 )
@@ -430,7 +430,7 @@ export function CommitMentionTooltip({
     // biome-ignore lint/a11y/noStaticElementInteractions: Hover and pointer handlers keep this non-interactive tooltip open while the pointer crosses into it.
     <div
       ref={tooltipRef}
-      className="layer-popover fixed overflow-y-auto rounded-xl border border-border bg-popover px-3 py-2.5 text-xs text-popover-foreground shadow-xl"
+      className="layer-popover fixed overflow-y-auto rounded-2xl border border-border bg-popover px-3 py-2 text-xs text-popover-foreground shadow-overlay"
       style={{
         left,
         top,
@@ -449,7 +449,7 @@ export function CommitMentionTooltip({
         <div className="min-w-0">
           <div className="break-words font-medium leading-tight">{authorLabel}</div>
           {date ? (
-            <div className="mt-0.5 text-[calc(11px*var(--zone-font-scale,1))] leading-tight text-muted-foreground">
+            <div className="mt-0.5 text-xs leading-tight text-muted-foreground">
               {date.relative} ({date.absolute})
             </div>
           ) : null}
@@ -457,18 +457,16 @@ export function CommitMentionTooltip({
       </div>
       <div className="mt-2 whitespace-pre-wrap break-words font-medium leading-snug">{subject}</div>
       {messageBody ? (
-        <div className="mt-1.5 whitespace-pre-wrap break-words leading-snug text-muted-foreground">
+        <div className="mt-2 whitespace-pre-wrap break-words leading-snug text-muted-foreground">
           {messageBody}
         </div>
       ) : null}
-      <div className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-[calc(11px*var(--zone-font-scale,1))] leading-tight">
+      <div className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs leading-tight">
         <span className="text-muted-foreground">{filesChangedLabel}</span>
-        <span className="font-medium text-emerald-600 dark:text-emerald-400">
-          {insertionsLabel}
-        </span>
-        <span className="font-medium text-rose-600 dark:text-rose-400">{deletionsLabel}</span>
+        <span className="font-medium text-success">{insertionsLabel}</span>
+        <span className="font-medium text-destructive">{deletionsLabel}</span>
       </div>
-      <div className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 border-t border-border/70 pt-1.5 text-[calc(11px*var(--zone-font-scale,1))] leading-tight text-muted-foreground">
+      <div className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 border-t border-border pt-2 text-xs leading-tight text-muted-foreground">
         <span className="font-mono text-foreground">{shortSha}</span>
         {commit.remoteName ? <span>{commit.remoteName}</span> : null}
         {commit.githubUrl ? (
@@ -476,7 +474,7 @@ export function CommitMentionTooltip({
             <span className="text-border">|</span>
             <button
               type="button"
-              className="inline-flex items-center gap-1 rounded px-1 py-0.5 text-primary hover:bg-primary/10"
+              className="inline-flex items-center gap-1 rounded-sm px-1 py-0.5 text-primary hover:bg-primary/10"
               onClick={() => commit.githubUrl && void openUrl(commit.githubUrl)}
             >
               <GitHubMarkIcon className="h-3 w-3" />

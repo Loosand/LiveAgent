@@ -40,10 +40,10 @@ export function UserMenu(props: UserMenuProps) {
         : t("settings.devicesUnknownStatus");
   const statusDotClass =
     agentStatus === "online"
-      ? "bg-emerald-500"
+      ? "bg-success"
       : agentStatus === "offline"
-        ? "bg-rose-500"
-        : "bg-muted-foreground/50";
+        ? "bg-destructive"
+        : "bg-muted-foreground/60";
 
   return (
     <DropdownMenu open={open} onOpenChange={onOpenChange}>
@@ -51,16 +51,16 @@ export function UserMenu(props: UserMenuProps) {
         render={
           <Button
             variant="ghost"
-            className="h-8 gap-1 rounded-full border border-border/60 bg-background/70 px-1.5 text-foreground shadow-sm hover:bg-muted/70"
+            className="h-8 gap-1 rounded-full border border-border bg-background/80 px-2 text-foreground shadow-control hover:bg-muted/80"
             title={`${userMenuLabel} · ${statusLabel}`}
           />
         }
       >
-        <span className="relative flex h-6 w-6 items-center justify-center rounded-full bg-gradient-to-br from-emerald-500/90 to-sky-500/90 text-[calc(11px*var(--zone-font-scale,1))] font-semibold text-white">
+        <span className="relative flex h-6 w-6 items-center justify-center rounded-full bg-gradient-to-br from-success/90 to-info/90 text-xs font-semibold text-white">
           {userAvatarLabel || <User className="h-3.5 w-3.5" />}
           <span
             className={cn(
-              "absolute -bottom-1 -right-1 h-3 w-3 rounded-full shadow-sm ring-2 ring-background",
+              "absolute -bottom-1 -right-1 h-3 w-3 rounded-full shadow-control ring-2 ring-background",
               statusDotClass,
             )}
           >
@@ -72,7 +72,7 @@ export function UserMenu(props: UserMenuProps) {
       <DropdownMenuContent
         align="end"
         sideOffset={8}
-        className="min-w-[12rem] rounded-xl border-border/70 bg-popover/95 backdrop-blur supports-[backdrop-filter]:bg-popover/90"
+        className="min-w-[12rem] rounded-2xl border-border bg-popover backdrop-blur supports-[backdrop-filter]:bg-popover/90"
       >
         {agentSelector}
         <DropdownMenuSeparator />

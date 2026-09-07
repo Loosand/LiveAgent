@@ -30,7 +30,7 @@ function TranscriptTimestampLabel(props: { timestamp?: number; className?: strin
   return (
     <span
       className={cn(
-        "select-none text-[calc(11px*var(--zone-font-scale,1))] tabular-nums text-[hsl(var(--muted-foreground)/0.7)]",
+        "select-none text-xs tabular-nums text-[hsl(var(--muted-foreground)/0.7)]",
         props.className,
       )}
     >
@@ -75,10 +75,10 @@ export function TranscriptUserMessageActions(
   const rewindTitle = rewind?.available ? t("chat.rewindCode") : t("chat.rewindUnavailable");
 
   return (
-    <div className="chat-user-bubble-actions mt-1 flex items-center justify-end gap-1.5">
+    <div className="chat-user-bubble-actions mt-1 flex items-center justify-end gap-2">
       <div
         className={cn(
-          "chat-row-hover-chrome chat-row-hover-chrome--actions flex items-center gap-1.5 opacity-0 transition-opacity group-hover:opacity-100 group-focus-within:opacity-100",
+          "chat-row-hover-chrome chat-row-hover-chrome--actions flex items-center gap-2 opacity-0 transition-opacity group-hover:opacity-100 group-focus-within:opacity-100",
           alwaysShowActions && "[@media(any-hover:none)]:opacity-100",
         )}
       >
@@ -86,7 +86,7 @@ export function TranscriptUserMessageActions(
           <div className="flex gap-0.5">
             <button
               type="button"
-              className="chat-user-bubble-action rounded-md p-1 text-muted-foreground transition-colors hover:bg-muted/50 hover:text-foreground disabled:cursor-not-allowed disabled:opacity-40"
+              className="chat-user-bubble-action rounded-lg p-1 text-muted-foreground transition-colors hover:bg-muted/60 hover:text-foreground disabled:cursor-not-allowed disabled:opacity-40"
               title={t("chat.copy")}
               aria-label={t("chat.copy")}
               disabled={copyDisabled}
@@ -96,7 +96,7 @@ export function TranscriptUserMessageActions(
             </button>
             <button
               type="button"
-              className="chat-user-bubble-action rounded-md p-1 text-muted-foreground transition-colors hover:bg-muted/50 hover:text-foreground disabled:cursor-not-allowed disabled:opacity-40"
+              className="chat-user-bubble-action rounded-lg p-1 text-muted-foreground transition-colors hover:bg-muted/60 hover:text-foreground disabled:cursor-not-allowed disabled:opacity-40"
               title={editTitle}
               aria-label={editTitle}
               disabled={editDisabled}
@@ -107,7 +107,7 @@ export function TranscriptUserMessageActions(
             {rewind ? (
               <button
                 type="button"
-                className="chat-user-bubble-action rounded-md p-1 text-muted-foreground transition-colors hover:bg-muted/50 hover:text-foreground disabled:cursor-not-allowed disabled:opacity-40"
+                className="chat-user-bubble-action rounded-lg p-1 text-muted-foreground transition-colors hover:bg-muted/60 hover:text-foreground disabled:cursor-not-allowed disabled:opacity-40"
                 title={rewindTitle}
                 aria-label={rewindTitle}
                 disabled={rewind.disabled}
@@ -174,7 +174,7 @@ export function TranscriptAssistantMessageActions(
       >
         <button
           type="button"
-          className="chat-assistant-action inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted/50 hover:text-foreground disabled:cursor-not-allowed disabled:opacity-40"
+          className="chat-assistant-action inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted/60 hover:text-foreground disabled:cursor-not-allowed disabled:opacity-40"
           title={t("chat.copy")}
           aria-label={t("chat.copy")}
           disabled={copyDisabled}
@@ -193,7 +193,7 @@ export function TranscriptAssistantMessageActions(
           {(open) => (
             <button
               type="button"
-              className="chat-assistant-action inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted/50 hover:text-foreground disabled:cursor-not-allowed disabled:opacity-40"
+              className="chat-assistant-action inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted/60 hover:text-foreground disabled:cursor-not-allowed disabled:opacity-40"
               title={retryTitle}
               aria-label={retryTitle}
               disabled={retryDisabled}
@@ -215,7 +215,7 @@ export function TranscriptAssistantMessageActions(
           {(open) => (
             <button
               type="button"
-              className="chat-assistant-action inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted/50 hover:text-foreground disabled:cursor-not-allowed disabled:opacity-40"
+              className="chat-assistant-action inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted/60 hover:text-foreground disabled:cursor-not-allowed disabled:opacity-40"
               title={branchTitle}
               aria-label={branchTitle}
               disabled={branchDisabled}
@@ -237,7 +237,7 @@ export function TranscriptAssistantMessageActions(
 
   if (!withAvatarSpacer) {
     return (
-      <div className="chat-assistant-actions mt-1 flex items-center justify-start gap-1.5">
+      <div className="chat-assistant-actions mt-1 flex items-center justify-start gap-2">
         {actions}
       </div>
     );

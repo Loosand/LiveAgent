@@ -439,7 +439,7 @@ export function TrajectoryView(props: {
 
   if (loading) {
     return (
-      <div className="flex flex-1 items-center justify-center text-[13px] text-muted-foreground">
+      <div className="flex flex-1 items-center justify-center text-xs text-muted-foreground">
         {t("trajectory.loading")}
       </div>
     );
@@ -467,10 +467,10 @@ export function TrajectoryView(props: {
       />
 
       {(hasMoreBefore || props.hasMoreMessages === true) && (
-        <div className="shrink-0 border-b border-border/60 px-3 py-1.5 text-center">
+        <div className="shrink-0 border-b border-border px-3 py-2 text-center">
           <button
             type="button"
-            className="rounded px-2 py-1 text-[11px] text-muted-foreground hover:bg-muted hover:text-foreground disabled:cursor-wait disabled:opacity-60"
+            className="rounded-sm px-2 py-1 text-xs text-muted-foreground hover:bg-muted hover:text-foreground disabled:cursor-wait disabled:opacity-60"
             disabled={loadingMore}
             onClick={() => void loadEarlier()}
           >
@@ -480,7 +480,7 @@ export function TrajectoryView(props: {
       )}
 
       {notice !== null && (
-        <p className="shrink-0 border-b border-border/60 bg-muted/30 px-3 py-1 text-[11px] text-muted-foreground">
+        <p className="shrink-0 border-b border-border bg-muted/40 px-3 py-1 text-xs text-muted-foreground">
           {notice}
         </p>
       )}

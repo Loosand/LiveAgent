@@ -139,25 +139,25 @@ function HistoryListLoadingSkeleton() {
 
   return (
     <div
-      className="space-y-1.5 pt-1"
+      className="space-y-2 pt-1"
       role="status"
       aria-live="polite"
       aria-label={t("sidebar.readingHistory")}
     >
-      <div className="flex items-center gap-2 px-2 pb-1 text-[calc(11px*var(--zone-font-scale,1))] font-medium text-muted-foreground/75">
+      <div className="flex items-center gap-2 px-2 pb-1 text-xs font-medium text-muted-foreground/80">
         <span className="relative flex h-2 w-2 shrink-0" aria-hidden="true">
-          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary/35 opacity-75" />
-          <span className="relative inline-flex h-2 w-2 rounded-full bg-primary/70" />
+          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary/40 opacity-75" />
+          <span className="relative inline-flex h-2 w-2 rounded-full bg-primary/80" />
         </span>
         <span>{t("sidebar.readingHistory")}</span>
       </div>
       {HISTORY_LOADING_SKELETON_ROWS.map((row) => (
-        <div key={`${row.title}-${row.meta}`} className="rounded-lg px-2 py-2.5">
+        <div key={`${row.title}-${row.meta}`} className="rounded-lg px-2 py-2">
           <div className="flex items-start gap-2">
-            <div className="skills-skeleton-shimmer mt-1 h-3.5 w-3.5 shrink-0 rounded-md" />
+            <div className="skills-skeleton-shimmer mt-1 h-3.5 w-3.5 shrink-0 rounded-lg" />
             <div className="min-w-0 flex-1 space-y-2">
-              <div className={cn("skills-skeleton-shimmer h-3.5 rounded", row.title)} />
-              <div className={cn("skills-skeleton-shimmer h-2.5 rounded", row.meta)} />
+              <div className={cn("skills-skeleton-shimmer h-3.5 rounded-sm", row.title)} />
+              <div className={cn("skills-skeleton-shimmer h-2.5 rounded-sm", row.meta)} />
             </div>
           </div>
         </div>
@@ -1309,14 +1309,14 @@ export const ChatHistorySidebar = memo(function ChatHistorySidebar(props: ChatHi
       data-app-frame-column="sidebar"
       data-state={isOpen ? "open" : "closed"}
       className={cn(
-        "chat-history-sidebar zone-font-scale flex h-full shrink-0 flex-col overflow-hidden border-r border-border/50 bg-[hsl(var(--sidebar-bg))] transition-[width,opacity] duration-200 ease-out",
+        "chat-history-sidebar zone-font-scale flex h-full shrink-0 flex-col overflow-hidden border-r border-border bg-[hsl(var(--sidebar-bg))] transition-[width,opacity] duration-200 ease-out",
         isOpen ? "w-[272px] opacity-100" : "w-0 opacity-0",
       )}
       style={{ "--zone-font-scale": fontScale } as CSSProperties}
     >
       <div className="chat-history-sidebar-inner flex w-[272px] min-w-[272px] min-h-0 flex-1 flex-col">
         {headerTop}
-        <div className="shrink-0 border-b border-border/50 px-2 pb-3 pt-3">
+        <div className="shrink-0 border-b border-border px-2 pb-3 pt-3">
           <div className="flex items-center justify-between gap-2">
             {brand ?? (
               <div className="flex min-w-0 -translate-y-0.5 items-center gap-2">
@@ -1325,7 +1325,7 @@ export const ChatHistorySidebar = memo(function ChatHistorySidebar(props: ChatHi
                   alt=""
                   aria-hidden="true"
                   draggable={false}
-                  className="h-8 w-8 shrink-0 select-none rounded-xl object-contain"
+                  className="h-8 w-8 shrink-0 select-none rounded-2xl object-contain"
                 />
                 <div className="min-w-0">
                   <div className="truncate font-semibold tracking-tight">Live Agent</div>
@@ -1353,13 +1353,13 @@ export const ChatHistorySidebar = memo(function ChatHistorySidebar(props: ChatHi
               variant="ghost"
               onClick={onNewConversation}
               className={cn(
-                "chat-history-new-conversation-button h-[30px] w-full justify-start gap-3 rounded-lg px-3 text-[calc(14px*var(--zone-font-scale,1))] font-normal leading-5 shadow-none transition-colors",
+                "chat-history-new-conversation-button h-[30px] w-full justify-start gap-3 rounded-lg px-3 text-xs font-normal leading-5 shadow-none transition-colors",
                 activeView === "chat"
-                  ? "text-foreground/90 hover:bg-foreground/[0.08] hover:text-foreground active:bg-foreground/[0.1] active:text-foreground focus-visible:bg-foreground/[0.08]"
-                  : "text-foreground/80 hover:bg-foreground/[0.08] hover:text-foreground focus-visible:bg-foreground/[0.08]",
+                  ? "text-foreground/90 hover:bg-foreground/10 hover:text-foreground active:bg-foreground/10 active:text-foreground focus-visible:bg-foreground/10"
+                  : "text-foreground/80 hover:bg-foreground/10 hover:text-foreground focus-visible:bg-foreground/10",
               )}
             >
-              <CirclePlus className="h-4 w-4 shrink-0 text-foreground/85" />
+              <CirclePlus className="h-4 w-4 shrink-0 text-foreground/90" />
               <span className="chat-history-new-conversation-label">
                 {t("chat.newConversation")}
               </span>
@@ -1369,10 +1369,10 @@ export const ChatHistorySidebar = memo(function ChatHistorySidebar(props: ChatHi
               variant="ghost"
               disabled={sectionsDisabled}
               onClick={() => setConversationSearchOpen(true)}
-              className="chat-history-search-button h-[30px] w-full justify-start gap-3 rounded-lg px-3 text-[calc(14px*var(--zone-font-scale,1))] font-normal leading-5 text-foreground/80 shadow-none transition-colors hover:bg-foreground/[0.08] hover:text-foreground focus-visible:bg-foreground/[0.08]"
+              className="chat-history-search-button h-[30px] w-full justify-start gap-3 rounded-lg px-3 text-xs font-normal leading-5 text-foreground/80 shadow-none transition-colors hover:bg-foreground/10 hover:text-foreground focus-visible:bg-foreground/10"
               title={t("chat.searchConversations")}
             >
-              <Search className="h-4 w-4 shrink-0 text-foreground/85" />
+              <Search className="h-4 w-4 shrink-0 text-foreground/90" />
               <span className="min-w-0 flex-1 truncate text-left">
                 {t("chat.searchConversations")}
               </span>
@@ -1382,17 +1382,17 @@ export const ChatHistorySidebar = memo(function ChatHistorySidebar(props: ChatHi
               variant="ghost"
               onClick={() => onOpenSkillsHub?.()}
               className={cn(
-                "sidebar-hub-menu-item h-[30px] w-full justify-start gap-3 rounded-lg px-3 text-[calc(14px*var(--zone-font-scale,1))] font-normal leading-5 shadow-none transition-colors",
+                "sidebar-hub-menu-item h-[30px] w-full justify-start gap-3 rounded-lg px-3 text-xs font-normal leading-5 shadow-none transition-colors",
                 activeView === "skills-hub"
-                  ? "bg-foreground/[0.06] text-foreground hover:bg-foreground/[0.08] hover:text-foreground focus-visible:bg-foreground/[0.08]"
-                  : "text-foreground/80 hover:bg-foreground/[0.08] hover:text-foreground focus-visible:bg-foreground/[0.08]",
+                  ? "bg-foreground/5 text-foreground hover:bg-foreground/10 hover:text-foreground focus-visible:bg-foreground/10"
+                  : "text-foreground/80 hover:bg-foreground/10 hover:text-foreground focus-visible:bg-foreground/10",
               )}
               title="Skills Hub"
             >
               <Blend
                 className={cn(
                   "h-4 w-4 shrink-0",
-                  activeView === "skills-hub" ? "text-amber-500" : "text-foreground/85",
+                  activeView === "skills-hub" ? "text-warning" : "text-foreground/90",
                 )}
               />
               <span className="truncate">Skills</span>
@@ -1402,17 +1402,17 @@ export const ChatHistorySidebar = memo(function ChatHistorySidebar(props: ChatHi
               variant="ghost"
               onClick={() => onOpenMcpHub?.()}
               className={cn(
-                "sidebar-hub-menu-item h-[30px] w-full justify-start gap-3 rounded-lg px-3 text-[calc(14px*var(--zone-font-scale,1))] font-normal leading-5 shadow-none transition-colors",
+                "sidebar-hub-menu-item h-[30px] w-full justify-start gap-3 rounded-lg px-3 text-xs font-normal leading-5 shadow-none transition-colors",
                 activeView === "mcp-hub"
-                  ? "bg-foreground/[0.06] text-foreground hover:bg-foreground/[0.08] hover:text-foreground focus-visible:bg-foreground/[0.08]"
-                  : "text-foreground/80 hover:bg-foreground/[0.08] hover:text-foreground focus-visible:bg-foreground/[0.08]",
+                  ? "bg-foreground/5 text-foreground hover:bg-foreground/10 hover:text-foreground focus-visible:bg-foreground/10"
+                  : "text-foreground/80 hover:bg-foreground/10 hover:text-foreground focus-visible:bg-foreground/10",
               )}
               title="MCP Hub"
             >
               <Cable
                 className={cn(
                   "h-4 w-4 shrink-0",
-                  activeView === "mcp-hub" ? "text-violet-500" : "text-foreground/85",
+                  activeView === "mcp-hub" ? "text-activity" : "text-foreground/90",
                 )}
               />
               <span className="truncate">MCP</span>
@@ -1442,14 +1442,14 @@ export const ChatHistorySidebar = memo(function ChatHistorySidebar(props: ChatHi
                   // both lists. The drop-zone outline eats 1px even while it's
                   // transparent, so the padding is mx-1 + border + 3px = 8, not
                   // the px-1 the 8px target would otherwise imply.
-                  "mx-1 flex items-center justify-between rounded-t-xl border-x border-t border-dashed border-transparent px-[3px] pb-1 pt-2 transition-colors",
-                  workspaceFolderDropActive && "border-primary/40 bg-primary/[0.08]",
+                  "mx-1 flex items-center justify-between rounded-t-2xl border-x border-t border-dashed border-transparent px-1 pb-1 pt-2 transition-colors",
+                  workspaceFolderDropActive && "border-ring bg-primary/10",
                 )}
               >
                 <button
                   type="button"
                   aria-expanded={!projectsCollapsed}
-                  className="group flex min-w-0 items-center gap-1 rounded-md px-3 py-1 text-xs font-semibold text-muted-foreground outline-hidden"
+                  className="group flex min-w-0 items-center gap-1 rounded-lg px-3 py-1 text-xs font-semibold text-muted-foreground outline-hidden"
                   onClick={handleProjectsCollapsedChange}
                   disabled={sectionsDisabled}
                 >
@@ -1533,10 +1533,9 @@ export const ChatHistorySidebar = memo(function ChatHistorySidebar(props: ChatHi
                   // never shifts that geometry. scroll-fade signals overflow by
                   // the edge fade and hides the native bar only on engines
                   // where that fade is actually applied.
-                  "scroll-fade scroll-fade-8 min-h-0 overflow-y-auto overflow-x-hidden rounded-b-xl transition-[opacity,background-color,box-shadow] duration-300 ease-out motion-reduce:transition-none",
+                  "scroll-fade scroll-fade-8 min-h-0 overflow-y-auto overflow-x-hidden rounded-b-2xl transition-[opacity,background-color,box-shadow] duration-300 ease-out motion-reduce:transition-none",
                   projectsCollapsed ? "opacity-0" : "opacity-100",
-                  workspaceFolderDropActive &&
-                    "bg-primary/[0.045] ring-1 ring-primary/40 ring-inset",
+                  workspaceFolderDropActive && "bg-primary/5 ring-1 ring-primary/40 ring-inset",
                 )}
               >
                 <div ref={projectsBodyRef} className="space-y-0.5 px-2 pb-0.5">
@@ -1544,7 +1543,7 @@ export const ChatHistorySidebar = memo(function ChatHistorySidebar(props: ChatHi
                     <div
                       role="status"
                       aria-live="polite"
-                      className="mb-1 flex items-center gap-2 rounded-lg border border-dashed border-primary/35 bg-primary/[0.06] px-2.5 py-2 text-[11px] leading-4 text-primary"
+                      className="mb-1 flex items-center gap-2 rounded-lg border border-dashed border-ring bg-primary/5 px-2 py-2 text-xs leading-4 text-primary"
                     >
                       <FolderOpen className="h-4 w-4 shrink-0" />
                       <span>{t("chat.workspaceDropFolderDescription")}</span>
@@ -1584,7 +1583,7 @@ export const ChatHistorySidebar = memo(function ChatHistorySidebar(props: ChatHi
                             }
                           }}
                           placeholder={t("chat.workspaceGroupNamePlaceholder")}
-                          className="h-7 min-w-0 flex-1 rounded-none border-0 bg-transparent p-0 text-[calc(13px*var(--zone-font-scale,1))] font-semibold shadow-none outline-none focus-visible:border-0 focus-visible:bg-transparent"
+                          className="h-7 min-w-0 flex-1 rounded-none border-0 bg-transparent p-0 text-xs font-semibold shadow-none outline-none focus-visible:border-0 focus-visible:bg-transparent"
                         />
                       </div>
                       {/* Mirrors ProjectRow's action column: gap-0.5 between
@@ -1603,7 +1602,7 @@ export const ChatHistorySidebar = memo(function ChatHistorySidebar(props: ChatHi
                             skipNextGroupBlurCommitRef.current = true;
                           }}
                           onClick={commitNewGroup}
-                          className="flex h-7 w-7 items-center justify-center rounded-lg text-emerald-600 transition-colors hover:bg-emerald-500/10 dark:text-emerald-300"
+                          className="flex h-7 w-7 items-center justify-center rounded-lg text-success transition-colors hover:bg-success/10"
                           aria-label={t("chat.workspaceGroupCreate")}
                         >
                           <Check className="h-3.5 w-3.5" />
@@ -1615,7 +1614,7 @@ export const ChatHistorySidebar = memo(function ChatHistorySidebar(props: ChatHi
                             skipNextGroupBlurCommitRef.current = true;
                           }}
                           onClick={cancelNewGroup}
-                          className="flex h-7 w-7 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-foreground/[0.06] hover:text-foreground"
+                          className="flex h-7 w-7 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-foreground/5 hover:text-foreground"
                           aria-label={t("chat.cancel")}
                         >
                           <X className="h-3.5 w-3.5" />
@@ -1631,7 +1630,7 @@ export const ChatHistorySidebar = memo(function ChatHistorySidebar(props: ChatHi
                         {sectionIndex === firstUnpinnedSectionIndex ? (
                           <div
                             aria-hidden="true"
-                            className="mx-2 !my-1.5 h-px bg-gradient-to-r from-border/80 via-border/45 to-transparent"
+                            className="mx-2 !my-2 h-px bg-gradient-to-r from-border/80 via-border/40 to-transparent"
                           />
                         ) : null}
                         <ProjectGroupHeader
@@ -1703,11 +1702,11 @@ export const ChatHistorySidebar = memo(function ChatHistorySidebar(props: ChatHi
                       renderedSections.grouped.length > 0 ? (
                         <div
                           aria-hidden="true"
-                          className="mx-2 !my-1.5 h-px bg-gradient-to-r from-border/80 via-border/45 to-transparent"
+                          className="mx-2 !my-2 h-px bg-gradient-to-r from-border/80 via-border/40 to-transparent"
                         />
                       ) : null}
                       {renderedSections.grouped.length > 0 ? (
-                        <div className="px-2 pt-1.5 text-[11px] font-medium uppercase tracking-wide text-muted-foreground/70">
+                        <div className="px-2 pt-2 text-xs font-medium uppercase tracking-wide text-muted-foreground/80">
                           {t("chat.workspaceUngrouped")}
                         </div>
                       ) : null}
@@ -1718,7 +1717,7 @@ export const ChatHistorySidebar = memo(function ChatHistorySidebar(props: ChatHi
                             {projectIndex === firstUnpinnedUngroupedIndex ? (
                               <div
                                 aria-hidden="true"
-                                className="mx-2 !my-1.5 h-px bg-gradient-to-r from-border/80 via-border/45 to-transparent"
+                                className="mx-2 !my-2 h-px bg-gradient-to-r from-border/80 via-border/40 to-transparent"
                               />
                             ) : null}
                             <ProjectRow
@@ -1765,7 +1764,7 @@ export const ChatHistorySidebar = memo(function ChatHistorySidebar(props: ChatHi
                   {hiddenProjectCount > 0 || showAllProjects ? (
                     <button
                       type="button"
-                      className="flex w-full items-center justify-center gap-1 rounded-md px-2 py-1.5 text-[calc(11.5px*var(--zone-font-scale,1))] font-medium text-muted-foreground outline-hidden transition-colors hover:!bg-foreground/[0.06] hover:text-foreground active:!bg-foreground/[0.1] focus-visible:!bg-foreground/[0.08] focus-visible:ring-2 focus-visible:ring-ring"
+                      className="flex w-full items-center justify-center gap-1 rounded-lg px-2 py-2 text-xs font-medium text-muted-foreground outline-hidden transition-colors hover:!bg-foreground/5 hover:text-foreground active:!bg-foreground/10 focus-visible:!bg-foreground/10 focus-visible:ring-2 focus-visible:ring-ring"
                       onClick={handleShowAllProjects}
                       disabled={sectionsDisabled}
                     >
@@ -1783,7 +1782,7 @@ export const ChatHistorySidebar = memo(function ChatHistorySidebar(props: ChatHi
                         type="button"
                         onClick={() => setArchivedGroupOpen((current) => !current)}
                         disabled={sectionsDisabled}
-                        className="flex w-full items-center gap-1 rounded-md px-2 py-1.5 text-[calc(11.5px*var(--zone-font-scale,1))] font-medium text-muted-foreground/80 outline-hidden transition-colors hover:!bg-foreground/[0.06] hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring"
+                        className="flex w-full items-center gap-1 rounded-lg px-2 py-2 text-xs font-medium text-muted-foreground/80 outline-hidden transition-colors hover:!bg-foreground/5 hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring"
                       >
                         <ChevronRight
                           className={cn(
@@ -1863,7 +1862,7 @@ export const ChatHistorySidebar = memo(function ChatHistorySidebar(props: ChatHi
                 <span
                   aria-hidden="true"
                   className={cn(
-                    "h-0.5 w-10 rounded-full bg-muted-foreground/25 opacity-70 shadow-sm transition-[width,background-color,opacity]",
+                    "h-0.5 w-10 rounded-full bg-muted-foreground/20 opacity-70 shadow-control transition-[width,background-color,opacity]",
                     "group-hover:w-16 group-hover:bg-primary/60 group-hover:opacity-100 group-focus-visible:w-16 group-focus-visible:bg-primary group-focus-visible:opacity-100",
                     isProjectSectionResizing && "w-20 bg-primary opacity-100",
                     !canResizeProjectSections && "hidden",
@@ -1877,14 +1876,14 @@ export const ChatHistorySidebar = memo(function ChatHistorySidebar(props: ChatHi
             ref={recentHeaderRef}
             className={cn(
               "grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2 px-2 pb-2",
-              showProjects ? "border-t border-border/35 pt-0.5" : "pt-3",
+              showProjects ? "border-t border-border pt-0.5" : "pt-3",
             )}
           >
             {selectionMode ? (
               <div
                 role="status"
                 aria-live="polite"
-                className="flex min-w-0 items-center gap-1.5 px-3 py-1 text-xs font-semibold text-foreground/85"
+                className="flex min-w-0 items-center gap-2 px-3 py-1 text-xs font-semibold text-foreground/90"
               >
                 <ListChecks className="h-3.5 w-3.5 shrink-0" />
                 <span className="min-w-0 truncate">
@@ -1898,7 +1897,7 @@ export const ChatHistorySidebar = memo(function ChatHistorySidebar(props: ChatHi
               <button
                 type="button"
                 aria-expanded={!recentCollapsed}
-                className="group flex min-w-0 items-center gap-1 rounded-md px-3 py-1 text-xs font-semibold text-muted-foreground outline-hidden"
+                className="group flex min-w-0 items-center gap-1 rounded-lg px-3 py-1 text-xs font-semibold text-muted-foreground outline-hidden"
                 onClick={handleRecentCollapsedChange}
                 disabled={sectionsDisabled}
               >
@@ -1910,7 +1909,7 @@ export const ChatHistorySidebar = memo(function ChatHistorySidebar(props: ChatHi
                 />
               </button>
             )}
-            <div className="flex items-center gap-1.5">
+            <div className="flex items-center gap-2">
               {selectionMode ? (
                 <>
                   <DropdownMenu
@@ -1948,7 +1947,7 @@ export const ChatHistorySidebar = memo(function ChatHistorySidebar(props: ChatHi
                       side="top"
                       align="start"
                       collisionPadding={12}
-                      className="sidebar-context-menu max-h-[18rem] min-w-[12rem] overflow-y-auto rounded-xl border-border/60 bg-background/95 backdrop-blur-xl"
+                      className="sidebar-context-menu max-h-[18rem] min-w-[12rem] overflow-y-auto rounded-2xl border-border bg-background backdrop-blur-xl"
                     >
                       {activeProjects.map((workspace) => (
                         <DropdownMenuItem
@@ -2001,11 +2000,11 @@ export const ChatHistorySidebar = memo(function ChatHistorySidebar(props: ChatHi
                     <span
                       role="status"
                       aria-live="polite"
-                      className="flex items-center gap-1 rounded-full border border-primary/20 bg-primary/[0.06] px-2 py-0.5 text-[calc(10.5px*var(--zone-font-scale,1))] font-medium text-primary/80"
+                      className="flex items-center gap-1 rounded-full border border-ring bg-primary/5 px-2 py-0.5 text-2xs font-medium text-primary/80"
                     >
                       <span className="relative flex h-1.5 w-1.5 shrink-0" aria-hidden="true">
-                        <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary/35 opacity-75" />
-                        <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-primary/70" />
+                        <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary/40 opacity-75" />
+                        <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-primary/80" />
                       </span>
                       {t("chat.history.syncing")}
                     </span>
@@ -2079,14 +2078,14 @@ export const ChatHistorySidebar = memo(function ChatHistorySidebar(props: ChatHi
                 <div
                   role="alert"
                   title={actionErrorMessage}
-                  className="flex items-start gap-2 rounded-xl border border-destructive/25 bg-destructive/10 px-3 py-2 text-[calc(11px*var(--zone-font-scale,1))] leading-4 text-destructive"
+                  className="flex items-start gap-2 rounded-2xl border border-destructive/20 bg-destructive/10 px-3 py-2 text-xs leading-4 text-destructive"
                 >
                   <AlertCircle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
                   <span className="min-w-0 break-words">{actionErrorMessage}</span>
                   {onDismissActionError ? (
                     <button
                       type="button"
-                      className="ml-auto shrink-0 rounded p-0.5 hover:bg-destructive/10"
+                      className="ml-auto shrink-0 rounded-sm p-0.5 hover:bg-destructive/10"
                       onClick={onDismissActionError}
                       title={t("chat.cancel")}
                     >
@@ -2122,7 +2121,7 @@ export const ChatHistorySidebar = memo(function ChatHistorySidebar(props: ChatHi
                         {virtualRow.index === firstUnpinnedHistoryIndex ? (
                           <div
                             aria-hidden="true"
-                            className="mx-2 mb-1.5 mt-1 h-px bg-gradient-to-r from-border/80 via-border/45 to-transparent"
+                            className="mx-2 mb-2 mt-1 h-px bg-gradient-to-r from-border/80 via-border/40 to-transparent"
                           />
                         ) : null}
                         {renderHistoryRow(item)}
@@ -2140,7 +2139,7 @@ export const ChatHistorySidebar = memo(function ChatHistorySidebar(props: ChatHi
                 </div>
               ) : null}
               {items.length > 0 && (hasMore || isLoadingMore) ? (
-                <div className="px-2 pb-2 pt-1 text-center text-[calc(11px*var(--zone-font-scale,1))] leading-5 text-muted-foreground/70">
+                <div className="px-2 pb-2 pt-1 text-center text-xs leading-5 text-muted-foreground/80">
                   {isLoadingMore
                     ? t("sidebar.loadingMoreHistory")
                     : t("sidebar.continueLoadingHistory")}
@@ -2149,7 +2148,7 @@ export const ChatHistorySidebar = memo(function ChatHistorySidebar(props: ChatHi
             </div>
           </div>
         </div>
-        <div className="grid shrink-0 grid-cols-[minmax(0,1fr)_auto] items-center gap-2 border-t border-border/50 bg-[hsl(var(--sidebar-bg))] px-2 py-1.5">
+        <div className="grid shrink-0 grid-cols-[minmax(0,1fr)_auto] items-center gap-2 border-t border-border bg-[hsl(var(--sidebar-bg))] px-2 py-2">
           <Button
             type="button"
             variant="ghost"
@@ -2158,10 +2157,10 @@ export const ChatHistorySidebar = memo(function ChatHistorySidebar(props: ChatHi
             // 东西不该为了脚本方便固定成英文。
             data-testid="open-settings"
             onClick={onOpenSettings}
-            className="h-8 w-full justify-start gap-2.5 rounded-lg px-2.5 text-[calc(13px*var(--zone-font-scale,1))] font-normal text-foreground/85 shadow-none hover:bg-foreground/[0.08] hover:text-foreground"
+            className="h-8 w-full justify-start gap-2 rounded-lg px-2 text-xs font-normal text-foreground/90 shadow-none hover:bg-foreground/10 hover:text-foreground"
             title={t("tooltip.settings")}
           >
-            <Settings className="h-4 w-4 shrink-0 text-foreground/75" />
+            <Settings className="h-4 w-4 shrink-0 text-foreground/80" />
             <span className="truncate">{t("tooltip.settings")}</span>
           </Button>
           {footerTrailing}

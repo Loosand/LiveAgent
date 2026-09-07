@@ -27,5 +27,5 @@ export async function copyWorkspacePreviewImage(request: { data: string; mimeTyp
 }
 
 export function WorkspaceOverlayTitleBar() {
-  return <MacOsTitleBarSpacer className="bg-muted/45" />;
+  return <MacOsTitleBarSpacer className="bg-muted/40" />;
 }

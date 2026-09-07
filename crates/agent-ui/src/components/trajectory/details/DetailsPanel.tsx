@@ -149,7 +149,7 @@ export function DetailsPanel(props: {
     // 窄容器为上下排布：空态占位直接隐藏，把整块高度让给列表。
     return (
       <aside
-        className="relative flex min-w-[160px] max-w-[calc(100%-140px)] w-[var(--trajectory-details-width)] shrink-0 items-center justify-center border-l border-border/60 p-6 text-center text-[12px] text-muted-foreground @max-[520px]:p-3 @max-[640px]:hidden"
+        className="relative flex min-w-[160px] max-w-[calc(100%-140px)] w-[var(--trajectory-details-width)] shrink-0 items-center justify-center border-l border-border p-6 text-center text-xs text-muted-foreground @max-[520px]:p-3 @max-[640px]:hidden"
         style={{ "--trajectory-details-width": `${props.width}px` } as CSSProperties}
       >
         <DetailsResizeHandle
@@ -183,7 +183,7 @@ export function DetailsPanel(props: {
 
   return (
     <aside
-      className="relative flex min-w-[160px] max-w-[calc(100%-140px)] w-[var(--trajectory-details-width)] shrink-0 flex-col border-l border-border/60 bg-background @max-[640px]:h-[55%] @max-[640px]:w-full @max-[640px]:min-w-0 @max-[640px]:max-w-none @max-[640px]:border-l-0 @max-[640px]:border-t"
+      className="relative flex min-w-[160px] max-w-[calc(100%-140px)] w-[var(--trajectory-details-width)] shrink-0 flex-col border-l border-border bg-background @max-[640px]:h-[55%] @max-[640px]:w-full @max-[640px]:min-w-0 @max-[640px]:max-w-none @max-[640px]:border-l-0 @max-[640px]:border-t"
       style={{ "--trajectory-details-width": `${props.width}px` } as CSSProperties}
     >
       <DetailsResizeHandle
@@ -191,8 +191,8 @@ export function DetailsPanel(props: {
         width={props.width}
         onWidthChange={props.onWidthChange}
       />
-      <header className="flex items-center gap-2 border-b border-border/60 px-3 py-2">
-        <span className="truncate text-[12px] font-medium">
+      <header className="flex items-center gap-2 border-b border-border px-3 py-2">
+        <span className="truncate text-xs font-medium">
           {t(trajectoryKindLabelKey(record.kind))}
           <span className="ml-2 font-normal text-muted-foreground">#{record.index}</span>
         </span>
@@ -200,7 +200,7 @@ export function DetailsPanel(props: {
           type="button"
           aria-label={t("trajectory.details.close")}
           onClick={props.onClose}
-          className="ml-auto rounded p-1 text-muted-foreground hover:bg-muted/60 hover:text-foreground"
+          className="ml-auto rounded-sm p-1 text-muted-foreground hover:bg-muted/60 hover:text-foreground"
         >
           <X className="size-3.5" aria-hidden="true" />
         </button>
@@ -208,7 +208,7 @@ export function DetailsPanel(props: {
 
       <div
         role="tablist"
-        className="flex shrink-0 flex-wrap gap-1 border-b border-border/60 px-2 py-1 @max-[520px]:flex-nowrap @max-[520px]:overflow-x-auto"
+        className="flex shrink-0 flex-wrap gap-1 border-b border-border px-2 py-1 @max-[520px]:flex-nowrap @max-[520px]:overflow-x-auto"
       >
         {tabs.map((tab) => (
           <button
@@ -218,7 +218,7 @@ export function DetailsPanel(props: {
             aria-selected={currentTab === tab}
             onClick={() => setActiveTab(tab)}
             className={cn(
-              "shrink-0 rounded px-2 py-0.5 text-[11px] transition-colors",
+              "shrink-0 rounded-sm px-2 py-0.5 text-xs transition-colors",
               currentTab === tab
                 ? "bg-muted text-foreground"
                 : "text-muted-foreground hover:text-foreground",
@@ -229,7 +229,7 @@ export function DetailsPanel(props: {
         ))}
       </div>
 
-      <div className="min-h-0 flex-1 overflow-y-auto p-3 text-[12px] @max-[520px]:p-2.5">
+      <div className="min-h-0 flex-1 overflow-y-auto p-3 text-xs @max-[520px]:p-2">
         {ActiveTab === null ? null : <ActiveTab {...tabProps} />}
       </div>
     </aside>

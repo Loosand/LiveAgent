@@ -74,7 +74,7 @@ export function SharedHistoryPage({ token }: SharedHistoryPageProps) {
                 <div className="text-xs font-medium uppercase tracking-[0.16em] text-muted-foreground">
                   LiveAgent Shared Conversation
                 </div>
-                <h1 className="mt-1 truncate text-lg font-semibold text-foreground" title={title}>
+                <h1 className="mt-1 truncate text-base font-semibold text-foreground" title={title}>
                   {title}
                 </h1>
               </div>
@@ -91,14 +91,14 @@ export function SharedHistoryPage({ token }: SharedHistoryPageProps) {
             {state.status === "loading" ? (
               <div className="history-share-state">
                 <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
-                <div className="text-sm font-medium text-foreground/85">正在加载分享会话</div>
+                <div className="text-base font-medium text-foreground/90">正在加载分享会话</div>
               </div>
             ) : state.status === "error" ? (
               <div className="history-share-state">
-                <div className="flex h-10 w-10 items-center justify-center rounded-2xl border border-destructive/25 bg-destructive/10 text-destructive">
+                <div className="flex h-10 w-10 items-center justify-center rounded-2xl border border-destructive/20 bg-destructive/10 text-destructive">
                   <AlertCircle className="h-5 w-5" />
                 </div>
-                <div className="text-sm font-medium text-foreground/85">{state.error}</div>
+                <div className="text-base font-medium text-foreground/90">{state.error}</div>
                 <div className="max-w-md text-center text-xs leading-5 text-muted-foreground">
                   分享可能已被关闭，或桌面端当前不在线。
                 </div>
@@ -106,7 +106,7 @@ export function SharedHistoryPage({ token }: SharedHistoryPageProps) {
             ) : state.entries.length === 0 ? (
               <div className="history-share-state">
                 <MessageSquareText className="h-5 w-5 text-muted-foreground" />
-                <div className="text-sm font-medium text-foreground/85">该会话暂无可展示内容</div>
+                <div className="text-base font-medium text-foreground/90">该会话暂无可展示内容</div>
               </div>
             ) : (
               <ScrollArea className="history-share-scroll">

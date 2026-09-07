@@ -99,7 +99,7 @@ function PreviewImage(props: { url: string; alt?: string; title?: string }) {
   }
   return (
     <img
-      className="my-1 inline-block h-auto max-w-full rounded-md"
+      className="my-1 inline-block h-auto max-w-full rounded-lg"
       data-liveagent-markdown-image="preview"
       src={url}
       alt={alt ?? ""}
@@ -121,7 +121,7 @@ function WorkspacePreviewImage(props: {
   if (state.status === "loading") {
     return (
       <span
-        className="inline-block h-4 w-20 animate-pulse rounded bg-muted align-middle"
+        className="inline-block h-4 w-20 animate-pulse rounded-sm bg-muted align-middle"
         data-liveagent-markdown-image="loading"
       />
     );
@@ -165,12 +165,12 @@ function WorkspaceMarkdownPreviewImage(props: MarkdownPreviewImageProps) {
 }
 
 const previewLinkClassName =
-  "cursor-pointer appearance-none bg-transparent p-0 text-left font-medium text-primary underline decoration-primary/35 underline-offset-4 transition-colors hover:decoration-primary";
+  "cursor-pointer appearance-none bg-transparent p-0 text-left font-medium text-primary underline decoration-primary/40 underline-offset-4 transition-colors hover:decoration-primary";
 
 function InertMarkdownLink(props: { children: ReactNode; label?: string }) {
   const { children, label } = props;
   return (
-    <span className="text-primary underline decoration-primary/35 underline-offset-4" title={label}>
+    <span className="text-primary underline decoration-primary/40 underline-offset-4" title={label}>
       {children}
     </span>
   );

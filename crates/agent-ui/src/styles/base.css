@@ -30,15 +30,6 @@
 }
 
 @theme inline {
-  --radius-xs: calc(var(--radius) - 6px);
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
-  --radius-2xl: calc(var(--radius) + 8px);
-  --radius-3xl: calc(var(--radius) + 12px);
-  --radius-4xl: calc(var(--radius) + 16px);
-
   @keyframes tw-shimmer {
     from {
       background-position: 100% 0;
@@ -390,18 +381,6 @@
     outline: none;
   }
 
-  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):focus-visible,
-  textarea:focus-visible,
-  select:focus-visible,
-  [contenteditable="true"]:focus-visible,
-  [contenteditable="plaintext-only"]:focus-visible,
-  [role="textbox"]:focus-visible {
-    --tw-ring-offset-shadow: 0 0 #0000;
-    --tw-ring-shadow: 0 0 #0000;
-    border-color: hsl(var(--input));
-    box-shadow: var(--tw-shadow, 0 0 #0000);
-  }
-
   ::-webkit-scrollbar {
     width: 6px;
     height: 6px;
@@ -413,7 +392,7 @@
 
   ::-webkit-scrollbar-thumb {
     background: hsl(var(--muted-foreground) / 0.2);
-    border-radius: 3px;
+    border-radius: var(--radius-sm);
   }
 
   ::-webkit-scrollbar-thumb:hover {
@@ -450,7 +429,7 @@
     height: 4px;
     flex: 0 0 4px;
     overflow: hidden;
-    border-radius: 999px;
+    border-radius: var(--radius-full);
     background: var(--project-tools-tabs-scrollbar-track, hsl(var(--muted) / 0.42));
     opacity: 0;
     pointer-events: none;
@@ -473,8 +452,7 @@
     min-width: 28px;
     border-radius: inherit;
     background: var(--project-tools-tabs-scrollbar-thumb, hsl(var(--muted-foreground) / 0.22));
-    box-shadow: inset 0 0 0 1px
-      var(--project-tools-tabs-scrollbar-thumb-border, hsl(var(--background) / 0.82));
+    box-shadow: var(--scrollbar-inset);
     transition:
       background-color 160ms ease,
       box-shadow 160ms ease;
@@ -512,9 +490,9 @@
     bottom: 2px;
     z-index: 2;
     width: 8px;
-    border-radius: 999px;
+    border-radius: var(--radius-full);
     background: hsl(var(--muted) / 0.36);
-    box-shadow: inset 0 0 0 1px hsl(var(--background) / 0.42);
+    box-shadow: var(--scrollbar-inset);
     cursor: default;
     touch-action: none;
   }
@@ -525,11 +503,9 @@
     right: 1px;
     top: 0;
     min-height: 24px;
-    border-radius: 999px;
+    border-radius: var(--radius-full);
     background: hsl(var(--muted-foreground) / 0.42);
-    box-shadow:
-      inset 0 0 0 1px hsl(var(--background) / 0.55),
-      0 1px 2px hsl(220 22% 10% / 0.08);
+    box-shadow: var(--scrollbar-inset);
     transition: background-color 0.16s ease;
   }
 
@@ -558,11 +534,11 @@
 
   .tool-text-scroll::-webkit-scrollbar-track {
     background: transparent;
-    margin: 6px;
+    margin: calc(var(--spacing) * 2);
   }
 
   .tool-text-scroll::-webkit-scrollbar-thumb {
-    border-radius: 999px;
+    border-radius: var(--radius-full);
     background: hsl(var(--muted-foreground) / 0.14);
     transition: background 0.2s ease;
   }
@@ -573,174 +549,6 @@
 
   .tool-text-scroll:hover::-webkit-scrollbar-thumb:hover {
     background: hsl(var(--muted-foreground) / 0.38);
-  }
-
-  :root {
-    color-scheme: light;
-    --app-font-family: ui-sans-serif, system-ui, "PingFang SC", "Microsoft YaHei", sans-serif;
-    --chat-font-family: "OpenAI Sans Semibold", "PingFang SC", "Microsoft YaHei", sans-serif;
-    --code-font-family:
-      "SF Mono", SFMono-Regular, Menlo, Monaco, "Cascadia Code", Consolas, "Liberation Mono",
-      monospace;
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
-
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
-
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
-
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
-
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
-
-    --radius: 0.625rem;
-
-    /* Modal/popover portals share a plane so later nested portals stay interactive. */
-    --layer-content: 1;
-    --layer-raised: 10;
-    --layer-panel: 20;
-    --layer-popover: 10000;
-    --layer-modal: 10000;
-    --layer-toast: 10010;
-    --layer-critical: 10020;
-
-    /* Sidebar */
-    --sidebar-bg: 220 14% 96%;
-
-    /* Hub pages (MCP/Skills) canvas — in dark it sits below --background so
-       background-tinted glass panels read as elevated surfaces. */
-    --hub-canvas: var(--background);
-
-    /* Chip / pill buttons (MCP, Skills, 新对话) */
-    --chip-bg: 220 13% 91%;
-    --chip-bg-hover: 220 13% 86%;
-    /* Send button disabled */
-    --send-disabled-bg: 220 13% 91%;
-
-    /* Chat-specific tokens */
-    --chat-user-bg: 220 9% 91%;
-    --chat-user-fg: 222 84% 5%;
-    --chat-assistant-bg: 0 0% 100%;
-    --chat-assistant-fg: 222.2 84% 4.9%;
-    --chat-tool-bg: 0 0% 100%;
-    --chat-tool-border: 220 13% 91%;
-    --chat-thinking-bg: 220 14% 97%;
-    --chat-thinking-border: 220 13% 90%;
-    --chat-success: 152 60% 42%;
-    --chat-error: 0 72% 51%;
-    --chat-running: 252 56% 57%;
-
-    /* Tool card frosted glass tokens */
-    --tool-card-bg: 0 0% 100% / 0.72;
-    --tool-card-border: 0 0% 0% / 0.06;
-    --tool-bash-accent: 142 70% 45%;
-    --tool-file-accent: 220 70% 55%;
-    --tool-search-accent: 38 92% 50%;
-    --tool-list-accent: 262 52% 56%;
-
-    /* Context checkpoint tokens – macOS frosted glass */
-    --checkpoint-accent: 220 9% 46%;
-    --checkpoint-bg: 0 0% 100% / 0.72;
-    --checkpoint-border: 0 0% 0% / 0.06;
-    --checkpoint-icon-bg: 220 10% 95%;
-    --checkpoint-icon-fg: 220 9% 46%;
-
-    /* VS Code SCM graph reference colors */
-    --git-review-graph-ref-local: #0063d3;
-    --git-review-graph-ref-remote: #652d90;
-    --git-review-graph-ref-base: #ea5c00;
-  }
-
-  .dark {
-    color-scheme: dark;
-
-    --background: 224 22% 9%;
-    --foreground: 210 30% 96%;
-
-    --card: 224 22% 10%;
-    --card-foreground: 210 30% 96%;
-
-    --popover: 224 20% 12%;
-    --popover-foreground: 210 30% 96%;
-
-    --primary: 210 30% 96%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-
-    --secondary: 220 18% 17%;
-    --secondary-foreground: 210 30% 96%;
-
-    --muted: 220 18% 17%;
-    --muted-foreground: 215 18% 76%;
-
-    --accent: 220 18% 17%;
-    --accent-foreground: 210 30% 96%;
-
-    --destructive: 0 62.8% 36%;
-    --destructive-foreground: 210 30% 96%;
-
-    --border: 220 14% 26%;
-    --input: 220 14% 26%;
-    --ring: 212.7 26.8% 83.9%;
-
-    /* Chip / pill buttons (dark) */
-    --chip-bg: 220 16% 24%;
-    --chip-bg-hover: 220 16% 30%;
-    /* Send button disabled (dark) */
-    --send-disabled-bg: 220 16% 24%;
-
-    /* Hub pages canvas (dark) — deeper than --background for glass elevation */
-    --hub-canvas: 224 24% 6.5%;
-
-    /* Chat-specific tokens (dark) */
-    --sidebar-bg: 224 22% 11%;
-    --chat-user-bg: 220 14% 28%;
-    --chat-user-fg: 210 30% 96%;
-    --chat-assistant-bg: 224 22% 9%;
-    --chat-assistant-fg: 210 30% 96%;
-    --chat-tool-bg: 224 22% 9%;
-    --chat-tool-border: 220 14% 24%;
-    --chat-thinking-bg: 220 18% 13%;
-    --chat-thinking-border: 220 14% 22%;
-    --chat-success: 152 56% 52%;
-    --chat-error: 0 75% 65%;
-    --chat-running: 252 60% 70%;
-
-    /* Tool card frosted glass tokens (dark) */
-    --tool-card-bg: 0 0% 100% / 0.08;
-    --tool-card-border: 0 0% 100% / 0.14;
-    --tool-bash-accent: 142 60% 62%;
-    --tool-file-accent: 220 70% 72%;
-    --tool-search-accent: 38 90% 66%;
-    --tool-list-accent: 262 60% 74%;
-
-    /* Context checkpoint tokens – macOS frosted glass (dark) */
-    --checkpoint-accent: 220 12% 78%;
-    --checkpoint-bg: 0 0% 100% / 0.08;
-    --checkpoint-border: 0 0% 100% / 0.14;
-    --checkpoint-icon-bg: 220 12% 22%;
-    --checkpoint-icon-fg: 220 14% 76%;
-
-    /* VS Code SCM graph reference colors (dark) */
-    --git-review-graph-ref-local: #59a4f9;
-    --git-review-graph-ref-remote: #b180d7;
-    --git-review-graph-ref-base: #ea5c00;
   }
 }
 
@@ -770,7 +578,7 @@
   }
 
   .project-terminal-viewport .xterm-scrollable-element > .scrollbar.vertical > .slider {
-    border-radius: 999px;
+    border-radius: var(--radius-full);
   }
 
   .project-terminal-viewport .xterm-viewport {
@@ -793,7 +601,7 @@
   }
 
   .project-terminal-viewport .xterm-viewport::-webkit-scrollbar-thumb {
-    border-radius: 999px;
+    border-radius: var(--radius-full);
     background: transparent;
     transition: background 0.2s ease;
   }

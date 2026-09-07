@@ -43,13 +43,13 @@ export function McpImportSourcePicker(props: {
               key={scan.tool}
               value={scan.tool}
               title={isLocalFile ? scan.configPath : undefined}
-              className="group shrink-0 gap-1.5 rounded-md border border-transparent px-2.5 text-[11.5px] font-medium text-muted-foreground shadow-none hover:bg-muted/60 hover:text-foreground data-[active]:bg-muted data-[active]:text-foreground data-[active]:shadow-none"
+              className="group shrink-0 gap-2 rounded-lg border border-transparent px-2 text-xs font-medium text-muted-foreground shadow-none hover:bg-muted/60 hover:text-foreground data-[active]:bg-muted data-[active]:text-foreground data-[active]:shadow-none"
             >
               <ExternalToolSourceIcon tool={scan.tool} className="h-3.5 w-3.5" />
               <span className="max-w-[10rem] truncate">{toolLabel}</span>
               <Badge
                 variant="muted"
-                className="h-4 min-w-4 rounded-full px-1 text-[9.5px] font-semibold tabular-nums group-data-[active]:bg-foreground/[0.08] group-data-[active]:text-foreground"
+                className="h-4 min-w-4 rounded-full px-1 text-2xs font-semibold tabular-nums group-data-[active]:bg-foreground/10 group-data-[active]:text-foreground"
               >
                 {scan.exists ? scan.servers.length : "—"}
               </Badge>

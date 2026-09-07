@@ -3,7 +3,7 @@ import { X } from "@liveagent/ui/components/IconSet";
 import * as React from "react";
 
 import { cn } from "../../lib/shared/utils";
-import { Button } from "./button";
+import { IconButton } from "./icon-button";
 import { resolveZoneFontScale, ZoneFontScaleContext } from "./zone-font-scale";
 
 export function Dialog(props: React.ComponentPropsWithoutRef<typeof DialogPrimitive.Root>) {
@@ -32,7 +32,7 @@ const DialogOverlay = React.forwardRef<
     ref={ref}
     data-slot="dialog-overlay"
     className={cn(
-      "layer-modal fixed inset-0 bg-black/40 backdrop-blur-xs transition-opacity duration-150 data-[ending-style]:opacity-0 data-[starting-style]:opacity-0 motion-reduce:transition-none",
+      "layer-modal fixed inset-0 bg-overlay/40 backdrop-blur-xs transition-opacity duration-150 data-[ending-style]:opacity-0 data-[starting-style]:opacity-0 motion-reduce:transition-none",
       className,
     )}
     {...props}
@@ -104,11 +104,11 @@ export const DialogContent = React.forwardRef<HTMLDivElement, DialogContentProps
               "zone-font-scale",
               // No default padding: the header/body/footer slots own their own
               // spacing, and every call site was cancelling a `p-6` here.
-              "group/dialog relative my-auto w-full max-w-md rounded-2xl border border-border/70 bg-background text-foreground shadow-2xl outline-none transition-[transform,opacity] duration-150 ease-out data-[ending-style]:scale-95 data-[ending-style]:opacity-0 data-[starting-style]:scale-95 data-[starting-style]:opacity-0 motion-reduce:transition-none",
+              "group/dialog relative my-auto w-full max-w-md rounded-overlay border border-border bg-popover text-popover-foreground shadow-overlay outline-none transition-[transform,opacity] duration-150 ease-out data-[ending-style]:scale-95 data-[ending-style]:opacity-0 data-[starting-style]:scale-95 data-[starting-style]:opacity-0 motion-reduce:transition-none",
               layout === "fullscreen-mobile" &&
                 "max-[720px]:my-0 max-[720px]:h-full max-[720px]:max-w-none max-[720px]:rounded-none max-[720px]:border-0",
               layout === "bottom-sheet-mobile" &&
-                "my-0 max-w-none rounded-b-none sm:my-auto sm:max-w-2xl sm:rounded-b-2xl",
+                "my-0 max-w-none rounded-b-none sm:my-auto sm:max-w-2xl sm:rounded-b-overlay",
               className,
             )}
             {...props}
@@ -144,7 +144,7 @@ export function DialogCloseButton({ className, disabled, label }: DialogCloseBut
         "absolute right-4 top-4 z-10 group-data-[layout=fullscreen-mobile]/dialog:max-[720px]:top-[max(1rem,env(safe-area-inset-top))]",
         className,
       )}
-      render={<Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg" />}
+      render={<IconButton aria-label={label} size="icon-sm" />}
     >
       <X className="h-4 w-4" />
     </DialogPrimitive.Close>
@@ -159,9 +159,9 @@ export const DialogHeader = React.forwardRef<HTMLDivElement, React.HTMLAttribute
       className={cn(
         // Headers hold a title plus at most one description line, so they take
         // one step less vertical padding than the body/footer.
-        "relative flex shrink-0 flex-col min-h-13 gap-1.5 border-b border-border/60 px-4 py-3 max-[820px]:px-3.5 max-[820px]:py-2 group-data-[layout=fullscreen-mobile]/dialog:max-[720px]:pt-[max(0.75rem,env(safe-area-inset-top))]",
+        "relative flex shrink-0 flex-col min-h-13 gap-2 border-b border-border px-4 py-3 max-[820px]:px-4 max-[820px]:py-2 group-data-[layout=fullscreen-mobile]/dialog:max-[720px]:pt-[max(0.75rem,env(safe-area-inset-top))]",
         className,
-        "group-data-[has-close-button=true]/dialog:pr-14 group-data-[has-close-button=true]/dialog:max-[820px]:pr-12",
+        "group-data-[has-close-button=true]/dialog:pr-12 group-data-[has-close-button=true]/dialog:max-[820px]:pr-12",
       )}
       {...props}
     />
@@ -177,7 +177,7 @@ export const DialogSubheader = React.forwardRef<
     ref={ref}
     data-slot="dialog-subheader"
     className={cn(
-      "shrink-0 border-b border-border/40 px-4 py-3 max-[820px]:px-3.5 max-[820px]:py-3",
+      "shrink-0 border-b border-border px-4 py-3 max-[820px]:px-4 max-[820px]:py-3",
       className,
     )}
     {...props}
@@ -191,7 +191,7 @@ export const DialogBody = React.forwardRef<HTMLDivElement, React.HTMLAttributes<
       ref={ref}
       data-slot="dialog-body"
       className={cn(
-        "min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 py-3 max-[820px]:px-3.5 max-[820px]:py-3.5",
+        "min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 py-3 max-[820px]:px-4 max-[820px]:py-4",
         className,
       )}
       {...props}
@@ -224,7 +224,7 @@ export const DialogFooter = React.forwardRef<HTMLDivElement, React.HTMLAttribute
       className={cn(
         // Footer matches the header's vertical padding: both are chrome around
         // the body, so they read tighter than the content they frame.
-        "flex shrink-0 flex-row items-center justify-end min-h-13 gap-2 border-t border-border/60 px-4 py-3 max-[820px]:flex-col-reverse max-[820px]:items-stretch max-[820px]:px-3.5 max-[820px]:py-3 group-data-[layout=bottom-sheet-mobile]/dialog:max-sm:pb-[max(0.75rem,env(safe-area-inset-bottom))] group-data-[layout=fullscreen-mobile]/dialog:max-[720px]:pb-[max(0.75rem,env(safe-area-inset-bottom))]",
+        "flex shrink-0 items-center justify-end min-h-13 gap-2 border-t border-border px-4 py-3 max-[820px]:flex-col-reverse max-[820px]:items-stretch max-[820px]:px-4 max-[820px]:py-3 group-data-[layout=bottom-sheet-mobile]/dialog:max-sm:pb-[max(0.75rem,env(safe-area-inset-bottom))] group-data-[layout=fullscreen-mobile]/dialog:max-[720px]:pb-[max(0.75rem,env(safe-area-inset-bottom))]",
         className,
       )}
       {...props}
@@ -255,7 +255,7 @@ export const DialogTitle = React.forwardRef<
   <DialogPrimitive.Title
     ref={ref}
     data-slot="dialog-title"
-    className={cn("text-base font-semibold leading-none text-foreground", className)}
+    className={cn("text-base font-semibold leading-none", className)}
     {...props}
   />
 ));
@@ -268,7 +268,7 @@ export const DialogDescription = React.forwardRef<
   <DialogPrimitive.Description
     ref={ref}
     data-slot="dialog-description"
-    className={cn("text-sm text-muted-foreground", className)}
+    className={cn("text-base text-muted-foreground", className)}
     {...props}
   />
 ));

@@ -13,7 +13,7 @@
     "check:fast": "node scripts/check.mjs fast",
     "check:all": "node scripts/check.mjs all",
     "check:strict": "node scripts/check.mjs strict",
-    "check:script-tests": "node --test scripts/ui-boundary-declarations.test.mjs scripts/run-node-tests.test.mjs scripts/check-biome-changed.test.mjs",
+    "check:script-tests": "node --test scripts/ui-boundary-declarations.test.mjs scripts/run-node-tests.test.mjs scripts/check-biome-changed.test.mjs scripts/ui-design-rules.test.mjs",
     "check:ui-boundaries": "node scripts/check-ui-boundaries.mjs",
     "typecheck:ui": "pnpm --filter @liveagent/ui typecheck",
     "typecheck:virtual-core": "pnpm --filter @tanstack/virtual-core typecheck",
@@ -22,7 +22,11 @@
     "lint:gui": "pnpm --filter liveagent lint",
     "lint:webui": "pnpm --filter @liveagent/gateway-webui lint",
     "test:gui": "pnpm --filter liveagent test:frontend",
-    "test:webui": "pnpm --filter @liveagent/gateway-webui test"
+    "test:webui": "pnpm --filter @liveagent/gateway-webui test",
+    "check:ui-design": "node scripts/check-ui-design.mjs",
+    "audit:ui-design": "node scripts/check-ui-design.mjs --report",
+    "check:ui-design:strict": "node scripts/check-ui-design.mjs --strict",
+    "prune:ui-design": "node scripts/check-ui-design.mjs --prune"
   },
   "pnpm": {
     "overrides": {

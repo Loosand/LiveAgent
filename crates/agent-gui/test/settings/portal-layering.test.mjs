@@ -9,7 +9,7 @@ function readShared(path) {
 
 const providersSectionSource = readShared("pages/settings/ProvidersSection.tsx");
 const modelPickerSource = readShared("pages/settings/modelPicker.tsx");
-const baseStylesSource = readShared("styles/base.css");
+const baseStylesSource = readShared("styles/tokens.css");
 
 const popupPortalSources = [
   ["Select", readShared("components/ui/select.tsx")],

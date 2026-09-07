@@ -259,14 +259,14 @@ function InstalledSkillPreviewPopup(props: {
       closeLabel={t("settings.cronViewClose")}
       className="w-full sm:max-w-xl"
     >
-      <SheetHeader className="flex-row items-center gap-3 px-5 py-4 pr-14">
-        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-border bg-muted text-foreground">
+      <SheetHeader className="flex-row items-center gap-3 px-4 py-4 pr-12">
+        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-border bg-muted text-foreground">
           {alwaysEnabled ? <Lock className="h-5 w-5" /> : <SkillIcon className="h-7 w-7" />}
         </div>
         <div className="min-w-0 flex-1">
           <SheetTitle className="truncate">{skill.name}</SheetTitle>
-          <div className="mt-1.5 flex min-w-0 flex-wrap items-center gap-2 text-[11px] text-muted-foreground">
-            <span className="flex items-center gap-1.5">
+          <div className="mt-2 flex min-w-0 flex-wrap items-center gap-2 text-xs text-muted-foreground">
+            <span className="flex items-center gap-2">
               <span>{t("settings.skillsInstalledPreviewStatusLabel")}</span>
               <Badge variant={alwaysEnabled ? "muted" : checked ? "success" : "outline"}>
                 {statusLabel}
@@ -277,8 +277,8 @@ function InstalledSkillPreviewPopup(props: {
         </div>
       </SheetHeader>
 
-      <SheetPanel className="px-5 py-5">
-        <div className="flex flex-col gap-5">
+      <SheetPanel className="px-4 py-4">
+        <div className="flex flex-col gap-4">
           <section aria-labelledby="installed-skill-description">
             <div className="flex items-center justify-between gap-3">
               <h3
@@ -293,7 +293,7 @@ function InstalledSkillPreviewPopup(props: {
                 copiedLabel={t("settings.skillsInstalledPreviewCopied")}
               />
             </div>
-            <p className="mt-2 text-sm leading-6 text-muted-foreground">
+            <p className="mt-2 text-base leading-6 text-muted-foreground">
               {description || t("settings.skillsInstalledPreviewNoDescription")}
             </p>
           </section>
@@ -348,7 +348,7 @@ function InstalledSkillPreviewPopup(props: {
                 >
                   {t("settings.skillsInstalledPreviewFilePreview")}
                 </h3>
-                <div className="mt-1 truncate text-[11px] text-muted-foreground">
+                <div className="mt-1 truncate text-xs text-muted-foreground">
                   {preview.skillFile || skill.skillFile}
                 </div>
               </div>
@@ -369,7 +369,7 @@ function InstalledSkillPreviewPopup(props: {
                       <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0 text-foreground" />
                       <div className="min-w-0">
                         <div>{t("settings.skillsInstalledPreviewUnavailable")}</div>
-                        <div className="mt-1 break-words text-[11px]">{preview.error}</div>
+                        <div className="mt-1 break-words text-xs">{preview.error}</div>
                       </div>
                     </div>
                   </div>
@@ -379,7 +379,7 @@ function InstalledSkillPreviewPopup(props: {
                   previewIsMarkdown ? (
                     <DocumentMarkdown content={previewContent} />
                   ) : (
-                    <pre className="max-h-[24rem] overflow-auto whitespace-pre-wrap break-words rounded-lg bg-muted p-3 font-mono text-[11px] leading-5 text-foreground">
+                    <pre className="max-h-[24rem] overflow-auto whitespace-pre-wrap break-words rounded-lg bg-muted p-3 font-mono text-xs leading-5 text-foreground">
                       {previewContent}
                     </pre>
                   )
@@ -390,7 +390,7 @@ function InstalledSkillPreviewPopup(props: {
                 )}
 
                 {preview.truncated ? (
-                  <div className="mt-2 rounded-lg border border-border bg-muted px-3 py-2 text-[11px] text-muted-foreground">
+                  <div className="mt-2 rounded-lg border border-border bg-muted px-3 py-2 text-xs text-muted-foreground">
                     {t("settings.skillsInstalledPreviewTruncated").replace(
                       "{count}",
                       String(INSTALLED_SKILL_PREVIEW_LINES),
@@ -409,7 +409,7 @@ function InstalledSkillPreviewPopup(props: {
 function InstalledPreviewField(props: { label: string; value?: string | null }) {
   if (!props.value) return null;
   return (
-    <div className="grid grid-cols-[7rem_minmax(0,1fr)] gap-3 py-2 text-[12px]">
+    <div className="grid grid-cols-[7rem_minmax(0,1fr)] gap-3 py-2 text-xs">
       <div className="text-muted-foreground">{props.label}</div>
       <div className="min-w-0 break-words text-foreground">{props.value}</div>
     </div>

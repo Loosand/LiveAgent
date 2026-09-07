@@ -39,7 +39,7 @@ const toolCallItemSource = fs.readFileSync(
 
 test("desktop live status cannot widen the transcript", () => {
   assert.match(activitySource, /min-w-0 w-full max-w-full/);
-  assert.match(bubbleSource, /<LiveAssistantStatus[\s\S]*?className="w-full py-1\.5"/);
+  assert.match(bubbleSource, /<LiveAssistantStatus[\s\S]*?className="w-full py-2"/);
   // Without a concrete status the shared component falls back to the
   // liveness sparkle instead of the "Vibing..." filler phrase.
   assert.match(sharedStatusSource, /return <LiveSparkle className=\{className\} \/>/);

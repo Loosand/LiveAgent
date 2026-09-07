@@ -54,8 +54,8 @@ export function AgentPromptTemplateModal({
         closeLabel={t("settings.cancel")}
         showCloseButton
       >
-        <DialogHeader className="flex-row items-center gap-3.5">
-          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-border/60 bg-muted/50 text-muted-foreground shadow-xs">
+        <DialogHeader className="flex-row items-center gap-4">
+          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-border bg-muted/60 text-muted-foreground shadow-control">
             <ScrollText className="h-5 w-5" />
           </div>
           <div className="min-w-0 flex-1">
@@ -70,13 +70,13 @@ export function AgentPromptTemplateModal({
 
         <DialogBody>
           <div className="grid items-stretch gap-4 md:grid-cols-[minmax(0,0.82fr)_minmax(0,1.18fr)]">
-            <section className="flex min-h-0 flex-col rounded-2xl border border-border/60 bg-card p-5 shadow-xs">
-              <div className="mb-5 flex items-start gap-3">
-                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-border/60 bg-muted/40 text-muted-foreground">
+            <section className="flex min-h-0 flex-col rounded-2xl border border-border bg-card p-4 shadow-control">
+              <div className="mb-4 flex items-start gap-3">
+                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl border border-border bg-muted/40 text-muted-foreground">
                   <BookOpen className="h-4 w-4" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-semibold">{t("settings.agentsTemplateDetails")}</h3>
+                  <h3 className="text-base font-semibold">{t("settings.agentsTemplateDetails")}</h3>
                   <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
                     {t("settings.agentsTemplateDetailsHint")}
                   </p>
@@ -86,18 +86,18 @@ export function AgentPromptTemplateModal({
               <div className="space-y-2">
                 <Label htmlFor="agent-template-name" className="text-xs font-semibold">
                   {t("settings.agentsName")}
-                  <span className="ml-1 text-muted-foreground/70">*</span>
+                  <span className="ml-1 text-muted-foreground/80">*</span>
                 </Label>
                 <Input
                   id="agent-template-name"
                   value={name}
                   placeholder={t("settings.agentsNamePlaceholder")}
-                  className="h-10 px-3.5"
+                  className="h-10 px-4"
                   onChange={(e) => setName(e.currentTarget.value)}
                 />
               </div>
 
-              <div className="mt-5 flex min-h-0 flex-1 flex-col gap-2">
+              <div className="mt-4 flex min-h-0 flex-1 flex-col gap-2">
                 <Label htmlFor="agent-template-description" className="text-xs font-semibold">
                   {t("settings.agentsDescription")}
                 </Label>
@@ -105,29 +105,29 @@ export function AgentPromptTemplateModal({
                   id="agent-template-description"
                   value={description}
                   placeholder={t("settings.agentsDescriptionPlaceholder")}
-                  className="h-32 min-h-32 flex-1 resize-none overflow-y-auto overscroll-contain px-3.5 py-3 leading-relaxed md:h-auto md:min-h-0"
+                  className="h-32 min-h-32 flex-1 resize-none overflow-y-auto overscroll-contain px-4 py-3 leading-relaxed md:h-auto md:min-h-0"
                   onChange={(e) => setDescription(e.currentTarget.value)}
                 />
               </div>
             </section>
 
-            <section className="flex min-h-0 flex-col rounded-2xl border border-border/60 bg-card p-5 shadow-xs md:min-h-[438px]">
+            <section className="flex min-h-0 flex-col rounded-2xl border border-border bg-card p-4 shadow-control md:min-h-[438px]">
               <div className="mb-4 flex flex-wrap items-start justify-between gap-x-4 gap-y-2">
                 <div className="flex items-start gap-3">
-                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-border/60 bg-muted/40 text-muted-foreground">
+                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl border border-border bg-muted/40 text-muted-foreground">
                     <FileText className="h-4 w-4" />
                   </div>
                   <div>
-                    <Label htmlFor="agent-template-prompt" className="text-sm font-semibold">
+                    <Label htmlFor="agent-template-prompt" className="text-xs font-semibold">
                       {t("settings.agentsPrompt")}
-                      <span className="ml-1 text-muted-foreground/70">*</span>
+                      <span className="ml-1 text-muted-foreground/80">*</span>
                     </Label>
                     <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
                       {t("settings.agentsPromptHint")}
                     </p>
                   </div>
                 </div>
-                <span className="shrink-0 rounded-full border border-border/60 bg-muted/40 px-2.5 py-1 text-xs tabular-nums text-muted-foreground">
+                <span className="shrink-0 rounded-full border border-border bg-muted/40 px-2 py-1 text-xs tabular-nums text-muted-foreground">
                   {prompt.length.toLocaleString()} {t("settings.agentsCharacters")}
                 </span>
               </div>
@@ -135,7 +135,7 @@ export function AgentPromptTemplateModal({
                 id="agent-template-prompt"
                 value={prompt}
                 placeholder={t("settings.agentsPromptPlaceholder")}
-                className="h-80 min-h-80 flex-1 resize-none overflow-y-auto overscroll-contain p-4 font-mono text-[13px] leading-6 md:h-auto md:min-h-0"
+                className="h-80 min-h-80 flex-1 resize-none overflow-y-auto overscroll-contain p-4 font-mono text-xs leading-6 md:h-auto md:min-h-0"
                 onChange={(e) => setPrompt(e.currentTarget.value)}
               />
             </section>
@@ -145,7 +145,7 @@ export function AgentPromptTemplateModal({
         <DialogFooter>
           <DialogActions>
             <Button
-              className="flex-1 px-5 sm:flex-none"
+              className="flex-1 px-4 sm:flex-none"
               onClick={handleSave}
               disabled={!name.trim() || !prompt.trim()}
             >

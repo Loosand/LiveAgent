@@ -9,13 +9,11 @@ export type MetaTag = { label: string; value: string };
 export function ToolSection(props: { label?: string; trailing?: ReactNode; children: ReactNode }) {
   const { label, trailing, children } = props;
   return (
-    <section className="space-y-1.5">
+    <section className="space-y-2">
       {label || trailing ? (
         <div className="flex min-h-5 items-center gap-2">
           {label ? (
-            <span className="shrink-0 text-[calc(11px*var(--zone-font-scale,1))] font-medium text-muted-foreground/65">
-              {label}
-            </span>
+            <span className="shrink-0 text-xs font-medium text-muted-foreground/60">{label}</span>
           ) : null}
           {trailing}
         </div>
@@ -31,21 +29,17 @@ export function ToolSurface(props: { children: ReactNode; className?: string }) 
 }
 
 export function ToolSurfaceLabel({ label }: { label: string }) {
-  return (
-    <div className="mb-0.5 text-[calc(10.5px*var(--zone-font-scale,1))] font-medium text-muted-foreground/55">
-      {label}
-    </div>
-  );
+  return <div className="mb-0.5 text-2xs font-medium text-muted-foreground/60">{label}</div>;
 }
 
 export function ToolFactGrid({ tags }: { tags: MetaTag[] }) {
   if (tags.length === 0) return null;
   return (
-    <div className="grid gap-x-4 gap-y-1.5 sm:grid-cols-2">
+    <div className="grid gap-x-4 gap-y-2 sm:grid-cols-2">
       {tags.map((tag) => (
         <ToolSurface key={`${tag.label}-${tag.value}`}>
           <ToolSurfaceLabel label={tag.label} />
-          <div className="break-all font-mono text-[calc(11px*var(--zone-font-scale,1))] leading-[1.55] text-foreground/78">
+          <div className="break-all font-mono text-xs leading-[1.55] text-foreground/80">
             {tag.value}
           </div>
         </ToolSurface>
@@ -83,7 +77,7 @@ export function PathDisplay({ path, className }: { path: string; className?: str
       <span className="min-w-0 flex-1 truncate text-muted-foreground/40">
         {dir.length > 50 ? `…${dir.slice(-50)}` : dir}
       </span>
-      <span className="max-w-[70%] truncate text-foreground/85">{file}</span>
+      <span className="max-w-[70%] truncate text-foreground/90">{file}</span>
     </span>
   );
 }
@@ -101,10 +95,10 @@ export function MetaTags({ tags }: { tags: MetaTag[] }) {
         return (
           <span
             key={stableKey}
-            className="inline-flex min-h-5 items-baseline gap-1 text-[calc(11px*var(--zone-font-scale,1))] leading-5"
+            className="inline-flex min-h-5 items-baseline gap-1 text-xs leading-5"
           >
-            <span className="font-medium text-muted-foreground/55">{tag.label}</span>
-            <span className="min-w-0 break-all font-mono tabular-nums text-foreground/75">
+            <span className="font-medium text-muted-foreground/60">{tag.label}</span>
+            <span className="min-w-0 break-all font-mono tabular-nums text-foreground/80">
               {tag.value}
             </span>
           </span>
@@ -119,7 +113,7 @@ export function ToolScrollablePre(props: { children: ReactNode; className?: stri
   return (
     <pre
       className={cn(
-        "tool-text-scroll overflow-x-auto overflow-y-auto whitespace-pre break-normal rounded-md px-2.5 py-2 text-[calc(11.5px*var(--zone-font-scale,1))] leading-[1.6]",
+        "tool-text-scroll overflow-x-auto overflow-y-auto whitespace-pre break-normal rounded-lg px-2 py-2 text-xs leading-[1.6]",
         className,
       )}
     >

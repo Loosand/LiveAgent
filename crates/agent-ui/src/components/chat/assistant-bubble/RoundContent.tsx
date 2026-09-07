@@ -265,7 +265,7 @@ export const AssistantTurnContent = memo(function AssistantTurnContent(props: {
         >
           {layout.work.map((entry) => renderEntry(entry, true))}
           {showDetailedStatus ? (
-            <div className="py-1.5">
+            <div className="py-2">
               <CompactingText />
             </div>
           ) : null}

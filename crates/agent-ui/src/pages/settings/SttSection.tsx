@@ -73,23 +73,23 @@ const PROVIDER_BRAND: Record<
 > = {
   tencent_cloud: {
     icon: Cloud,
-    iconClass: "text-sky-600 dark:text-sky-400",
-    boxClass: "bg-sky-500/10",
+    iconClass: "text-info",
+    boxClass: "bg-info/10",
   },
   volcengine_seed_v3: {
     icon: Flame,
-    iconClass: "text-rose-600 dark:text-rose-400",
-    boxClass: "bg-rose-500/10",
+    iconClass: "text-destructive",
+    boxClass: "bg-destructive/10",
   },
   aliyun_dashscope: {
     icon: Brackets,
-    iconClass: "text-orange-600 dark:text-orange-400",
-    boxClass: "bg-orange-500/10",
+    iconClass: "text-warning",
+    boxClass: "bg-warning/10",
   },
   baidu_cloud: {
     icon: PawPrint,
-    iconClass: "text-indigo-600 dark:text-indigo-400",
-    boxClass: "bg-indigo-500/10",
+    iconClass: "text-activity",
+    boxClass: "bg-activity/10",
   },
 };
 
@@ -385,26 +385,24 @@ export function SttSection({
     testResult?.result === "connected" || testResult?.result === "connected_no_speech";
 
   return (
-    <div className="w-full min-w-0 space-y-5">
+    <div className="w-full min-w-0 space-y-4">
       <div className="flex items-start gap-3">
-        <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary/10">
+        <div className="flex h-9 w-9 items-center justify-center rounded-2xl bg-primary/10">
           <Mic className="h-[18px] w-[18px] text-primary" />
         </div>
         <div>
-          <h3 className="text-sm font-semibold">语音输入</h3>
+          <h3 className="text-base font-semibold">语音输入</h3>
           <p className="mt-0.5 text-xs leading-relaxed text-muted-foreground">
             桌面端配置会同步到 Gateway WebUI；浏览器仅接收脱敏配置，录音统一为 16 kHz 单声道 PCM。
           </p>
           {service.runtimeLabel ? (
-            <p className="mt-1 text-[11px] text-muted-foreground">
-              当前运行端：{service.runtimeLabel}
-            </p>
+            <p className="mt-1 text-xs text-muted-foreground">当前运行端：{service.runtimeLabel}</p>
           ) : null}
         </div>
       </div>
-      <div className="flex items-center justify-between gap-4 rounded-xl border border-border/50 bg-background/60 px-4 py-3">
+      <div className="flex items-center justify-between gap-4 rounded-2xl border border-border bg-background/60 px-4 py-3">
         <div className="min-w-0">
-          <div className="text-sm font-medium">开启语音输入</div>
+          <div className="text-base font-medium">开启语音输入</div>
           <p className="mt-0.5 text-xs leading-relaxed text-muted-foreground">
             开启后，聊天输入框会显示麦克风按钮；关闭后不会启用麦克风。
           </p>
@@ -431,10 +429,10 @@ export function SttSection({
               onClick={() => selectProvider(item.id)}
               aria-pressed={active}
               className={cn(
-                "group relative flex min-w-0 items-center gap-3 rounded-xl border p-3 text-left transition-all duration-150",
+                "group relative flex min-w-0 items-center gap-3 rounded-2xl border p-3 text-left transition-all duration-150",
                 active
-                  ? "border-primary/50 bg-primary/5 shadow-sm ring-1 ring-primary/25"
-                  : "border-border/50 bg-background/40 hover:border-border hover:bg-muted/40",
+                  ? "border-ring bg-primary/5 shadow-control ring-1 ring-primary/20"
+                  : "border-border bg-background/40 hover:border-input hover:bg-muted/40",
               )}
             >
               <ProviderBrandBadge
@@ -443,21 +441,21 @@ export function SttSection({
                 iconClassName="h-[18px] w-[18px]"
               />
               <span className="min-w-0 flex-1">
-                <span className="block truncate text-[13px] font-medium leading-tight">
+                <span className="block truncate text-xs font-medium leading-tight">
                   {item.label}
                 </span>
-                <span className="mt-0.5 flex items-center gap-1.5 text-[11px] text-muted-foreground">
+                <span className="mt-0.5 flex items-center gap-2 text-xs text-muted-foreground">
                   <span className="truncate">{item.vendor}</span>
                   <span
                     className={cn(
                       "inline-flex shrink-0 items-center gap-1",
-                      configured && "text-emerald-600 dark:text-emerald-400",
+                      configured && "text-success",
                     )}
                   >
                     <span
                       className={cn(
                         "h-1.5 w-1.5 rounded-full",
-                        configured ? "bg-emerald-500" : "bg-muted-foreground/40",
+                        configured ? "bg-success" : "bg-muted-foreground/40",
                       )}
                     />
                     {configured ? "已配置" : "未配置"}
@@ -473,19 +471,17 @@ export function SttSection({
           );
         })}
       </div>
-      <div className="w-full min-w-0 space-y-4 rounded-xl border border-border/50 bg-background/60 p-4">
-        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border/40 pb-3">
-          <div className="flex min-w-0 items-center gap-2.5">
+      <div className="w-full min-w-0 space-y-4 rounded-2xl border border-border bg-background/60 p-4">
+        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border pb-3">
+          <div className="flex min-w-0 items-center gap-2">
             <ProviderBrandBadge
               provider={definition.id}
               className="h-8 w-8"
               iconClassName="h-4 w-4"
             />
             <div className="min-w-0">
-              <div className="truncate text-[13px] font-medium leading-tight">
-                {definition.label}
-              </div>
-              <div className="mt-0.5 text-[11px] text-muted-foreground">
+              <div className="truncate text-xs font-medium leading-tight">{definition.label}</div>
+              <div className="mt-0.5 text-xs text-muted-foreground">
                 {provider.configured
                   ? "凭据已保存，可直接使用语音输入"
                   : "填写凭据后保存并测试连接"}
@@ -493,7 +489,7 @@ export function SttSection({
             </div>
           </div>
           {provider.configured ? (
-            <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-emerald-500/10 px-2 py-0.5 text-[11px] text-emerald-600 dark:text-emerald-400">
+            <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-success/10 px-2 py-0.5 text-xs text-success">
               <Shield className="h-3 w-3" />
               密钥已脱敏保存
             </span>
@@ -521,7 +517,7 @@ export function SttSection({
               <div
                 key={field}
                 className={cn(
-                  "block min-w-0 space-y-1.5 text-xs",
+                  "block min-w-0 space-y-2 text-xs",
                   field === "websocketUrl" && "sm:col-span-2",
                 )}
               >
@@ -540,7 +536,7 @@ export function SttSection({
                     readOnly={
                       Boolean(secretField) && visible && service.secretRevealMode === "field-name"
                     }
-                    className={secret ? "w-full min-w-0 pr-10" : "w-full min-w-0"}
+                    className={secret ? "w-full min-w-0 pr-8" : "w-full min-w-0"}
                     inputMode={
                       (definition.id === "tencent_cloud" && field === "appId") ||
                       (definition.id === "baidu_cloud" &&
@@ -578,7 +574,7 @@ export function SttSection({
                   {secretField ? (
                     <button
                       type="button"
-                      className="absolute right-1 top-1/2 inline-flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-md text-muted-foreground hover:bg-muted/60 hover:text-foreground disabled:pointer-events-none disabled:opacity-50"
+                      className="absolute right-1 top-1/2 inline-flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-lg text-muted-foreground hover:bg-muted/60 hover:text-foreground disabled:pointer-events-none disabled:opacity-50"
                       disabled={
                         saving ||
                         testing ||
@@ -613,21 +609,21 @@ export function SttSection({
           })}
         </div>
         {service.secretRevealMode === "field-name" ? (
-          <p className="text-[11px] text-muted-foreground">
+          <p className="text-xs text-muted-foreground">
             WebUI 的查看按钮只显示字段名；已保存的密钥内容不会下发到浏览器。
           </p>
         ) : null}
         {definition.id === "baidu_cloud" ? (
-          <p className="text-[11px] text-muted-foreground">
+          <p className="text-xs text-muted-foreground">
             appid 必须是数字；dev_pid 不提供默认值，请按百度模型填写。
           </p>
         ) : null}
-        <div className="flex flex-wrap items-center gap-2 border-t border-border/40 pt-3">
+        <div className="flex flex-wrap items-center gap-2 border-t border-border pt-3">
           <button
             type="button"
             onClick={() => void test()}
             disabled={saving || testing || clearing}
-            className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-3.5 py-2 text-xs font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-60"
+            className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-xs font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-60"
           >
             {saving || testing ? (
               <LoaderCircle className="h-3.5 w-3.5 animate-spin" />
@@ -640,7 +636,7 @@ export function SttSection({
             type="button"
             onClick={() => void clearProviderSecrets()}
             disabled={saving || testing || clearing}
-            className="inline-flex items-center gap-1.5 rounded-lg border border-destructive/40 px-3.5 py-2 text-xs text-destructive transition-colors hover:bg-destructive/5 disabled:opacity-60"
+            className="inline-flex items-center gap-2 rounded-lg border border-destructive/40 px-4 py-2 text-xs text-destructive transition-colors hover:bg-destructive/5 disabled:opacity-60"
           >
             {clearing ? (
               <LoaderCircle className="h-3.5 w-3.5 animate-spin" />
@@ -653,10 +649,10 @@ export function SttSection({
         {testResult ? (
           <div
             className={cn(
-              "flex items-start gap-2 rounded-lg border px-3 py-2.5 text-xs",
+              "flex items-start gap-2 rounded-lg border px-3 py-2 text-xs",
               testPassed
-                ? "border-emerald-500/30 bg-emerald-500/5 text-emerald-600 dark:text-emerald-400"
-                : "border-destructive/30 bg-destructive/5 text-destructive",
+                ? "border-success/40 bg-success/5 text-success"
+                : "border-destructive/40 bg-destructive/5 text-destructive",
             )}
           >
             {testPassed ? (
@@ -675,7 +671,7 @@ export function SttSection({
           </div>
         ) : null}
         {error ? (
-          <div className="flex items-start gap-2 rounded-lg border border-destructive/30 bg-destructive/5 px-3 py-2.5 text-xs text-destructive">
+          <div className="flex items-start gap-2 rounded-lg border border-destructive/40 bg-destructive/5 px-3 py-2 text-xs text-destructive">
             <XCircle className="mt-px h-3.5 w-3.5 shrink-0" />
             <p className="break-words">{error}</p>
           </div>

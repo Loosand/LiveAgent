@@ -96,10 +96,10 @@ type DockTabDescriptor = {
 // NOTE: `transform` is deliberately absent from the transition list — drag
 // positioning drives `transform` via inline styles with its own transitions.
 const TAB_BASE_CLASS =
-  "project-tools-panel-tab group relative flex h-8 max-w-[12rem] shrink-0 select-none items-center gap-1 rounded-md border border-transparent px-1.5 text-xs text-muted-foreground transition-[background-color,border-color,color,opacity,box-shadow] hover:bg-muted/80 hover:text-foreground";
+  "project-tools-panel-tab group relative flex h-8 max-w-[12rem] shrink-0 select-none items-center gap-1 rounded-lg border border-transparent px-2 text-xs text-muted-foreground transition-[background-color,border-color,color,opacity,box-shadow] hover:bg-muted/80 hover:text-foreground";
 
 const CLOSE_BUTTON_CLASS =
-  "relative z-10 ml-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded text-muted-foreground/70 transition-colors hover:bg-background hover:text-foreground focus-visible:bg-background focus-visible:text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50";
+  "relative z-10 ml-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-sm text-muted-foreground/80 transition-colors hover:bg-background hover:text-foreground focus-visible:bg-background focus-visible:text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50";
 
 export function RightDockTabStrip(props: RightDockTabStripProps) {
   const {
@@ -162,10 +162,10 @@ export function RightDockTabStrip(props: RightDockTabStripProps) {
         data-project-tools-tab-id={tab.id}
         className={cn(
           TAB_BASE_CLASS,
-          tab.isActive && "border-border bg-muted text-foreground shadow-sm",
-          tab.isPendingClose && "bg-destructive/10 text-destructive hover:bg-destructive/15",
+          tab.isActive && "border-border bg-muted text-foreground shadow-control",
+          tab.isPendingClose && "bg-destructive/10 text-destructive hover:bg-destructive/20",
           draggingTabId === tab.id &&
-            "z-10 scale-[0.98] cursor-grabbing opacity-80 shadow-md ring-1 ring-ring",
+            "z-10 scale-[0.98] cursor-grabbing opacity-80 shadow-overlay ring-1 ring-ring",
         )}
         title={tab.label}
         style={getTabDragStyle(tab.id)}
@@ -175,7 +175,7 @@ export function RightDockTabStrip(props: RightDockTabStripProps) {
           type="button"
           aria-label={tab.label}
           aria-haspopup={tab.menuItems ? "menu" : undefined}
-          className="absolute inset-0 z-0 rounded-md bg-transparent p-0 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+          className="absolute inset-0 z-0 rounded-lg bg-transparent p-0 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
           onClick={() => {
             if (consumeSuppressedTabClick(tab.id)) return;
             tab.onActivate();
@@ -210,7 +210,7 @@ export function RightDockTabStrip(props: RightDockTabStripProps) {
             aria-label={t("workbench.dragPane")}
             title={t("workbench.dragPane")}
             className={cn(
-              "relative z-10 flex h-6 w-5 shrink-0 items-center justify-center rounded text-muted-foreground/45 opacity-70 transition-[background-color,color,opacity] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring",
+              "relative z-10 flex h-6 w-5 shrink-0 items-center justify-center rounded-sm text-muted-foreground/40 opacity-70 transition-[background-color,color,opacity] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring",
               "cursor-grab touch-none hover:bg-background/80 hover:text-foreground hover:opacity-100 focus-visible:bg-background focus-visible:text-foreground focus-visible:opacity-100 active:cursor-grabbing",
             )}
             onPointerDown={(event) => {
@@ -228,7 +228,7 @@ export function RightDockTabStrip(props: RightDockTabStripProps) {
         )}
         <div
           aria-hidden="true"
-          className="pointer-events-none relative z-10 flex h-full min-w-0 flex-1 items-center gap-1.5 text-left text-inherit"
+          className="pointer-events-none relative z-10 flex h-full min-w-0 flex-1 items-center gap-2 text-left text-inherit"
         >
           {tab.icon}
           <span className="min-w-0 truncate">{tab.label}</span>
@@ -236,7 +236,7 @@ export function RightDockTabStrip(props: RightDockTabStripProps) {
             <span
               className={cn(
                 "h-1.5 w-1.5 shrink-0 rounded-full",
-                tab.running ? "bg-emerald-500" : "bg-muted-foreground/50",
+                tab.running ? "bg-success" : "bg-muted-foreground/60",
               )}
             />
           ) : null}

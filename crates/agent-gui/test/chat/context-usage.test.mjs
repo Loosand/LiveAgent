@@ -118,14 +118,14 @@ test("composer editor row reserves the right rail so the scrollbar clears expand
   assert.doesNotMatch(chatComposerBarSource, /"px-0 py-0 pr-8"/);
 });
 
-test("composer uses the opaque Tessera surface and a compact idle height", () => {
+test("composer uses the opaque token-based surface and a compact idle height", () => {
   assert.match(
     chatComposerBarSource,
-    /composer-glass-card[^\n]+rounded-4xl[^\n]+border-border\/65 bg-muted/,
+    /composer-glass-card[^\n]+rounded-composer[^\n]+border-border bg-muted/,
   );
   assert.match(
     chatComposerBarSource,
-    /composer-input-surface[^\n]+rounded-4xl bg-background/,
+    /composer-input-surface[^\n]+rounded-composer bg-background/,
   );
   assert.match(chatComposerBarSource, /composer-control-deck[^\n]+min-h-9[^\n]+bg-muted/);
   assert.doesNotMatch(chatComposerBarSource, /composer-input-surface[^\n]+bg-white\/76/);

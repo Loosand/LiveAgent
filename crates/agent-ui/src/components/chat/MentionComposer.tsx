@@ -2197,7 +2197,7 @@ export const MentionComposer = memo(
               <div
                 ref={composerContextMenuRef}
                 role="menu"
-                className="layer-popover fixed w-max min-w-[9.5rem] max-w-[calc(100vw-1.5rem)] overflow-hidden rounded-lg border border-border/70 bg-popover p-1.5 text-popover-foreground shadow-[0_20px_60px_-20px_rgba(15,23,42,0.35)]"
+                className="layer-popover fixed w-max min-w-[9.5rem] max-w-[calc(100vw-1.5rem)] overflow-hidden rounded-lg border border-border bg-popover p-2 text-popover-foreground shadow-overlay"
                 style={{
                   left: contextMenuPosition.left,
                   top: contextMenuPosition.top,
@@ -2211,7 +2211,7 @@ export const MentionComposer = memo(
                   role="menuitem"
                   disabled={!contextMenuCanMutate || !contextMenuHasSelection}
                   className={cn(
-                    "flex w-full items-center gap-2 rounded-md px-2.5 py-1.5 text-left text-[calc(13px*var(--zone-font-scale,1))] text-foreground/90 transition-colors hover:bg-accent hover:text-accent-foreground",
+                    "flex w-full items-center gap-2 rounded-lg px-2 py-2 text-left text-xs text-foreground/90 transition-colors hover:bg-accent hover:text-accent-foreground",
                     "disabled:pointer-events-none disabled:opacity-45",
                   )}
                   onMouseDown={(event) => event.preventDefault()}
@@ -2225,7 +2225,7 @@ export const MentionComposer = memo(
                   role="menuitem"
                   disabled={!contextMenuHasSelection}
                   className={cn(
-                    "flex w-full items-center gap-2 rounded-md px-2.5 py-1.5 text-left text-[calc(13px*var(--zone-font-scale,1))] text-foreground/90 transition-colors hover:bg-accent hover:text-accent-foreground",
+                    "flex w-full items-center gap-2 rounded-lg px-2 py-2 text-left text-xs text-foreground/90 transition-colors hover:bg-accent hover:text-accent-foreground",
                     "disabled:pointer-events-none disabled:opacity-45",
                   )}
                   onMouseDown={(event) => event.preventDefault()}
@@ -2239,7 +2239,7 @@ export const MentionComposer = memo(
                   role="menuitem"
                   disabled={!contextMenuCanMutate}
                   className={cn(
-                    "flex w-full items-center gap-2 rounded-md px-2.5 py-1.5 text-left text-[calc(13px*var(--zone-font-scale,1))] text-foreground/90 transition-colors hover:bg-accent hover:text-accent-foreground",
+                    "flex w-full items-center gap-2 rounded-lg px-2 py-2 text-left text-xs text-foreground/90 transition-colors hover:bg-accent hover:text-accent-foreground",
                     "disabled:pointer-events-none disabled:opacity-45",
                   )}
                   onMouseDown={(event) => event.preventDefault()}
@@ -2250,13 +2250,13 @@ export const MentionComposer = memo(
                   <ClipboardPaste className="h-3.5 w-3.5 shrink-0" />
                   <span className="min-w-0 flex-1 truncate">{contextMenuLabels.paste}</span>
                 </button>
-                <div className="my-1 h-px bg-border/70" />
+                <div className="my-1 h-px bg-border/80" />
                 <button
                   type="button"
                   role="menuitem"
                   disabled={!composerContextMenu.hasContent}
                   className={cn(
-                    "flex w-full items-center gap-2 rounded-md px-2.5 py-1.5 text-left text-[calc(13px*var(--zone-font-scale,1))] text-foreground/90 transition-colors hover:bg-accent hover:text-accent-foreground",
+                    "flex w-full items-center gap-2 rounded-lg px-2 py-2 text-left text-xs text-foreground/90 transition-colors hover:bg-accent hover:text-accent-foreground",
                     "disabled:pointer-events-none disabled:opacity-45",
                   )}
                   onMouseDown={(event) => event.preventDefault()}
@@ -2295,7 +2295,7 @@ export const MentionComposer = memo(
           onBlur={handleBlur}
           className={cn(
             "mention-composer min-h-10 max-h-[160px] w-full min-w-0 max-w-full overflow-x-hidden overflow-y-auto whitespace-pre-wrap break-words [overflow-wrap:anywhere] outline-hidden",
-            "text-sm",
+            "text-base",
             isDomEmpty && "is-empty",
             disabled && "cursor-not-allowed opacity-60",
             className,

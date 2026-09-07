@@ -65,9 +65,9 @@ test("chat typography keeps body copy substantial and emphasis at weight 500", (
 });
 
 test("inline code uses the higher-contrast transcript treatment", () => {
-  assert.match(chatStylesSource, /bg-foreground\/\[0\.085\]/);
-  assert.match(chatStylesSource, /rounded-xs/);
-  assert.match(markdownSource, /bg-foreground\/\[0\.085\]/);
+  assert.match(chatStylesSource, /bg-foreground\/10/);
+  assert.match(chatStylesSource, /rounded-sm/);
+  assert.match(markdownSource, /bg-foreground\/10/);
 });
 
 test("operation rows use compact icons and reveal disclosure chevrons on intent", () => {

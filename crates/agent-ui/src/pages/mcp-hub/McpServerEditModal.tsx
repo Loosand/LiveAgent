@@ -263,7 +263,7 @@ export function McpServerEditModal(props: {
       >
         <form onSubmit={handleSubmit} className="flex min-h-0 flex-1 flex-col">
           <DialogHeader className="flex-row items-center gap-3">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-primary/10 text-primary">
               <McpLogo className="h-5 w-5" />
             </div>
             <div className="min-w-0 flex-1">
@@ -284,7 +284,7 @@ export function McpServerEditModal(props: {
                   {t("mcpHub.basicSettings")}
                 </h3>
                 <div className="grid gap-x-3 gap-y-4 sm:grid-cols-4">
-                  <div className="space-y-1.5 sm:col-span-2">
+                  <div className="space-y-2 sm:col-span-2">
                     <Label htmlFor="mcp-edit-id" className="text-xs text-muted-foreground">
                       {t("mcpHub.serverName")}
                     </Label>
@@ -299,7 +299,7 @@ export function McpServerEditModal(props: {
                       {t("mcpHub.serverNameHint")}
                     </p>
                   </div>
-                  <div className="space-y-1.5">
+                  <div className="space-y-2">
                     <Label htmlFor="mcp-edit-transport" className="text-xs text-muted-foreground">
                       {t("mcpHub.transport")}
                     </Label>
@@ -321,7 +321,7 @@ export function McpServerEditModal(props: {
                       </SelectContent>
                     </Select>
                   </div>
-                  <div className="space-y-1.5">
+                  <div className="space-y-2">
                     <Label htmlFor="mcp-edit-timeout" className="text-xs text-muted-foreground">
                       {t("mcpHub.timeout")}
                     </Label>
@@ -340,7 +340,7 @@ export function McpServerEditModal(props: {
 
               <section
                 aria-labelledby="mcp-edit-connection-heading"
-                className="space-y-3 border-t border-border/60 pt-5"
+                className="space-y-3 border-t border-border pt-4"
               >
                 <h3
                   id="mcp-edit-connection-heading"
@@ -351,7 +351,7 @@ export function McpServerEditModal(props: {
                 {isStdio ? (
                   <div className="space-y-4">
                     <div className="grid gap-3 sm:grid-cols-2">
-                      <div className="space-y-1.5">
+                      <div className="space-y-2">
                         <Label htmlFor="mcp-edit-command" className="text-xs text-muted-foreground">
                           {t("mcpHub.command")}
                         </Label>
@@ -359,11 +359,11 @@ export function McpServerEditModal(props: {
                           id="mcp-edit-command"
                           value={draft.command}
                           placeholder="npx"
-                          className="font-mono text-[12.5px]"
+                          className="font-mono text-xs"
                           onChange={(event) => updateDraft({ command: event.currentTarget.value })}
                         />
                       </div>
-                      <div className="space-y-1.5">
+                      <div className="space-y-2">
                         <Label htmlFor="mcp-edit-cwd" className="text-xs text-muted-foreground">
                           {t("mcpHub.cwd")}
                         </Label>
@@ -371,13 +371,13 @@ export function McpServerEditModal(props: {
                           id="mcp-edit-cwd"
                           value={draft.cwd}
                           placeholder={t("mcpHub.cwdDefault")}
-                          className="font-mono text-[12.5px]"
+                          className="font-mono text-xs"
                           onChange={(event) => updateDraft({ cwd: event.currentTarget.value })}
                         />
                       </div>
                     </div>
                     <div className="grid gap-3 sm:grid-cols-2">
-                      <div className="space-y-1.5">
+                      <div className="space-y-2">
                         <Label htmlFor="mcp-edit-args" className="text-xs text-muted-foreground">
                           {t("mcpHub.args")}
                         </Label>
@@ -390,7 +390,7 @@ export function McpServerEditModal(props: {
                           onChange={(event) => updateDraft({ argsText: event.currentTarget.value })}
                         />
                       </div>
-                      <div className="space-y-1.5">
+                      <div className="space-y-2">
                         <Label htmlFor="mcp-edit-env" className="text-xs text-muted-foreground">
                           {t("mcpHub.env")}
                         </Label>
@@ -407,7 +407,7 @@ export function McpServerEditModal(props: {
                   </div>
                 ) : (
                   <div className="space-y-4">
-                    <div className="space-y-1.5">
+                    <div className="space-y-2">
                       <Label htmlFor="mcp-edit-url" className="text-xs text-muted-foreground">
                         {draft.transport === "http" ? t("mcpHub.urlHttp") : t("mcpHub.urlSse")}
                       </Label>
@@ -419,12 +419,12 @@ export function McpServerEditModal(props: {
                             ? "http://127.0.0.1:3000/mcp"
                             : "http://127.0.0.1:3000/sse"
                         }
-                        className="font-mono text-[12.5px]"
+                        className="font-mono text-xs"
                         onChange={(event) => updateDraft({ url: event.currentTarget.value })}
                       />
                     </div>
                     {isSse ? (
-                      <div className="space-y-1.5">
+                      <div className="space-y-2">
                         <Label
                           htmlFor="mcp-edit-message-url"
                           className="text-xs text-muted-foreground"
@@ -435,7 +435,7 @@ export function McpServerEditModal(props: {
                           id="mcp-edit-message-url"
                           value={draft.messageUrl}
                           placeholder="http://127.0.0.1:3000/message"
-                          className="font-mono text-[12.5px]"
+                          className="font-mono text-xs"
                           onChange={(event) =>
                             updateDraft({
                               messageUrl: event.currentTarget.value,
@@ -444,7 +444,7 @@ export function McpServerEditModal(props: {
                         />
                       </div>
                     ) : null}
-                    <div className="space-y-1.5">
+                    <div className="space-y-2">
                       <Label htmlFor="mcp-edit-headers" className="text-xs text-muted-foreground">
                         {t("mcpHub.headers")}
                       </Label>
@@ -462,7 +462,7 @@ export function McpServerEditModal(props: {
                       />
                     </div>
                     <div className="grid gap-x-3 gap-y-4 sm:grid-cols-3">
-                      <div className="space-y-1.5">
+                      <div className="space-y-2">
                         <Label
                           htmlFor="mcp-edit-auth-type"
                           className="text-xs text-muted-foreground"
@@ -491,7 +491,7 @@ export function McpServerEditModal(props: {
                       </div>
                       {draft.authType === "oauth" ? (
                         <>
-                          <div className="space-y-1.5">
+                          <div className="space-y-2">
                             <Label
                               htmlFor="mcp-edit-auth-scope"
                               className="text-xs text-muted-foreground"
@@ -502,13 +502,13 @@ export function McpServerEditModal(props: {
                               id="mcp-edit-auth-scope"
                               value={draft.authScope}
                               placeholder={t("mcpHub.authScopePlaceholder")}
-                              className="font-mono text-[12.5px]"
+                              className="font-mono text-xs"
                               onChange={(event) =>
                                 updateDraft({ authScope: event.currentTarget.value })
                               }
                             />
                           </div>
-                          <div className="space-y-1.5">
+                          <div className="space-y-2">
                             <Label
                               htmlFor="mcp-edit-auth-client-id"
                               className="text-xs text-muted-foreground"
@@ -519,7 +519,7 @@ export function McpServerEditModal(props: {
                               id="mcp-edit-auth-client-id"
                               value={draft.authClientId}
                               placeholder={t("mcpHub.authClientIdPlaceholder")}
-                              className="font-mono text-[12.5px]"
+                              className="font-mono text-xs"
                               onChange={(event) =>
                                 updateDraft({ authClientId: event.currentTarget.value })
                               }
@@ -534,7 +534,7 @@ export function McpServerEditModal(props: {
 
               <section
                 aria-labelledby="mcp-edit-details-heading"
-                className="space-y-3 border-t border-border/60 pt-5"
+                className="space-y-3 border-t border-border pt-4"
               >
                 <h3
                   id="mcp-edit-details-heading"
@@ -543,7 +543,7 @@ export function McpServerEditModal(props: {
                   {t("mcpHub.optionalDetails")}
                 </h3>
                 <div className="grid gap-3 sm:grid-cols-2">
-                  <div className="space-y-1.5">
+                  <div className="space-y-2">
                     <Label htmlFor="mcp-edit-description" className="text-xs text-muted-foreground">
                       {t("mcpHub.description")}
                     </Label>
@@ -552,12 +552,12 @@ export function McpServerEditModal(props: {
                       rows={3}
                       value={draft.description}
                       placeholder={t("mcpHub.descriptionPlaceholder")}
-                      className="resize-y text-sm"
+                      className="resize-y text-base"
                       onChange={(event) => updateDraft({ description: event.currentTarget.value })}
                     />
                   </div>
 
-                  <div className="space-y-1.5">
+                  <div className="space-y-2">
                     <Label htmlFor="mcp-edit-docs-url" className="text-xs text-muted-foreground">
                       {t("mcpHub.docsUrl")}
                     </Label>
@@ -573,7 +573,7 @@ export function McpServerEditModal(props: {
               </section>
 
               {formError ? (
-                <div className="flex items-start gap-2 rounded-xl border border-destructive/25 bg-destructive/[0.06] px-3 py-2.5 text-xs text-destructive">
+                <div className="flex items-start gap-2 rounded-2xl border border-destructive/20 bg-destructive/5 px-3 py-2 text-xs text-destructive">
                   <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
                   <span>{formError}</span>
                 </div>
@@ -585,7 +585,7 @@ export function McpServerEditModal(props: {
             <Button type="button" variant="outline" onClick={onClose}>
               {t("settings.cancel")}
             </Button>
-            <Button type="submit" className="gap-1.5">
+            <Button type="submit" className="gap-2">
               {mode === "add" ? <Plus className="h-3.5 w-3.5" /> : <Save className="h-3.5 w-3.5" />}
               {submitLabel}
             </Button>

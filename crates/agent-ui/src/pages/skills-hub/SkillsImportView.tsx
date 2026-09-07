@@ -158,9 +158,9 @@ export function SkillsImportView(props: {
           {importToast ? (
             <div
               role="status"
-              className="notify-toast-enter pointer-events-auto flex w-full max-w-md items-start gap-2.5 rounded-xl border border-amber-500/30 bg-background px-3 py-2.5 text-sm shadow-xl"
+              className="notify-toast-enter pointer-events-auto flex w-full max-w-md items-start gap-2 rounded-2xl border border-warning/40 bg-background px-3 py-2 text-base shadow-overlay"
             >
-              <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-amber-600 dark:text-amber-400" />
+              <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-warning" />
               <p className="min-w-0 flex-1 leading-relaxed text-foreground">{importToast}</p>
               <Button
                 variant="ghost"
@@ -175,7 +175,7 @@ export function SkillsImportView(props: {
           ) : importErrors.length > 0 ? (
             <div
               role="alert"
-              className="notify-toast-enter pointer-events-auto flex w-full max-w-md items-start gap-2.5 rounded-xl border border-destructive/30 bg-background px-3 py-2.5 text-sm shadow-xl"
+              className="notify-toast-enter pointer-events-auto flex w-full max-w-md items-start gap-2 rounded-2xl border border-destructive/40 bg-background px-3 py-2 text-base shadow-overlay"
             >
               <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-destructive" />
               <div className="min-w-0 flex-1">
@@ -201,7 +201,7 @@ export function SkillsImportView(props: {
           ) : (
             <div
               role="status"
-              className="notify-toast-enter pointer-events-auto flex w-full max-w-md items-start gap-2.5 rounded-xl border border-emerald-500/30 bg-background px-3 py-2.5 text-sm shadow-xl"
+              className="notify-toast-enter pointer-events-auto flex w-full max-w-md items-start gap-2 rounded-2xl border border-success/40 bg-background px-3 py-2 text-base shadow-overlay"
             >
               <Check className="mt-0.5 h-4 w-4 shrink-0 text-[hsl(var(--chat-success))]" />
               <p className="min-w-0 flex-1 leading-relaxed text-foreground">
@@ -222,8 +222,8 @@ export function SkillsImportView(props: {
       ) : null}
       <div
         className={cn(
-          "h-full min-h-0 overflow-y-auto px-1.5 pb-4 pt-1.5",
-          bulkMode ? "pb-[calc(5rem+env(safe-area-inset-bottom))] sm:pb-20" : null,
+          "h-full min-h-0 overflow-y-auto px-2 pb-4 pt-2",
+          bulkMode ? "pb-[calc(5rem+env(safe-area-inset-bottom))] sm:pb-16" : null,
         )}
       >
         <div className="flex flex-col gap-3">
@@ -238,7 +238,7 @@ export function SkillsImportView(props: {
             </GlassPanel>
           ) : null}
 
-          <div className="hub-panel-enter sticky top-0 z-30 -mx-0.5 flex flex-wrap items-center justify-between gap-3 bg-background/95 px-0.5 backdrop-blur supports-[backdrop-filter]:bg-background/90">
+          <div className="hub-panel-enter sticky top-0 z-30 -mx-0.5 flex flex-wrap items-center justify-between gap-3 bg-background px-0.5 backdrop-blur supports-[backdrop-filter]:bg-background/90">
             <SkillsImportSourceTabs
               scans={filteredScans}
               value={activeTool}
@@ -253,7 +253,7 @@ export function SkillsImportView(props: {
               <Button
                 variant="outline"
                 size="sm"
-                className="min-w-[6.75rem] justify-center gap-1.5"
+                className="min-w-[6.75rem] justify-center gap-2"
                 disabled={loading || importing || initializing}
                 aria-busy={loading}
                 onClick={() => void handleRescan()}
@@ -276,7 +276,7 @@ export function SkillsImportView(props: {
               {!bulkMode ? (
                 <Button
                   size="sm"
-                  className="gap-1.5"
+                  className="gap-2"
                   disabled={selected.size === 0 || importing || initializing}
                   onClick={() => onImport()}
                 >
@@ -301,17 +301,17 @@ export function SkillsImportView(props: {
               aria-busy="true"
             >
               {[1, 2, 3, 4].map((item) => (
-                <div key={item} className="hub-frost-skeleton min-h-48 p-3.5">
+                <div key={item} className="hub-frost-skeleton min-h-48 p-4">
                   <div className="flex h-full flex-col gap-3">
                     <div className="flex items-center gap-3">
-                      <div className="skills-skeleton-shimmer h-5 w-5 shrink-0 rounded" />
-                      <div className="skills-skeleton-shimmer h-3.5 w-28 rounded" />
+                      <div className="skills-skeleton-shimmer h-5 w-5 shrink-0 rounded-sm" />
+                      <div className="skills-skeleton-shimmer h-3.5 w-28 rounded-sm" />
                     </div>
                     <div className="space-y-2">
-                      <div className="skills-skeleton-shimmer h-3 w-full rounded" />
-                      <div className="skills-skeleton-shimmer h-3 w-4/5 rounded" />
+                      <div className="skills-skeleton-shimmer h-3 w-full rounded-sm" />
+                      <div className="skills-skeleton-shimmer h-3 w-4/5 rounded-sm" />
                     </div>
-                    <div className="skills-skeleton-shimmer mt-auto h-8 w-20 rounded-md" />
+                    <div className="skills-skeleton-shimmer mt-auto h-8 w-20 rounded-lg" />
                   </div>
                 </div>
               ))}
@@ -319,7 +319,7 @@ export function SkillsImportView(props: {
             </div>
           ) : activeScan ? (
             <div key={activeScan.tool} className="hub-panel-enter flex flex-col gap-3">
-              <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[11px] text-muted-foreground">
+              <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted-foreground">
                 <span className="font-mono">{activeScan.rootDir}</span>
                 {activeScan.tool === "codebuddy" && activeScan.exists ? (
                   <>
@@ -368,7 +368,7 @@ export function SkillsImportView(props: {
                     <Button
                       variant="outline"
                       size="sm"
-                      className="gap-1.5"
+                      className="gap-2"
                       disabled={importing || selectableVisibleBaseDirs.length === 0}
                       onClick={() => onBatchToggle(selectableVisibleBaseDirs, !allVisibleSelected)}
                     >
@@ -429,12 +429,12 @@ export function SkillsImportView(props: {
                             event.currentTarget.click();
                           }}
                           className={cn(
-                            "group flex min-h-48 w-full flex-col rounded-xl border border-foreground/15 bg-card p-3.5 text-left shadow-sm transition-[border-color,background-color,box-shadow] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+                            "group flex min-h-48 w-full flex-col rounded-2xl border border-border bg-card p-4 text-left shadow-control transition-[border-color,background-color,box-shadow] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
                             alreadyInstalled
-                              ? "border-emerald-600/25"
+                              ? "border-success/20"
                               : checked
-                                ? "border-foreground bg-muted/30 shadow-sm"
-                                : "hover:border-foreground/30 hover:bg-muted/20",
+                                ? "border-ring bg-muted/40 shadow-control"
+                                : "hover:border-input hover:bg-muted/20",
                             importing && !alreadyInstalled ? "opacity-60" : null,
                           )}
                         >
@@ -448,14 +448,14 @@ export function SkillsImportView(props: {
                                 onCheckedChange={() => onToggle(skill.baseDir)}
                               />
                               <div className="min-w-0 flex-1">
-                                <div className="flex items-center gap-1.5">
+                                <div className="flex items-center gap-2">
                                   <SearchHighlight
                                     text={skill.name}
                                     query={query}
-                                    className="truncate text-[13px] font-semibold leading-tight text-foreground"
+                                    className="truncate text-xs font-semibold leading-tight text-foreground"
                                   />
                                   {alreadyInstalled ? (
-                                    <Badge variant="success" className="h-5 px-1.5 text-[10px]">
+                                    <Badge variant="success" className="h-5 px-2 text-2xs">
                                       {t("settings.skillsImportInstalledBadge")}
                                     </Badge>
                                   ) : null}
@@ -471,9 +471,9 @@ export function SkillsImportView(props: {
                                 query={query}
                               />
                             </p>
-                            <div className="mt-auto space-y-2.5">
+                            <div className="mt-auto space-y-2">
                               <span
-                                className="block truncate px-0.5 text-[10.5px] text-muted-foreground"
+                                className="block truncate px-0.5 text-2xs text-muted-foreground"
                                 title={skill.baseDir}
                               >
                                 <SearchHighlight text={skill.baseDir} query={query} />
@@ -482,7 +482,7 @@ export function SkillsImportView(props: {
                                 type="button"
                                 variant={alreadyInstalled ? "outline" : "default"}
                                 size="sm"
-                                className="h-9 w-full gap-1.5 rounded-xl"
+                                className="h-9 w-full gap-2 rounded-2xl"
                                 disabled={locked}
                                 aria-busy={installing}
                                 onClick={(event) => {
@@ -520,8 +520,8 @@ export function SkillsImportView(props: {
         <div className="pointer-events-none absolute inset-x-0 bottom-1 z-40 flex justify-center px-2 max-sm:bottom-[calc(0.25rem+env(safe-area-inset-bottom))]">
           <div
             className={cn(
-              "hub-panel-enter pointer-events-auto flex max-w-full flex-wrap items-center gap-2 rounded-full border border-border/50 bg-background/95 text-[12.5px] shadow-[0_8px_24px_-12px_rgba(15,23,42,0.35)] max-sm:justify-center max-sm:rounded-3xl max-sm:whitespace-nowrap dark:border-white/[0.1] dark:bg-popover/95",
-              importableSelectedCount > 0 || importing ? "py-2 pl-4 pr-2" : "px-4 py-2.5",
+              "hub-panel-enter pointer-events-auto flex max-w-full flex-wrap items-center gap-2 rounded-full border border-border bg-background text-xs shadow-overlay max-sm:justify-center max-sm:rounded-2xl max-sm:whitespace-nowrap dark:bg-popover",
+              importableSelectedCount > 0 || importing ? "py-2 pl-4 pr-2" : "px-4 py-2",
             )}
           >
             {importableSelectedCount > 0 || importing ? (
@@ -532,7 +532,7 @@ export function SkillsImportView(props: {
                     String(importableSelectedCount),
                   )}
                 </span>
-                <span className="hidden text-muted-foreground/50 sm:inline" aria-hidden="true">
+                <span className="hidden text-muted-foreground/60 sm:inline" aria-hidden="true">
                   │
                 </span>
                 <Button
@@ -543,7 +543,7 @@ export function SkillsImportView(props: {
                 >
                   {importing && importProgress ? (
                     <>
-                      <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />
+                      <Loader2 className="mr-2 h-3.5 w-3.5 animate-spin" />
                       {`${t("settings.skillsImportProgress")} ${importProgress.done + 1}/${importProgress.total}`}
                     </>
                   ) : (

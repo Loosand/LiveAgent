@@ -84,13 +84,13 @@ export function ThinkingDisclosure(props: {
         type="button"
         aria-expanded={open}
         aria-label={t("chat.thinkingProcess")}
-        className="-mx-1.5 flex w-fit max-w-[calc(100%+0.75rem)] cursor-pointer select-none items-center gap-1.5 rounded-lg px-1.5 py-1 text-left text-[calc(13px*var(--zone-font-scale,1))] font-[450] text-foreground/60 transition-colors duration-150 hover:bg-foreground/[0.04] hover:text-foreground/75"
+        className="-mx-2 flex w-fit max-w-[calc(100%+1rem)] cursor-pointer select-none items-center gap-2 rounded-lg px-2 py-1 text-left text-xs font-[450] text-foreground/60 transition-colors duration-150 hover:bg-foreground/5 hover:text-foreground/80"
         onClick={() => {
           userOwnsDisclosureRef.current = true;
           setOpen((prev) => !prev);
         }}
       >
-        <Brain className="h-3 w-3 shrink-0 text-foreground/45" />
+        <Brain className="h-3 w-3 shrink-0 text-foreground/40" />
         <span className={cn("min-w-0 truncate", active && "shimmer")}>
           {active ? t("chat.thinking") : settledLabel}
         </span>
@@ -110,7 +110,7 @@ export function ThinkingDisclosure(props: {
               data-thinking-scroll=""
               className="max-h-[320px] overflow-y-auto overscroll-contain pr-1 [scrollbar-gutter:stable]"
             >
-              <div ref={setScrollContent} className="border-l border-border/55 pl-3">
+              <div ref={setScrollContent} className="border-l border-border pl-3">
                 <Markdown
                   content={text}
                   className="font-chat thinking-markdown"

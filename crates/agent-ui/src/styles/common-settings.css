@@ -303,7 +303,7 @@
 
 /*
  * Provider toolbar — unlayered so these win over Button's Tailwind utilities
- * (rounded-md / border / ghost hover) and keep the cluster aligned with the
+ * (rounded-lg / border / ghost hover) and keep the cluster aligned with the
  * vendor tab track on the same row.
  */
 .settings-provider-tabs-wrap {
@@ -326,7 +326,7 @@
   flex-shrink: 0;
   align-items: stretch;
   gap: 1px;
-  padding: 4px;
+  padding: calc(var(--spacing) * 1);
   border-radius: var(--radius);
   background: hsl(var(--muted));
   color: hsl(var(--muted-foreground));
@@ -349,13 +349,13 @@
   min-width: 0;
   align-items: center;
   justify-content: center;
-  gap: 6px;
-  padding: 0 10px;
+  gap: calc(var(--spacing) * 2);
+  padding: 0 calc(var(--spacing) * 3);
   border: 0;
-  border-radius: calc(var(--radius) - 4px);
+  border-radius: var(--radius-item);
   background: transparent;
   box-shadow: none;
-  font-size: 12.5px;
+  font-size: var(--text-xs);
   font-weight: 500;
   color: hsl(var(--muted-foreground));
   transition:
@@ -385,21 +385,19 @@
 .settings-provider-action-group .settings-provider-action-active {
   background: hsl(var(--background));
   color: hsl(var(--foreground));
-  box-shadow: 0 1px 2px hsl(var(--foreground) / 0.06);
+  box-shadow: var(--elevation-control);
 }
 
 .settings-provider-action-group .settings-provider-action--primary {
   background: hsl(var(--primary));
   color: hsl(var(--primary-foreground));
-  box-shadow: 0 1px 2px hsl(var(--primary) / 0.28);
+  box-shadow: var(--elevation-control);
 }
 
 .settings-provider-action-group .settings-provider-action:focus-visible {
   z-index: 1;
   outline: none;
-  box-shadow:
-    0 0 0 2px hsl(var(--background)),
-    0 0 0 4px hsl(var(--ring));
+  box-shadow: var(--focus-halo-offset);
 }
 
 @media (max-width: 860px) {
@@ -409,7 +407,7 @@
 
   .settings-provider-action-group .settings-provider-action {
     min-width: 32px;
-    padding: 0 8px;
+    padding: 0 calc(var(--spacing) * 2);
   }
 }
 

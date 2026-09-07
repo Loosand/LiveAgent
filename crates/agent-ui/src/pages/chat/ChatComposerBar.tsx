@@ -1234,7 +1234,7 @@ export const ChatComposerBar = memo(function ChatComposerBar(props: ChatComposer
       ref={composerLayerRef}
       className={cn(
         surface === "desktop"
-          ? "pointer-events-none absolute inset-x-0 bottom-0 z-20 flex justify-center px-5 pb-4"
+          ? "pointer-events-none absolute inset-x-0 bottom-0 z-20 flex justify-center px-4 pb-4"
           : "gateway-composer-layer pointer-events-none absolute inset-x-0 bottom-0 z-20 flex justify-center",
         isComposerExpanded && (surface === "desktop" ? "top-14" : "top-0 pt-3"),
         hidden && "hidden",
@@ -1251,7 +1251,7 @@ export const ChatComposerBar = memo(function ChatComposerBar(props: ChatComposer
       {/* Desktop aligns to the assistant message body: transcript px-5 + px-5
           = 40px removed from the column, and the column itself already gives
           back the retired 40px avatar rail. The card extends 2px past each
-          edge of the body so scrolling content cannot peek around its rounded
+          edge of the body so scrolling content cannot peek around its rounded-sm
           lower corners. */}
       <div
         ref={composerColumnRef}
@@ -1272,10 +1272,7 @@ export const ChatComposerBar = memo(function ChatComposerBar(props: ChatComposer
           </div>
         ) : null}
         {queuedTurns.length > 0 ? (
-          <div
-            ref={queuePanelRef}
-            className="relative z-30 mx-auto mb-[-1px] w-[calc(100%-1.5rem)]"
-          >
+          <div ref={queuePanelRef} className="relative z-30 mx-auto -mb-px w-[calc(100%-1.5rem)]">
             <div
               aria-hidden={queueCollapsed}
               className={cn(
@@ -1284,7 +1281,7 @@ export const ChatComposerBar = memo(function ChatComposerBar(props: ChatComposer
               )}
             >
               <div className="min-h-0 overflow-hidden">
-                <div className="rounded-t-lg border border-b-0 border-black/[0.055] bg-white/70 px-1 pb-1 pt-2 shadow-[0_8px_24px_-18px_rgba(15,23,42,0.24),inset_0_1px_0_rgba(255,255,255,0.72)] backdrop-blur-2xl backdrop-saturate-[165%] dark:border-white/[0.10] dark:bg-white/[0.06] dark:shadow-[0_8px_24px_-18px_rgba(0,0,0,0.72),inset_0_1px_0_rgba(255,255,255,0.08)]">
+                <div className="rounded-t-lg border border-b-0 border-border bg-white/80 px-1 pb-1 pt-2 shadow-control backdrop-blur-2xl backdrop-saturate-[165%] dark:bg-white/5">
                   <div className="relative min-h-0">
                     <ul
                       ref={queueListRef}
@@ -1299,7 +1296,7 @@ export const ChatComposerBar = memo(function ChatComposerBar(props: ChatComposer
                       {queuedTurns.map((item, index) => (
                         <li
                           key={item.id}
-                          className="relative grid h-9 min-h-9 grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-1.5 rounded-md border border-black/[0.035] bg-white/42 px-2 text-xs shadow-[inset_0_1px_0_rgba(255,255,255,0.56)] backdrop-blur-xl backdrop-saturate-[150%] transition-[border-color,background-color] dark:border-white/[0.06] dark:bg-white/[0.04] dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.05)]"
+                          className="relative grid h-9 min-h-9 grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-2 rounded-lg border border-border bg-white/40 px-2 text-xs shadow-none backdrop-blur-xl backdrop-saturate-[150%] transition-[border-color,background-color] dark:bg-white/5"
                         >
                           <div className="flex shrink-0 items-center gap-0.5">
                             {index > 0 ? (
@@ -1308,21 +1305,21 @@ export const ChatComposerBar = memo(function ChatComposerBar(props: ChatComposer
                                 disabled={queueCollapsed}
                                 onClick={() => onMoveQueuedTurnUp(item.id)}
                                 aria-label={t("chat.queue.moveUp")}
-                                className="inline-flex h-6 w-6 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-background/80 hover:text-foreground disabled:pointer-events-none disabled:opacity-35"
+                                className="inline-flex h-6 w-6 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-background/80 hover:text-foreground disabled:pointer-events-none disabled:opacity-35"
                               >
                                 <ChevronUp className="h-3 w-3" />
                               </button>
                             ) : (
                               <span aria-hidden className="h-6 w-6" />
                             )}
-                            <Clock3 className="h-3 w-3 shrink-0 text-muted-foreground/65" />
+                            <Clock3 className="h-3 w-3 shrink-0 text-muted-foreground/60" />
                           </div>
-                          <div className="flex min-w-0 items-center gap-1.5 overflow-hidden">
-                            <span className="block min-w-0 flex-1 overflow-hidden text-ellipsis whitespace-nowrap text-[calc(11px*var(--zone-font-scale,1))] leading-4 text-foreground/88">
+                          <div className="flex min-w-0 items-center gap-2 overflow-hidden">
+                            <span className="block min-w-0 flex-1 overflow-hidden text-ellipsis whitespace-nowrap text-xs leading-4 text-foreground/90">
                               {item.previewText || t("chat.queue.emptyMessage")}
                             </span>
                             {item.fileCount > 0 ? (
-                              <span className="max-w-[4.5rem] shrink-0 overflow-hidden text-ellipsis whitespace-nowrap text-[calc(9px*var(--zone-font-scale,1))] leading-4 text-muted-foreground">
+                              <span className="max-w-[4.5rem] shrink-0 overflow-hidden text-ellipsis whitespace-nowrap text-2xs leading-4 text-muted-foreground">
                                 {t("chat.queue.fileCount").replace(
                                   "{count}",
                                   String(item.fileCount),
@@ -1337,7 +1334,7 @@ export const ChatComposerBar = memo(function ChatComposerBar(props: ChatComposer
                                 disabled={queueCollapsed}
                                 onClick={() => onEditQueuedTurn(item.id)}
                                 aria-label={t("chat.queue.edit")}
-                                className="inline-flex h-6 w-6 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-background/80 hover:text-foreground"
+                                className="inline-flex h-6 w-6 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-background/80 hover:text-foreground"
                               >
                                 <SquarePen className="h-3 w-3" />
                               </button>
@@ -1348,7 +1345,7 @@ export const ChatComposerBar = memo(function ChatComposerBar(props: ChatComposer
                                 disabled={queueCollapsed}
                                 onClick={() => onRunQueuedTurnNow(item.id)}
                                 aria-label={t("chat.queue.runNow")}
-                                className="inline-flex h-6 w-6 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-background/80 hover:text-foreground"
+                                className="inline-flex h-6 w-6 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-background/80 hover:text-foreground"
                               >
                                 <Play className="h-3 w-3" />
                               </button>
@@ -1359,7 +1356,7 @@ export const ChatComposerBar = memo(function ChatComposerBar(props: ChatComposer
                                 disabled={queueCollapsed}
                                 onClick={() => onRemoveQueuedTurn(item.id)}
                                 aria-label={t("chat.queue.delete")}
-                                className="inline-flex h-6 w-6 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive"
+                                className="inline-flex h-6 w-6 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive"
                               >
                                 <Trash2 className="h-3 w-3" />
                               </button>
@@ -1397,14 +1394,14 @@ export const ChatComposerBar = memo(function ChatComposerBar(props: ChatComposer
               title={toggleQueueTooltip}
               aria-label={toggleQueueTooltip}
               aria-expanded={!queueCollapsed}
-              className="absolute left-1/2 top-0 z-40 inline-flex h-[18px] -translate-x-1/2 -translate-y-1/2 items-center gap-1 rounded-full border border-black/[0.07] bg-white/90 pl-1.5 pr-2 text-muted-foreground shadow-[0_2px_10px_-4px_rgba(15,23,42,0.45),inset_0_1px_0_rgba(255,255,255,0.85)] backdrop-blur-xl backdrop-saturate-150 transition-[background-color,color,scale] hover:bg-white hover:text-foreground active:scale-95 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring dark:border-white/[0.12] dark:bg-zinc-900/90 dark:shadow-[0_2px_10px_-4px_rgba(0,0,0,0.8),inset_0_1px_0_rgba(255,255,255,0.10)] dark:hover:bg-zinc-900"
+              className="absolute left-1/2 top-0 z-40 inline-flex h-[18px] -translate-x-1/2 -translate-y-1/2 items-center gap-1 rounded-full border border-border bg-white/90 pl-2 pr-2 text-muted-foreground shadow-control backdrop-blur-xl backdrop-saturate-150 transition-[background-color,color,scale] hover:bg-white hover:text-foreground active:scale-95 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring dark:bg-card/90 dark:hover:bg-card"
             >
               {queueCollapsed ? (
                 <ChevronDown className="h-3 w-3" />
               ) : (
                 <ChevronUp className="h-3 w-3" />
               )}
-              <span className="text-[calc(10px*var(--zone-font-scale,1))] font-medium leading-none tabular-nums">
+              <span className="text-2xs font-medium leading-none tabular-nums">
                 {queuedTurns.length}
               </span>
             </button>
@@ -1457,7 +1454,7 @@ export const ChatComposerBar = memo(function ChatComposerBar(props: ChatComposer
             // 展开态切换 flex-grow 时会被一并动画，导致卡片先跳顶再长满的闪动。
             // 常驻 flex-col：FLIP 动画把卡片钳在中间高度时，flex-1 的编辑器
             // 区吸收多余空间，工具栏才能始终贴住卡片底边。
-            "composer-glass-card @container relative flex flex-col overflow-hidden rounded-4xl border border-border/65 bg-muted shadow-[0_18px_44px_-34px_color-mix(in_oklch,var(--foreground)_42%,transparent)] transition-[border-color,box-shadow] focus-within:border-border focus-within:shadow-[0_20px_48px_-34px_color-mix(in_oklch,var(--foreground)_48%,transparent)]",
+            "composer-glass-card @container relative flex flex-col overflow-hidden rounded-composer border border-border bg-muted shadow-control transition-[border-color,box-shadow] focus-within:border-border focus-within:shadow-focus",
             surface === "desktop" && "z-10",
             isComposerExpanded && "min-h-0 flex-1",
           )}
@@ -1466,9 +1463,9 @@ export const ChatComposerBar = memo(function ChatComposerBar(props: ChatComposer
             <div
               aria-hidden
               className={cn(
-                "pointer-events-none absolute inset-0 z-40 flex items-center justify-center rounded-3xl border-2 border-dashed bg-background/90 text-sm font-medium backdrop-blur-sm",
+                "pointer-events-none absolute inset-0 z-40 flex items-center justify-center rounded-composer border-2 border-dashed bg-background/90 text-base font-medium backdrop-blur-sm",
                 workspacePathDropState === "accept"
-                  ? "border-sky-500/70 text-sky-600 dark:text-sky-300"
+                  ? "border-info/80 text-info"
                   : "border-destructive/60 text-destructive",
               )}
             >
@@ -1477,8 +1474,8 @@ export const ChatComposerBar = memo(function ChatComposerBar(props: ChatComposer
                 : t("chat.workspacePathDrop.crossProject")}
             </div>
           ) : conversationDropReference ? (
-            <div className="pointer-events-none absolute inset-1 z-50 flex items-center justify-center rounded-3xl border border-dashed border-primary/45 bg-background/88 px-6 text-center shadow-inner backdrop-blur-sm">
-              <span className="max-w-full truncate rounded-full bg-primary/10 px-3 py-1.5 text-xs font-medium text-primary">
+            <div className="pointer-events-none absolute inset-1 z-50 flex items-center justify-center rounded-composer border border-dashed border-ring bg-background/90 px-6 text-center shadow-inset backdrop-blur-sm">
+              <span className="max-w-full truncate rounded-full bg-primary/10 px-3 py-2 text-xs font-medium text-primary">
                 {t("chat.conversationReference.drop").replace(
                   "{title}",
                   conversationDropReference.title,
@@ -1486,22 +1483,22 @@ export const ChatComposerBar = memo(function ChatComposerBar(props: ChatComposer
               </span>
             </div>
           ) : conversationDropNoticeText ? (
-            <div className="pointer-events-none absolute inset-1 z-50 flex items-center justify-center rounded-3xl border border-dashed border-amber-500/45 bg-background/90 px-6 text-center shadow-inner backdrop-blur-sm">
-              <span className="max-w-full rounded-full bg-amber-500/10 px-3 py-1.5 text-xs font-medium text-amber-700 dark:text-amber-300">
+            <div className="pointer-events-none absolute inset-1 z-50 flex items-center justify-center rounded-composer border border-dashed border-warning/40 bg-background/90 px-6 text-center shadow-inset backdrop-blur-sm">
+              <span className="max-w-full rounded-full bg-warning/10 px-3 py-2 text-xs font-medium text-warning">
                 {conversationDropNoticeText}
               </span>
             </div>
           ) : null}
           <div
             className={cn(
-              "composer-input-surface relative z-10 flex flex-col overflow-hidden rounded-4xl bg-background",
+              "composer-input-surface relative z-10 flex flex-col overflow-hidden rounded-composer bg-background",
               isComposerExpanded && "min-h-0 flex-1",
             )}
           >
             {pendingUploadedFiles.length > 0 ? (
               <div
                 ref={attachmentListRef}
-                className="upload-file-list relative z-10 flex shrink-0 items-center gap-1.5 overflow-x-auto overflow-y-hidden pb-1 pl-4 pr-12 pt-2"
+                className="upload-file-list relative z-10 flex shrink-0 items-center gap-2 overflow-x-auto overflow-y-hidden pb-1 pl-4 pr-12 pt-2"
               >
                 {pendingUploadedFiles.map((file) => (
                   <PendingComposerAttachment
@@ -1526,7 +1523,7 @@ export const ChatComposerBar = memo(function ChatComposerBar(props: ChatComposer
                 title={toggleComposerExpandTooltip}
                 aria-label={toggleComposerExpandTooltip}
                 aria-expanded={isComposerExpanded}
-                className="absolute right-3 top-2 z-20 inline-flex h-8 w-8 items-center justify-center rounded-full bg-clip-content p-0.5 text-muted-foreground/70 outline-hidden transition-[background-color,color,scale] hover:bg-muted/60 hover:text-foreground active:scale-90 focus-visible:bg-muted/60"
+                className="absolute right-3 top-2 z-20 inline-flex h-8 w-8 items-center justify-center rounded-full bg-clip-content p-0.5 text-muted-foreground/80 outline-hidden transition-[background-color,color,scale] hover:bg-muted/60 hover:text-foreground active:scale-90 focus-visible:bg-muted/60"
               >
                 {isComposerExpanded ? (
                   <Minimize2 className="h-4 w-4" />
@@ -1547,7 +1544,7 @@ export const ChatComposerBar = memo(function ChatComposerBar(props: ChatComposer
             <div
               className={cn(
                 "relative flex flex-1 pl-4 pr-12",
-                pendingUploadedFiles.length > 0 ? "pt-1.5" : "pt-3",
+                pendingUploadedFiles.length > 0 ? "pt-2" : "pt-3",
                 isComposerExpanded && "min-h-0",
               )}
               onFocusCapture={onPrepareChatRuntime}
@@ -1600,7 +1597,7 @@ export const ChatComposerBar = memo(function ChatComposerBar(props: ChatComposer
                           "composer-toolbar-action relative inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full outline-hidden transition-colors hover:bg-muted/60 focus-visible:bg-muted/60 data-[popup-open]:bg-muted/60",
                           "disabled:pointer-events-none disabled:opacity-40",
                           pendingUploadedFiles.length > 0
-                            ? "text-sky-600 hover:text-sky-700 dark:text-sky-300 dark:hover:text-sky-200"
+                            ? "text-info hover:text-info"
                             : "text-muted-foreground hover:text-foreground dark:hover:text-white",
                         )}
                       />
@@ -1614,7 +1611,7 @@ export const ChatComposerBar = memo(function ChatComposerBar(props: ChatComposer
                     {pendingUploadedFiles.length > 0 ? (
                       <span
                         aria-hidden
-                        className="absolute -right-0.5 -top-0.5 flex h-[15px] min-w-[15px] items-center justify-center rounded-full bg-sky-500 px-[3px] text-[calc(9px*var(--zone-font-scale,1))] font-semibold leading-none text-white shadow-[0_0_0_1.5px_rgba(255,255,255,0.95)] dark:bg-sky-400 dark:text-slate-900 dark:shadow-[0_0_0_1.5px_rgba(20,22,28,0.9)]"
+                        className="absolute -right-0.5 -top-0.5 flex h-[15px] min-w-[15px] items-center justify-center rounded-full bg-info px-1 text-2xs font-semibold leading-none text-info-foreground shadow-separator"
                       >
                         {pendingUploadedFiles.length}
                       </span>
@@ -1625,13 +1622,13 @@ export const ChatComposerBar = memo(function ChatComposerBar(props: ChatComposer
                     side="top"
                     align="start"
                   >
-                    <DropdownMenuLabel className="px-2 pb-1 pt-1.5 text-xs font-medium text-muted-foreground">
+                    <DropdownMenuLabel className="px-2 pb-1 pt-2 text-xs font-medium text-muted-foreground">
                       {t("chat.upload.addSection")}
                     </DropdownMenuLabel>
                     <DropdownMenuItem
                       onSelect={onPickReadableFiles}
                       disabled={uploadDisabled}
-                      className="composer-safety-item items-center gap-2 rounded-md py-1.5 text-xs"
+                      className="composer-safety-item items-center gap-2 rounded-lg py-2 text-xs"
                     >
                       <Paperclip className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
                       <span className="font-medium leading-5">{t("chat.upload.files")}</span>
@@ -1639,7 +1636,7 @@ export const ChatComposerBar = memo(function ChatComposerBar(props: ChatComposer
                     <DropdownMenuItem
                       onSelect={onPickWorkspaceFolder}
                       disabled={uploadDisabled}
-                      className="composer-safety-item items-center gap-2 rounded-md py-1.5 text-xs"
+                      className="composer-safety-item items-center gap-2 rounded-lg py-2 text-xs"
                     >
                       <FolderOpen className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
                       <span className="font-medium leading-5">{t("chat.upload.folder")}</span>
@@ -1658,13 +1655,13 @@ export const ChatComposerBar = memo(function ChatComposerBar(props: ChatComposer
                             planModeEnabled: !chatRuntimeControls.planModeEnabled,
                           })
                         }
-                        className="composer-safety-item items-center gap-2 rounded-md py-1.5 text-xs"
+                        className="composer-safety-item items-center gap-2 rounded-lg py-2 text-xs"
                       >
                         <Lightbulb
                           className={cn(
                             "h-3.5 w-3.5 shrink-0 transition-colors",
                             chatRuntimeControls.planModeEnabled
-                              ? "text-sky-600 dark:text-sky-300"
+                              ? "text-info"
                               : "text-muted-foreground",
                           )}
                         />
@@ -1678,13 +1675,13 @@ export const ChatComposerBar = memo(function ChatComposerBar(props: ChatComposer
                           className={cn(
                             "ml-auto inline-flex h-[18px] w-8 shrink-0 items-center rounded-full transition-colors",
                             chatRuntimeControls.planModeEnabled
-                              ? "bg-sky-500 dark:bg-sky-400"
-                              : "bg-muted-foreground/25",
+                              ? "bg-info"
+                              : "bg-muted-foreground/20",
                           )}
                         >
                           <span
                             className={cn(
-                              "block h-3.5 w-3.5 translate-x-[2px] rounded-full bg-white shadow-sm transition-transform dark:bg-slate-100",
+                              "block h-3.5 w-3.5 translate-x-[2px] rounded-full bg-white shadow-control transition-transform dark:bg-primary-foreground",
                               chatRuntimeControls.planModeEnabled && "translate-x-4",
                             )}
                           />
@@ -1702,7 +1699,7 @@ export const ChatComposerBar = memo(function ChatComposerBar(props: ChatComposer
                     onClick={() => onChatRuntimeControlsChange({ planModeEnabled: false })}
                     title={t("chat.runtime.planModeSlashOff")}
                     aria-label={t("chat.runtime.planModeSlashOff")}
-                    className="inline-flex h-8 shrink-0 items-center gap-1.5 rounded-full bg-sky-500/10 px-2.5 text-[11px] font-medium text-sky-700 outline-hidden transition-colors hover:bg-sky-500/15 focus-visible:ring-2 focus-visible:ring-primary/35 disabled:pointer-events-none disabled:opacity-40 dark:text-sky-300"
+                    className="inline-flex h-8 shrink-0 items-center gap-2 rounded-full bg-info/10 px-2 text-xs font-medium text-info outline-hidden transition-colors hover:bg-info/20 focus-visible:ring-2 focus-visible:ring-primary/40 disabled:pointer-events-none disabled:opacity-40"
                   >
                     <Lightbulb className="h-3.5 w-3.5 shrink-0" />
                     <span className="truncate">{t("chat.runtime.planMode")}</span>
@@ -1741,7 +1738,7 @@ export const ChatComposerBar = memo(function ChatComposerBar(props: ChatComposer
                         "composer-toolbar-action inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full outline-hidden transition-colors hover:bg-muted/60 focus-visible:bg-muted/60",
                         "disabled:pointer-events-none disabled:opacity-40",
                         stt.active
-                          ? "bg-red-500/10 text-red-600"
+                          ? "bg-destructive/10 text-destructive"
                           : "text-muted-foreground hover:text-foreground",
                       )}
                     >
@@ -1777,30 +1774,18 @@ export const ChatComposerBar = memo(function ChatComposerBar(props: ChatComposer
                   size="sm"
                   title={primaryActionTitle}
                   aria-label={primaryActionTitle}
-                  style={
-                    canQueueDraftWhileSending
-                      ? {
-                          backgroundColor: "hsl(160 84% 39%)",
-                          backgroundImage: "none",
-                          color: "white",
-                        }
-                      : isSending
-                        ? {
-                            backgroundColor: "hsl(var(--destructive))",
-                            backgroundImage: "none",
-                            color: "hsl(var(--destructive-foreground))",
-                          }
-                        : undefined
+                  variant={
+                    canQueueDraftWhileSending ? "success" : isSending ? "destructive" : "default"
                   }
                   className={cn(
                     // 点击区保持 32px；背景经 p-0.5 + bg-clip-content 只涂 28px 内圆，
                     // 与用量环外径、展开按钮悬停圆等大，避免实心圆盘显大。
-                    "h-8 w-8 shrink-0 rounded-full border-0 bg-clip-content p-0.5 shadow-none transition-all [&_svg]:stroke-[2.25]",
+                    "h-8 w-8 shrink-0 rounded-full border-0 bg-none bg-clip-content p-0.5 shadow-none transition-all [&_svg]:stroke-[2.25]",
                     canQueueDraftWhileSending
                       ? "hover:brightness-105 active:scale-95"
                       : isSending
                         ? "hover:opacity-90 active:scale-95"
-                        : "disabled:opacity-100 [&:not(:disabled)]:bg-foreground [&:not(:disabled)]:text-background [&:not(:disabled)]:hover:bg-foreground/85 [&:not(:disabled)]:active:scale-95 disabled:bg-muted/60 disabled:text-muted-foreground",
+                        : "disabled:opacity-100 [&:not(:disabled)]:bg-foreground [&:not(:disabled)]:text-background [&:not(:disabled)]:hover:bg-foreground/90 [&:not(:disabled)]:active:scale-95 disabled:bg-muted/60 disabled:text-muted-foreground",
                   )}
                 >
                   {canQueueDraftWhileSending ? (

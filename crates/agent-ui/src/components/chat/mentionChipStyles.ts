@@ -15,24 +15,24 @@ type MentionChipClassOptions = {
 };
 
 const BASE_CHIP_CLASS =
-  "mention-chip mx-0.5 inline-flex items-baseline gap-1 rounded px-1.5 align-baseline whitespace-nowrap";
+  "mention-chip mx-0.5 inline-flex items-baseline gap-1 rounded-sm px-2 align-baseline whitespace-nowrap";
 
 const VARIANT_CLASS: Record<MentionChipVariant, string> = {
-  file: "bg-blue-500/15 text-blue-700 dark:text-blue-300",
-  dir: "bg-amber-500/15 text-amber-700 dark:text-amber-300",
-  skill: "bg-violet-500/15 text-violet-700 dark:text-violet-300",
-  app: "bg-teal-500/15 text-teal-700 dark:text-teal-300",
-  commit: "bg-cyan-500/15 text-cyan-800 dark:text-cyan-200",
-  gitFile: "bg-sky-500/15 text-sky-800 dark:text-sky-200",
-  conversation: "bg-teal-500/15 text-teal-800 dark:text-teal-200",
-  codeRef: "bg-indigo-500/15 text-indigo-700 dark:text-indigo-300",
-  pastedText: "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300",
+  file: "bg-info/20 text-info",
+  dir: "bg-warning/20 text-warning",
+  skill: "bg-activity/20 text-activity",
+  app: "bg-success/20 text-success",
+  commit: "bg-info/20 text-info",
+  gitFile: "bg-info/20 text-info",
+  conversation: "bg-success/20 text-success",
+  codeRef: "bg-activity/20 text-activity",
+  pastedText: "bg-success/20 text-success",
 };
 
 const INTERACTIVE_HOVER_CLASS: Partial<Record<MentionChipVariant, string>> = {
-  commit: "hover:bg-cyan-500/20",
-  gitFile: "hover:bg-sky-500/20",
-  codeRef: "hover:bg-indigo-500/20",
+  commit: "hover:bg-info/20",
+  gitFile: "hover:bg-info/20",
+  codeRef: "hover:bg-activity/20",
 };
 
 export function mentionChipClassName(

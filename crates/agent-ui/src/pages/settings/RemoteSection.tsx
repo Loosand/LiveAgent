@@ -52,11 +52,7 @@ function CopyButton({ value }: { value: string }) {
       onClick={handleCopy}
       className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted/60 hover:text-foreground"
     >
-      {copied ? (
-        <Check className="h-3.5 w-3.5 text-emerald-500" />
-      ) : (
-        <Copy className="h-3.5 w-3.5" />
-      )}
+      {copied ? <Check className="h-3.5 w-3.5 text-success" /> : <Copy className="h-3.5 w-3.5" />}
     </button>
   );
 }
@@ -82,13 +78,13 @@ function PasswordInput({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className="pr-16 font-mono text-[13px]"
+        className="pr-16 font-mono text-xs"
       />
       <div className="absolute right-1 top-1/2 flex -translate-y-1/2 items-center gap-0.5">
         <button
           type="button"
           onClick={() => setVisible((prev) => !prev)}
-          className="flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted/60 hover:text-foreground"
+          className="flex h-7 w-7 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted/60 hover:text-foreground"
         >
           {visible ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
         </button>
@@ -100,7 +96,7 @@ function PasswordInput({
 
 function SectionCardHeader({ icon: Icon, title }: { icon: IconComponent; title: string }) {
   return (
-    <div className="flex items-center gap-2 text-sm font-medium text-foreground">
+    <div className="flex items-center gap-2 text-base font-medium text-foreground">
       <Icon className="h-4 w-4 text-muted-foreground" />
       {title}
     </div>
@@ -121,9 +117,9 @@ function ToggleOptionCard({
   onToggle: () => void;
 }) {
   return (
-    <div className="flex items-center justify-between gap-4 rounded-lg bg-muted/30 px-4 py-3">
+    <div className="flex items-center justify-between gap-4 rounded-lg bg-muted/40 px-4 py-3">
       <div className="min-w-0 flex-1">
-        <div className="flex items-center gap-1.5 text-sm font-medium">
+        <div className="flex items-center gap-2 text-base font-medium">
           <Icon className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
           {title}
         </div>
@@ -320,11 +316,11 @@ export function RemoteSection(props: SettingsSectionProps) {
     <div className="space-y-6">
       <div className="flex items-center justify-between gap-4">
         <div className="flex items-center gap-3">
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-sky-500/10">
-            <Cloud className="h-[18px] w-[18px] text-sky-500" />
+          <div className="flex h-9 w-9 items-center justify-center rounded-2xl bg-info/10">
+            <Cloud className="h-[18px] w-[18px] text-info" />
           </div>
           <div>
-            <h3 className="text-sm font-semibold">{t("settings.remoteTitle")}</h3>
+            <h3 className="text-base font-semibold">{t("settings.remoteTitle")}</h3>
             <p className="text-xs text-muted-foreground">{t("settings.remoteDesc")}</p>
           </div>
         </div>
@@ -332,10 +328,8 @@ export function RemoteSection(props: SettingsSectionProps) {
         <div className="flex items-center gap-3">
           <div
             className={cn(
-              "flex max-w-[260px] items-center gap-2 rounded-lg px-2.5 py-1.5 text-xs font-medium",
-              isConnected
-                ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
-                : "bg-muted/50 text-muted-foreground",
+              "flex max-w-[260px] items-center gap-2 rounded-lg px-2 py-2 text-xs font-medium",
+              isConnected ? "bg-success/10 text-success" : "bg-muted/60 text-muted-foreground",
             )}
             title={status.lastError ?? undefined}
           >
@@ -361,13 +355,13 @@ export function RemoteSection(props: SettingsSectionProps) {
         </div>
       </div>
 
-      <div className="space-y-4 rounded-xl border border-border/60 bg-card p-5">
+      <div className="space-y-4 rounded-2xl border border-border bg-card p-4">
         <SectionCardHeader icon={Server} title={t("settings.remoteGatewayConnection")} />
 
-        <div className="space-y-1.5">
+        <div className="space-y-2">
           <label
             htmlFor="remote-gateway-url"
-            className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground"
+            className="flex items-center gap-2 text-xs font-medium text-muted-foreground"
           >
             <Link2 className="h-3 w-3" />
             {t("settings.remoteGatewayUrl")}
@@ -383,9 +377,9 @@ export function RemoteSection(props: SettingsSectionProps) {
                 })
               }
               placeholder="https://gateway.example.com"
-              className="min-w-0 flex-1 font-mono text-[13px]"
+              className="min-w-0 flex-1 font-mono text-xs"
             />
-            <span className="shrink-0 text-xs text-muted-foreground/50">:</span>
+            <span className="shrink-0 text-xs text-muted-foreground/60">:</span>
             <Input
               type="text"
               inputMode="numeric"
@@ -393,16 +387,16 @@ export function RemoteSection(props: SettingsSectionProps) {
               onBlur={remoteGatewayPortDraft.handleBlur}
               onChange={(e) => remoteGatewayPortDraft.handleChange(e.target.value)}
               placeholder="443"
-              className="w-24 shrink-0 font-mono text-[13px]"
+              className="w-24 shrink-0 font-mono text-xs"
             />
           </div>
-          <p className="text-[11px] leading-relaxed text-muted-foreground/70">
+          <p className="text-xs leading-relaxed text-muted-foreground/80">
             {t("settings.remoteGatewayUrlHint")}
           </p>
         </div>
 
         {gatewayEndpointPreview ? (
-          <div className="flex items-center gap-2 rounded-lg bg-muted/30 px-3 py-2 text-[11px] text-muted-foreground">
+          <div className="flex items-center gap-2 rounded-lg bg-muted/40 px-3 py-2 text-xs text-muted-foreground">
             <Globe className="h-3.5 w-3.5 shrink-0" />
             <span className="min-w-0 flex-1 truncate font-mono">{gatewayEndpointPreview}</span>
             <CopyButton value={gatewayEndpointPreview} />
@@ -410,13 +404,13 @@ export function RemoteSection(props: SettingsSectionProps) {
         ) : null}
       </div>
 
-      <div className="space-y-4 rounded-xl border border-border/60 bg-card p-5">
+      <div className="space-y-4 rounded-2xl border border-border bg-card p-4">
         <SectionCardHeader icon={Shield} title={t("settings.remoteAuth")} />
 
-        <div className="space-y-1.5">
+        <div className="space-y-2">
           <label
             htmlFor="remote-gateway-token"
-            className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground"
+            className="flex items-center gap-2 text-xs font-medium text-muted-foreground"
           >
             <Key className="h-3 w-3" />
             {t("settings.remoteToken")}
@@ -431,15 +425,15 @@ export function RemoteSection(props: SettingsSectionProps) {
             }
             placeholder={t("settings.remoteTokenPlaceholder")}
           />
-          <p className="text-[11px] leading-relaxed text-muted-foreground/70">
+          <p className="text-xs leading-relaxed text-muted-foreground/80">
             {t("settings.remoteTokenHint")}
           </p>
         </div>
 
-        <div className="space-y-1.5">
+        <div className="space-y-2">
           <label
             htmlFor="remote-agent-id"
-            className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground"
+            className="flex items-center gap-2 text-xs font-medium text-muted-foreground"
           >
             <MonitorSmartphone className="h-3 w-3" />
             {t("settings.remoteAgentId")}
@@ -450,19 +444,19 @@ export function RemoteSection(props: SettingsSectionProps) {
               type="text"
               readOnly
               value={settings.remote.agentId}
-              className="bg-muted/30 pr-12 font-mono text-[13px]"
+              className="bg-muted/40 pr-12 font-mono text-xs"
             />
             <div className="absolute right-1 top-1/2 -translate-y-1/2">
               <CopyButton value={settings.remote.agentId} />
             </div>
           </div>
-          <p className="text-[11px] leading-relaxed text-muted-foreground/70">
+          <p className="text-xs leading-relaxed text-muted-foreground/80">
             {t("settings.remoteAgentIdHint")}
           </p>
         </div>
       </div>
 
-      <div className="space-y-4 rounded-xl border border-border/60 bg-card p-5">
+      <div className="space-y-4 rounded-2xl border border-border bg-card p-4">
         <SectionCardHeader icon={Globe} title={t("settings.remoteAdvanced")} />
 
         <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
@@ -478,9 +472,9 @@ export function RemoteSection(props: SettingsSectionProps) {
             }
           />
 
-          <div className="flex items-center justify-between gap-4 rounded-lg bg-muted/30 px-4 py-3">
+          <div className="flex items-center justify-between gap-4 rounded-lg bg-muted/40 px-4 py-3">
             <div className="min-w-0 flex-1">
-              <div className="flex items-center gap-1.5 text-sm font-medium">
+              <div className="flex items-center gap-2 text-base font-medium">
                 <Radio className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
                 {t("settings.remoteHeartbeat")}
               </div>
@@ -496,7 +490,7 @@ export function RemoteSection(props: SettingsSectionProps) {
                 onBlur={remoteHeartbeatDraft.handleBlur}
                 onChange={(e) => remoteHeartbeatDraft.handleChange(e.target.value)}
                 placeholder="30"
-                className="w-24 font-mono text-[13px]"
+                className="w-24 font-mono text-xs"
               />
               <span className="text-xs text-muted-foreground">
                 {t("settings.remoteHeartbeatUnit")}
@@ -554,21 +548,25 @@ export function RemoteSection(props: SettingsSectionProps) {
         </div>
       </div>
 
-      <div className="space-y-4 rounded-xl border border-border/60 bg-card p-5">
+      <div className="space-y-4 rounded-2xl border border-border bg-card p-4">
         <SectionCardHeader icon={Clock3} title={t("settings.remoteConnectionStatus")} />
 
         <div className="grid gap-3 sm:grid-cols-2">
-          <div className="rounded-lg bg-muted/30 px-4 py-3">
+          <div className="rounded-lg bg-muted/40 px-4 py-3">
             <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
               {t("settings.remoteConnectedSince")}
             </div>
-            <div className="mt-1 text-sm font-medium">{formatTimestamp(status.connectedSince)}</div>
+            <div className="mt-1 text-base font-medium">
+              {formatTimestamp(status.connectedSince)}
+            </div>
           </div>
-          <div className="rounded-lg bg-muted/30 px-4 py-3">
+          <div className="rounded-lg bg-muted/40 px-4 py-3">
             <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
               {t("settings.remoteLastHeartbeat")}
             </div>
-            <div className="mt-1 text-sm font-medium">{formatTimestamp(status.lastHeartbeat)}</div>
+            <div className="mt-1 text-base font-medium">
+              {formatTimestamp(status.lastHeartbeat)}
+            </div>
           </div>
         </div>
       </div>

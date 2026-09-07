@@ -98,11 +98,11 @@ export function GitInitModal(props: {
         >
           <DialogHeader className="flex-row items-start gap-4">
             <div className="flex min-w-0 items-start gap-3">
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-emerald-500/20 bg-emerald-500/10 text-emerald-600 dark:text-emerald-300">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-success/20 bg-success/10 text-success">
                 <GitBranch className="h-5 w-5" />
               </div>
               <div className="min-w-0">
-                <DialogTitle className="text-sm leading-normal">
+                <DialogTitle className="text-base leading-normal">
                   {t("git.branchSelector.initRepositoryTitle")}
                 </DialogTitle>
                 <DialogDescription className="mt-1 text-xs leading-5">
@@ -112,18 +112,18 @@ export function GitInitModal(props: {
             </div>
           </DialogHeader>
           <DialogBody className="space-y-4">
-            <div className="space-y-1.5">
+            <div className="space-y-2">
               <Label className="text-xs text-muted-foreground">
                 {t("git.branchSelector.targetDirectory")}
               </Label>
               <div
-                className="truncate rounded-lg border border-border/70 bg-muted/35 px-3 py-2 text-xs text-foreground"
+                className="truncate rounded-lg border border-border bg-muted/40 px-3 py-2 text-xs text-foreground"
                 title={workdir}
               >
                 {workdir}
               </div>
             </div>
-            <div className="space-y-1.5">
+            <div className="space-y-2">
               <Label htmlFor={branchId} className="text-xs text-muted-foreground">
                 {t("git.branchSelector.initialBranch")}
               </Label>
@@ -131,14 +131,14 @@ export function GitInitModal(props: {
                 id={branchId}
                 value={branch}
                 onChange={(event) => onBranchChange(event.target.value)}
-                className="git-branch-selector-input h-9 text-sm"
+                className="git-branch-selector-input h-9 text-xs"
                 placeholder="main"
                 autoFocus
                 disabled={loading}
               />
             </div>
             <div className="grid gap-3 sm:grid-cols-2">
-              <div className="space-y-1.5">
+              <div className="space-y-2">
                 <Label htmlFor={userNameId} className="text-xs text-muted-foreground">
                   {t("git.branchSelector.userNameOptional")}
                 </Label>
@@ -146,11 +146,11 @@ export function GitInitModal(props: {
                   id={userNameId}
                   value={userName}
                   onChange={(event) => onUserNameChange(event.target.value)}
-                  className="git-branch-selector-input h-9 text-sm"
+                  className="git-branch-selector-input h-9 text-xs"
                   disabled={loading}
                 />
               </div>
-              <div className="space-y-1.5">
+              <div className="space-y-2">
                 <Label htmlFor={userEmailId} className="text-xs text-muted-foreground">
                   {t("git.branchSelector.userEmailOptional")}
                 </Label>
@@ -158,7 +158,7 @@ export function GitInitModal(props: {
                   id={userEmailId}
                   value={userEmail}
                   onChange={(event) => onUserEmailChange(event.target.value)}
-                  className="git-branch-selector-input h-9 text-sm"
+                  className="git-branch-selector-input h-9 text-xs"
                   disabled={loading}
                 />
               </div>
@@ -265,11 +265,11 @@ export function WorktreeCreateModal(props: {
         >
           <DialogHeader className="flex-row items-start gap-4">
             <div className="flex min-w-0 items-start gap-3">
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-emerald-500/20 bg-emerald-500/10 text-emerald-600 dark:text-emerald-300">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-success/20 bg-success/10 text-success">
                 <FolderTree className="h-5 w-5" />
               </div>
               <div className="min-w-0">
-                <DialogTitle className="text-sm leading-normal">
+                <DialogTitle className="text-base leading-normal">
                   {t("git.branchSelector.createWorktreeTitle")}
                 </DialogTitle>
                 <DialogDescription className="mt-1 text-xs leading-5">
@@ -279,18 +279,18 @@ export function WorktreeCreateModal(props: {
             </div>
           </DialogHeader>
           <DialogBody className="space-y-4">
-            <div className="space-y-1.5">
+            <div className="space-y-2">
               <Label className="text-xs text-muted-foreground">
                 {t("git.branchSelector.repositoryLabel")}
               </Label>
               <div
-                className="truncate rounded-lg border border-border/70 bg-muted/35 px-3 py-2 text-xs text-foreground"
+                className="truncate rounded-lg border border-border bg-muted/40 px-3 py-2 text-xs text-foreground"
                 title={repoRoot}
               >
                 {repoRoot}
               </div>
             </div>
-            <div className="space-y-1.5">
+            <div className="space-y-2">
               <Label className="text-xs text-muted-foreground">
                 {t("git.branchSelector.worktreeStartPoint")}
               </Label>
@@ -312,7 +312,7 @@ export function WorktreeCreateModal(props: {
               </Select>
             </div>
             <div className="grid gap-3 sm:grid-cols-2">
-              <div className="space-y-1.5">
+              <div className="space-y-2">
                 <Label htmlFor={branchInputId} className="text-xs text-muted-foreground">
                   {t("git.branchSelector.worktreeBranch")}
                 </Label>
@@ -320,7 +320,7 @@ export function WorktreeCreateModal(props: {
                   id={branchInputId}
                   value={branch}
                   onChange={(event) => onBranchChange(event.target.value)}
-                  className="h-9 text-sm"
+                  className="h-9 text-xs"
                   placeholder={t("git.branchSelector.worktreeBranchPlaceholder")}
                   autoFocus
                   disabled={loading}
@@ -329,7 +329,7 @@ export function WorktreeCreateModal(props: {
                   autoCorrect="off"
                 />
               </div>
-              <div className="space-y-1.5">
+              <div className="space-y-2">
                 <Label htmlFor={directoryInputId} className="text-xs text-muted-foreground">
                   {t("git.branchSelector.worktreeDirectoryName")}
                 </Label>
@@ -337,7 +337,7 @@ export function WorktreeCreateModal(props: {
                   id={directoryInputId}
                   value={directoryName}
                   onChange={(event) => onDirectoryNameChange(event.target.value)}
-                  className="h-9 text-sm"
+                  className="h-9 text-xs"
                   placeholder={t("git.branchSelector.worktreeDirectoryPlaceholder")}
                   disabled={loading}
                   spellCheck={false}
@@ -346,7 +346,7 @@ export function WorktreeCreateModal(props: {
                 />
               </div>
             </div>
-            <div className="space-y-1.5">
+            <div className="space-y-2">
               <Label htmlFor={parentInputId} className="text-xs text-muted-foreground">
                 {t("git.branchSelector.worktreeParentDirectory")}
               </Label>
@@ -502,11 +502,11 @@ export function BranchActionsModal(props: {
         >
           <DialogHeader className="flex-row items-start gap-4">
             <div className="flex min-w-0 items-start gap-3">
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-emerald-500/20 bg-emerald-500/10 text-emerald-600 dark:text-emerald-300">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-success/20 bg-success/10 text-success">
                 <GitBranch className="h-5 w-5" />
               </div>
               <div className="min-w-0">
-                <DialogTitle className="truncate text-sm leading-normal" title={branch.fullName}>
+                <DialogTitle className="truncate text-base leading-normal" title={branch.fullName}>
                   {branch.fullName}
                 </DialogTitle>
                 <DialogDescription className="mt-1 text-xs leading-5">
@@ -596,19 +596,19 @@ export function BranchActionsModal(props: {
           ) : (
             <DialogBody className="space-y-4">
               {mode === "createFrom" ? (
-                <div className="space-y-1.5">
+                <div className="space-y-2">
                   <Label className="text-xs text-muted-foreground">
                     {t("git.branchSelector.startPointLabel")}
                   </Label>
                   <div
-                    className="truncate rounded-lg border border-border/70 bg-muted/35 px-3 py-2 text-xs text-foreground"
+                    className="truncate rounded-lg border border-border bg-muted/40 px-3 py-2 text-xs text-foreground"
                     title={branch.fullName}
                   >
                     {branch.fullName}
                   </div>
                 </div>
               ) : null}
-              <div className="space-y-1.5">
+              <div className="space-y-2">
                 <Label htmlFor={inputId} className="text-xs text-muted-foreground">
                   {formTitle}
                 </Label>

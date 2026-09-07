@@ -2,7 +2,7 @@
   /*
    * Per-zone font scaling: re-declare Tailwind v4 text-size theme variables so
    * every rem-based text-* utility inside the zone follows --zone-font-scale.
-   * Hard-coded px sizes opt in via text-[calc(NNpx*var(--zone-font-scale,1))].
+   * Named compact sizes use the same scale; see tokens.css and design.md.
    * Line-height variables are unitless ratios, so they scale automatically.
    *
    * `.layer-popover` (every portaled popup positioner) is included so a popup
@@ -14,31 +14,28 @@
   .zone-font-scale,
   .layer-popover {
     font-size: calc(1rem * var(--zone-font-scale, 1));
+    --text-2xs: calc(0.625rem * var(--zone-font-scale, 1));
     --text-xs: calc(0.75rem * var(--zone-font-scale, 1));
-    --text-sm: calc(0.875rem * var(--zone-font-scale, 1));
     --text-base: calc(1rem * var(--zone-font-scale, 1));
-    --text-lg: calc(1.125rem * var(--zone-font-scale, 1));
-    --text-xl: calc(1.25rem * var(--zone-font-scale, 1));
-    --text-2xl: calc(1.5rem * var(--zone-font-scale, 1));
   }
 }
 
 /* Streamdown ships element-level Tailwind utilities. Keep the chat profile
  * unlayered and scoped so these product overrides win without !important.
  * Structural changes still belong in Markdown.tsx component overrides.
- * Reading rhythm: body 14/22, H1 22/30, H2 17/26, H3 14/22. */
+ * Body and headings share the 16px tier; weight and spacing establish hierarchy. */
 .chat-markdown {
-  @apply text-[calc(14px*var(--zone-font-scale,1))] leading-[calc(22px*var(--zone-font-scale,1))] tracking-[0] text-foreground;
+  @apply text-base leading-normal tracking-[0] text-foreground;
   font-weight: 450;
 }
 
 .chat-markdown p {
-  @apply my-0 min-w-0 max-w-full break-words text-[calc(14px*var(--zone-font-scale,1))] leading-[calc(22px*var(--zone-font-scale,1))] tracking-[0] text-foreground [overflow-wrap:anywhere];
+  @apply my-0 min-w-0 max-w-full break-words text-base leading-normal tracking-[0] text-foreground [overflow-wrap:anywhere];
   font-weight: 450;
 }
 
 .chat-markdown p + p {
-  @apply mt-2.5;
+  @apply mt-2;
 }
 
 .chat-markdown strong,
@@ -57,20 +54,20 @@
 
 /* Headings */
 .chat-markdown [data-streamdown="heading-1"] {
-  @apply mb-2.5 mt-7 text-[calc(22px*var(--zone-font-scale,1))] font-semibold leading-[calc(30px*var(--zone-font-scale,1))] tracking-[-0.018em] text-foreground;
+  @apply mb-2 mt-8 text-base font-semibold leading-normal tracking-[-0.018em] text-foreground;
 }
 .chat-markdown [data-streamdown="heading-2"] {
-  @apply mb-2 mt-6 text-[calc(17px*var(--zone-font-scale,1))] font-semibold leading-[calc(26px*var(--zone-font-scale,1))] tracking-[-0.012em] text-foreground;
+  @apply mb-2 mt-6 text-base font-semibold leading-normal tracking-[-0.012em] text-foreground;
 }
 .chat-markdown [data-streamdown="heading-3"] {
-  @apply mb-1.5 mt-5 text-[calc(14px*var(--zone-font-scale,1))] font-semibold leading-[calc(22px*var(--zone-font-scale,1))] tracking-[-0.006em] text-foreground;
+  @apply mb-2 mt-4 text-base font-semibold leading-normal tracking-[-0.006em] text-foreground;
 }
 .chat-markdown [data-streamdown="heading-4"],
 .chat-markdown [data-streamdown="heading-5"] {
-  @apply mb-1 mt-4 text-[calc(14px*var(--zone-font-scale,1))] font-semibold leading-[calc(22px*var(--zone-font-scale,1))] tracking-[0] text-foreground;
+  @apply mb-1 mt-4 text-base font-semibold leading-normal tracking-[0] text-foreground;
 }
 .chat-markdown [data-streamdown="heading-6"] {
-  @apply mb-1 mt-4 text-[calc(13px*var(--zone-font-scale,1))] font-semibold leading-[calc(20px*var(--zone-font-scale,1))] tracking-wide text-muted-foreground;
+  @apply mb-1 mt-4 text-xs font-semibold leading-normal tracking-wide text-muted-foreground;
 }
 .chat-markdown [data-streamdown="heading-1"]:first-child,
 .chat-markdown [data-streamdown="heading-2"]:first-child,
@@ -80,29 +77,30 @@
 
 /* Links */
 .chat-markdown [data-streamdown="link"] {
-  @apply rounded-xs font-medium text-sky-600 no-underline decoration-sky-500/45 underline-offset-2 transition-colors hover:underline dark:text-sky-400;
+  @apply rounded-sm font-medium text-info no-underline decoration-info/40 underline-offset-2 transition-colors hover:underline;
 }
 
 /* Inline code */
 .chat-markdown [data-streamdown="inline-code"] {
-  @apply whitespace-pre-wrap break-words rounded-xs border-0 bg-foreground/[0.085] px-[5px] py-px font-mono text-[0.92em] font-normal leading-[1.45] text-foreground/95 [overflow-wrap:anywhere];
+  @apply whitespace-pre-wrap break-words rounded-sm border-0 bg-foreground/10 px-1 py-px font-mono font-normal leading-[1.45] text-foreground [overflow-wrap:anywhere];
+  font-size: inherit;
 }
 
 /* Code blocks — container, header, body */
 .chat-markdown [data-streamdown="code-block"] {
-  @apply relative my-4 w-full min-w-0 overflow-hidden rounded-lg border-0 bg-foreground/[0.045] p-0 shadow-none outline-none ring-0;
+  @apply relative my-4 w-full min-w-0 overflow-hidden rounded-lg border-0 bg-foreground/5 p-0 shadow-none outline-none ring-0;
 }
 .chat-markdown [data-streamdown="code-block-header"] {
-  @apply h-8 border-0 border-b border-border/45 bg-transparent px-3 py-0 text-[calc(11px*var(--zone-font-scale,1))] font-medium tracking-[0] text-muted-foreground/85 shadow-none;
+  @apply h-8 border-0 border-b border-border bg-transparent px-3 py-0 text-xs font-medium tracking-[0] text-muted-foreground/90 shadow-none;
 }
 .chat-markdown [data-streamdown="code-block-header"] > span {
   @apply ml-0 font-sans tracking-[0] normal-case;
 }
 .chat-markdown [data-streamdown="code-block-body"] {
-  @apply w-full min-w-0 overflow-x-auto rounded-none border-0 bg-transparent p-0 text-[calc(13px*var(--zone-font-scale,1))] shadow-none outline-none ring-0;
+  @apply w-full min-w-0 overflow-x-auto rounded-none border-0 bg-transparent p-0 text-xs shadow-none outline-none ring-0;
 }
 .chat-markdown [data-streamdown="code-block-body"] pre {
-  @apply leading-[calc(22px*var(--zone-font-scale,1))];
+  @apply leading-normal;
 }
 .chat-markdown [data-streamdown="code-block-body"] pre code > span::before {
   display: none;
@@ -119,26 +117,26 @@
 .chat-markdown--streaming
   [data-streamdown="code-block"][data-incomplete="true"]
   [data-streamdown="code-block-header"] {
-  @apply border-0 bg-transparent text-muted-foreground/85;
+  @apply border-0 bg-transparent text-muted-foreground/90;
 }
 
 /* Blockquotes */
 .chat-markdown [data-streamdown="blockquote"] {
-  @apply my-4 min-w-0 max-w-full border-l-2 border-border/75 pl-3.5 not-italic text-foreground/82 [overflow-wrap:anywhere];
+  @apply my-4 min-w-0 max-w-full border-l-2 border-border pl-4 not-italic text-foreground/80 [overflow-wrap:anywhere];
 }
 .chat-markdown [data-streamdown="blockquote"] p {
-  @apply my-0 text-[calc(14px*var(--zone-font-scale,1))] leading-[calc(22px*var(--zone-font-scale,1))] text-foreground/82;
+  @apply my-0 text-base leading-normal text-foreground/80;
 }
 
 /* Lists */
 .chat-markdown [data-streamdown="unordered-list"] {
-  @apply my-2 ml-0 list-outside list-disc space-y-1 pl-5;
+  @apply my-2 ml-0 list-outside list-disc space-y-1 pl-4;
 }
 .chat-markdown [data-streamdown="ordered-list"] {
-  @apply my-2 ml-0 list-outside list-decimal space-y-1 pl-5;
+  @apply my-2 ml-0 list-outside list-decimal space-y-1 pl-4;
 }
 .chat-markdown [data-streamdown="list-item"] {
-  @apply min-w-0 max-w-full break-words py-0 pl-0 text-[calc(14px*var(--zone-font-scale,1))] leading-[calc(22px*var(--zone-font-scale,1))] [overflow-wrap:anywhere];
+  @apply min-w-0 max-w-full break-words py-0 pl-0 text-base leading-normal [overflow-wrap:anywhere];
   font-weight: 450;
 }
 .chat-markdown .contains-task-list {
@@ -148,7 +146,7 @@
   @apply flex items-start gap-2 pl-0;
 }
 .chat-markdown .task-list-item input[type="checkbox"] {
-  @apply mt-[0.28rem] h-3.5 w-3.5 rounded border border-border align-middle accent-emerald-500;
+  @apply mt-1 h-3.5 w-3.5 rounded-sm border border-border align-middle accent-emerald-500;
 }
 
 /* Tables */
@@ -162,19 +160,19 @@
   @apply w-full min-w-0 overflow-x-auto overflow-y-hidden rounded-none border-0 bg-transparent p-0 shadow-none outline-none ring-0;
 }
 .chat-markdown [data-streamdown="table-wrapper"] button {
-  @apply rounded-md border-0 bg-transparent shadow-none transition-colors hover:bg-foreground/[0.04] hover:text-foreground;
+  @apply rounded-lg border-0 bg-transparent shadow-none transition-colors hover:bg-foreground/5 hover:text-foreground;
 }
 .chat-markdown [data-streamdown="table"] {
-  @apply my-0 w-full min-w-full table-auto border-collapse border-0 bg-transparent text-[calc(14px*var(--zone-font-scale,1))] shadow-none outline-none ring-0;
+  @apply my-0 w-full min-w-full table-auto border-collapse border-0 bg-transparent text-base shadow-none outline-none ring-0;
 }
 .chat-markdown [data-streamdown="table-header"] {
   @apply bg-transparent;
 }
 .chat-markdown [data-streamdown="table-header-cell"] {
-  @apply border-0 border-b border-border/55 px-0 py-2 pr-8 text-left align-bottom text-[calc(14px*var(--zone-font-scale,1))] font-semibold leading-[calc(22px*var(--zone-font-scale,1))] tracking-[0] text-foreground;
+  @apply border-0 border-b border-border px-0 py-2 pr-8 text-left align-bottom text-base font-semibold leading-normal tracking-[0] text-foreground;
 }
 .chat-markdown [data-streamdown="table-cell"] {
-  @apply border-0 border-b border-border/35 px-0 py-2 pr-8 text-left align-middle text-[calc(14px*var(--zone-font-scale,1))] leading-[calc(22px*var(--zone-font-scale,1))] text-foreground/88;
+  @apply border-0 border-b border-border px-0 py-2 pr-8 text-left align-middle text-base leading-normal text-foreground/90;
   font-weight: 450;
 }
 .chat-markdown [data-streamdown="table-body"] [data-streamdown="table-row"]:nth-child(even) {
@@ -208,10 +206,10 @@
 
 /* Math */
 .chat-markdown .katex {
-  @apply text-[1.04em];
+  font-size: inherit;
 }
 .chat-markdown .katex-display {
-  @apply my-3.5 block max-w-full overflow-x-auto overflow-y-hidden px-1 py-1.5 text-center;
+  @apply my-4 block max-w-full overflow-x-auto overflow-y-hidden px-1 py-2 text-center;
 }
 
 /* Thinking markdown — reasoning disclosures reuse chat structure but read
@@ -219,36 +217,36 @@
  * rules re-assert 450/strong-at-full-foreground per element, so weight and
  * emphasis must be overridden here too or reasoning looks bold all over. */
 .chat-markdown.thinking-markdown {
-  @apply text-[calc(12px*var(--zone-font-scale,1))] leading-6 text-muted-foreground/80;
+  @apply text-xs leading-6 text-muted-foreground/80;
   font-weight: 400;
 }
 .chat-markdown.thinking-markdown p {
-  @apply my-1 text-[calc(12px*var(--zone-font-scale,1))] leading-6 text-muted-foreground/80;
+  @apply my-1 text-xs leading-6 text-muted-foreground/80;
   font-weight: 400;
 }
 .chat-markdown.thinking-markdown strong,
 .chat-markdown.thinking-markdown [data-streamdown="strong"] {
-  @apply font-medium text-muted-foreground/95;
+  @apply font-medium text-muted-foreground;
 }
 .chat-markdown.thinking-markdown [data-streamdown^="heading-"] {
-  @apply mb-0 mt-1 text-[calc(12px*var(--zone-font-scale,1))] font-medium leading-6 tracking-normal text-muted-foreground/90;
+  @apply mb-0 mt-1 text-xs font-medium leading-6 tracking-normal text-muted-foreground/90;
 }
 .chat-markdown.thinking-markdown [data-streamdown="unordered-list"],
 .chat-markdown.thinking-markdown [data-streamdown="ordered-list"] {
   @apply my-1 pl-4;
 }
 .chat-markdown.thinking-markdown [data-streamdown="list-item"] {
-  @apply text-[calc(12px*var(--zone-font-scale,1))] leading-5 text-muted-foreground/80;
+  @apply text-xs leading-5 text-muted-foreground/80;
   font-weight: 400;
 }
 .chat-markdown.thinking-markdown [data-streamdown="blockquote"] {
-  @apply my-1 border-l-0 pl-0 not-italic text-muted-foreground/75;
+  @apply my-1 border-l-0 pl-0 not-italic text-muted-foreground/80;
 }
 .chat-markdown.thinking-markdown [data-streamdown="inline-code"] {
-  @apply bg-foreground/[0.03] text-[calc(11px*var(--zone-font-scale,1))] text-muted-foreground/90;
+  @apply bg-foreground/5 text-xs text-muted-foreground/90;
 }
 .chat-markdown.thinking-markdown [data-streamdown="code-block-body"] {
-  @apply bg-muted/20 p-3 text-[calc(11px*var(--zone-font-scale,1))];
+  @apply bg-muted/20 p-3 text-xs;
 }
 
 /* Images */
@@ -256,12 +254,12 @@
   @apply my-4 overflow-visible rounded-none border-0 bg-transparent shadow-none;
 }
 .chat-markdown [data-streamdown="image"] {
-  @apply block max-h-[34rem] max-w-full rounded-xl border border-border/60 bg-muted/10 object-contain;
+  @apply block max-h-[34rem] max-w-full rounded-2xl border border-border bg-muted/10 object-contain;
 }
 
 /* Horizontal rule */
 .chat-markdown [data-streamdown="horizontal-rule"] {
-  @apply my-6 border-border/45;
+  @apply my-6 border-border;
 }
 
 @layer components {
@@ -269,34 +267,34 @@
    * than conversational Markdown. This profile is shared by Skill and
    * workspace file previews; chat typography remains unchanged. */
   .document-markdown {
-    @apply text-[calc(13px*var(--zone-font-scale,1))] leading-6 text-foreground/85;
+    @apply text-xs leading-6 text-foreground/90;
   }
   .document-markdown p {
-    @apply my-2.5 text-[calc(13px*var(--zone-font-scale,1))] leading-6 text-foreground/85;
+    @apply my-2 text-xs leading-6 text-foreground/90;
   }
   .document-markdown strong,
   .document-markdown [data-streamdown="strong"] {
     @apply font-semibold text-foreground;
   }
   .document-markdown [data-streamdown="heading-1"] {
-    @apply mb-3 mt-7 text-lg font-semibold leading-7 tracking-tight text-foreground;
+    @apply mb-3 mt-8 text-base font-semibold leading-7 tracking-tight text-foreground;
   }
   .document-markdown [data-streamdown="heading-2"] {
-    @apply mb-2.5 mt-7 text-base font-semibold leading-6 tracking-tight text-foreground;
+    @apply mb-2 mt-8 text-base font-semibold leading-6 tracking-tight text-foreground;
   }
   .document-markdown [data-streamdown="heading-3"] {
-    @apply mb-2 mt-6 text-sm font-semibold leading-6 tracking-tight text-foreground;
+    @apply mb-2 mt-6 text-base font-semibold leading-6 tracking-tight text-foreground;
   }
   .document-markdown [data-streamdown="heading-4"],
   .document-markdown [data-streamdown="heading-5"] {
-    @apply mb-1.5 mt-5 text-xs font-semibold leading-5 tracking-tight text-foreground;
+    @apply mb-2 mt-4 text-xs font-semibold leading-5 tracking-tight text-foreground;
   }
   .document-markdown [data-streamdown="heading-6"] {
-    @apply mb-1.5 mt-5 text-[11px] font-semibold leading-5 tracking-wide text-foreground/80;
+    @apply mb-2 mt-4 text-xs font-semibold leading-5 tracking-wide text-foreground/80;
   }
   .document-markdown [data-streamdown="unordered-list"],
   .document-markdown [data-streamdown="ordered-list"] {
-    @apply my-3 ml-0 space-y-1 pl-5;
+    @apply my-3 ml-0 space-y-1 pl-4;
   }
   .document-markdown [data-streamdown="unordered-list"] [data-streamdown="unordered-list"],
   .document-markdown [data-streamdown="ordered-list"] [data-streamdown="ordered-list"],
@@ -305,38 +303,39 @@
     @apply my-1;
   }
   .document-markdown [data-streamdown="list-item"] {
-    @apply pl-0.5 text-[calc(13px*var(--zone-font-scale,1))] leading-6 text-foreground/85;
+    @apply pl-0.5 text-xs leading-6 text-foreground/90;
   }
   .document-markdown [data-streamdown="list-item"] > p {
     @apply my-0;
   }
   .document-markdown [data-streamdown="blockquote"] {
-    @apply my-4 border-l-2 border-border pl-3 not-italic text-foreground/75;
+    @apply my-4 border-l-2 border-border pl-3 not-italic text-foreground/80;
   }
   .document-markdown [data-streamdown="inline-code"] {
-    @apply rounded border border-border/50 bg-muted/65 px-1 py-0.5 text-[0.9em] text-foreground;
+    @apply rounded-sm border border-border bg-muted/60 px-1 py-0.5 text-foreground;
+    font-size: inherit;
   }
   .document-markdown [data-streamdown="code-block"] {
     @apply my-4;
   }
   .document-markdown [data-streamdown="code-block-header"] {
-    @apply h-7 px-1 text-[calc(10px*var(--zone-font-scale,1))] tracking-[0.04em] text-muted-foreground;
+    @apply h-7 px-1 text-2xs tracking-[0.04em] text-muted-foreground;
   }
   .document-markdown [data-streamdown="code-block-body"] {
-    @apply rounded-lg bg-muted/55 p-3;
+    @apply rounded-lg bg-muted/60 p-3;
   }
   .document-markdown pre > code {
-    @apply !py-3 text-[calc(12px*var(--zone-font-scale,1))] leading-5 text-foreground/90;
+    @apply !py-3 text-xs leading-5 text-foreground/90;
   }
   .document-markdown [data-streamdown="table"] {
-    @apply text-[calc(13px*var(--zone-font-scale,1))];
+    @apply text-xs;
   }
   .document-markdown [data-streamdown="table-header-cell"],
   .document-markdown [data-streamdown="table-cell"] {
     @apply py-2 leading-5;
   }
   .document-markdown [data-streamdown="horizontal-rule"] {
-    @apply my-7 border-border/60;
+    @apply my-8 border-border;
   }
 
   /* First/last child margin reset */
@@ -354,18 +353,18 @@
      整块位于全局 first/last reset 之后:本作用域按更高特异性覆盖全局规则,
      保持"特异性随源顺序递增",不触发 noDescendingSpecificity。 */
   .chat-markdown.plan-markdown {
-    @apply text-[calc(14px*var(--zone-font-scale,1))] leading-[1.72] text-foreground/90;
+    @apply text-base leading-[1.72] text-foreground/90;
   }
   .chat-markdown.plan-markdown p {
-    @apply my-1.5 text-[calc(14px*var(--zone-font-scale,1))] leading-[1.72] text-foreground/90;
+    @apply my-2 text-base leading-[1.72] text-foreground/90;
   }
   /* 计划里的标题就是阶段分节,层级本身不携带额外信息:统一收成一档字号,
-     靠字重与分节线区分,不再有 text-xl/text-lg 的落差。
-     字号带 ! —— Streamdown 把 text-3xl/text-2xl 直接写在 h1/h2 的 class 上,
+     靠字重与分节线区分,不再有 text-base/text-base 的落差。
+     字号带 ! —— Streamdown 把 text-base/text-base 直接写在 h1/h2 的 class 上,
      那是 utilities 层,层级顺序上永远压过本文件所在的 components 层,单靠选择器
      权重赢不了。 */
   .chat-markdown.plan-markdown [data-streamdown^="heading-"] {
-    @apply mb-1.5 mt-4 !text-[calc(13px*var(--zone-font-scale,1))] font-semibold leading-[1.6] tracking-[0.01em] text-foreground;
+    @apply mb-2 mt-4 !text-xs font-semibold leading-[1.6] tracking-[0.01em] text-foreground;
   }
   /* 标题 mt-4 特异性高于全局 first-child 重置;计划又以标题开头时会在卡片
      padding 之外再多出一段空白。同作用域补一条,压过标题规则。 */
@@ -375,7 +374,7 @@
   }
   .chat-markdown.plan-markdown [data-streamdown="heading-1"],
   .chat-markdown.plan-markdown [data-streamdown="heading-2"] {
-    @apply !text-[calc(13.5px*var(--zone-font-scale,1))];
+    @apply !text-xs;
   }
   /* 非首个分节标题上方补一条发丝线,把"进入下一阶段"这件事画出来。
      流式渲染时 Streamdown 会给每个块包一层 display:contents 的方向 div
@@ -389,18 +388,18 @@
   .chat-markdown.plan-markdown
     > [dir]:not(:first-child)
     > [data-streamdown="heading-2"]:first-child {
-    @apply border-t border-border/30 pt-3.5 dark:border-white/[0.06];
+    @apply border-t border-border pt-4;
   }
   .chat-markdown.plan-markdown [data-streamdown="unordered-list"],
   .chat-markdown.plan-markdown [data-streamdown="ordered-list"] {
-    @apply my-1.5 ml-0 space-y-1 pl-[1.15rem];
+    @apply my-2 ml-0 space-y-1 pl-4;
   }
   .chat-markdown.plan-markdown [data-streamdown="list-item"] {
-    @apply pl-0.5 text-[calc(14px*var(--zone-font-scale,1))] leading-[1.72] text-foreground/90;
+    @apply pl-0.5 text-base leading-[1.72] text-foreground/90;
   }
   /* 项目符号压到 muted:状态色只在左侧脊出现一处,正文不参与表达状态。 */
   .chat-markdown.plan-markdown [data-streamdown="list-item"]::marker {
-    @apply text-muted-foreground/55;
+    @apply text-muted-foreground/60;
   }
   .chat-markdown.plan-markdown
     [data-streamdown="ordered-list"]
@@ -408,19 +407,19 @@
     @apply font-medium tabular-nums text-muted-foreground;
   }
   .chat-markdown.plan-markdown [data-streamdown="inline-code"] {
-    @apply px-1 py-px text-[calc(12.5px*var(--zone-font-scale,1))];
+    @apply px-1 py-px text-xs;
   }
   .chat-markdown.plan-markdown [data-streamdown="code-block"] {
-    @apply my-2.5;
+    @apply my-2;
   }
   .chat-markdown.plan-markdown [data-streamdown="code-block-body"] {
-    @apply rounded-lg p-3 text-[calc(12px*var(--zone-font-scale,1))];
+    @apply rounded-lg p-3 text-xs;
   }
   .chat-markdown.plan-markdown [data-streamdown="blockquote"] {
-    @apply my-2 border-l-2 border-border/50 pl-3 not-italic text-muted-foreground dark:border-white/[0.12];
+    @apply my-2 border-l-2 border-border pl-3 not-italic text-muted-foreground;
   }
   .chat-markdown.plan-markdown [data-streamdown="horizontal-rule"] {
-    @apply my-3.5 border-border/35;
+    @apply my-4 border-border;
   }
 
   /* Context checkpoint animations */
@@ -515,7 +514,7 @@
     bottom: 0;
     height: 2px;
     width: 34%;
-    border-radius: 9999px;
+    border-radius: var(--radius-full);
     background: linear-gradient(
       90deg,
       transparent 0%,
@@ -648,7 +647,7 @@
   }
 
   .mention-chip {
-    font-size: calc(13px * var(--zone-font-scale, 1));
+    font-size: var(--text-xs);
     line-height: 1.5;
     vertical-align: baseline;
     cursor: default;
@@ -706,11 +705,11 @@
   @keyframes hubStatusPulse {
     0%,
     100% {
-      box-shadow: 0 0 0 0 currentColor;
+      box-shadow: var(--pulse-rest);
       opacity: 0.65;
     }
     50% {
-      box-shadow: 0 0 0 4px transparent;
+      box-shadow: var(--pulse-expanded);
       opacity: 1;
     }
   }
@@ -808,8 +807,8 @@
   .hub-frost-hero {
     position: relative;
     overflow: hidden;
-    border-radius: 14px;
-    border: 1px solid hsl(var(--border) / 0.55);
+    border-radius: var(--radius-2xl);
+    border: var(--border-width-default) solid hsl(var(--border));
     background: linear-gradient(
       180deg,
       hsl(var(--background) / 0.82),
@@ -817,9 +816,7 @@
     );
     -webkit-backdrop-filter: blur(24px) saturate(180%);
     backdrop-filter: blur(24px) saturate(180%);
-    box-shadow:
-      0 1px 0 hsl(0 0% 100% / 0.6) inset,
-      0 8px 28px -18px hsl(0 0% 0% / 0.18);
+    box-shadow: var(--elevation-control);
   }
   .hub-frost-hero::after {
     content: "";
@@ -831,11 +828,9 @@
     pointer-events: none;
   }
   .dark .hub-frost-hero {
-    border-color: hsl(0 0% 100% / 0.08);
+    border-color: hsl(var(--border));
     background: linear-gradient(180deg, hsl(0 0% 100% / 0.06), hsl(0 0% 100% / 0.03));
-    box-shadow:
-      0 1px 0 hsl(0 0% 100% / 0.05) inset,
-      0 8px 28px -18px hsl(0 0% 0% / 0.6);
+    box-shadow: var(--elevation-control);
   }
   .dark .hub-frost-hero::after {
     background: linear-gradient(90deg, transparent, hsl(0 0% 100% / 0.06), transparent);
@@ -853,9 +848,9 @@
     left: 50%;
     width: 1.6px;
     height: 5px;
-    margin-left: -0.8px;
+    margin-left: -1px;
     background: currentColor;
-    border-radius: 1px;
+    border-radius: var(--corner-indicator);
     transform-origin: 0.8px 9px;
     animation: hubFrostSpinnerFade 1s linear infinite;
     opacity: 0;
@@ -913,7 +908,7 @@
     position: relative;
     height: 2px;
     width: 100%;
-    border-radius: 9999px;
+    border-radius: var(--radius-full);
     background: hsl(var(--muted-foreground) / 0.1);
     overflow: hidden;
   }
@@ -931,8 +926,8 @@
   .hub-frost-skeleton {
     position: relative;
     overflow: hidden;
-    border-radius: 14px;
-    border: 1px solid hsl(var(--border) / 0.35);
+    border-radius: var(--radius-2xl);
+    border: var(--border-width-default) solid hsl(var(--border));
     background: hsl(var(--background) / 0.5);
     -webkit-backdrop-filter: blur(18px) saturate(170%);
     backdrop-filter: blur(18px) saturate(170%);
@@ -1184,10 +1179,10 @@
   @keyframes fileDropBorderPulse {
     0%,
     100% {
-      box-shadow: 0 0 0 0 hsl(var(--foreground) / 0);
+      box-shadow: var(--pulse-rest);
     }
     50% {
-      box-shadow: 0 0 0 3px hsl(var(--foreground) / 0.04);
+      box-shadow: var(--drop-pulse);
     }
   }
 

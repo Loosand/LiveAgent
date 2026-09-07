@@ -38,7 +38,7 @@ export type SshPortForwardDialogProps = {
 // 模态 portal 到 body，逃出了 dock 的 --zone-font-scale 作用域，
 // 所以这里与 confirm-dialog 一样使用固定字号。
 const FIELD_CLASS =
-  "h-8 w-full min-w-0 rounded-lg border border-border/70 bg-background/80 px-2.5 text-xs text-foreground outline-none placeholder:text-muted-foreground/70 focus-visible:border-indigo-500/50 focus-visible:ring-1 focus-visible:ring-indigo-500/20 disabled:opacity-50";
+  "h-8 w-full min-w-0 rounded-lg border border-border bg-background/80 px-2 text-xs text-foreground outline-none placeholder:text-muted-foreground/80 focus-visible:border-activity/60 focus-visible:ring-1 focus-visible:ring-activity/20 disabled:opacity-50";
 
 function errorMessage(error: unknown) {
   return error instanceof Error ? error.message : String(error);
@@ -135,7 +135,7 @@ export function SshPortForwardDialog(props: SshPortForwardDialogProps) {
       >
         <DialogHeader className="flex-row items-start gap-4">
           <div className="flex min-w-0 items-start gap-3">
-            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-indigo-500/25 bg-indigo-500/10 text-indigo-600 dark:text-indigo-300">
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-activity/20 bg-activity/10 text-activity">
               <Cable className="h-5 w-5" />
             </div>
             <div className="min-w-0">
@@ -227,9 +227,9 @@ export function SshPortForwardDialog(props: SshPortForwardDialogProps) {
               />
             </div>
 
-            <div className="rounded-lg border border-border/60 bg-muted/25 px-3 py-2 font-mono text-xs text-muted-foreground">
+            <div className="rounded-lg border border-border bg-muted/20 px-3 py-2 font-mono text-xs text-muted-foreground">
               127.0.0.1:{previewLocal}
-              <span className="mx-1.5 text-muted-foreground/60">→</span>
+              <span className="mx-2 text-muted-foreground/60">→</span>
               {previewHost}:{previewPort}
             </div>
 

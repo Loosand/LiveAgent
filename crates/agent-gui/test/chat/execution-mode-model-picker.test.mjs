@@ -33,7 +33,7 @@ const selectSource = readFileSync(
   "utf8",
 );
 const baseStylesSource = readFileSync(
-  new URL("../../../agent-ui/src/styles/base.css", import.meta.url),
+  new URL("../../../agent-ui/src/styles/tokens.css", import.meta.url),
   "utf8",
 );
 const iconSetSource = readFileSync(

@@ -192,7 +192,7 @@ function ImagePreviewToolButton(props: {
     <button
       type="button"
       className={cn(
-        "inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground disabled:pointer-events-none disabled:opacity-35",
+        "inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground disabled:pointer-events-none disabled:opacity-35",
         pressed && "bg-muted text-foreground",
       )}
       title={label}
@@ -215,7 +215,7 @@ export function ImagePreviewMenuItem(props: {
     <button
       type="button"
       role="menuitem"
-      className="flex w-full items-center gap-2 rounded-md px-2.5 py-2 text-left hover:bg-accent disabled:pointer-events-none disabled:opacity-40"
+      className="flex w-full items-center gap-2 rounded-lg px-2 py-2 text-left hover:bg-accent disabled:pointer-events-none disabled:opacity-40"
       disabled={props.disabled}
       onClick={props.onClick}
     >
@@ -329,7 +329,7 @@ export function ImagePreviewContextMenu(props: {
     <div
       ref={menuRef}
       role="menu"
-      className="layer-popover fixed min-w-52 rounded-lg border border-border bg-popover p-1 text-xs text-popover-foreground shadow-2xl"
+      className="layer-popover fixed min-w-52 rounded-lg border border-border bg-popover p-1 text-xs text-popover-foreground shadow-overlay"
       style={{
         left: (menuPosition ?? position).x,
         top: (menuPosition ?? position).y,
@@ -693,7 +693,7 @@ export const ImagePreview = memo(function ImagePreview(props: ImagePreviewProps)
       <DialogContent
         ref={dialogRef}
         initialFocus={dialogRef}
-        className="chat-image-preview-dialog flex h-[min(78vh,760px)] w-[min(82vw,1120px)] max-w-none min-h-0 min-w-0 flex-col overflow-hidden rounded-xl border-border bg-background p-0 text-foreground"
+        className="chat-image-preview-dialog flex h-[min(78vh,760px)] w-[min(82vw,1120px)] max-w-none min-h-0 min-w-0 flex-col overflow-hidden rounded-2xl border-border bg-background p-0 text-foreground"
         onKeyDown={(event) => {
           if (
             (event.ctrlKey || event.metaKey) &&
@@ -730,7 +730,7 @@ export const ImagePreview = memo(function ImagePreview(props: ImagePreviewProps)
                 >
                   <ChevronRight className="h-4 w-4" />
                 </ImagePreviewToolButton>
-                <span className="ml-1 shrink-0 text-[11px] tabular-nums text-muted-foreground">
+                <span className="ml-1 shrink-0 text-xs tabular-nums text-muted-foreground">
                   {clampedIndex + 1} / {imageCount}
                 </span>
               </>
@@ -744,7 +744,7 @@ export const ImagePreview = memo(function ImagePreview(props: ImagePreviewProps)
             >
               <Minus className="h-4 w-4" />
             </ImagePreviewToolButton>
-            <span className="w-11 text-center text-[11px] tabular-nums text-muted-foreground">
+            <span className="w-11 text-center text-xs tabular-nums text-muted-foreground">
               {Math.round(viewerState.scale * 100)}%
             </span>
             <ImagePreviewToolButton
@@ -818,7 +818,7 @@ export const ImagePreview = memo(function ImagePreview(props: ImagePreviewProps)
               {isFullscreen ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
             </ImagePreviewToolButton>
             <DialogClose
-              className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+              className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
               title={closeLabel}
               aria-label={closeLabel}
             >
@@ -831,7 +831,7 @@ export const ImagePreview = memo(function ImagePreview(props: ImagePreviewProps)
           role="application"
           aria-label={t("chat.imageViewer.viewer")}
           className={cn(
-            "relative min-h-0 flex-1 touch-none select-none overflow-hidden bg-muted/25",
+            "relative min-h-0 flex-1 touch-none select-none overflow-hidden bg-muted/20",
             isDragging ? "cursor-grabbing" : canPan ? "cursor-grab" : "cursor-default",
           )}
           onWheel={(event) => {
@@ -934,7 +934,7 @@ export const ImagePreview = memo(function ImagePreview(props: ImagePreviewProps)
           {actionError ? (
             <div
               role="alert"
-              className="absolute left-3 top-3 z-10 max-w-[min(28rem,calc(100%-1.5rem))] rounded-md border border-destructive/30 bg-background/95 px-3 py-2 text-xs text-destructive shadow-lg backdrop-blur"
+              className="absolute left-3 top-3 z-10 max-w-[min(28rem,calc(100%-1.5rem))] rounded-lg border border-destructive/40 bg-background px-3 py-2 text-xs text-destructive shadow-overlay backdrop-blur"
             >
               {actionError}
             </div>
@@ -942,13 +942,13 @@ export const ImagePreview = memo(function ImagePreview(props: ImagePreviewProps)
           {showInfo ? (
             <aside
               aria-label={t("chat.imageViewer.infoPanel")}
-              className="absolute right-3 top-3 z-10 w-72 rounded-lg border border-border bg-background/90 p-3 text-xs text-foreground shadow-xl backdrop-blur"
+              className="absolute right-3 top-3 z-10 w-72 rounded-lg border border-border bg-background/90 p-3 text-xs text-foreground shadow-overlay backdrop-blur"
             >
               <div className="mb-2 flex items-center justify-between gap-2">
-                <div className="text-sm font-semibold">{t("chat.imageViewer.infoPanel")}</div>
+                <div className="text-base font-semibold">{t("chat.imageViewer.infoPanel")}</div>
                 <button
                   type="button"
-                  className="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground"
+                  className="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground"
                   title={closeLabel}
                   aria-label={closeLabel}
                   onClick={() => setShowInfo(false)}
@@ -956,7 +956,7 @@ export const ImagePreview = memo(function ImagePreview(props: ImagePreviewProps)
                   <X className="h-3.5 w-3.5" />
                 </button>
               </div>
-              <dl className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1.5 text-muted-foreground">
+              <dl className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-2 text-muted-foreground">
                 <dt>{t("chat.imageViewer.fileName")}</dt>
                 <dd
                   className="truncate text-right text-foreground"

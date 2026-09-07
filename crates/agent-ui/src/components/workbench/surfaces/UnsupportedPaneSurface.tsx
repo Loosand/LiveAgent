@@ -14,10 +14,10 @@ export function UnsupportedPaneSurface(props: UnsupportedPaneSurfaceProps) {
     <div
       data-workbench-pane-id={paneId}
       data-workbench-surface="unsupported"
-      className="flex h-full min-h-0 w-full flex-col items-center justify-center gap-1.5 p-6 text-center"
+      className="flex h-full min-h-0 w-full flex-col items-center justify-center gap-2 p-6 text-center"
     >
-      <p className="text-sm text-muted-foreground">{t("workbench.unsupportedPane")}</p>
-      <p className="font-mono text-xs text-muted-foreground/70">{originalKind}</p>
+      <p className="text-base text-muted-foreground">{t("workbench.unsupportedPane")}</p>
+      <p className="font-mono text-xs text-muted-foreground/80">{originalKind}</p>
     </div>
   );
 }

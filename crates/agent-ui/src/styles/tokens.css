@@ -1,0 +1,275 @@
+/* LiveAgent design tokens. See /design.md. Both applications import this file. */
+@theme inline {
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+  --color-card: hsl(var(--card));
+  --color-card-foreground: hsl(var(--card-foreground));
+  --color-popover: hsl(var(--popover));
+  --color-popover-foreground: hsl(var(--popover-foreground));
+  --color-primary: hsl(var(--primary));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+  --color-secondary: hsl(var(--secondary));
+  --color-secondary-foreground: hsl(var(--secondary-foreground));
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+  --color-accent: hsl(var(--accent));
+  --color-accent-foreground: hsl(var(--accent-foreground));
+  --color-destructive: hsl(var(--destructive));
+  --color-destructive-foreground: hsl(var(--destructive-foreground));
+  --color-border: hsl(var(--border));
+  --color-input: hsl(var(--input));
+  --color-ring: hsl(var(--ring));
+  --color-success: hsl(var(--success));
+  --color-success-foreground: hsl(var(--success-foreground));
+  --color-warning: hsl(var(--warning));
+  --color-warning-foreground: hsl(var(--warning-foreground));
+  --color-info: hsl(var(--info));
+  --color-info-foreground: hsl(var(--info-foreground));
+  --color-activity: hsl(var(--activity));
+  --color-activity-foreground: hsl(var(--activity-foreground));
+  --color-overlay: hsl(var(--overlay));
+  --color-surface-inset: hsl(var(--surface-inset));
+  --color-sidebar: hsl(var(--sidebar-bg));
+  --color-sidebar-foreground: hsl(var(--foreground));
+  --color-chip: hsl(var(--chip-bg));
+  --color-chip-hover: hsl(var(--chip-bg-hover));
+  --color-send-disabled: hsl(var(--send-disabled-bg));
+  /* Native Windows close action uses the same red in hover and keyboard focus. */
+  --color-window-close: #e81123;
+  --color-window-close-foreground: hsl(0 0% 100%);
+  --radius-*: initial;
+  --radius-sm: calc(var(--radius) / 2);
+  --radius-lg: var(--radius);
+  --radius-2xl: calc(var(--radius) * 2);
+  --radius-item: var(--corner-item);
+  --radius-control: var(--corner-control);
+  --radius-panel: var(--corner-panel);
+  --radius-overlay: var(--corner-overlay);
+  --radius-composer: var(--corner-composer);
+  --radius-full: var(--corner-full);
+  --shadow-overlay: var(--elevation-overlay);
+  --shadow-control: var(--elevation-control);
+  --shadow-inset: var(--elevation-inset);
+  --shadow-focus: var(--focus-halo);
+  --shadow-separator: var(--separator-halo);
+  --container-settings: 57.5rem;
+  --spacing-settings-nav: 16rem;
+}
+
+@theme {
+  --text-*: initial;
+  --text-2xs: 0.625rem;
+  --text-2xs--line-height: 1.4;
+  --text-xs: 0.75rem;
+  --text-xs--line-height: 1.5;
+  --text-base: 1rem;
+  --text-base--line-height: 1.5;
+}
+
+@layer base {
+  :root {
+    color-scheme: light;
+    --app-font-family: ui-sans-serif, system-ui, "PingFang SC", "Microsoft YaHei", sans-serif;
+    --chat-font-family: var(--app-font-family);
+    --code-font-family:
+      "SF Mono", SFMono-Regular, Menlo, Monaco, "Cascadia Code", Consolas, "Liberation Mono",
+      monospace;
+    --background: 0 0% 100%;
+    --foreground: 0 0% 10%;
+
+    --card: 0 0% 94%;
+    --card-foreground: var(--foreground);
+
+    --popover: 0 0% 100%;
+    --popover-foreground: var(--foreground);
+
+    --primary: var(--foreground);
+    --primary-foreground: var(--background);
+
+    --secondary: var(--card);
+    --secondary-foreground: var(--foreground);
+
+    --muted: var(--card);
+    --muted-foreground: 0 0% 36.5%;
+
+    --accent: 0 0% 88%;
+    --accent-foreground: var(--foreground);
+
+    --destructive: 0 68% 42%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 0 0% 88%;
+    --input: 0 0% 78%;
+    --ring: var(--muted-foreground);
+
+    --radius: 0.5rem;
+    --corner-item: calc(var(--radius) / 2);
+    --corner-control: var(--radius);
+    --corner-panel: calc(var(--radius) * 2);
+    --corner-overlay: var(--corner-panel);
+    --corner-composer: var(--corner-panel);
+    --corner-full: calc(infinity * 1px);
+    --corner-indicator: 1px;
+    --border-width-default: 1px;
+    --border-width-emphasis: 2px;
+    /* Scrollbar border reserves a hit-area gutter, not a visible outline. */
+    --scrollbar-gutter: 3px;
+    --focus-halo: 0 0 0 2px hsl(var(--ring) / 0.35);
+    --focus-halo-offset: 0 0 0 2px hsl(var(--background)), 0 0 0 4px hsl(var(--ring));
+    --separator-halo: 0 0 0 1px hsl(var(--background));
+    --elevation-inset: inset 0 0 0 1px hsl(var(--border));
+    --selection-inset: inset 0 0 0 1px hsl(var(--ring));
+    --scrollbar-inset: inset 0 0 0 1px hsl(var(--background));
+    --status-halo: 0 0 0 2px currentColor;
+    --pulse-rest: 0 0 0 0 transparent;
+    --pulse-expanded: 0 0 0 4px transparent;
+    --drop-pulse: 0 0 0 2px hsl(var(--ring) / 0.15);
+    --keyboard-key-pressed: 0 1px 2px hsl(var(--overlay) / 0.2);
+
+    --layer-content: 1;
+    --layer-raised: 10;
+    --layer-panel: 20;
+    --layer-popover: 10000;
+    --layer-modal: 10000;
+    --layer-toast: 10010;
+    --layer-critical: 10020;
+
+    --sidebar-bg: var(--card);
+
+    --hub-canvas: var(--background);
+
+    --chip-bg: var(--secondary);
+    --chip-bg-hover: var(--accent);
+    --send-disabled-bg: var(--muted);
+
+    --chat-user-bg: var(--secondary);
+    --chat-user-fg: var(--foreground);
+    --chat-assistant-bg: var(--background);
+    --chat-assistant-fg: var(--foreground);
+    --chat-tool-bg: var(--card);
+    --chat-tool-border: var(--border);
+    --chat-thinking-bg: var(--muted);
+    --chat-thinking-border: var(--border);
+    --chat-success: var(--success);
+    --chat-error: var(--destructive);
+    --chat-running: var(--activity);
+
+    --tool-card-bg: var(--card);
+    --tool-card-border: var(--border);
+    --tool-bash-accent: var(--muted-foreground);
+    --tool-file-accent: var(--muted-foreground);
+    --tool-search-accent: var(--muted-foreground);
+    --tool-list-accent: var(--muted-foreground);
+
+    --checkpoint-accent: var(--muted-foreground);
+    --checkpoint-bg: var(--card);
+    --checkpoint-border: var(--border);
+    --checkpoint-icon-bg: var(--muted);
+    --checkpoint-icon-fg: var(--muted-foreground);
+
+    --git-review-graph-ref-local: #0063d3;
+    --git-review-graph-ref-remote: #652d90;
+    --git-review-graph-ref-base: #ea5c00;
+    --success: 152 60% 30%;
+    --success-foreground: var(--background);
+    --warning: 28 85% 32%;
+    --warning-foreground: var(--background);
+    --info: 210 75% 38%;
+    --info-foreground: var(--background);
+    --activity: 265 55% 43%;
+    --activity-foreground: var(--background);
+    --overlay: 0 0% 0%;
+    --surface-inset: var(--accent);
+    --elevation-overlay: 0 16px 48px hsl(0 0% 0% / 0.14);
+    --elevation-control: 0 1px 2px hsl(0 0% 0% / 0.06);
+  }
+
+  .dark {
+    color-scheme: dark;
+
+    --background: 0 0% 9.4%;
+    --foreground: 0 0% 94%;
+
+    --card: 0 0% 15.7%;
+    --card-foreground: var(--foreground);
+
+    --popover: var(--card);
+    --popover-foreground: var(--foreground);
+
+    --primary: var(--foreground);
+    --primary-foreground: var(--background);
+
+    --secondary: var(--card);
+    --secondary-foreground: var(--foreground);
+
+    --muted: var(--card);
+    --muted-foreground: 0 0% 68.6%;
+
+    --accent: 0 0% 22%;
+    --accent-foreground: var(--foreground);
+
+    --destructive: 0 90% 74%;
+    --destructive-foreground: var(--background);
+
+    --border: 0 0% 28%;
+    --input: 0 0% 34%;
+    --ring: var(--muted-foreground);
+
+    --chip-bg: var(--secondary);
+    --chip-bg-hover: var(--accent);
+    --send-disabled-bg: var(--muted);
+
+    --hub-canvas: var(--background);
+
+    --sidebar-bg: var(--background);
+    --chat-user-bg: var(--secondary);
+    --chat-user-fg: var(--foreground);
+    --chat-assistant-bg: var(--background);
+    --chat-assistant-fg: var(--foreground);
+    --chat-tool-bg: var(--card);
+    --chat-tool-border: var(--border);
+    --chat-thinking-bg: var(--muted);
+    --chat-thinking-border: var(--border);
+    --chat-success: var(--success);
+    --chat-error: var(--destructive);
+    --chat-running: var(--activity);
+
+    --tool-card-bg: var(--card);
+    --tool-card-border: var(--border);
+    --tool-bash-accent: var(--muted-foreground);
+    --tool-file-accent: var(--muted-foreground);
+    --tool-search-accent: var(--muted-foreground);
+    --tool-list-accent: var(--muted-foreground);
+
+    --checkpoint-accent: var(--muted-foreground);
+    --checkpoint-bg: var(--card);
+    --checkpoint-border: var(--border);
+    --checkpoint-icon-bg: var(--muted);
+    --checkpoint-icon-fg: var(--muted-foreground);
+
+    --git-review-graph-ref-local: #59a4f9;
+    --git-review-graph-ref-remote: #b180d7;
+    --git-review-graph-ref-base: #ea5c00;
+    --success: 152 56% 64%;
+    --success-foreground: var(--background);
+    --warning: 28 95% 72%;
+    --warning-foreground: var(--background);
+    --info: 210 90% 75%;
+    --info-foreground: var(--background);
+    --activity: 265 80% 80%;
+    --activity-foreground: var(--background);
+    --overlay: 0 0% 0%;
+    --surface-inset: var(--background);
+    --elevation-overlay: 0 16px 48px hsl(0 0% 0% / 0.45);
+    --elevation-control: 0 1px 2px hsl(0 0% 0% / 0.24);
+  }
+
+  /* Illustration depth resolves on its host, where keyboard colors are defined. */
+  .ghk-root {
+    --keyboard-board-depth: 0 16px 0 -6px var(--ghk-board-edge), 0 28px 32px var(--ghk-shadow);
+  }
+  .ghk-key {
+    --keyboard-key-depth:
+      0 4px 0 var(--keyboard-key-edge, var(--ghk-cap-side)), 0 6px 5px hsl(var(--overlay) / 0.16);
+  }
+}

@@ -22,7 +22,7 @@ export function ContextCheckpointCard(props: {
   return (
     <div
       className={cn(
-        "checkpoint-card w-full overflow-hidden rounded-xl border border-black/[0.06] bg-white/[0.85] shadow-[0_1px_3px_rgba(0,0,0,0.04),0_4px_12px_rgba(0,0,0,0.03)] dark:border-white/[0.1] dark:bg-white/[0.06] dark:shadow-[0_1px_3px_rgba(0,0,0,0.2),0_4px_12px_rgba(0,0,0,0.15)]",
+        "checkpoint-card w-full overflow-hidden rounded-2xl border border-border bg-white/90 shadow-control dark:bg-white/5",
         className,
       )}
     >
@@ -30,34 +30,34 @@ export function ContextCheckpointCard(props: {
         type="button"
         aria-expanded={expanded}
         onClick={() => setExpanded((previous) => !previous)}
-        className="flex w-full items-center gap-3 px-3.5 py-3 text-left transition-colors duration-150 hover:bg-black/[0.02] dark:hover:bg-white/[0.03]"
+        className="flex w-full items-center gap-3 px-4 py-3 text-left transition-colors duration-150 hover:bg-black/0 dark:hover:bg-white/5"
       >
-        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-black/[0.04] dark:bg-white/[0.08]">
+        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-black/5 dark:bg-white/10">
           <CheckCircle2 size={16} strokeWidth={1.8} className="text-muted-foreground" />
         </div>
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2">
-            <span className="text-[calc(13px*var(--zone-font-scale,1))] font-medium text-foreground/90">
+            <span className="text-xs font-medium text-foreground/90">
               {t("chat.contextCheckpoint.title")}
             </span>
-            <span className="inline-flex items-center rounded-md bg-black/[0.05] px-1.5 py-[1px] text-[calc(11px*var(--zone-font-scale,1))] font-normal tabular-nums text-muted-foreground dark:bg-white/[0.08]">
+            <span className="inline-flex items-center rounded-lg bg-black/5 px-2 py-px text-xs font-normal tabular-nums text-muted-foreground dark:bg-white/10">
               {messageCountLabel}
             </span>
           </div>
-          <div className="mt-[2px] text-[calc(11px*var(--zone-font-scale,1))] text-muted-foreground/70">
+          <div className="mt-0.5 text-xs text-muted-foreground/80">
             {generatedBy.providerId} · {generatedBy.model}
           </div>
         </div>
         <ChevronDown
           className={cn(
-            "h-3.5 w-3.5 shrink-0 text-muted-foreground/50 transition-transform duration-200",
+            "h-3.5 w-3.5 shrink-0 text-muted-foreground/60 transition-transform duration-200",
             expanded ? "rotate-0" : "-rotate-90",
           )}
         />
       </button>
       {expanded ? (
-        <div className="checkpoint-expand border-t border-black/[0.05] px-3.5 py-3 dark:border-white/[0.06]">
-          <Markdown content={content} className="font-chat text-sm" readOnly={readOnly} />
+        <div className="checkpoint-expand border-t border-border px-4 py-3">
+          <Markdown content={content} className="font-chat text-base" readOnly={readOnly} />
         </div>
       ) : null}
     </div>

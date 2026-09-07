@@ -87,7 +87,7 @@ function SourceFavicon({ url }: { url: string }) {
     <img
       alt=""
       aria-hidden="true"
-      className="h-3.5 w-3.5 shrink-0 rounded-xs bg-muted object-contain"
+      className="h-3.5 w-3.5 shrink-0 rounded-sm bg-muted object-contain"
       decoding="async"
       loading="lazy"
       onError={() => setCandidateIndex((current) => current + 1)}
@@ -149,10 +149,10 @@ export function HostedSearchGroupView({
         type="button"
         aria-expanded={expanded}
         aria-label={expanded ? t("chat.search.collapseActivity") : t("chat.search.expandActivity")}
-        className="-mx-1.5 flex h-auto max-w-[calc(100%+0.75rem)] items-center gap-1.5 rounded-lg px-1.5 py-1 text-[calc(13px*var(--zone-font-scale,1))] font-[450] text-foreground/60 transition-colors hover:bg-foreground/[0.04] hover:text-foreground/75 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        className="-mx-2 flex h-auto max-w-[calc(100%+1rem)] items-center gap-2 rounded-lg px-2 py-1 text-xs font-[450] transition-colors hover:bg-foreground/5 hover:text-foreground/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         onClick={() => setExpanded((current) => !current)}
       >
-        <Globe className="h-3 w-3 shrink-0 text-foreground/45" />
+        <Globe className="h-3 w-3 shrink-0 text-foreground/40" />
         <span
           className={cn(
             "min-w-0 truncate",
@@ -174,7 +174,7 @@ export function HostedSearchGroupView({
       {hasDetails ? (
         <LazyCollapse open={expanded}>
           {() => (
-            <div className="mt-1 border-l border-border/55 py-1 pl-3">
+            <div className="mt-1 border-l border-border py-1 pl-3">
               <section
                 aria-label={locale === "en-US" ? "Web search activity" : "联网搜索过程"}
                 className="max-h-64 overflow-y-auto pr-1 [scrollbar-gutter:stable]"
@@ -182,36 +182,34 @@ export function HostedSearchGroupView({
                 <div className="flex flex-col gap-1">
                   {queries.map((query) => (
                     <div
-                      className="flex min-h-7 items-center gap-2 rounded-md px-1.5 py-0.5"
+                      className="flex min-h-7 items-center gap-2 rounded-lg px-2 py-0.5"
                       key={query}
                     >
                       <Search className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
-                      <span className="min-w-0 truncate text-[calc(12.5px*var(--zone-font-scale,1))] text-foreground">
-                        {query}
-                      </span>
+                      <span className="min-w-0 truncate text-xs text-foreground">{query}</span>
                     </div>
                   ))}
 
                   {visibleSources.map((source) => (
                     <a
-                      className="flex min-h-7 items-center gap-2 rounded-md px-1.5 py-0.5 text-left transition-colors hover:bg-muted/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                      className="flex min-h-7 items-center gap-2 rounded-lg px-2 py-0.5 text-left transition-colors hover:bg-muted/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                       href={source.url}
                       key={source.url}
                       rel="noreferrer"
                       target="_blank"
                     >
                       <SourceFavicon url={source.url} />
-                      <span className="min-w-0 flex-1 truncate text-[calc(12.5px*var(--zone-font-scale,1))] font-medium text-foreground">
+                      <span className="min-w-0 flex-1 truncate text-xs font-medium text-foreground">
                         {source.title || getSourceHost(source.url)}
                       </span>
-                      <span className="max-w-40 shrink-0 truncate text-[calc(11.5px*var(--zone-font-scale,1))] text-muted-foreground">
+                      <span className="max-w-40 shrink-0 truncate text-xs text-muted-foreground">
                         {getSourceHost(source.url)}
                       </span>
                     </a>
                   ))}
 
                   {failedCount > 0 ? (
-                    <p className="px-1.5 py-1 text-xs leading-5 text-destructive">
+                    <p className="px-2 py-1 text-xs leading-5 text-destructive">
                       {locale === "en-US"
                         ? `${failedCount} ${failedCount === 1 ? "search" : "searches"} failed`
                         : `${failedCount} 次搜索失败`}
@@ -220,7 +218,7 @@ export function HostedSearchGroupView({
 
                   {hiddenSourceCount > 0 ? (
                     <button
-                      className="ml-1 w-fit rounded-md px-2 py-1 text-xs text-muted-foreground transition-colors hover:bg-muted/70 hover:text-foreground"
+                      className="ml-1 w-fit rounded-lg px-2 py-1 text-xs text-muted-foreground transition-colors hover:bg-muted/80 hover:text-foreground"
                       onClick={() => setShowAll(true)}
                       type="button"
                     >

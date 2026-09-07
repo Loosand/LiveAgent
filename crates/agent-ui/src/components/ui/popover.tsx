@@ -53,7 +53,7 @@ export const PopoverContent = React.forwardRef<HTMLDivElement, PopoverContentPro
             ref={ref}
             data-slot="popover-content"
             className={cn(
-              "w-72 origin-(--transform-origin) rounded-xl border bg-popover p-4 text-sm text-popover-foreground shadow-md outline-none transition-[transform,opacity] duration-150 data-[ending-style]:scale-95 data-[ending-style]:opacity-0 data-[starting-style]:scale-95 data-[starting-style]:opacity-0 motion-reduce:transition-none",
+              "w-72 origin-(--transform-origin) rounded-overlay border border-border bg-popover p-4 text-base text-popover-foreground shadow-overlay outline-none transition-[transform,opacity] duration-150 data-[ending-style]:scale-95 data-[ending-style]:opacity-0 data-[starting-style]:scale-95 data-[starting-style]:opacity-0 motion-reduce:transition-none",
               className,
             )}
             {...props}
@@ -97,7 +97,7 @@ export const PopoverDescription = React.forwardRef<
   <PopoverPrimitive.Description
     ref={ref}
     data-slot="popover-description"
-    className={cn("text-sm text-muted-foreground", className)}
+    className={cn("text-base text-muted-foreground", className)}
     {...props}
   />
 ));

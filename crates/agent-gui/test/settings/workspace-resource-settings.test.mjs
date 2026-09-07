@@ -219,7 +219,7 @@ test("global and project prompt cards share row and action layout", () => {
   const editButton = projectCards.indexOf('title={t("settings.agentsProjectEdit")}');
 
   assert.match(projectCards, /settings-card-row flex items-center gap-3 px-4 py-3/);
-  assert.match(projectCards, /settings-card-actions flex items-center gap-1\.5/);
+  assert.match(projectCards, /settings-card-actions flex items-center gap-2/);
   assert.match(projectCards, /settings-hover-actions ml-1 flex items-center gap-0\.5/);
   assert.ok(previewButton >= 0 && previewButton < editButton);
   assert.match(projectCards, /disabled=\{!configured\}/);
@@ -241,7 +241,7 @@ test("project prompt preview renders the effective prompt without overflowing it
   assert.match(sharedAgentsSection, /hidePromptHeader/);
   assert.match(sharedAgentsSection, /label: t\("chat\.globalPromptTitle"\)/);
   assert.match(sharedAgentsSection, /<PromptScopeLabel label=\{segment\.label\}/);
-  assert.match(sharedAgentsSection, /my-5 h-px w-full bg-border\/70/);
+  assert.match(sharedAgentsSection, /my-4 h-px w-full bg-border\/80/);
   assert.match(sharedAgentsSection, /md:grid-cols-\[minmax\(0,16rem\)_minmax\(0,1fr\)\]/);
   assert.match(sharedAgentsSection, /\[overflow-wrap:anywhere\]/);
   assert.match(
