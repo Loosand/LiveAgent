@@ -130,14 +130,16 @@ export function SettingsShell<Context>(props: SettingsShellProps<Context>) {
   return (
     <div
       className={
-        web ? "settings-page-shell flex h-full bg-background" : "flex h-full flex-col bg-background"
+        web
+          ? "flex h-full bg-background web:min-w-0 web:max-820:h-full web:max-820:min-h-0 web:max-820:flex-col web:max-820:overflow-hidden"
+          : "flex h-full flex-col bg-background"
       }
     >
       <div className={web ? "contents" : "flex min-h-0 flex-1"}>
-        <aside className="settings-sidebar flex w-64 shrink-0 flex-col border-r border-border/60 bg-muted/30">
+        <aside className="flex w-64 shrink-0 flex-col border-r border-border/60 bg-muted/30 web:max-820:w-full web:max-820:flex-none web:max-820:border-r-0 web:max-820:border-r-current web:max-820:border-b web:max-820:border-solid web:max-820:border-b-border web:max-820:bg-background/96">
           {registry.slots.sidebarLeading}
           {web ? (
-            <div className="settings-back-bar">
+            <div className="web:hidden web:max-820:flex web:max-820:items-center web:max-820:order-1 web:max-820:border-t-0 web:max-820:border-t-current web:max-820:border-b web:max-820:border-solid web:max-820:border-b-border/72 web:max-820:px-10px web:max-820:pt-settings-back-bar-pt web:max-820:pb-8px">
               <button
                 type="button"
                 onClick={onBack}
@@ -148,7 +150,7 @@ export function SettingsShell<Context>(props: SettingsShellProps<Context>) {
               </button>
             </div>
           ) : null}
-          <div className="settings-sidebar-header px-3 pb-2 pt-3">
+          <div className="px-3 pb-2 pt-3 web:max-820:hidden">
             <button
               type="button"
               onClick={onBack}
@@ -171,8 +173,14 @@ export function SettingsShell<Context>(props: SettingsShellProps<Context>) {
           </div>
           <nav className="settings-nav flex-1 overflow-y-auto px-3 py-3">
             {visibleGroups.map(([groupKey, definitions], groupIndex) => (
-              <div key={groupKey} className={cn("settings-nav-group", groupIndex > 0 && "mt-5")}>
-                <div className="settings-nav-group-label mb-1 px-3 text-xs font-medium text-muted-foreground/65">
+              <div
+                key={groupKey}
+                className={cn(
+                  "web:max-820:contents web:max-820:mt-0 web:max-820:[&_>_div:last-child]:contents web:max-820:[&_>_div:last-child_>_*_+_*]:mt-0",
+                  groupIndex > 0 && "mt-5",
+                )}
+              >
+                <div className="mb-1 px-3 text-xs font-medium text-muted-foreground/65 web:max-820:hidden">
                   {t(groupKey)}
                 </div>
                 <div className="space-y-0.5">
@@ -187,16 +195,16 @@ export function SettingsShell<Context>(props: SettingsShellProps<Context>) {
                         data-settings-nav-id={definition.id}
                         data-active={active ? "true" : "false"}
                         className={cn(
-                          "settings-nav-item group relative flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-left text-sm transition-all duration-150",
+                          "group relative flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-left text-sm transition-all duration-150 web:max-820:w-auto web:max-820:flex-none web:max-820:whitespace-nowrap web:max-820:border web:max-820:border-solid web:max-820:border-border/50 web:max-820:px-10px web:max-820:py-8px web:max-820:rounded-10px web:max-820:[&_>_div]:gap-8px web:max-520:px-9px web:max-520:py-7px",
                           active
-                            ? "settings-nav-item-active bg-accent font-medium text-foreground"
+                            ? "bg-accent font-medium text-foreground web:max-820:border-primary/35!"
                             : "text-foreground/75 hover:bg-accent/60 hover:text-foreground",
                         )}
                       >
-                        <span className="settings-nav-icon flex h-5 w-5 shrink-0 items-center justify-center text-muted-foreground transition-colors group-hover:text-foreground">
+                        <span className="flex h-5 w-5 shrink-0 items-center justify-center text-muted-foreground transition-colors group-hover:text-foreground web:max-820:w-24px web:max-820:h-24px web:max-820:rounded-8px">
                           {definition.icon}
                         </span>
-                        <span className="settings-nav-label min-w-0 truncate leading-tight">
+                        <span className="min-w-0 truncate leading-tight web:max-820:text-12px">
                           {t(definition.labelKey)}
                         </span>
                       </button>
@@ -214,7 +222,7 @@ export function SettingsShell<Context>(props: SettingsShellProps<Context>) {
           {!web && showSaveIndicator ? (
             <div className="border-t border-border/60 px-3 py-2.5">
               <div
-                className="flex items-center gap-1.5 px-2.5 text-[11px] text-muted-foreground"
+                className="flex items-center gap-1.5 px-2.5 text-11px text-muted-foreground"
                 title={saveIndicator.title}
               >
                 <div className={cn("h-1.5 w-1.5 rounded-full", saveIndicator.dotClass)} />
@@ -223,23 +231,23 @@ export function SettingsShell<Context>(props: SettingsShellProps<Context>) {
             </div>
           ) : null}
         </aside>
-        <main className="settings-main flex min-w-0 flex-1 flex-col">
+        <main className="flex min-w-0 flex-1 flex-col web:min-w-0 web:max-820:min-h-0 web:max-820:flex-auto">
           {registry.slots.mainLeading}
           <header
             className={cn(
-              "settings-main-header px-8 pb-2 pt-8",
+              "px-8 pb-2 pt-8 web:max-820:gap-12px web:max-820:px-14px web:max-820:py-10px web:max-640:px-10px web:max-640:py-9px",
               web && "flex items-center justify-between",
             )}
           >
             <div
               className={cn(
                 "settings-main-title w-full overflow-hidden",
-                activeSection.id === "system" && "mx-auto max-w-[920px]",
+                activeSection.id === "system" && "mx-auto max-w-920px",
               )}
             >
               <div
                 key={activeSection.id}
-                className="settings-section-title-enter text-[28px] font-semibold tracking-tight"
+                className="settings-section-title-enter text-28px font-semibold tracking-tight"
                 data-anim-suspended={isDocumentHidden ? "true" : undefined}
                 style={
                   isDocumentHidden
@@ -252,7 +260,7 @@ export function SettingsShell<Context>(props: SettingsShellProps<Context>) {
             </div>
             {web && showSaveIndicator ? (
               <div
-                className="settings-save-indicator flex shrink-0 items-center gap-1.5 whitespace-nowrap text-xs text-muted-foreground"
+                className="flex shrink-0 items-center gap-1.5 whitespace-nowrap text-xs text-muted-foreground web:max-820:flex-none web:max-820:whitespace-nowrap"
                 title={saveIndicator.title}
               >
                 <div className={cn("h-1.5 w-1.5 shrink-0 rounded-full", saveIndicator.dotClass)} />
@@ -263,7 +271,7 @@ export function SettingsShell<Context>(props: SettingsShellProps<Context>) {
           <div
             key={activeSection.id}
             className={cn(
-              "settings-content settings-section-enter flex-1 px-8 pb-8 pt-6",
+              "settings-section-enter flex-1 px-8 pb-8 pt-6 web:min-w-0 web:max-820:min-h-0 web:max-820:p-14px web:max-640:p-10px",
               `settings-content-${activeSection.id}`,
               fillContent ? "flex min-h-0 flex-col overflow-hidden" : "overflow-auto",
             )}
@@ -274,9 +282,9 @@ export function SettingsShell<Context>(props: SettingsShellProps<Context>) {
           >
             <div
               className={cn(
-                "settings-section-shell",
+                "relative isolate web:min-w-0",
                 `settings-section-shell-${activeSection.id}`,
-                activeSection.id === "system" && "mx-auto w-full max-w-[920px]",
+                activeSection.id === "system" && "mx-auto w-full max-w-920px",
                 fillContent ? "flex min-h-0 flex-1 flex-col" : "min-h-full",
               )}
             >

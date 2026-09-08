@@ -107,7 +107,7 @@ export function useProjectTerminals(params: UseProjectTerminalsParams) {
                   <span className="text-sm font-semibold text-foreground">
                     {t("chat.exitConfirmRunningLabel")}
                   </span>
-                  <span className="inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-amber-500/15 px-1.5 text-[calc(11px*var(--zone-font-scale,1))] font-semibold text-amber-700 dark:text-amber-300">
+                  <span className="inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-amber-500/15 px-1.5 text-scaled-11px font-semibold text-amber-700 dark:text-amber-300">
                     {runningCount}
                   </span>
                 </div>

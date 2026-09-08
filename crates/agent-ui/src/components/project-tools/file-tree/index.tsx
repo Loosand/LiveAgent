@@ -595,13 +595,13 @@ export function FileTreeSurface(props: FileTreeSurfaceProps) {
             value={query}
             onChange={(event) => setQuery(event.currentTarget.value)}
             placeholder={t("projectTools.fileTree.searchPlaceholder")}
-            className="h-8 pl-7 text-[calc(11px*var(--zone-font-scale,1))] placeholder:text-[calc(11px*var(--zone-font-scale,1))]"
+            className="h-8 pl-7 text-scaled-11px placeholder:text-scaled-11px"
           />
         </div>
         <Button
           variant="ghost"
-          size="icon"
-          className="h-8 w-8 rounded-lg"
+          size="icon-sm"
+          className="rounded-lg"
           title={t("projectTools.fileTree.refresh")}
           onClick={() => {
             void onRefreshExternalRoots?.();
@@ -631,12 +631,12 @@ export function FileTreeSurface(props: FileTreeSurfaceProps) {
               }
             }}
             placeholder={actionPlaceholder}
-            className="h-8 text-[calc(11px*var(--zone-font-scale,1))] placeholder:text-[calc(11px*var(--zone-font-scale,1))]"
+            className="h-8 text-scaled-11px placeholder:text-scaled-11px"
           />
           <Button
-            size="icon"
+            size="icon-sm"
             variant="ghost"
-            className="h-8 w-8 rounded-lg"
+            className="rounded-lg"
             disabled={busyAction}
             onClick={() => void finishAction()}
           >
@@ -647,9 +647,9 @@ export function FileTreeSurface(props: FileTreeSurfaceProps) {
             )}
           </Button>
           <Button
-            size="icon"
+            size="icon-sm"
             variant="ghost"
-            className="h-8 w-8 rounded-lg"
+            className="rounded-lg"
             onClick={() => {
               setPendingAction(null);
               setPendingTargetPath(null);
@@ -706,7 +706,7 @@ export function FileTreeSurface(props: FileTreeSurfaceProps) {
             })
           )}
           {search.truncated ? (
-            <div className="px-2 pt-1 text-[calc(11px*var(--zone-font-scale,1))] text-muted-foreground">
+            <div className="px-2 pt-1 text-scaled-11px text-muted-foreground">
               {t("projectTools.fileTree.resultsTruncated")}
             </div>
           ) : null}

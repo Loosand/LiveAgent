@@ -234,7 +234,10 @@ function PathCrumbRow(props: {
   }, [crumbs]);
 
   return (
-    <div ref={scrollRef} className="sftp-path-scroll flex min-w-0 items-center overflow-x-auto">
+    <div
+      ref={scrollRef}
+      className="flex min-w-0 items-center overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+    >
       {crumbs.map((crumb, index) => {
         const isLast = index === crumbs.length - 1;
         return (
@@ -446,7 +449,7 @@ function PathNavigator(props: {
       }}
     >
       {editing ? (
-        <div className="group relative flex h-8 min-w-0 flex-1 items-center rounded-lg border border-border/60 bg-background/85 shadow-sm transition-all focus-within:border-primary/40 focus-within:bg-background focus-within:ring-[3px] focus-within:ring-primary/10">
+        <div className="group relative flex h-8 min-w-0 flex-1 items-center rounded-lg border border-border/60 bg-background/85 shadow-sm transition-all focus-within:border-primary/40 focus-within:bg-background focus-within:ring-3px focus-within:ring-primary/10">
           <FolderTree className="pointer-events-none absolute left-2.5 h-4 w-4 text-muted-foreground/70 transition-colors group-focus-within:text-primary" />
           <input
             ref={inputRef}
@@ -475,7 +478,7 @@ function PathNavigator(props: {
             }}
             onKeyDown={handleKeyDown}
           />
-          <span className="pointer-events-none absolute right-2 flex items-center gap-1 text-[10px] text-muted-foreground/70">
+          <span className="pointer-events-none absolute right-2 flex items-center gap-1 text-10px text-muted-foreground/70">
             {loading ? <Loader2 className="h-3.5 w-3.5 animate-spin text-primary" /> : null}
             <kbd className="rounded-sm border border-border/70 bg-background/80 px-1 py-0.5 font-sans text-muted-foreground/80">
               ↵
@@ -502,7 +505,7 @@ function PathNavigator(props: {
         <div
           id={listboxId}
           role="listbox"
-          className="sftp-path-popover-enter absolute inset-x-2 top-full z-50 mt-1.5 overflow-hidden rounded-xl border border-border/50 bg-popover/85 shadow-[0_18px_44px_-14px_rgba(0,0,0,0.28),0_2px_10px_rgba(0,0,0,0.06)] ring-1 ring-black/[0.03] backdrop-blur-2xl dark:ring-white/[0.06]"
+          className="absolute inset-x-2 top-full z-50 mt-1.5 overflow-hidden rounded-xl border border-border/50 bg-popover/85 shadow-ui-workspacesftppanel-34 ring-1 ring-black/[0.03] backdrop-blur-2xl dark:ring-white/[0.06] animate-sftp-path-popover-enter origin-top motion-reduce:animate-none"
         >
           <div className="max-h-64 overflow-y-auto p-1">
             {suggestionError ? (
@@ -559,7 +562,7 @@ function PathNavigator(props: {
                       <span className="block truncate text-xs font-medium text-foreground">
                         {entry.name}
                       </span>
-                      <span className="block truncate font-mono text-[10px] text-muted-foreground/80">
+                      <span className="block truncate font-mono text-10px text-muted-foreground/80">
                         {entry.path}
                       </span>
                     </span>
@@ -579,7 +582,7 @@ function PathNavigator(props: {
             )}
           </div>
 
-          <div className="border-t border-border/50 bg-muted/25 px-3 py-1.5 text-[10px] text-muted-foreground/80">
+          <div className="border-t border-border/50 bg-muted/25 px-3 py-1.5 text-10px text-muted-foreground/80">
             {t("workspaceSftp.pathKeyboardHint")}
           </div>
         </div>
@@ -1399,14 +1402,14 @@ export function WorkspaceSftpPanel(props: WorkspaceSftpPanelProps) {
       ) : null}
       <div
         className={cn(
-          "sftp-panes-scroll flex min-h-0 flex-1 overflow-y-hidden",
+          "flex min-h-0 flex-1 overflow-y-hidden web:[scrollbar-width:auto]! web:[scrollbar-color:auto]!",
           isMobileLayout ? "overflow-x-hidden" : "overflow-x-auto",
         )}
       >
         <div
           className={cn(
             "grid h-full min-h-0 flex-1 divide-x divide-border",
-            isMobileLayout ? "grid-cols-1" : "min-w-[860px] grid-cols-2",
+            isMobileLayout ? "grid-cols-1" : "min-w-860px grid-cols-2",
           )}
         >
           {(isMobileLayout ? panes.filter((entry) => entry.side === mobilePane) : panes).map(
@@ -1446,14 +1449,14 @@ export function WorkspaceSftpPanel(props: WorkspaceSftpPanelProps) {
                     </div>
                     <div className="min-w-0 flex-1">
                       <div className="truncate text-sm font-semibold text-foreground">{label}</div>
-                      <div className="truncate font-mono text-[11px] text-muted-foreground">
+                      <div className="truncate font-mono text-11px text-muted-foreground">
                         {root}
                       </div>
                     </div>
                     {pane.selectedPaths.length ? (
                       <button
                         type="button"
-                        className="inline-flex h-7 max-w-[112px] shrink-0 items-center rounded-full border border-emerald-500/20 bg-emerald-500/10 px-2 text-[11px] font-medium text-emerald-700 transition-colors hover:bg-emerald-500/15 dark:text-emerald-300"
+                        className="inline-flex h-7 max-w-112px shrink-0 items-center rounded-full border border-emerald-500/20 bg-emerald-500/10 px-2 text-11px font-medium text-emerald-700 transition-colors hover:bg-emerald-500/15 dark:text-emerald-300"
                         title={t("workspaceSftp.clearSelection")}
                         onClick={(event) => {
                           event.stopPropagation();
@@ -1514,7 +1517,7 @@ export function WorkspaceSftpPanel(props: WorkspaceSftpPanelProps) {
                     {dropMode ? (
                       <div
                         className={cn(
-                          "pointer-events-none absolute inset-2 z-20 flex items-center justify-center rounded-lg bg-background/80 text-center opacity-75 shadow-inner backdrop-blur-[1px] transition-all",
+                          "pointer-events-none absolute inset-2 z-20 flex items-center justify-center rounded-lg bg-background/80 text-center opacity-75 shadow-inner backdrop-blur-1px transition-all",
                           dropActive && "bg-emerald-500/10 opacity-100",
                         )}
                       >
@@ -1565,7 +1568,7 @@ export function WorkspaceSftpPanel(props: WorkspaceSftpPanelProps) {
                               )}
                             </div>
                             {dropPath ? (
-                              <div className="mx-auto mt-2 max-w-full truncate rounded bg-background/70 px-2 py-1 font-mono text-[11px] text-muted-foreground">
+                              <div className="mx-auto mt-2 max-w-full truncate rounded bg-background/70 px-2 py-1 font-mono text-11px text-muted-foreground">
                                 {normalizePath(dropPath, side)}
                               </div>
                             ) : null}
@@ -1598,7 +1601,7 @@ export function WorkspaceSftpPanel(props: WorkspaceSftpPanelProps) {
                               }
                               aria-pressed={isSelected}
                               className={cn(
-                                "grid w-full cursor-default grid-cols-[minmax(0,1fr)_5.5rem] items-center gap-3 rounded-md px-2 py-1.5 text-left text-xs hover:bg-muted",
+                                "grid w-full cursor-default grid-cols-composer-control items-center gap-3 rounded-md px-2 py-1.5 text-left text-xs hover:bg-muted",
                                 !isMobileLayout && "touch-none",
                                 isSelected &&
                                   "bg-emerald-500/10 text-foreground ring-1 ring-emerald-500/20",
@@ -1697,7 +1700,7 @@ export function WorkspaceSftpPanel(props: WorkspaceSftpPanelProps) {
                                 {entryIcon(entry)}
                                 <span className="truncate">{entry.name}</span>
                               </span>
-                              <span className="text-right font-mono text-[11px] text-muted-foreground">
+                              <span className="text-right font-mono text-11px text-muted-foreground">
                                 {entry.kind === "directory" ? "--" : formatBytes(entry.sizeBytes)}
                               </span>
                             </button>
@@ -1737,13 +1740,13 @@ export function WorkspaceSftpPanel(props: WorkspaceSftpPanelProps) {
 
       {contextMenu ? (
         <div
-          className="editor-context-menu layer-popover absolute w-[220px] select-none overflow-hidden rounded-xl border border-border/60 bg-popover/90 p-1 text-xs text-popover-foreground shadow-2xl ring-1 ring-black/[0.03] backdrop-blur-xl dark:ring-white/[0.06]"
+          className="editor-context-menu layer-popover absolute w-220px select-none overflow-hidden rounded-xl border border-border/60 bg-popover/90 p-1 text-xs text-popover-foreground shadow-2xl ring-1 ring-black/[0.03] backdrop-blur-xl dark:ring-white/[0.06]"
           role="menu"
           style={{ left: contextMenu.x, top: contextMenu.y }}
           onContextMenu={(event) => event.preventDefault()}
         >
           {contextMenu.items.length > 1 ? (
-            <div className="mb-1 flex items-center justify-between rounded-lg bg-emerald-500/10 px-2 py-1 text-[11px] font-medium text-emerald-700 dark:text-emerald-300">
+            <div className="mb-1 flex items-center justify-between rounded-lg bg-emerald-500/10 px-2 py-1 text-11px font-medium text-emerald-700 dark:text-emerald-300">
               <span>
                 {t("workspaceSftp.selectedCount").replace(
                   "{count}",

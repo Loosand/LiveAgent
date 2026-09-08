@@ -32,7 +32,7 @@ function RootAccessToggle(props: {
           aria-pressed={value === option}
           disabled={disabled}
           className={cn(
-            "rounded-md px-2 py-0.5 text-[11px] font-medium text-muted-foreground transition-colors hover:text-foreground disabled:pointer-events-none disabled:opacity-50",
+            "rounded-md px-2 py-0.5 text-11px font-medium text-muted-foreground transition-colors hover:text-foreground disabled:pointer-events-none disabled:opacity-50",
             value === option && "bg-background text-foreground shadow-sm",
           )}
           onClick={() => onChange(option)}
@@ -85,13 +85,13 @@ export function WorkspaceDirectorySettingsPanel(props: {
           <div className="min-w-0 flex-1">
             <div className="text-sm font-medium">{t("chat.workspaceSettingsPrimaryDirectory")}</div>
             <div
-              className="truncate font-mono text-[11px] leading-4 text-muted-foreground"
+              className="truncate font-mono text-11px leading-4 text-muted-foreground"
               title={project.path}
             >
               {project.path}
             </div>
           </div>
-          <div className="flex shrink-0 items-center gap-1.5 text-[11px] text-muted-foreground">
+          <div className="flex shrink-0 items-center gap-1.5 text-11px text-muted-foreground">
             <Lock className="h-3 w-3" />
             {t("chat.workspaceSettingsDirectoryWrite")}
           </div>
@@ -130,13 +130,13 @@ export function WorkspaceDirectorySettingsPanel(props: {
                     maxLength={32}
                     pattern="[a-z][a-z0-9_-]{0,31}"
                     disabled={!loaded}
-                    className="h-6 min-w-0 max-w-[180px] border-transparent bg-transparent px-1 text-sm font-medium shadow-none hover:border-border/60 focus-visible:border-border/60 focus-visible:ring-2 focus-visible:ring-foreground/10"
+                    className="h-6 min-w-0 max-w-180px border-transparent bg-transparent px-1 text-sm font-medium shadow-none hover:border-border/60 focus-visible:border-border/60 focus-visible:ring-2 focus-visible:ring-foreground/10"
                   />
                   {/* 正常状态不显示徽标，只有异常/待批准时提醒。 */}
                   {root.state !== "active" ? (
                     <span
                       className={cn(
-                        "shrink-0 rounded-full border px-1.5 py-0.5 text-[10px] font-medium",
+                        "shrink-0 rounded-full border px-1.5 py-0.5 text-10px font-medium",
                         rootStateTone(root.state),
                       )}
                     >
@@ -150,7 +150,7 @@ export function WorkspaceDirectorySettingsPanel(props: {
                   ) : null}
                 </div>
                 <div
-                  className="truncate font-mono text-[11px] leading-4 text-muted-foreground"
+                  className="truncate font-mono text-11px leading-4 text-muted-foreground"
                   title={root.displayPath}
                 >
                   {root.displayPath}
@@ -168,8 +168,8 @@ export function WorkspaceDirectorySettingsPanel(props: {
                 <Button
                   type="button"
                   variant="ghost"
-                  size="icon"
-                  className="h-7 w-7 shrink-0 text-muted-foreground hover:text-destructive"
+                  size="icon-xs"
+                  className="shrink-0 text-muted-foreground hover:text-destructive"
                   title={t("chat.workspaceSettingsRemoveDirectory")}
                   disabled={!loaded}
                   onClick={() => onRemove(root.id)}

@@ -251,8 +251,8 @@ export const InstalledSkillCard = memo(function InstalledSkillCard(props: Instal
             <>
               <Button
                 variant="ghost"
-                size="icon"
-                className="h-7 w-7 text-muted-foreground opacity-0 group-hover:opacity-100 focus-visible:opacity-100 [@media(hover:none)]:opacity-100"
+                size="icon-xs"
+                className="text-muted-foreground opacity-0 group-hover:opacity-100 focus-visible:opacity-100 [@media(hover:none)]:opacity-100"
                 aria-label={`${t("settings.skillsHubBulkSelectLabel")}: ${skill.name}`}
                 title={t("settings.skillsHubBulkSelect")}
                 onClick={(event) => {
@@ -284,12 +284,12 @@ export const InstalledSkillCard = memo(function InstalledSkillCard(props: Instal
             className="truncate text-sm font-semibold text-foreground"
           />
           {alwaysEnabled ? (
-            <Badge variant="muted" className="h-5 gap-1 px-1.5 text-[10px]">
+            <Badge variant="muted" className="h-5 gap-1 px-1.5 text-10px">
               <Lock className="h-2.5 w-2.5" />
               {t("settings.skillsAlwaysOn")}
             </Badge>
           ) : effectivelyEnabled ? (
-            <Badge variant="success" className="h-5 px-1.5 text-[10px]">
+            <Badge variant="success" className="h-5 px-1.5 text-10px">
               {t("settings.skillsHubEnabledBadge")}
             </Badge>
           ) : null}
@@ -307,7 +307,7 @@ export const InstalledSkillCard = memo(function InstalledSkillCard(props: Instal
           <div className="ml-auto grid min-w-0 items-center justify-items-end">
             <span
               className={cn(
-                "pointer-events-none col-start-1 row-start-1 inline-flex min-w-0 items-center gap-1 text-[10px] text-muted-foreground transition-opacity",
+                "pointer-events-none col-start-1 row-start-1 inline-flex min-w-0 items-center gap-1 text-10px text-muted-foreground transition-opacity",
                 !bulkMode &&
                   "group-hover:opacity-0 group-focus-within:opacity-0 [@media(hover:none)]:opacity-0",
               )}
@@ -330,8 +330,8 @@ export const InstalledSkillCard = memo(function InstalledSkillCard(props: Instal
                   {(open) => (
                     <Button
                       variant="ghost"
-                      size="icon"
-                      className="h-8 w-8 text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
+                      size="icon-sm"
+                      className="text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
                       disabled={deleteDisabled}
                       aria-label={`${t("settings.skillsHubDeleteSkill")}: ${skill.name}`}
                       onClick={(event) => {

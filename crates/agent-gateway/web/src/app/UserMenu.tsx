@@ -56,7 +56,7 @@ export function UserMenu(props: UserMenuProps) {
           />
         }
       >
-        <span className="relative flex h-6 w-6 items-center justify-center rounded-full bg-gradient-to-br from-emerald-500/90 to-sky-500/90 text-[calc(11px*var(--zone-font-scale,1))] font-semibold text-white">
+        <span className="relative flex h-6 w-6 items-center justify-center rounded-full bg-gradient-to-br from-emerald-500/90 to-sky-500/90 text-scaled-11px font-semibold text-white">
           {userAvatarLabel || <User className="h-3.5 w-3.5" />}
           <span
             className={cn(
@@ -72,7 +72,7 @@ export function UserMenu(props: UserMenuProps) {
       <DropdownMenuContent
         align="end"
         sideOffset={8}
-        className="min-w-[12rem] rounded-xl border-border/70 bg-popover/95 backdrop-blur supports-[backdrop-filter]:bg-popover/90"
+        className="min-w-12rem rounded-xl border-border/70 bg-popover/95 backdrop-blur supports-[backdrop-filter]:bg-popover/90"
       >
         {agentSelector}
         <DropdownMenuSeparator />

@@ -101,10 +101,10 @@ function TimelineItem(props: {
       </div>
       <div className="min-w-0 flex-1">
         <div className="flex min-h-9 items-center justify-between gap-3 pr-1">
-          <h2 className="text-[14px] font-semibold tracking-tight text-foreground">{title}</h2>
+          <h2 className="text-14px font-semibold tracking-tight text-foreground">{title}</h2>
           {action}
         </div>
-        <div className="mt-2 overflow-hidden rounded-2xl border border-border/75 bg-card shadow-[0_1px_2px_hsl(var(--foreground)/0.02)]">
+        <div className="mt-2 overflow-hidden rounded-2xl border border-border/75 bg-card shadow-ui-cuadriversection-47">
           {children}
         </div>
       </div>
@@ -224,10 +224,10 @@ function HeroCard(props: {
           </div>
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-2.5">
-              <h3 className="text-[16px] font-semibold text-foreground">Computer Use</h3>
+              <h3 className="text-16px font-semibold text-foreground">Computer Use</h3>
               <span
                 className={cn(
-                  "inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[11px] font-medium transition-colors",
+                  "inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-11px font-medium transition-colors",
                   running
                     ? "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400"
                     : "bg-muted/70 text-muted-foreground",
@@ -283,7 +283,7 @@ function PermissionRow(props: {
       ) : (
         <span
           className={cn(
-            "flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[11px] font-medium",
+            "flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-11px font-medium",
             status === "granted" && "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
             status === "pending" && "bg-amber-500/10 text-amber-600 dark:text-amber-400",
             status === "unknown" && "bg-muted/60 text-muted-foreground",
@@ -641,7 +641,7 @@ export function CuaDriverSection(props: SettingsSectionProps & { surface?: UiSur
                 </div>
                 {displayCommand ? (
                   <p
-                    className="mt-0.5 truncate font-mono text-[11px] text-muted-foreground"
+                    className="mt-0.5 truncate font-mono text-11px text-muted-foreground"
                     title={displayCommand}
                   >
                     {displayCommand}
@@ -692,10 +692,10 @@ export function CuaDriverSection(props: SettingsSectionProps & { surface?: UiSur
                     <AlertTriangle className="h-3.5 w-3.5" />
                     {t("settings.cuaDriver.commandDriftTitle")}
                   </p>
-                  <p className="mt-1 text-[11px] leading-relaxed text-muted-foreground">
+                  <p className="mt-1 text-11px leading-relaxed text-muted-foreground">
                     {t("settings.cuaDriver.commandDriftDesc")}
                   </p>
-                  <div className="mt-2.5 space-y-1 font-mono text-[11px]">
+                  <div className="mt-2.5 space-y-1 font-mono text-11px">
                     <div className="flex items-center gap-2 rounded bg-background/80 px-2.5 py-1.5">
                       <span className="shrink-0 text-muted-foreground">
                         {t("settings.cuaDriver.commandDriftConfigured")}
@@ -727,11 +727,11 @@ export function CuaDriverSection(props: SettingsSectionProps & { surface?: UiSur
                     <AlertTriangle className="h-3.5 w-3.5" />
                     {t("settings.cuaDriver.confirmTitle")}
                   </p>
-                  <p className="mt-1 text-[11px] text-muted-foreground">
+                  <p className="mt-1 text-11px text-muted-foreground">
                     {t("settings.cuaDriver.confirmDesc").replace("{url}", preview.sourceUrl)}
                   </p>
                   <div className="relative mt-2.5">
-                    <pre className="overflow-x-auto rounded-lg bg-foreground/[0.05] px-3 py-2 pr-9 font-mono text-[11px] leading-relaxed text-foreground">
+                    <pre className="overflow-x-auto rounded-lg bg-foreground/[0.05] px-3 py-2 pr-9 font-mono text-11px leading-relaxed text-foreground">
                       {preview.display}
                     </pre>
                     <CopyButton
@@ -763,14 +763,14 @@ export function CuaDriverSection(props: SettingsSectionProps & { surface?: UiSur
                 <div className="overflow-hidden rounded-xl bg-zinc-950">
                   <div className="flex items-center gap-2 border-b border-white/10 px-3 py-1.5">
                     <Terminal className="h-3 w-3 text-zinc-400" />
-                    <span className="text-[10px] text-zinc-400">
+                    <span className="text-10px text-zinc-400">
                       {t("settings.cuaDriver.installLog")}
                     </span>
                     {installing ? (
                       <Loader2 className="ml-auto h-3 w-3 animate-spin text-zinc-400" />
                     ) : null}
                   </div>
-                  <pre className="max-h-48 overflow-auto px-3 py-2 font-mono text-[10.5px] leading-relaxed text-zinc-300">
+                  <pre className="max-h-48 overflow-auto px-3 py-2 font-mono text-10p5px leading-relaxed text-zinc-300">
                     {log.join("\n")}
                   </pre>
                 </div>
@@ -834,7 +834,7 @@ export function CuaDriverSection(props: SettingsSectionProps & { surface?: UiSur
             />
             {permissionsKnown && !permissionsPending ? (
               <CardBlock className="py-2.5">
-                <p className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
+                <p className="flex items-center gap-1.5 text-11px text-muted-foreground">
                   <CheckCircle2 className="h-3.5 w-3.5 shrink-0 text-emerald-500" />
                   {t("settings.cuaDriver.permissionsGranted").replace(
                     "{bundleId}",
@@ -923,7 +923,7 @@ export function CuaDriverSection(props: SettingsSectionProps & { surface?: UiSur
                     disabled={!serverEntry}
                     onClick={() => applyTimeout(preset.value)}
                     className={cn(
-                      "rounded-md px-2.5 py-1 text-[11px] font-medium leading-none transition-colors disabled:opacity-50",
+                      "rounded-md px-2.5 py-1 text-11px font-medium leading-none transition-colors disabled:opacity-50",
                       active
                         ? "bg-primary text-primary-foreground"
                         : "text-muted-foreground hover:text-foreground",
@@ -958,7 +958,7 @@ export function CuaDriverSection(props: SettingsSectionProps & { surface?: UiSur
             </div>
           </CardBlock>
           <CardBlock className="py-3">
-            <div className="flex items-center justify-between gap-3 text-[11px] text-muted-foreground">
+            <div className="flex items-center justify-between gap-3 text-11px text-muted-foreground">
               <span className="min-w-0 truncate">{t("settings.cuaDriver.policyNote")}</span>
               <a
                 href={CUA_UPSTREAM_REPO_URL}

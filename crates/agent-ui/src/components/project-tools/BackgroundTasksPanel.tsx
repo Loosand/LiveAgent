@@ -45,7 +45,7 @@ type BackgroundTasksPanelProps = {
 };
 
 const ROW_ACTION_CLASS =
-  "h-6 gap-1 rounded-md px-1.5 text-[calc(11px*var(--zone-font-scale,1))] text-muted-foreground hover:text-foreground";
+  "h-6 gap-1 rounded-md px-1.5 text-scaled-11px text-muted-foreground hover:text-foreground";
 
 const LOG_MENU_ITEM_CLASS =
   "flex w-full items-center rounded-sm px-2.5 py-1.5 text-left text-xs text-popover-foreground hover:bg-muted focus-visible:bg-muted focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50";
@@ -180,7 +180,7 @@ function BackgroundTaskLogDialog(props: {
         layout="bottom-sheet-mobile"
         // 显式声明宽度：这是唯一依赖 primitive 默认值的调用点，默认值从
         // max-w-lg 收到 max-w-md 后它会被动变窄 64px，而它承载等宽终端日志。
-        className="flex h-[85dvh] max-w-lg flex-col p-0 sm:h-[min(80dvh,36rem)]"
+        className="flex h-85dvh max-w-lg flex-col p-0 sm:h-dialog-36rem-dvh"
         closeLabel={t("projectTools.close")}
         showCloseButton
       >
@@ -188,7 +188,7 @@ function BackgroundTaskLogDialog(props: {
           <div className="min-w-0 flex-1">
             <DialogTitle className="truncate text-sm">{processDisplayName(process)}</DialogTitle>
             <DialogDescription
-              className="mt-0.5 truncate text-[calc(11px*var(--zone-font-scale,1))] text-muted-foreground"
+              className="mt-0.5 truncate text-scaled-11px text-muted-foreground"
               title={log?.logPath ?? process.logPath}
             >
               {log?.logPath ?? process.logPath}
@@ -224,7 +224,7 @@ function BackgroundTaskLogDialog(props: {
         <DialogBody
           ref={logRef}
           role="log"
-          className="select-text px-3 py-3 font-mono text-[calc(11px*var(--zone-font-scale,1))] leading-4 text-muted-foreground [counter-reset:log-line]"
+          className="select-text px-3 py-3 font-mono text-scaled-11px leading-4 text-muted-foreground [counter-reset:log-line]"
           onContextMenu={handleLogContextMenu}
         >
           {lines.length === 0 ? (
@@ -237,7 +237,7 @@ function BackgroundTaskLogDialog(props: {
                 // Static tail render, replaced wholesale on refresh.
                 // biome-ignore lint/suspicious/noArrayIndexKey: lines have no identity
                 key={index}
-                className="grid grid-cols-[2.75rem_minmax(0,1fr)] gap-2 [counter-increment:log-line]"
+                className="grid grid-cols-file-icon gap-2 [counter-increment:log-line]"
               >
                 <span
                   aria-hidden="true"
@@ -385,17 +385,17 @@ function BackgroundTaskRow(props: {
           {processDisplayName(process)}
         </span>
         {process.isolated ? (
-          <span className="shrink-0 rounded bg-amber-500/15 px-1 py-px text-[calc(10px*var(--zone-font-scale,1))] text-amber-600 dark:text-amber-400">
+          <span className="shrink-0 rounded bg-amber-500/15 px-1 py-px text-scaled-10px text-amber-600 dark:text-amber-400">
             {t("projectTools.bgTaskIsolated")}
           </span>
         ) : null}
         {process.restored ? (
-          <span className="shrink-0 rounded bg-sky-500/15 px-1 py-px text-[calc(10px*var(--zone-font-scale,1))] text-sky-600 dark:text-sky-400">
+          <span className="shrink-0 rounded bg-sky-500/15 px-1 py-px text-scaled-10px text-sky-600 dark:text-sky-400">
             {t("projectTools.bgTaskRestored")}
           </span>
         ) : null}
       </div>
-      <div className="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-0.5 text-[calc(11px*var(--zone-font-scale,1))] text-muted-foreground">
+      <div className="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-0.5 text-scaled-11px text-muted-foreground">
         <span className="shrink-0">PID {process.pid}</span>
         {process.running ? (
           <span className="shrink-0 tabular-nums">{formatUptime(process.startedAt, now)}</span>
@@ -411,7 +411,7 @@ function BackgroundTaskRow(props: {
         </span>
       </div>
       <div
-        className="min-w-0 truncate text-[calc(10px*var(--zone-font-scale,1))] text-muted-foreground/70"
+        className="min-w-0 truncate text-scaled-10px text-muted-foreground/70"
         title={process.cwd}
       >
         {process.cwd}
@@ -473,9 +473,7 @@ function BackgroundTaskRow(props: {
           {copied ? t("projectTools.bgTaskCopied") : t("projectTools.bgTaskCopy")}
         </Button>
       </div>
-      {error ? (
-        <div className="text-[calc(11px*var(--zone-font-scale,1))] text-destructive">{error}</div>
-      ) : null}
+      {error ? <div className="text-scaled-11px text-destructive">{error}</div> : null}
     </div>
   );
 }
@@ -531,7 +529,7 @@ export const BackgroundTasksPanel = memo(function BackgroundTasksPanel(
   return (
     <div className="flex h-full min-h-0 flex-col">
       {actionsDisabled ? (
-        <div className="flex shrink-0 items-center gap-2 border-b border-border bg-muted/40 px-3 py-2 text-[calc(11px*var(--zone-font-scale,1))] text-muted-foreground">
+        <div className="flex shrink-0 items-center gap-2 border-b border-border bg-muted/40 px-3 py-2 text-scaled-11px text-muted-foreground">
           <AlertTriangle className="h-3.5 w-3.5 shrink-0 text-amber-500" />
           <span className="min-w-0 flex-1">{t("projectTools.bgTaskAgentOffline")}</span>
         </div>
@@ -539,7 +537,7 @@ export const BackgroundTasksPanel = memo(function BackgroundTasksPanel(
       {/* Fixed-height header with the clear button always mounted: its
           appearance only fades opacity, so the list below never shifts. */}
       <div className="flex h-9 shrink-0 items-center gap-2 px-3">
-        <span className="min-w-0 flex-1 truncate text-[calc(11px*var(--zone-font-scale,1))] text-muted-foreground">
+        <span className="min-w-0 flex-1 truncate text-scaled-11px text-muted-foreground">
           {t("projectTools.backgroundTasksTitle")}
         </span>
         <Button

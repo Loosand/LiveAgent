@@ -37,7 +37,7 @@ const ToastEntry = memo(function ToastEntry(props: {
     const timer = setTimeout(() => {
       const el = elRef.current;
       if (el) {
-        el.classList.add("notify-toast-exit");
+        el.classList.add("animate-notify-toast-exit");
         const onEnd = () => onDismiss(item.id);
         el.addEventListener("animationend", onEnd, { once: true });
         // fallback in case animationend doesn't fire
@@ -59,7 +59,7 @@ const ToastEntry = memo(function ToastEntry(props: {
       aria-live={item.type === "error" ? "assertive" : "polite"}
       aria-atomic="true"
       className={cn(
-        "notify-toast-enter pointer-events-auto flex w-[min(18rem,calc(100vw-2rem))] items-start gap-2.5 rounded-lg border px-3 py-2.5 text-sm shadow-lg backdrop-blur-xl",
+        "notify-toast-enter motion-reduce:animate-none! pointer-events-auto flex w-notification items-start gap-2.5 rounded-lg border px-3 py-2.5 text-sm shadow-lg backdrop-blur-xl",
         isWarning
           ? "border-amber-500/30 bg-amber-50/95 dark:bg-amber-950/80 dark:border-amber-500/25"
           : isSuccess

@@ -81,7 +81,7 @@ function RuntimeToggleChip(props: {
       title={ariaLabel}
       onClick={onClick}
       className={cn(
-        "inline-flex h-7 shrink-0 items-center justify-center gap-1.5 rounded-lg px-2.5 text-[11px] font-medium outline-hidden transition-colors focus-visible:ring-2 focus-visible:ring-primary/35 disabled:pointer-events-none disabled:opacity-40",
+        "inline-flex h-7 shrink-0 items-center justify-center gap-1.5 rounded-lg px-2.5 text-11px font-medium outline-hidden transition-colors focus-visible:ring-2 focus-visible:ring-primary/35 disabled:pointer-events-none disabled:opacity-40",
         pressed
           ? pressedClassName
           : "bg-muted/60 text-muted-foreground hover:bg-muted/80 hover:text-foreground",
@@ -232,7 +232,7 @@ function ReasoningEffortSegments(props: {
               if (next && next !== value) onSelect(next);
             }}
             className={cn(
-              "relative z-10 flex flex-1 items-center justify-center whitespace-nowrap rounded-md px-1.5 text-[11px] font-medium transition-colors",
+              "relative z-10 flex flex-1 items-center justify-center whitespace-nowrap rounded-md px-1.5 text-11px font-medium transition-colors",
               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary/40",
               isSelected
                 ? "text-sky-700 dark:text-sky-300"
@@ -413,7 +413,7 @@ export const ComposerModelControls = memo(function ComposerModelControls(
         collisionPadding={8}
         initialFocus={resolveModelPickerInitialFocus}
         aria-label={t("chat.selectModel")}
-        className="model-selector-dropdown flex max-h-[min(26rem,var(--available-height,26rem))] w-[min(25rem,calc(100vw-1rem))] flex-col overflow-hidden rounded-xl border border-border/60 bg-popover p-0 text-xs shadow-lg"
+        className="flex max-h-popover-26rem w-popover-25rem flex-col overflow-hidden rounded-xl border border-border/60 bg-popover p-0 text-xs shadow-lg web:font-app web:text-14px web:leading-1p3"
       >
         <div className="flex min-h-0 flex-1 flex-col">
           {/* 头部只留「执行模式」+ 搜索两行。原本还有「选择模型」标题与
@@ -433,7 +433,7 @@ export const ComposerModelControls = memo(function ComposerModelControls(
               >
                 <label
                   className={cn(
-                    "relative cursor-pointer rounded-md px-2.5 py-1 text-[11px] font-medium transition-[color,background-color,box-shadow] has-[:focus-visible]:outline-none has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-primary/40",
+                    "relative cursor-pointer rounded-md px-2.5 py-1 text-11px font-medium transition-[color,background-color,box-shadow] has-[:focus-visible]:outline-none has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-primary/40",
                     isAgent
                       ? "text-muted-foreground hover:text-foreground"
                       : "bg-background text-foreground shadow-sm",
@@ -451,7 +451,7 @@ export const ComposerModelControls = memo(function ComposerModelControls(
                 </label>
                 <label
                   className={cn(
-                    "relative cursor-pointer rounded-md px-2.5 py-1 text-[11px] font-medium transition-[color,background-color,box-shadow] has-[:focus-visible]:outline-none has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-primary/40",
+                    "relative cursor-pointer rounded-md px-2.5 py-1 text-11px font-medium transition-[color,background-color,box-shadow] has-[:focus-visible]:outline-none has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-primary/40",
                     isAgent
                       ? "bg-background text-foreground shadow-sm"
                       : "text-muted-foreground hover:text-foreground",
@@ -551,7 +551,7 @@ export const ComposerModelControls = memo(function ComposerModelControls(
                         disabled={groupToggleLocked}
                         aria-expanded={expanded}
                         className={cn(
-                          "model-selector-group-label flex min-w-0 flex-1 cursor-pointer items-center gap-2 rounded-l-lg px-2.5 py-0 text-left text-xs font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary/30",
+                          "flex min-w-0 flex-1 cursor-pointer items-center gap-2 rounded-l-lg px-2.5 py-0 text-left text-xs font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary/30 web:font-app web:text-14px! web:leading-1p3!",
                           isSelectedGroup
                             ? "text-foreground"
                             : "text-muted-foreground/85 dark:text-white/80",
@@ -607,7 +607,7 @@ export const ComposerModelControls = memo(function ComposerModelControls(
                                 setIsModelPickerOpen(false);
                               }}
                               className={cn(
-                                "model-selector-item flex h-7 w-full max-w-full shrink-0 cursor-pointer items-center justify-between gap-2 overflow-hidden rounded-lg py-0 pl-8 pr-2 text-left text-xs font-normal leading-5 text-foreground transition-[background-color,box-shadow] hover:bg-foreground/[0.045] focus-visible:bg-foreground/[0.05] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary/30 dark:text-white",
+                                "flex h-7 w-full max-w-full shrink-0 cursor-pointer items-center justify-between gap-2 overflow-hidden rounded-lg py-0 pl-8 pr-2 text-left text-xs font-normal leading-5 text-foreground transition-[background-color,box-shadow] hover:bg-foreground/[0.045] focus-visible:bg-foreground/[0.05] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary/30 dark:text-white web:font-app web:text-14px! web:leading-1p3!",
                                 isSelected &&
                                   "bg-muted/70 font-medium hover:bg-muted/70 focus-visible:bg-muted/70",
                               )}

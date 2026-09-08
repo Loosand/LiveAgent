@@ -272,7 +272,7 @@ function CcsImportModal(props: {
   return (
     <Dialog open onOpenChange={(open) => !open && !importing && onClose()}>
       <DialogContent
-        className="flex h-[min(34rem,85dvh)] max-w-xl flex-col p-0"
+        className="flex h-dialog-34rem-dvh max-w-xl flex-col p-0"
         closeDisabled={importing}
         closeLabel="关闭"
         showCloseButton

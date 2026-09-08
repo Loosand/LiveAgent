@@ -59,6 +59,7 @@ import {
 } from "../../lib/workspaceProjects";
 import type { WorkspaceProjectGroup } from "../../lib/workspaceProjectTypes";
 import { HistoryRow, ProjectGroupHeader, ProjectRow } from "./ChatHistorySidebarRows";
+import { HISTORY_RENAME_INPUT_CLASS, PROJECT_ICON_BUTTON_CLASS } from "./ChatHistorySidebarStyles";
 import type {
   ChatHistorySidebarProps,
   WorkspaceProjectRemoveOptions,
@@ -89,8 +90,6 @@ const HISTORY_ROW_ESTIMATED_HEIGHT = 30;
 const HISTORY_ROW_GAP = 2;
 const HISTORY_ROW_OVERSCAN_COUNT = 8;
 const HISTORY_LOAD_MORE_THRESHOLD = 12;
-const PROJECT_ICON_BUTTON_CLASS =
-  "h-7 w-7 rounded-lg !bg-transparent text-muted-foreground transition-colors hover:!bg-transparent hover:!text-foreground active:!bg-transparent focus-visible:!bg-transparent data-[state=open]:!bg-transparent data-[state=open]:text-foreground data-[popup-open]:!bg-transparent data-[popup-open]:text-foreground";
 const SIDEBAR_SECTION_ROWS_TRANSITION_CLASS =
   "transition-[grid-template-rows] duration-300 ease-out motion-reduce:transition-none";
 const SIDEBAR_PROJECT_MIN_BODY_HEIGHT = 96;
@@ -144,7 +143,7 @@ function HistoryListLoadingSkeleton() {
       aria-live="polite"
       aria-label={t("sidebar.readingHistory")}
     >
-      <div className="flex items-center gap-2 px-2 pb-1 text-[calc(11px*var(--zone-font-scale,1))] font-medium text-muted-foreground/75">
+      <div className="flex items-center gap-2 px-2 pb-1 text-scaled-11px font-medium text-muted-foreground/75">
         <span className="relative flex h-2 w-2 shrink-0" aria-hidden="true">
           <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary/35 opacity-75" />
           <span className="relative inline-flex h-2 w-2 rounded-full bg-primary/70" />
@@ -1310,11 +1309,11 @@ export const ChatHistorySidebar = memo(function ChatHistorySidebar(props: ChatHi
       data-state={isOpen ? "open" : "closed"}
       className={cn(
         "chat-history-sidebar zone-font-scale flex h-full shrink-0 flex-col overflow-hidden border-r border-border/50 bg-[hsl(var(--sidebar-bg))] transition-[width,opacity] duration-200 ease-out",
-        isOpen ? "w-[272px] opacity-100" : "w-0 opacity-0",
+        isOpen ? "w-272px opacity-100" : "w-0 opacity-0",
       )}
       style={{ "--zone-font-scale": fontScale } as CSSProperties}
     >
-      <div className="chat-history-sidebar-inner flex w-[272px] min-w-[272px] min-h-0 flex-1 flex-col">
+      <div className="chat-history-sidebar-inner flex w-272px min-w-272px min-h-0 flex-1 flex-col">
         {headerTop}
         <div className="shrink-0 border-b border-border/50 px-2 pb-3 pt-3">
           <div className="flex items-center justify-between gap-2">
@@ -1340,7 +1339,7 @@ export const ChatHistorySidebar = memo(function ChatHistorySidebar(props: ChatHi
                 size="icon"
                 onClick={onCloseSidebar}
                 title={t("sidebar.closeSidebar")}
-                className="h-9 w-9 shrink-0 rounded-2xl text-muted-foreground hover:text-foreground"
+                className="shrink-0 rounded-2xl text-muted-foreground hover:text-foreground"
               >
                 <PanelLeftClose className="h-4 w-4" />
               </Button>
@@ -1353,14 +1352,14 @@ export const ChatHistorySidebar = memo(function ChatHistorySidebar(props: ChatHi
               variant="ghost"
               onClick={onNewConversation}
               className={cn(
-                "chat-history-new-conversation-button h-[30px] w-full justify-start gap-3 rounded-lg px-3 text-[calc(14px*var(--zone-font-scale,1))] font-normal leading-5 shadow-none transition-colors",
+                "h-30px w-full justify-start gap-3 rounded-lg px-3 text-scaled-14px font-normal leading-5 shadow-none transition-colors web:text-14px! web:leading-20px! web:font-normal",
                 activeView === "chat"
                   ? "text-foreground/90 hover:bg-foreground/[0.08] hover:text-foreground active:bg-foreground/[0.1] active:text-foreground focus-visible:bg-foreground/[0.08]"
                   : "text-foreground/80 hover:bg-foreground/[0.08] hover:text-foreground focus-visible:bg-foreground/[0.08]",
               )}
             >
               <CirclePlus className="h-4 w-4 shrink-0 text-foreground/85" />
-              <span className="chat-history-new-conversation-label">
+              <span className="web:font-app web:[font-size:inherit] web:[line-height:inherit] web:[font-weight:inherit]">
                 {t("chat.newConversation")}
               </span>
             </Button>
@@ -1369,7 +1368,7 @@ export const ChatHistorySidebar = memo(function ChatHistorySidebar(props: ChatHi
               variant="ghost"
               disabled={sectionsDisabled}
               onClick={() => setConversationSearchOpen(true)}
-              className="chat-history-search-button h-[30px] w-full justify-start gap-3 rounded-lg px-3 text-[calc(14px*var(--zone-font-scale,1))] font-normal leading-5 text-foreground/80 shadow-none transition-colors hover:bg-foreground/[0.08] hover:text-foreground focus-visible:bg-foreground/[0.08]"
+              className="chat-history-search-button h-30px w-full justify-start gap-3 rounded-lg px-3 text-scaled-14px font-normal leading-5 text-foreground/80 shadow-none transition-colors hover:bg-foreground/[0.08] hover:text-foreground focus-visible:bg-foreground/[0.08]"
               title={t("chat.searchConversations")}
             >
               <Search className="h-4 w-4 shrink-0 text-foreground/85" />
@@ -1382,7 +1381,7 @@ export const ChatHistorySidebar = memo(function ChatHistorySidebar(props: ChatHi
               variant="ghost"
               onClick={() => onOpenSkillsHub?.()}
               className={cn(
-                "sidebar-hub-menu-item h-[30px] w-full justify-start gap-3 rounded-lg px-3 text-[calc(14px*var(--zone-font-scale,1))] font-normal leading-5 shadow-none transition-colors",
+                "sidebar-hub-menu-item h-30px w-full justify-start gap-3 rounded-lg px-3 text-scaled-14px font-normal leading-5 shadow-none transition-colors",
                 activeView === "skills-hub"
                   ? "bg-foreground/[0.06] text-foreground hover:bg-foreground/[0.08] hover:text-foreground focus-visible:bg-foreground/[0.08]"
                   : "text-foreground/80 hover:bg-foreground/[0.08] hover:text-foreground focus-visible:bg-foreground/[0.08]",
@@ -1402,7 +1401,7 @@ export const ChatHistorySidebar = memo(function ChatHistorySidebar(props: ChatHi
               variant="ghost"
               onClick={() => onOpenMcpHub?.()}
               className={cn(
-                "sidebar-hub-menu-item h-[30px] w-full justify-start gap-3 rounded-lg px-3 text-[calc(14px*var(--zone-font-scale,1))] font-normal leading-5 shadow-none transition-colors",
+                "sidebar-hub-menu-item h-30px w-full justify-start gap-3 rounded-lg px-3 text-scaled-14px font-normal leading-5 shadow-none transition-colors",
                 activeView === "mcp-hub"
                   ? "bg-foreground/[0.06] text-foreground hover:bg-foreground/[0.08] hover:text-foreground focus-visible:bg-foreground/[0.08]"
                   : "text-foreground/80 hover:bg-foreground/[0.08] hover:text-foreground focus-visible:bg-foreground/[0.08]",
@@ -1442,7 +1441,7 @@ export const ChatHistorySidebar = memo(function ChatHistorySidebar(props: ChatHi
                   // both lists. The drop-zone outline eats 1px even while it's
                   // transparent, so the padding is mx-1 + border + 3px = 8, not
                   // the px-1 the 8px target would otherwise imply.
-                  "mx-1 flex items-center justify-between rounded-t-xl border-x border-t border-dashed border-transparent px-[3px] pb-1 pt-2 transition-colors",
+                  "mx-1 flex items-center justify-between rounded-t-xl border-x border-t border-dashed border-transparent px-3px pb-1 pt-2 transition-colors",
                   workspaceFolderDropActive && "border-primary/40 bg-primary/[0.08]",
                 )}
               >
@@ -1544,7 +1543,7 @@ export const ChatHistorySidebar = memo(function ChatHistorySidebar(props: ChatHi
                     <div
                       role="status"
                       aria-live="polite"
-                      className="mb-1 flex items-center gap-2 rounded-lg border border-dashed border-primary/35 bg-primary/[0.06] px-2.5 py-2 text-[11px] leading-4 text-primary"
+                      className="mb-1 flex items-center gap-2 rounded-lg border border-dashed border-primary/35 bg-primary/[0.06] px-2.5 py-2 text-11px leading-4 text-primary"
                     >
                       <FolderOpen className="h-4 w-4 shrink-0" />
                       <span>{t("chat.workspaceDropFolderDescription")}</span>
@@ -1555,8 +1554,8 @@ export const ChatHistorySidebar = memo(function ChatHistorySidebar(props: ChatHi
                     // pl-1 + px-2 + a 16px icon slot + gap-2 puts the draft name
                     // at 36px, the shared left edge for every row in this list.
                     // Committing the name must not shift it.
-                    <div className="flex h-[30px] items-center rounded-lg pl-1">
-                      <div className="flex h-[30px] min-w-0 flex-1 items-center gap-2 px-2">
+                    <div className="flex h-30px items-center rounded-lg pl-1">
+                      <div className="flex h-30px min-w-0 flex-1 items-center gap-2 px-2">
                         <Folder
                           aria-hidden="true"
                           className="h-4 w-4 shrink-0 text-muted-foreground"
@@ -1584,7 +1583,7 @@ export const ChatHistorySidebar = memo(function ChatHistorySidebar(props: ChatHi
                             }
                           }}
                           placeholder={t("chat.workspaceGroupNamePlaceholder")}
-                          className="h-7 min-w-0 flex-1 rounded-none border-0 bg-transparent p-0 text-[calc(13px*var(--zone-font-scale,1))] font-semibold shadow-none outline-none focus-visible:border-0 focus-visible:bg-transparent"
+                          className={HISTORY_RENAME_INPUT_CLASS}
                         />
                       </div>
                       {/* Mirrors ProjectRow's action column: gap-0.5 between
@@ -1707,7 +1706,7 @@ export const ChatHistorySidebar = memo(function ChatHistorySidebar(props: ChatHi
                         />
                       ) : null}
                       {renderedSections.grouped.length > 0 ? (
-                        <div className="px-2 pt-1.5 text-[11px] font-medium uppercase tracking-wide text-muted-foreground/70">
+                        <div className="px-2 pt-1.5 text-11px font-medium uppercase tracking-wide text-muted-foreground/70">
                           {t("chat.workspaceUngrouped")}
                         </div>
                       ) : null}
@@ -1765,7 +1764,7 @@ export const ChatHistorySidebar = memo(function ChatHistorySidebar(props: ChatHi
                   {hiddenProjectCount > 0 || showAllProjects ? (
                     <button
                       type="button"
-                      className="flex w-full items-center justify-center gap-1 rounded-md px-2 py-1.5 text-[calc(11.5px*var(--zone-font-scale,1))] font-medium text-muted-foreground outline-hidden transition-colors hover:!bg-foreground/[0.06] hover:text-foreground active:!bg-foreground/[0.1] focus-visible:!bg-foreground/[0.08] focus-visible:ring-2 focus-visible:ring-ring"
+                      className="flex w-full items-center justify-center gap-1 rounded-md px-2 py-1.5 text-scaled-11p5px font-medium text-muted-foreground outline-hidden transition-colors hover:!bg-foreground/[0.06] hover:text-foreground active:!bg-foreground/[0.1] focus-visible:!bg-foreground/[0.08] focus-visible:ring-2 focus-visible:ring-ring"
                       onClick={handleShowAllProjects}
                       disabled={sectionsDisabled}
                     >
@@ -1783,7 +1782,7 @@ export const ChatHistorySidebar = memo(function ChatHistorySidebar(props: ChatHi
                         type="button"
                         onClick={() => setArchivedGroupOpen((current) => !current)}
                         disabled={sectionsDisabled}
-                        className="flex w-full items-center gap-1 rounded-md px-2 py-1.5 text-[calc(11.5px*var(--zone-font-scale,1))] font-medium text-muted-foreground/80 outline-hidden transition-colors hover:!bg-foreground/[0.06] hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring"
+                        className="flex w-full items-center gap-1 rounded-md px-2 py-1.5 text-scaled-11p5px font-medium text-muted-foreground/80 outline-hidden transition-colors hover:!bg-foreground/[0.06] hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring"
                       >
                         <ChevronRight
                           className={cn(
@@ -1948,7 +1947,7 @@ export const ChatHistorySidebar = memo(function ChatHistorySidebar(props: ChatHi
                       side="top"
                       align="start"
                       collisionPadding={12}
-                      className="sidebar-context-menu max-h-[18rem] min-w-[12rem] overflow-y-auto rounded-xl border-border/60 bg-background/95 backdrop-blur-xl"
+                      className="sidebar-context-menu max-h-18rem min-w-12rem overflow-y-auto rounded-xl border-border/60 bg-background/95 backdrop-blur-xl"
                     >
                       {activeProjects.map((workspace) => (
                         <DropdownMenuItem
@@ -2001,7 +2000,7 @@ export const ChatHistorySidebar = memo(function ChatHistorySidebar(props: ChatHi
                     <span
                       role="status"
                       aria-live="polite"
-                      className="flex items-center gap-1 rounded-full border border-primary/20 bg-primary/[0.06] px-2 py-0.5 text-[calc(10.5px*var(--zone-font-scale,1))] font-medium text-primary/80"
+                      className="flex items-center gap-1 rounded-full border border-primary/20 bg-primary/[0.06] px-2 py-0.5 text-scaled-10p5px font-medium text-primary/80"
                     >
                       <span className="relative flex h-1.5 w-1.5 shrink-0" aria-hidden="true">
                         <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary/35 opacity-75" />
@@ -2079,7 +2078,7 @@ export const ChatHistorySidebar = memo(function ChatHistorySidebar(props: ChatHi
                 <div
                   role="alert"
                   title={actionErrorMessage}
-                  className="flex items-start gap-2 rounded-xl border border-destructive/25 bg-destructive/10 px-3 py-2 text-[calc(11px*var(--zone-font-scale,1))] leading-4 text-destructive"
+                  className="flex items-start gap-2 rounded-xl border border-destructive/25 bg-destructive/10 px-3 py-2 text-scaled-11px leading-4 text-destructive"
                 >
                   <AlertCircle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
                   <span className="min-w-0 break-words">{actionErrorMessage}</span>
@@ -2140,7 +2139,7 @@ export const ChatHistorySidebar = memo(function ChatHistorySidebar(props: ChatHi
                 </div>
               ) : null}
               {items.length > 0 && (hasMore || isLoadingMore) ? (
-                <div className="px-2 pb-2 pt-1 text-center text-[calc(11px*var(--zone-font-scale,1))] leading-5 text-muted-foreground/70">
+                <div className="px-2 pb-2 pt-1 text-center text-scaled-11px leading-5 text-muted-foreground/70">
                   {isLoadingMore
                     ? t("sidebar.loadingMoreHistory")
                     : t("sidebar.continueLoadingHistory")}
@@ -2158,7 +2157,7 @@ export const ChatHistorySidebar = memo(function ChatHistorySidebar(props: ChatHi
             // 东西不该为了脚本方便固定成英文。
             data-testid="open-settings"
             onClick={onOpenSettings}
-            className="h-8 w-full justify-start gap-2.5 rounded-lg px-2.5 text-[calc(13px*var(--zone-font-scale,1))] font-normal text-foreground/85 shadow-none hover:bg-foreground/[0.08] hover:text-foreground"
+            className="h-8 w-full justify-start gap-2.5 rounded-lg px-2.5 text-scaled-13px font-normal text-foreground/85 shadow-none hover:bg-foreground/[0.08] hover:text-foreground"
             title={t("tooltip.settings")}
           >
             <Settings className="h-4 w-4 shrink-0 text-foreground/75" />

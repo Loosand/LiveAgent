@@ -88,7 +88,7 @@ export function isMacOsTauri(): boolean {
 export function MacOsTitleBarSpacer({ className }: { className?: string }) {
   const [show] = useState(isMacOsTauri);
   if (!show) return null;
-  return <div data-tauri-drag-region className={cn("h-[38px] shrink-0", className)} />;
+  return <div data-tauri-drag-region className={cn("h-38px shrink-0", className)} />;
 }
 
 /**
@@ -171,5 +171,5 @@ export function MacOsTitleBarToggle({
 export function MacOsTitleBarLeadingInset({ className }: { className?: string }) {
   const [show] = useState(isMacOsTauri);
   if (!show) return null;
-  return <div data-tauri-drag-region className={cn("w-[88px] shrink-0", className)} />;
+  return <div data-tauri-drag-region className={cn("w-88px shrink-0", className)} />;
 }

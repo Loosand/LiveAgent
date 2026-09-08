@@ -149,7 +149,7 @@ function graphCircleColor(row: GraphRow) {
 
 function commitRefChipClass(kind: CommitRefKind, selected: boolean) {
   const baseClass =
-    "inline-flex h-5 min-w-0 items-center gap-1 rounded-full border px-1.5 text-[calc(10px*var(--zone-font-scale,1))] font-semibold leading-[14px] shadow-sm ring-1 ring-inset";
+    "inline-flex h-5 min-w-0 items-center gap-1 rounded-full border px-1.5 text-scaled-10px font-semibold leading-14px shadow-sm ring-1 ring-inset";
 
   if (selected) {
     return cn(
@@ -234,15 +234,15 @@ function CommitRefTags({
           title={ref.title}
           className={cn(
             commitRefChipClass(ref.kind, selected),
-            variant === "detail" ? "max-w-[12rem] shrink-0" : "max-w-[8.5rem] shrink",
+            variant === "detail" ? "max-w-12rem shrink-0" : "max-w-8p5rem shrink",
           )}
         >
           <CommitRefTagIcon kind={ref.kind} variant={variant} />
-          <span className="truncate leading-[14px]">{ref.label}</span>
+          <span className="truncate leading-14px">{ref.label}</span>
         </span>
       ))}
       {hiddenCount > 0 ? (
-        <span className={cn(commitRefChipClass("ref", selected), "shrink-0 px-1.5 leading-[14px]")}>
+        <span className={cn(commitRefChipClass("ref", selected), "shrink-0 px-1.5 leading-14px")}>
           +{hiddenCount}
         </span>
       ) : null}
@@ -1019,7 +1019,7 @@ export function GitReviewHistoryView(props: {
                       >
                         <button
                           type="button"
-                          className="flex min-h-[28px] w-full items-center justify-center gap-2 px-3 text-xs text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground disabled:pointer-events-none disabled:opacity-70"
+                          className="flex min-h-28px w-full items-center justify-center gap-2 px-3 text-xs text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground disabled:pointer-events-none disabled:opacity-70"
                           disabled={historyLoadingMore}
                           title={historyLoadMoreError || undefined}
                           onClick={() => void loadHistory({ append: true, silent: true })}
@@ -1060,15 +1060,15 @@ export function GitReviewHistoryView(props: {
                         style={{ transform: `translateY(${virtualRow.start}px)` }}
                       >
                         <div
-                          className="git-review-history-row flex h-[22px] w-full min-w-0 select-none items-center gap-1 px-1.5 text-left text-xs text-muted-foreground transition-colors"
+                          className="git-review-history-row flex h-22px w-full min-w-0 select-none items-center gap-1 px-1.5 text-left text-xs text-muted-foreground transition-colors"
                           title={title}
                         >
                           <GitGraphSvgCell row={graphRow} />
-                          <span className="min-w-0 flex-1 truncate text-[calc(12px*var(--zone-font-scale,1))] font-medium">
+                          <span className="min-w-0 flex-1 truncate text-scaled-12px font-medium">
                             {label}
                           </span>
                           {refLabel ? (
-                            <span className="shrink-0 truncate text-[calc(11px*var(--zone-font-scale,1))] text-muted-foreground">
+                            <span className="shrink-0 truncate text-scaled-11px text-muted-foreground">
                               {refLabel}
                             </span>
                           ) : null}
@@ -1100,7 +1100,7 @@ export function GitReviewHistoryView(props: {
                       >
                         <button
                           type="button"
-                          className="git-review-history-row flex h-[22px] w-full min-w-0 select-none items-center gap-1.5 px-1.5 text-left text-xs transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                          className="git-review-history-row flex h-22px w-full min-w-0 select-none items-center gap-1.5 px-1.5 text-left text-xs transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
                           data-selected={fileSelected || undefined}
                           data-context-open={fileContextMenuOpen || undefined}
                           title={
@@ -1117,13 +1117,13 @@ export function GitReviewHistoryView(props: {
                           <TypeIcon className="h-4 w-4 shrink-0" aria-hidden="true" />
                           <span className="min-w-0 flex-1 truncate">
                             <span className="font-medium">{fileName}</span>
-                            <span className="ml-1 text-[calc(10px*var(--zone-font-scale,1))] text-muted-foreground">
+                            <span className="ml-1 text-scaled-10px text-muted-foreground">
                               {filePath}
                             </span>
                           </span>
                           <span
                             className={cn(
-                              "shrink-0 text-[calc(10px*var(--zone-font-scale,1))] font-semibold",
+                              "shrink-0 text-scaled-10px font-semibold",
                               commitFileStatusTone(row.file),
                             )}
                           >
@@ -1150,7 +1150,7 @@ export function GitReviewHistoryView(props: {
                     >
                       <button
                         type="button"
-                        className="git-review-history-row flex h-[22px] w-full min-w-0 select-none items-center gap-1 px-1.5 text-left text-xs transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                        className="git-review-history-row flex h-22px w-full min-w-0 select-none items-center gap-1 px-1.5 text-left text-xs transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
                         data-selected={commitSelected || undefined}
                         data-context-open={commitContextMenuOpen || undefined}
                         title={commitHistoryTitle(commit)}
@@ -1159,7 +1159,7 @@ export function GitReviewHistoryView(props: {
                         onClick={() => selectCommitRow(commit)}
                       >
                         {graphRow ? <GitGraphSvgCell row={graphRow} /> : null}
-                        <span className="min-w-0 flex-1 truncate text-[calc(12px*var(--zone-font-scale,1))] font-medium">
+                        <span className="min-w-0 flex-1 truncate text-scaled-12px font-medium">
                           {commit.subject || commit.shortSha}
                         </span>
                         <CommitRefTags
@@ -1201,7 +1201,7 @@ export function GitReviewHistoryView(props: {
                     variant="detail"
                     limit={COMMIT_DETAIL_REF_TAG_LIMIT}
                   />
-                  <div className="mt-0.5 flex min-w-0 flex-wrap items-center gap-1.5 text-[calc(11px*var(--zone-font-scale,1))] text-muted-foreground">
+                  <div className="mt-0.5 flex min-w-0 flex-wrap items-center gap-1.5 text-scaled-11px text-muted-foreground">
                     <span className="font-mono">{selectedCommit.shortSha}</span>
                     <span>{selectedCommit.authorName}</span>
                     <span>{formatCommitDate(selectedCommit.authorDate)}</span>
@@ -1216,7 +1216,7 @@ export function GitReviewHistoryView(props: {
                         {historyDiffTitle || t("projectTools.gitReview.commitDiff")}
                       </div>
                       <div
-                        className="truncate text-[calc(11px*var(--zone-font-scale,1))] text-muted-foreground"
+                        className="truncate text-scaled-11px text-muted-foreground"
                         title={
                           historyDiffSubtitle || selectedCommitFile?.path || selectedCommit.sha
                         }

@@ -6,7 +6,7 @@ export function AppBootShell(props: { loadingLabel: string }) {
       data-app-boot-shell=""
       className="flex h-full min-h-0 w-full overflow-hidden bg-background"
     >
-      <aside className="flex w-[272px] shrink-0 flex-col border-r border-border/50 bg-[hsl(var(--sidebar-bg))] px-3 py-4">
+      <aside className="flex w-272px shrink-0 flex-col border-r border-border/50 bg-[hsl(var(--sidebar-bg))] px-3 py-4">
         <div className="mb-6 flex items-center gap-2 px-2" aria-hidden>
           <div className="h-7 w-7 rounded-lg bg-muted-foreground/10" />
           <div className="h-2 w-20 rounded-full bg-muted-foreground/15" />

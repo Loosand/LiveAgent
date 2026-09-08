@@ -175,7 +175,7 @@ export function AboutSection(props: AboutSectionProps) {
         </div>
       </div>
 
-      <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_360px]">
+      <div className="grid gap-4 lg:grid-cols-gateway-settings">
         <section className="space-y-4 rounded-2xl border border-border/60 bg-card p-4">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div>

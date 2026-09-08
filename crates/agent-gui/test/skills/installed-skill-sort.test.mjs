@@ -1,3 +1,4 @@
+import { resolveStyleValues } from "../../../../scripts/test-style-values.mjs";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import test from "node:test";
@@ -99,7 +100,7 @@ for (const { label, loader, sources } of implementations) {
   });
 
   test(`${label} wires visual order, selection order, persistence, and reduced-motion FLIP`, () => {
-    const source = sources.map((file) => readFileSync(file, "utf8")).join("\n");
+    const source = resolveStyleValues(sources.map((file) => readFileSync(file, "utf8")).join("\n"));
 
     assert.match(source, /skillsHub\.installedSort/);
     assert.match(source, /sortInstalledSkillItems\(filtered, installedSort, selected/);
@@ -155,7 +156,7 @@ for (const { label, loader, sources } of implementations) {
     assert.match(source, /element\.style\.translate/);
     assert.match(
       source,
-      /<SelectTrigger[\s\S]*h-8 w-auto max-w-\[11rem\][^"]*bg-transparent/,
+      /<SelectTrigger[\s\S]*h-8 w-auto max-w-11rem[^"]*bg-transparent/,
     );
     assert.match(source, /<Input[\s\S]*h-11 rounded-full[^"]*bg-background/);
     assert.match(source, /from "@liveagent\/ui\/components\/ui\/select"/);
@@ -167,15 +168,15 @@ for (const { label, loader, sources } of implementations) {
       source,
       /max-w-full[^"]*overflow-x-auto[^"]*\[scrollbar-width:none\] \[&::-webkit-scrollbar\]:hidden/,
     );
-    assert.match(source, /max-sm:max-w-\[8rem\]/);
+    assert.match(source, /max-sm:max-w-8rem/);
     assert.match(source, /hub-panel-enter relative mb-5/);
     assert.equal(source.match(/2xl:grid-cols-5/g)?.length, 5);
-    assert.match(source, /pb-\[calc\(10rem\+env\(safe-area-inset-bottom\)\)\] sm:pb-24/);
+    assert.match(source, /pb-safe-bottom-10rem sm:pb-24/);
     assert.equal(
-      source.match(/max-sm:bottom-\[calc\(1rem\+env\(safe-area-inset-bottom\)\)\]/g)?.length,
+      source.match(/max-sm:bottom-safe-bottom-offset(?=[\s"])/g)?.length,
       2,
     );
-    assert.match(source, /max-sm:bottom-\[calc\(0\.25rem\+env\(safe-area-inset-bottom\)\)\]/);
+    assert.match(source, /max-sm:bottom-safe-bottom-offset-compact/);
     assert.equal(source.match(/<SheetPopup/g)?.length, 2);
     assert.equal(source.match(/variant="inset"/g)?.length, 2);
     assert.equal(source.match(/<SheetPanel/g)?.length, 2);

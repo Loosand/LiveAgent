@@ -30,7 +30,7 @@ function TranscriptTimestampLabel(props: { timestamp?: number; className?: strin
   return (
     <span
       className={cn(
-        "select-none text-[calc(11px*var(--zone-font-scale,1))] tabular-nums text-[hsl(var(--muted-foreground)/0.7)]",
+        "select-none text-scaled-11px tabular-nums text-[hsl(var(--muted-foreground)/0.7)]",
         props.className,
       )}
     >
@@ -75,7 +75,7 @@ export function TranscriptUserMessageActions(
   const rewindTitle = rewind?.available ? t("chat.rewindCode") : t("chat.rewindUnavailable");
 
   return (
-    <div className="chat-user-bubble-actions mt-1 flex items-center justify-end gap-1.5">
+    <div className="mt-1 flex items-center justify-end gap-1.5 web:min-h-24px web:no-hover:opacity-100 web:max-640:opacity-100">
       <div
         className={cn(
           "chat-row-hover-chrome chat-row-hover-chrome--actions flex items-center gap-1.5 opacity-0 transition-opacity group-hover:opacity-100 group-focus-within:opacity-100",

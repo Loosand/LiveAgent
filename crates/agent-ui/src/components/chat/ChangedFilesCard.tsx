@@ -42,7 +42,7 @@ function splitPath(path: string): { dir: string; base: string } {
 }
 
 const ROW_ACTION_CLASS =
-  "changed-file-row-action flex h-6 w-6 shrink-0 items-center justify-center rounded-md text-muted-foreground/70 transition-colors hover:bg-foreground/[0.07] hover:text-foreground focus-visible:bg-foreground/[0.08] focus-visible:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring";
+  "flex h-6 w-6 shrink-0 items-center justify-center rounded-md text-muted-foreground/70 transition-colors hover:bg-foreground/[0.07] hover:text-foreground focus-visible:bg-foreground/[0.08] focus-visible:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring web:touch-primary:hidden";
 const MAX_VISIBLE_FILES = 5;
 
 const ChangedFileRow = memo(function ChangedFileRow({ file }: { file: ChangedFileEntry }) {
@@ -66,7 +66,7 @@ const ChangedFileRow = memo(function ChangedFileRow({ file }: { file: ChangedFil
       {dir ? (
         <span
           className={cn(
-            "min-w-0 truncate text-[calc(10.5px*var(--zone-font-scale,1))] leading-tight text-muted-foreground/65",
+            "min-w-0 truncate text-scaled-10p5px leading-tight text-muted-foreground/65",
             file.deleted && "line-through",
           )}
         >
@@ -76,7 +76,7 @@ const ChangedFileRow = memo(function ChangedFileRow({ file }: { file: ChangedFil
       {/* shrink-0 keeps the file name intact while the directory truncates first. */}
       <span
         className={cn(
-          "max-w-full shrink-0 truncate text-[calc(11.5px*var(--zone-font-scale,1))] font-medium leading-tight text-foreground/85",
+          "max-w-full shrink-0 truncate text-scaled-11p5px font-medium leading-tight text-foreground/85",
           file.deleted && "text-muted-foreground line-through",
         )}
       >
@@ -106,7 +106,7 @@ const ChangedFileRow = memo(function ChangedFileRow({ file }: { file: ChangedFil
       {file.deleted ? (
         <span
           className={cn(
-            "shrink-0 rounded-full bg-muted/70 px-1.5 py-0.5 text-[calc(10px*var(--zone-font-scale,1))] leading-none text-muted-foreground transition-opacity",
+            "shrink-0 rounded-full bg-muted/70 px-1.5 py-0.5 text-scaled-10px leading-none text-muted-foreground transition-opacity",
             hasRowActions &&
               "group-hover/changed-file:opacity-0 group-focus-within/changed-file:opacity-0",
           )}
@@ -181,20 +181,20 @@ export const ChangedFilesCard = memo(function ChangedFilesCard({
           <FilePenLine className="h-4 w-4" />
         </div>
         <div className="flex min-h-8 min-w-0 flex-1 flex-col justify-center gap-0.5">
-          <span className="truncate text-[calc(13px*var(--zone-font-scale,1))] font-semibold leading-tight text-foreground/90">
+          <span className="truncate text-scaled-13px font-semibold leading-tight text-foreground/90">
             {title}
           </span>
           <FileChangeBadge
             added={summary.totalAdded}
             removed={summary.totalRemoved}
-            className="text-[calc(11.5px*var(--zone-font-scale,1))]"
+            className="text-scaled-11p5px"
           />
         </div>
         {canOpenReview ? (
           <button
             type="button"
             onClick={() => actions?.onOpenDiff?.(null)}
-            className="flex h-7 shrink-0 items-center gap-1.5 rounded-lg border border-border/55 bg-transparent px-2.5 text-[calc(11px*var(--zone-font-scale,1))] font-medium leading-none text-muted-foreground transition-colors hover:border-border/80 hover:bg-foreground/[0.05] hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring dark:border-white/[0.1] dark:hover:border-white/[0.16] dark:hover:bg-white/[0.06]"
+            className="flex h-7 shrink-0 items-center gap-1.5 rounded-lg border border-border/55 bg-transparent px-2.5 text-scaled-11px font-medium leading-none text-muted-foreground transition-colors hover:border-border/80 hover:bg-foreground/[0.05] hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring dark:border-white/[0.1] dark:hover:border-white/[0.16] dark:hover:bg-white/[0.06]"
           >
             <GitCommitHorizontal className="h-3.5 w-3.5" />
             {t("chat.changedFiles.review")}
@@ -211,7 +211,7 @@ export const ChangedFilesCard = memo(function ChangedFilesCard({
             type="button"
             onClick={() => setFilesExpanded((expanded) => !expanded)}
             aria-expanded={filesExpanded}
-            className="flex min-h-8 w-full items-center gap-1 rounded-lg px-2.5 py-0.5 text-left text-[calc(11.5px*var(--zone-font-scale,1))] font-medium text-foreground/80 transition-colors hover:bg-foreground/[0.04] hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring"
+            className="flex min-h-8 w-full items-center gap-1 rounded-lg px-2.5 py-0.5 text-left text-scaled-11p5px font-medium text-foreground/80 transition-colors hover:bg-foreground/[0.04] hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring"
           >
             <span className="truncate">
               {filesExpanded

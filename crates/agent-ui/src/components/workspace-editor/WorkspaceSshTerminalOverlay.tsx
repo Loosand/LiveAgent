@@ -355,7 +355,7 @@ export function WorkspaceSshTerminalOverlay(props: WorkspaceSshTerminalOverlayPr
           <div className="truncate text-sm font-semibold leading-tight">
             {t("workspaceSshTerminal.title")}
           </div>
-          <div className="truncate font-mono text-[11px] text-muted-foreground">
+          <div className="truncate font-mono text-11px text-muted-foreground">
             {activeSession ? sessionEndpointLabel(activeSession) : t("workspaceSshTerminal.empty")}
           </div>
         </div>
@@ -380,7 +380,7 @@ export function WorkspaceSshTerminalOverlay(props: WorkspaceSshTerminalOverlayPr
         </button>
       </div>
 
-      <div className="workspace-ssh-terminal-tabs flex h-10 shrink-0 items-end gap-1 overflow-x-auto overflow-y-hidden border-b border-border bg-background px-2 pt-1">
+      <div className="flex h-10 shrink-0 items-end gap-1 overflow-x-auto overflow-y-hidden border-b border-border bg-background px-2 pt-1 web:overscroll-x-contain web:[scrollbar-width:none]! web:[-ms-overflow-style:none] web:[-webkit-overflow-scrolling:touch] web:scroll-px-0p5rem web:[&::-webkit-scrollbar]:hidden web:[&::-webkit-scrollbar]:w-0 web:[&::-webkit-scrollbar]:h-0 web:max-820:h-44px web:max-820:px-8px web:max-820:scroll-px-8px">
         {openTabRecords.map(({ tab, session }) => (
           <div
             key={tab.id}
@@ -392,7 +392,7 @@ export function WorkspaceSshTerminalOverlay(props: WorkspaceSshTerminalOverlayPr
               }
             }}
             className={cn(
-              "workspace-ssh-terminal-tab group flex h-8 max-w-[14rem] shrink-0 items-center gap-1.5 rounded-t-md border border-b-0 px-2 text-xs transition-colors",
+              "group flex h-8 max-w-14rem shrink-0 items-center gap-1.5 rounded-t-md border border-b-0 px-2 text-xs transition-colors web:max-w-workspace-ssh-terminal-tab-max-w web:max-820:max-w-workspace-ssh-terminal-tab-max-w-2 web:max-820:[&_>_button:last-child]:w-1p75rem web:max-820:[&_>_button:last-child]:h-1p75rem",
               tab.id === effectiveActiveTabId
                 ? "border-border bg-muted text-foreground"
                 : "border-transparent text-muted-foreground hover:bg-muted/60 hover:text-foreground",

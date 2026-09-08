@@ -154,7 +154,7 @@ export function SkillsSettingsForm(props: SettingsSectionProps) {
             />
             {loading ? t("settings.skillsScanning") : t("settings.skillsScan")}
             {loading && (
-              <span className="ml-0.5 inline-flex gap-[2px]">
+              <span className="ml-0.5 inline-flex gap-2px">
                 <span className="skills-scan-dot h-1 w-1 rounded-full bg-primary" />
                 <span className="skills-scan-dot h-1 w-1 rounded-full bg-primary" />
                 <span className="skills-scan-dot h-1 w-1 rounded-full bg-primary" />
@@ -239,7 +239,7 @@ export function SkillsSettingsForm(props: SettingsSectionProps) {
                 value={filter}
                 onChange={(e) => setFilter(e.currentTarget.value)}
                 placeholder={t("settings.skillsSearch")}
-                className="settings-skills-search h-9 w-full rounded-lg border bg-background pl-9 pr-3 text-sm outline-hidden transition-colors placeholder:text-muted-foreground/60 focus:border-primary/50 focus:ring-1 focus:ring-primary/20"
+                className="h-9 w-full rounded-lg border bg-background pl-9 pr-3 text-sm outline-hidden transition-colors placeholder:text-muted-foreground/60 focus:border-primary/50 focus:ring-1 focus:ring-primary/20 web:text-0p75rem"
               />
             </div>
           ) : null}
@@ -271,7 +271,7 @@ export function SkillsSettingsForm(props: SettingsSectionProps) {
                           {skill.description}
                         </p>
                       ) : null}
-                      <div className="mt-0.5 flex items-center gap-1 text-[11px] text-muted-foreground/60">
+                      <div className="mt-0.5 flex items-center gap-1 text-11px text-muted-foreground/60">
                         <FileText className="h-3 w-3" />
                         <span className="truncate">{skill.skillFile}</span>
                       </div>
@@ -279,7 +279,7 @@ export function SkillsSettingsForm(props: SettingsSectionProps) {
 
                     {alwaysEnabled ? (
                       <div
-                        className="flex shrink-0 items-center gap-1.5 rounded-full bg-primary/10 px-2 py-1 text-[11px] font-medium text-primary"
+                        className="flex shrink-0 items-center gap-1.5 rounded-full bg-primary/10 px-2 py-1 text-11px font-medium text-primary"
                         title={t("settings.skillsAlwaysOn")}
                       >
                         <Lock className="h-3 w-3" />
@@ -294,7 +294,9 @@ export function SkillsSettingsForm(props: SettingsSectionProps) {
                             : "border-border bg-background group-hover:border-muted-foreground/40",
                         )}
                       >
-                        {checked ? <Check className="skill-check-enter h-3 w-3" /> : null}
+                        {checked ? (
+                          <Check className="animate-skill-check-enter motion-reduce:animate-none! h-3 w-3" />
+                        ) : null}
                       </div>
                     )}
                   </>

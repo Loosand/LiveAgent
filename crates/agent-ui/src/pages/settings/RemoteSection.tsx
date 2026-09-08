@@ -82,7 +82,7 @@ function PasswordInput({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className="pr-16 font-mono text-[13px]"
+        className="pr-16 font-mono text-13px"
       />
       <div className="absolute right-1 top-1/2 flex -translate-y-1/2 items-center gap-0.5">
         <button
@@ -321,7 +321,7 @@ export function RemoteSection(props: SettingsSectionProps) {
       <div className="flex items-center justify-between gap-4">
         <div className="flex items-center gap-3">
           <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-sky-500/10">
-            <Cloud className="h-[18px] w-[18px] text-sky-500" />
+            <Cloud className="h-18px w-18px text-sky-500" />
           </div>
           <div>
             <h3 className="text-sm font-semibold">{t("settings.remoteTitle")}</h3>
@@ -332,7 +332,7 @@ export function RemoteSection(props: SettingsSectionProps) {
         <div className="flex items-center gap-3">
           <div
             className={cn(
-              "flex max-w-[260px] items-center gap-2 rounded-lg px-2.5 py-1.5 text-xs font-medium",
+              "flex max-w-260px items-center gap-2 rounded-lg px-2.5 py-1.5 text-xs font-medium",
               isConnected
                 ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
                 : "bg-muted/50 text-muted-foreground",
@@ -383,7 +383,7 @@ export function RemoteSection(props: SettingsSectionProps) {
                 })
               }
               placeholder="https://gateway.example.com"
-              className="min-w-0 flex-1 font-mono text-[13px]"
+              className="min-w-0 flex-1 font-mono text-13px"
             />
             <span className="shrink-0 text-xs text-muted-foreground/50">:</span>
             <Input
@@ -393,16 +393,16 @@ export function RemoteSection(props: SettingsSectionProps) {
               onBlur={remoteGatewayPortDraft.handleBlur}
               onChange={(e) => remoteGatewayPortDraft.handleChange(e.target.value)}
               placeholder="443"
-              className="w-24 shrink-0 font-mono text-[13px]"
+              className="w-24 shrink-0 font-mono text-13px"
             />
           </div>
-          <p className="text-[11px] leading-relaxed text-muted-foreground/70">
+          <p className="text-11px leading-relaxed text-muted-foreground/70">
             {t("settings.remoteGatewayUrlHint")}
           </p>
         </div>
 
         {gatewayEndpointPreview ? (
-          <div className="flex items-center gap-2 rounded-lg bg-muted/30 px-3 py-2 text-[11px] text-muted-foreground">
+          <div className="flex items-center gap-2 rounded-lg bg-muted/30 px-3 py-2 text-11px text-muted-foreground">
             <Globe className="h-3.5 w-3.5 shrink-0" />
             <span className="min-w-0 flex-1 truncate font-mono">{gatewayEndpointPreview}</span>
             <CopyButton value={gatewayEndpointPreview} />
@@ -431,7 +431,7 @@ export function RemoteSection(props: SettingsSectionProps) {
             }
             placeholder={t("settings.remoteTokenPlaceholder")}
           />
-          <p className="text-[11px] leading-relaxed text-muted-foreground/70">
+          <p className="text-11px leading-relaxed text-muted-foreground/70">
             {t("settings.remoteTokenHint")}
           </p>
         </div>
@@ -450,13 +450,13 @@ export function RemoteSection(props: SettingsSectionProps) {
               type="text"
               readOnly
               value={settings.remote.agentId}
-              className="bg-muted/30 pr-12 font-mono text-[13px]"
+              className="bg-muted/30 pr-12 font-mono text-13px"
             />
             <div className="absolute right-1 top-1/2 -translate-y-1/2">
               <CopyButton value={settings.remote.agentId} />
             </div>
           </div>
-          <p className="text-[11px] leading-relaxed text-muted-foreground/70">
+          <p className="text-11px leading-relaxed text-muted-foreground/70">
             {t("settings.remoteAgentIdHint")}
           </p>
         </div>
@@ -496,7 +496,7 @@ export function RemoteSection(props: SettingsSectionProps) {
                 onBlur={remoteHeartbeatDraft.handleBlur}
                 onChange={(e) => remoteHeartbeatDraft.handleChange(e.target.value)}
                 placeholder="30"
-                className="w-24 font-mono text-[13px]"
+                className="w-24 font-mono text-13px"
               />
               <span className="text-xs text-muted-foreground">
                 {t("settings.remoteHeartbeatUnit")}

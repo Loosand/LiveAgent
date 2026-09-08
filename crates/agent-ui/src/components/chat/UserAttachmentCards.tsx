@@ -92,7 +92,7 @@ function UserImageAttachmentCard(props: {
       title={file.relativePath}
       className={cn(
         "group relative overflow-hidden rounded-xl border border-white/60 bg-white/75 dark:border-white/[0.12] dark:bg-white/[0.06]",
-        compact ? "min-w-0 basis-[calc(33.333%-5.33px)] grow" : "w-full max-w-[280px]",
+        compact ? "min-w-0 basis-third-minus-gap grow" : "w-full max-w-280px",
       )}
     >
       {onRemove ? (
@@ -191,11 +191,11 @@ function UserImageAttachmentCard(props: {
       )}
       <div className="flex items-center gap-1.5 px-2.5 py-1.5">
         <div className="min-w-0 flex-1">
-          <div className="truncate text-[calc(11px*var(--zone-font-scale,1))] font-medium leading-tight text-[hsl(var(--chat-user-fg)/0.85)]">
+          <div className="truncate text-scaled-11px font-medium leading-tight text-[hsl(var(--chat-user-fg)/0.85)]">
             {file.fileName}
           </div>
         </div>
-        <span className="shrink-0 text-[calc(10px*var(--zone-font-scale,1))] tabular-nums text-[hsl(var(--chat-user-fg)/0.4)]">
+        <span className="shrink-0 text-scaled-10px tabular-nums text-[hsl(var(--chat-user-fg)/0.4)]">
           {formatUploadedFileSize(file.sizeBytes)}
         </span>
       </div>
@@ -216,18 +216,18 @@ function UserFileAttachmentCard(props: {
     <div
       title={file.relativePath}
       className={cn(
-        "group relative flex items-center gap-2 rounded-xl border border-white/60 bg-white/75 px-2.5 py-2 text-left shadow-[0_1px_3px_rgba(0,0,0,0.06),0_1px_2px_rgba(0,0,0,0.04)] transition-shadow hover:shadow-[0_2px_8px_rgba(0,0,0,0.1)] dark:border-white/[0.12] dark:bg-white/[0.06]",
-        compact ? "min-w-0 basis-[calc(33.333%-5.33px)] grow" : "w-full",
+        "group relative flex items-center gap-2 rounded-xl border border-white/60 bg-white/75 px-2.5 py-2 text-left shadow-ui-userattachmentcards-20 transition-shadow hover:shadow-ui-userattachmentcards-21 dark:border-white/[0.12] dark:bg-white/[0.06]",
+        compact ? "min-w-0 basis-third-minus-gap grow" : "w-full",
       )}
     >
       <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-gradient-to-b from-black/[0.03] to-black/[0.06] dark:from-white/[0.06] dark:to-white/[0.1]">
         <TypeIcon className="h-4.5 w-4.5" />
       </div>
       <div className="min-w-0 flex-1">
-        <div className="truncate text-[calc(11px*var(--zone-font-scale,1))] font-medium leading-tight text-[hsl(var(--chat-user-fg)/0.85)]">
+        <div className="truncate text-scaled-11px font-medium leading-tight text-[hsl(var(--chat-user-fg)/0.85)]">
           {file.fileName}
         </div>
-        <div className="mt-0.5 text-[calc(10px*var(--zone-font-scale,1))] tabular-nums leading-tight text-[hsl(var(--chat-user-fg)/0.4)]">
+        <div className="mt-0.5 text-scaled-10px tabular-nums leading-tight text-[hsl(var(--chat-user-fg)/0.4)]">
           {formatUploadedFileSize(file.sizeBytes)}
         </div>
       </div>

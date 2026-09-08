@@ -223,7 +223,7 @@ export function SkillsImportView(props: {
       <div
         className={cn(
           "h-full min-h-0 overflow-y-auto px-1.5 pb-4 pt-1.5",
-          bulkMode ? "pb-[calc(5rem+env(safe-area-inset-bottom))] sm:pb-20" : null,
+          bulkMode ? "pb-safe-bottom-5rem sm:pb-20" : null,
         )}
       >
         <div className="flex flex-col gap-3">
@@ -253,7 +253,7 @@ export function SkillsImportView(props: {
               <Button
                 variant="outline"
                 size="sm"
-                className="min-w-[6.75rem] justify-center gap-1.5"
+                className="min-w-6p75rem justify-center gap-1.5"
                 disabled={loading || importing || initializing}
                 aria-busy={loading}
                 onClick={() => void handleRescan()}
@@ -319,7 +319,7 @@ export function SkillsImportView(props: {
             </div>
           ) : activeScan ? (
             <div key={activeScan.tool} className="hub-panel-enter flex flex-col gap-3">
-              <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[11px] text-muted-foreground">
+              <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-11px text-muted-foreground">
                 <span className="font-mono">{activeScan.rootDir}</span>
                 {activeScan.tool === "codebuddy" && activeScan.exists ? (
                   <>
@@ -452,10 +452,10 @@ export function SkillsImportView(props: {
                                   <SearchHighlight
                                     text={skill.name}
                                     query={query}
-                                    className="truncate text-[13px] font-semibold leading-tight text-foreground"
+                                    className="truncate text-13px font-semibold leading-tight text-foreground"
                                   />
                                   {alreadyInstalled ? (
-                                    <Badge variant="success" className="h-5 px-1.5 text-[10px]">
+                                    <Badge variant="success" className="h-5 px-1.5 text-10px">
                                       {t("settings.skillsImportInstalledBadge")}
                                     </Badge>
                                   ) : null}
@@ -473,7 +473,7 @@ export function SkillsImportView(props: {
                             </p>
                             <div className="mt-auto space-y-2.5">
                               <span
-                                className="block truncate px-0.5 text-[10.5px] text-muted-foreground"
+                                className="block truncate px-0.5 text-10p5px text-muted-foreground"
                                 title={skill.baseDir}
                               >
                                 <SearchHighlight text={skill.baseDir} query={query} />
@@ -517,10 +517,10 @@ export function SkillsImportView(props: {
       </div>
 
       {bulkMode ? (
-        <div className="pointer-events-none absolute inset-x-0 bottom-1 z-40 flex justify-center px-2 max-sm:bottom-[calc(0.25rem+env(safe-area-inset-bottom))]">
+        <div className="pointer-events-none absolute inset-x-0 bottom-1 z-40 flex justify-center px-2 max-sm:bottom-safe-bottom-offset-compact">
           <div
             className={cn(
-              "hub-panel-enter pointer-events-auto flex max-w-full flex-wrap items-center gap-2 rounded-full border border-border/50 bg-background/95 text-[12.5px] shadow-[0_8px_24px_-12px_rgba(15,23,42,0.35)] max-sm:justify-center max-sm:rounded-3xl max-sm:whitespace-nowrap dark:border-white/[0.1] dark:bg-popover/95",
+              "hub-panel-enter pointer-events-auto flex max-w-full flex-wrap items-center gap-2 rounded-full border border-border/50 bg-background/95 text-12p5px shadow-ui-skillshubpage-51 max-sm:justify-center max-sm:rounded-3xl max-sm:whitespace-nowrap dark:border-white/[0.1] dark:bg-popover/95",
               importableSelectedCount > 0 || importing ? "py-2 pl-4 pr-2" : "px-4 py-2.5",
             )}
           >

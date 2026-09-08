@@ -38,16 +38,16 @@ export function FileDropOverlay(props: FileDropOverlayProps) {
             )}
           </div>
           <div className="min-w-0">
-            <div className="truncate text-[calc(14px*var(--zone-font-scale,1))] font-semibold leading-5 text-foreground">
+            <div className="truncate text-scaled-14px font-semibold leading-5 text-foreground">
               {title}
             </div>
-            <div className="hidden max-w-[420px] truncate text-xs leading-5 text-muted-foreground sm:block">
+            <div className="hidden max-w-420px truncate text-xs leading-5 text-muted-foreground sm:block">
               {description}
             </div>
           </div>
           <div
             className={cn(
-              "hidden shrink-0 items-center gap-1.5 rounded-full border px-2.5 py-1 text-[calc(11px*var(--zone-font-scale,1))] font-medium md:inline-flex",
+              "hidden shrink-0 items-center gap-1.5 rounded-full border px-2.5 py-1 text-scaled-11px font-medium md:inline-flex",
               canDropUpload
                 ? "border-foreground/[0.08] bg-foreground/[0.03] text-muted-foreground dark:border-white/10 dark:bg-white/[0.04]"
                 : "border-destructive/20 bg-destructive/[0.05] text-destructive/80",
@@ -74,7 +74,7 @@ export function FileDropOverlay(props: FileDropOverlayProps) {
     >
       <div
         className={cn(
-          "file-drop-overlay-zone absolute inset-3 sm:inset-4 rounded-2xl border border-dashed",
+          "animate-file-drop-overlay-zone motion-reduce:animate-none! absolute inset-3 sm:inset-4 rounded-2xl border border-dashed",
           canDropUpload
             ? "border-foreground/20 bg-foreground/[0.015] dark:border-white/15 dark:bg-white/[0.015]"
             : "border-destructive/35 bg-destructive/[0.03]",
@@ -82,7 +82,7 @@ export function FileDropOverlay(props: FileDropOverlayProps) {
       />
       <div
         className={cn(
-          "file-drop-overlay-card relative flex w-full max-w-[380px] flex-col items-center gap-5 rounded-2xl border bg-white/70 px-8 py-7 text-center shadow-[0_24px_60px_-20px_rgba(0,0,0,0.25),0_8px_20px_-12px_rgba(0,0,0,0.15)] backdrop-blur-2xl dark:bg-zinc-900/70 dark:shadow-[0_24px_60px_-20px_rgba(0,0,0,0.7),0_8px_20px_-12px_rgba(0,0,0,0.5)]",
+          "file-drop-overlay-card relative flex w-full max-w-380px flex-col items-center gap-5 rounded-2xl border bg-white/70 px-8 py-7 text-center shadow-ui-filedropoverlay-6 backdrop-blur-2xl dark:bg-zinc-900/70 dark:shadow-ui-filedropoverlay-7",
           canDropUpload
             ? "border-black/[0.06] ring-1 ring-inset ring-white/40 dark:border-white/10 dark:ring-white/[0.04]"
             : "border-destructive/20 ring-1 ring-inset ring-destructive/10 dark:border-destructive/30",
@@ -104,17 +104,17 @@ export function FileDropOverlay(props: FileDropOverlayProps) {
         </div>
 
         <div className="flex flex-col items-center gap-1.5">
-          <div className="text-[calc(15px*var(--zone-font-scale,1))] font-semibold leading-tight tracking-tight text-foreground">
+          <div className="text-scaled-15px font-semibold leading-tight tracking-tight text-foreground">
             {title}
           </div>
-          <div className="max-w-[280px] text-xs leading-5 text-muted-foreground">{description}</div>
+          <div className="max-w-280px text-xs leading-5 text-muted-foreground">{description}</div>
         </div>
 
         <div className="h-px w-12 bg-foreground/10 dark:bg-white/10" aria-hidden="true" />
 
         <div
           className={cn(
-            "inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[calc(11px*var(--zone-font-scale,1))] font-medium",
+            "inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-scaled-11px font-medium",
             canDropUpload
               ? "border-foreground/[0.08] bg-foreground/[0.03] text-muted-foreground dark:border-white/10 dark:bg-white/[0.04]"
               : "border-destructive/20 bg-destructive/[0.05] text-destructive/80",

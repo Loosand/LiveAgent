@@ -256,7 +256,7 @@ export function McpServerEditModal(props: {
   return (
     <Dialog open onOpenChange={(open) => !open && onClose()}>
       <DialogContent
-        className="flex max-h-[92dvh] max-w-3xl flex-col p-0"
+        className="flex max-h-92dvh max-w-3xl flex-col p-0"
         closeLabel={t("settings.cancel")}
         layout="fullscreen-mobile"
         showCloseButton
@@ -359,7 +359,7 @@ export function McpServerEditModal(props: {
                           id="mcp-edit-command"
                           value={draft.command}
                           placeholder="npx"
-                          className="font-mono text-[12.5px]"
+                          className="font-mono text-12p5px"
                           onChange={(event) => updateDraft({ command: event.currentTarget.value })}
                         />
                       </div>
@@ -371,7 +371,7 @@ export function McpServerEditModal(props: {
                           id="mcp-edit-cwd"
                           value={draft.cwd}
                           placeholder={t("mcpHub.cwdDefault")}
-                          className="font-mono text-[12.5px]"
+                          className="font-mono text-12p5px"
                           onChange={(event) => updateDraft({ cwd: event.currentTarget.value })}
                         />
                       </div>
@@ -419,7 +419,7 @@ export function McpServerEditModal(props: {
                             ? "http://127.0.0.1:3000/mcp"
                             : "http://127.0.0.1:3000/sse"
                         }
-                        className="font-mono text-[12.5px]"
+                        className="font-mono text-12p5px"
                         onChange={(event) => updateDraft({ url: event.currentTarget.value })}
                       />
                     </div>
@@ -435,7 +435,7 @@ export function McpServerEditModal(props: {
                           id="mcp-edit-message-url"
                           value={draft.messageUrl}
                           placeholder="http://127.0.0.1:3000/message"
-                          className="font-mono text-[12.5px]"
+                          className="font-mono text-12p5px"
                           onChange={(event) =>
                             updateDraft({
                               messageUrl: event.currentTarget.value,
@@ -502,7 +502,7 @@ export function McpServerEditModal(props: {
                               id="mcp-edit-auth-scope"
                               value={draft.authScope}
                               placeholder={t("mcpHub.authScopePlaceholder")}
-                              className="font-mono text-[12.5px]"
+                              className="font-mono text-12p5px"
                               onChange={(event) =>
                                 updateDraft({ authScope: event.currentTarget.value })
                               }
@@ -519,7 +519,7 @@ export function McpServerEditModal(props: {
                               id="mcp-edit-auth-client-id"
                               value={draft.authClientId}
                               placeholder={t("mcpHub.authClientIdPlaceholder")}
-                              className="font-mono text-[12.5px]"
+                              className="font-mono text-12p5px"
                               onChange={(event) =>
                                 updateDraft({ authClientId: event.currentTarget.value })
                               }

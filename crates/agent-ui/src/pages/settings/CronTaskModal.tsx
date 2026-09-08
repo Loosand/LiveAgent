@@ -360,7 +360,7 @@ export function CronTaskModal({
   return (
     <Dialog open onOpenChange={(open) => !open && !isSaving && onClose()}>
       <DialogContent
-        className="flex max-h-[92dvh] max-w-3xl flex-col p-0"
+        className="flex max-h-92dvh max-w-3xl flex-col p-0"
         closeDisabled={isSaving}
         closeLabel={t("settings.cancel")}
         showCloseButton
@@ -383,14 +383,14 @@ export function CronTaskModal({
           {/* Step 1: Basic Info */}
           <div className="border-b border-border/30 px-6 py-5">
             <div className="mb-4 flex items-center gap-2">
-              <div className="flex h-6 w-6 items-center justify-center rounded-md bg-primary/10 text-[11px] font-bold text-primary">
+              <div className="flex h-6 w-6 items-center justify-center rounded-md bg-primary/10 text-11px font-bold text-primary">
                 1
               </div>
               <span className="text-sm font-semibold">{t("settings.cronStepBasic")}</span>
             </div>
 
             <div className="space-y-4">
-              <div className="settings-form-grid grid gap-4 sm:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_9rem]">
+              <div className="settings-form-grid grid gap-4 sm:grid-cols-provider-credentials">
                 <div className="space-y-1.5">
                   <Label className="text-xs font-medium text-muted-foreground">
                     {t("settings.cronTaskName")}
@@ -435,7 +435,7 @@ export function CronTaskModal({
                   />
                 </div>
               </div>
-              <div className="settings-form-grid grid gap-4 sm:grid-cols-[minmax(0,1fr)_9rem]">
+              <div className="settings-form-grid grid gap-4 sm:grid-cols-provider-field">
                 <div className="space-y-1.5">
                   <Label className="text-xs font-medium text-muted-foreground">
                     {t("settings.cronTaskDesc")}
@@ -464,7 +464,7 @@ export function CronTaskModal({
                       setTimeoutSeconds(next);
                     }}
                   />
-                  <p className="text-[11px] text-muted-foreground/70">
+                  <p className="text-11px text-muted-foreground/70">
                     {t("settings.cronTimeoutSecondsMaxHint").replace(
                       "{max}",
                       String(maxCronTimeoutSeconds(type)),
@@ -478,13 +478,13 @@ export function CronTaskModal({
           {/* Step 2: Task Type */}
           <div className="border-b border-border/30 px-6 py-5">
             <div className="mb-4 flex items-center gap-2">
-              <div className="flex h-6 w-6 items-center justify-center rounded-md bg-primary/10 text-[11px] font-bold text-primary">
+              <div className="flex h-6 w-6 items-center justify-center rounded-md bg-primary/10 text-11px font-bold text-primary">
                 2
               </div>
               <span className="text-sm font-semibold">{t("settings.cronStepType")}</span>
             </div>
 
-            <div className="settings-choice-grid settings-cron-type-grid grid grid-cols-3 gap-3">
+            <div className="settings-choice-grid grid grid-cols-3 gap-3 web:max-820:grid-cols-settings-cron-type-grid">
               {/* Bash */}
               <button
                 type="button"
@@ -634,19 +634,19 @@ export function CronTaskModal({
           <div className="px-6 py-5">
             <DialogSectionHeader>
               <div className="flex items-center gap-2">
-                <div className="flex h-6 w-6 items-center justify-center rounded-md bg-primary/10 text-[11px] font-bold text-primary">
+                <div className="flex h-6 w-6 items-center justify-center rounded-md bg-primary/10 text-11px font-bold text-primary">
                   3
                 </div>
                 <span className="text-sm font-semibold">{t("settings.cronStepConfig")}</span>
               </div>
 
               {type === "bash" ? (
-                <span className="rounded-md bg-blue-500/10 px-2 py-0.5 text-[11px] font-medium text-blue-600 dark:text-blue-400">
+                <span className="rounded-md bg-blue-500/10 px-2 py-0.5 text-11px font-medium text-blue-600 dark:text-blue-400">
                   {scriptLineCount} {t("settings.cronCommandsCount")}
                 </span>
               ) : type === "http" ? (
                 <div className="flex items-center gap-2">
-                  <span className="rounded-md bg-emerald-500/10 px-2 py-0.5 text-[11px] font-medium text-emerald-600 dark:text-emerald-400">
+                  <span className="rounded-md bg-emerald-500/10 px-2 py-0.5 text-11px font-medium text-emerald-600 dark:text-emerald-400">
                     {requests.length} {t("settings.cronRequestsCount")}
                   </span>
                   <Button
@@ -758,7 +758,7 @@ export function CronTaskModal({
                         type="button"
                         variant="outline"
                         size="icon"
-                        className="h-9 w-9 shrink-0"
+                        className="shrink-0"
                         title={t("settings.cronWorkdirBrowse")}
                         aria-label={t("settings.cronWorkdirBrowse")}
                         onClick={() => {
@@ -781,13 +781,13 @@ export function CronTaskModal({
                   </div>
                 ) : workdir ? (
                   <div
-                    className="truncate font-mono text-[11px] text-muted-foreground/80"
+                    className="truncate font-mono text-11px text-muted-foreground/80"
                     title={workdir}
                   >
                     {workdir}
                   </div>
                 ) : (
-                  <div className="text-[11px] text-muted-foreground/60">
+                  <div className="text-11px text-muted-foreground/60">
                     {t("settings.cronWorkdirHint")}
                   </div>
                 )}
@@ -798,18 +798,18 @@ export function CronTaskModal({
             {type === "bash" ? (
               <div className="overflow-hidden rounded-xl border border-border/60 bg-muted/20">
                 <div className="flex items-center justify-between border-b border-border/30 px-3 py-2">
-                  <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
+                  <div className="flex items-center gap-1.5 text-11px text-muted-foreground">
                     <Terminal className="h-3 w-3" />
                     <span className="font-medium">{t("settings.cronCommandList")}</span>
                   </div>
-                  <span className="text-[11px] text-muted-foreground/60">
+                  <span className="text-11px text-muted-foreground/60">
                     {t("settings.cronCommandHint")}
                   </span>
                 </div>
                 <Textarea
                   value={scriptText}
                   placeholder={"pnpm install\npnpm build\npnpm test"}
-                  className="min-h-[180px] resize-y rounded-none border-0 bg-transparent font-mono text-xs leading-relaxed focus-visible:ring-0"
+                  className="min-h-180px resize-y rounded-none border-0 bg-transparent font-mono text-xs leading-relaxed focus-visible:ring-0"
                   onChange={(e) => {
                     setFormError(null);
                     setScriptText(e.currentTarget.value);
@@ -839,7 +839,7 @@ export function CronTaskModal({
                   </div>
                 ) : null}
 
-                <div className="settings-form-grid grid gap-4 sm:grid-cols-[minmax(0,1fr)_9rem]">
+                <div className="settings-form-grid grid gap-4 sm:grid-cols-provider-field">
                   <div className="space-y-1.5">
                     <Label className="text-xs font-medium text-muted-foreground">
                       {t("settings.cronPromptModelLabel")}
@@ -892,14 +892,14 @@ export function CronTaskModal({
                 ) : null}
 
                 <div className="overflow-hidden rounded-xl border border-border/60 bg-muted/20">
-                  <div className="flex items-center gap-1.5 border-b border-border/30 px-3 py-2 text-[11px] text-muted-foreground">
+                  <div className="flex items-center gap-1.5 border-b border-border/30 px-3 py-2 text-11px text-muted-foreground">
                     <MessageSquare className="h-3 w-3" />
                     <span className="font-medium">{t("settings.cronPromptLabel")}</span>
                   </div>
                   <Textarea
                     value={prompt}
                     placeholder={t("settings.cronPromptPlaceholder")}
-                    className="min-h-[180px] resize-y rounded-none border-0 bg-transparent text-sm leading-relaxed focus-visible:ring-0"
+                    className="min-h-180px resize-y rounded-none border-0 bg-transparent text-sm leading-relaxed focus-visible:ring-0"
                     onChange={(e) => {
                       setFormError(null);
                       setPrompt(e.currentTarget.value);

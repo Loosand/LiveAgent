@@ -1,3 +1,4 @@
+import { readStyleSource } from "../../../../scripts/test-style-values.mjs";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import test from "node:test";
@@ -22,10 +23,7 @@ const conversationViewTabsSource = readFileSync(
   new URL("../../../agent-ui/src/components/chat/ConversationViewTabs.tsx", import.meta.url),
   "utf8",
 );
-const commonComponentsCss = readFileSync(
-  new URL("../../../agent-ui/src/styles/common-components.css", import.meta.url),
-  "utf8",
-);
+const commonComponentsCss = readStyleSource(new URL("../../../agent-ui/src/styles/common-components.css", import.meta.url));
 const rightDockPanelSource = readFileSync(
   new URL("../../../agent-ui/src/components/project-tools/RightDockPanel.tsx", import.meta.url),
   "utf8",

@@ -1073,7 +1073,7 @@ export function GitBranchSelector(props: {
                     )}
                   </button>
                   {showSyncBadges && state.behind > 0 ? (
-                    <span className="pointer-events-none absolute -right-0.5 -top-0.5 rounded-full bg-primary px-1 text-[9px] font-medium leading-3 text-primary-foreground">
+                    <span className="pointer-events-none absolute -right-0.5 -top-0.5 rounded-full bg-primary px-1 text-9px font-medium leading-3 text-primary-foreground">
                       {state.behind > 9 ? "9+" : state.behind}
                     </span>
                   ) : null}
@@ -1096,7 +1096,7 @@ export function GitBranchSelector(props: {
                     )}
                   </button>
                   {showSyncBadges && state.ahead > 0 ? (
-                    <span className="pointer-events-none absolute -right-0.5 -top-0.5 rounded-full bg-primary px-1 text-[9px] font-medium leading-3 text-primary-foreground">
+                    <span className="pointer-events-none absolute -right-0.5 -top-0.5 rounded-full bg-primary px-1 text-9px font-medium leading-3 text-primary-foreground">
                       {state.ahead > 9 ? "9+" : state.ahead}
                     </span>
                   ) : null}
@@ -1135,7 +1135,7 @@ export function GitBranchSelector(props: {
                     {selectedGitRepositoryLabel(repositories, selectedRepoRoot) ||
                       t("git.branchSelector.switchRepository")}
                   </span>
-                  <span className="ml-auto shrink-0 rounded-full bg-muted px-1.5 py-px text-[10px] leading-4 text-muted-foreground">
+                  <span className="ml-auto shrink-0 rounded-full bg-muted px-1.5 py-px text-10px leading-4 text-muted-foreground">
                     {repositories.length}
                   </span>
                   <ChevronRight className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
@@ -1236,7 +1236,7 @@ export function GitBranchSelector(props: {
             ) : noRepo ? null : (
               <>
                 {filteredLocalBranches.length > 0 ? (
-                  <DropdownMenuLabel className="px-2 py-1 text-[11px] uppercase tracking-wide text-muted-foreground">
+                  <DropdownMenuLabel className="px-2 py-1 text-11px uppercase tracking-wide text-muted-foreground">
                     {t("git.branchSelector.localBranches")}
                   </DropdownMenuLabel>
                 ) : null}
@@ -1244,7 +1244,7 @@ export function GitBranchSelector(props: {
                   renderBranchRow(branch, branch.current, branch.name),
                 )}
                 {filteredRemoteBranches.length > 0 ? (
-                  <DropdownMenuLabel className="px-2 py-1 text-[11px] uppercase tracking-wide text-muted-foreground">
+                  <DropdownMenuLabel className="px-2 py-1 text-11px uppercase tracking-wide text-muted-foreground">
                     {t("git.branchSelector.remoteBranches")}
                   </DropdownMenuLabel>
                 ) : null}
@@ -1255,7 +1255,7 @@ export function GitBranchSelector(props: {
                   return renderBranchRow(branch, isCurrentUpstream, branch.fullName);
                 })}
                 {filteredRemoteBranches.length > REMOTE_BRANCH_DISPLAY_LIMIT ? (
-                  <div className="px-2 py-1 text-[11px] text-muted-foreground">
+                  <div className="px-2 py-1 text-11px text-muted-foreground">
                     {t("git.branchSelector.moreRemoteBranches").replace(
                       "{count}",
                       String(filteredRemoteBranches.length - REMOTE_BRANCH_DISPLAY_LIMIT),

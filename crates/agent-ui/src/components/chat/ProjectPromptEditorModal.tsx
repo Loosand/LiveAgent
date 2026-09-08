@@ -75,11 +75,11 @@ export function ProjectPromptSettingsPanel(props: {
         value={projectPrompt}
         placeholder={t("chat.projectPromptPlaceholder")}
         aria-label={t("chat.projectPromptTitle")}
-        className="mt-3 min-h-52 flex-1 resize-none overflow-y-auto rounded-xl p-4 font-mono text-[13px] leading-6"
+        className="mt-3 min-h-52 flex-1 resize-none overflow-y-auto rounded-xl p-4 font-mono text-13px leading-6"
         onChange={(event) => onProjectPromptChange(event.currentTarget.value)}
       />
 
-      <div className="mt-2 flex items-baseline justify-between gap-3 px-1 text-[11px] text-muted-foreground">
+      <div className="mt-2 flex items-baseline justify-between gap-3 px-1 text-11px text-muted-foreground">
         <span className="min-w-0 truncate">
           {projectPrompt ? null : t("chat.projectPromptContentHint")}
         </span>
@@ -127,7 +127,7 @@ export function ProjectPromptEditorModal(props: {
   return (
     <Dialog open onOpenChange={(open) => !open && !saving && onClose()}>
       <DialogContent
-        className="flex max-h-[90dvh] max-w-3xl flex-col p-0"
+        className="flex max-h-90dvh max-w-3xl flex-col p-0"
         closeDisabled={saving}
         closeLabel={t("window.close")}
         layout="fullscreen-mobile"

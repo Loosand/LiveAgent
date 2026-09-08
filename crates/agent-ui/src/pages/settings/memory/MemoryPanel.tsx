@@ -228,7 +228,7 @@ export function MemoryPanel(props: {
         onClick={() => openEntry(entry)}
         className={cn(
           "h-auto w-full flex-col items-stretch justify-start whitespace-normal rounded-lg px-3 py-2.5 text-left font-normal",
-          nested ? "ml-3 w-[calc(100%-0.75rem)]" : "",
+          nested ? "ml-3 w-inset-0p75rem" : "",
           active
             ? "border-primary/50 bg-primary/5 shadow-xs"
             : entry.unreviewed
@@ -238,11 +238,11 @@ export function MemoryPanel(props: {
       >
         <div className="flex items-center justify-between gap-2">
           <div className="min-w-0 truncate text-xs font-semibold">{entryTitle(entry)}</div>
-          <div className="shrink-0 rounded bg-muted px-1.5 py-0.5 text-[10px] text-muted-foreground">
+          <div className="shrink-0 rounded bg-muted px-1.5 py-0.5 text-10px text-muted-foreground">
             {memoryTypeLabel(entry.memoryType, t)}
           </div>
         </div>
-        <div className="mt-1 truncate font-mono text-[11px] text-muted-foreground/70">
+        <div className="mt-1 truncate font-mono text-11px text-muted-foreground/70">
           id: {entry.slug}
         </div>
       </Button>
@@ -262,8 +262,8 @@ export function MemoryPanel(props: {
 
   return (
     <>
-      <div className="settings-memory-panel flex min-h-0 flex-1 flex-col gap-4">
-        <div className="settings-memory-summary-card shrink-0 rounded-xl border border-border/60 bg-card p-4">
+      <div className="flex min-h-0 flex-1 flex-col gap-4 web:max-820:min-h-auto web:max-820:flex-none web:max-820:gap-12px web:max-820:pb-settings-memory-panel-pb">
+        <div className="shrink-0 rounded-xl border border-border/60 bg-card p-4 web:max-820:rounded-12px web:max-820:p-12px">
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div className="min-w-0 space-y-1">
               <div className="flex items-center gap-2 text-sm font-semibold">
@@ -274,7 +274,7 @@ export function MemoryPanel(props: {
                 {pathsInfo?.root ?? "~/.liveagent/memory"}
               </div>
             </div>
-            <div className="settings-memory-summary-actions flex flex-wrap items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2 web:max-820:w-full web:max-820:items-stretch web:max-820:[&_>_button]:min-h-34px">
               {quotaItems.map((item) => {
                 const level = quotaLevel(item);
                 const label =
@@ -302,7 +302,7 @@ export function MemoryPanel(props: {
                 variant="outline"
                 size="sm"
                 className={cn(
-                  "min-w-[112px] disabled:opacity-100",
+                  "min-w-112px disabled:opacity-100",
                   refreshState === "success"
                     ? "border-emerald-500/30 bg-emerald-500/[0.08] text-emerald-700 dark:text-emerald-300"
                     : refreshState === "error"
@@ -336,8 +336,7 @@ export function MemoryPanel(props: {
               </Button>
               <Button
                 variant="outline"
-                size="icon"
-                className="h-8 w-8"
+                size="icon-sm"
                 title={t("settings.memoryOpenSettings")}
                 aria-label={t("settings.memoryOpenSettings")}
                 onClick={() => setSettingsDrawerOpen(true)}
@@ -381,8 +380,8 @@ export function MemoryPanel(props: {
           ) : null}
         </div>
 
-        <div className="settings-memory-layout grid min-h-0 flex-1 gap-4 lg:grid-cols-[380px_minmax(0,1fr)]">
-          <section className="settings-memory-list-section flex min-h-0 flex-col rounded-xl border border-border/60 bg-card">
+        <div className="grid min-h-0 flex-1 gap-4 lg:grid-cols-stt-settings web:max-820:flex web:max-820:min-h-auto web:max-820:flex-none web:max-820:flex-col web:max-820:gap-12px">
+          <section className="flex min-h-0 flex-col rounded-xl border border-border/60 bg-card web:max-820:min-h-auto web:max-820:overflow-visible web:max-820:rounded-12px">
             <div className="shrink-0 space-y-3 border-b border-border/40 p-3">
               <Tabs
                 value={tab}
@@ -402,7 +401,7 @@ export function MemoryPanel(props: {
                   >
                     <Globe2 className="h-3.5 w-3.5 shrink-0" />
                     <span className="truncate">{t("settings.memoryCategoryGlobal")}</span>
-                    <span className="shrink-0 text-[10px] text-muted-foreground">
+                    <span className="shrink-0 text-10px text-muted-foreground">
                       {globalEntryCount}
                     </span>
                   </TabsTrigger>
@@ -412,7 +411,7 @@ export function MemoryPanel(props: {
                   >
                     <Folder className="h-3.5 w-3.5 shrink-0" />
                     <span className="truncate">{t("settings.memoryCategoryProject")}</span>
-                    <span className="shrink-0 text-[10px] text-muted-foreground">
+                    <span className="shrink-0 text-10px text-muted-foreground">
                       {projectEntryCount}
                     </span>
                   </TabsTrigger>
@@ -422,7 +421,7 @@ export function MemoryPanel(props: {
                   >
                     <BookOpen className="h-3.5 w-3.5 shrink-0" />
                     <span className="truncate">{t("settings.memoryCategoryJournal")}</span>
-                    <span className="shrink-0 text-[10px] text-muted-foreground">
+                    <span className="shrink-0 text-10px text-muted-foreground">
                       {dailyEntryCount}
                     </span>
                   </TabsTrigger>
@@ -449,7 +448,7 @@ export function MemoryPanel(props: {
               </div>
             </div>
 
-            <div className="settings-memory-entry-list min-h-0 flex-1 overflow-auto p-2">
+            <div className="min-h-0 flex-1 overflow-auto p-2 web:max-820:max-h-settings-memory-entry-list-max-h web:max-820:flex-initial web:max-820:overflow-y-auto web:max-820:overscroll-y-contain web:max-820:[-webkit-overflow-scrolling:touch]">
               {tab === "global" ? (
                 renderFlatEntries(globalEntries, "settings.memoryNoGlobalEntries")
               ) : tab === "journal" ? (
@@ -472,7 +471,7 @@ export function MemoryPanel(props: {
                         <span className="min-w-0 flex-1 truncate font-medium" title={group.label}>
                           {group.label}
                         </span>
-                        <span className="shrink-0 rounded bg-background px-1.5 py-0.5 text-[10px] text-muted-foreground">
+                        <span className="shrink-0 rounded bg-background px-1.5 py-0.5 text-10px text-muted-foreground">
                           {group.entries.length}
                         </span>
                       </summary>
@@ -486,7 +485,7 @@ export function MemoryPanel(props: {
             </div>
           </section>
 
-          <section className="settings-memory-detail-section flex min-h-0 flex-col rounded-xl border border-border/60 bg-card">
+          <section className="flex min-h-0 flex-col rounded-xl border border-border/60 bg-card web:max-820:min-h-auto web:max-820:overflow-visible web:max-820:rounded-12px">
             {showCreate ? (
               <div className="shrink-0 border-b border-border/40 p-4">
                 <div className="mb-3 text-sm font-semibold">{t("settings.memoryNew")}</div>
@@ -575,14 +574,14 @@ export function MemoryPanel(props: {
                         <div className="truncate text-sm font-semibold">
                           {selectedTitle(selected)}
                         </div>
-                        <span className="rounded bg-muted px-1.5 py-0.5 text-[10px] text-muted-foreground">
+                        <span className="rounded bg-muted px-1.5 py-0.5 text-10px text-muted-foreground">
                           {memoryScopeLabel(selected.scope, t)}
                         </span>
-                        <span className="rounded bg-muted px-1.5 py-0.5 text-[10px] text-muted-foreground">
+                        <span className="rounded bg-muted px-1.5 py-0.5 text-10px text-muted-foreground">
                           {memoryTypeLabel(selected.memoryType, t)}
                         </span>
                         {selected.meta.unreviewed ? (
-                          <span className="rounded bg-amber-500/10 px-1.5 py-0.5 text-[10px] text-amber-700 dark:text-amber-300">
+                          <span className="rounded bg-amber-500/10 px-1.5 py-0.5 text-10px text-amber-700 dark:text-amber-300">
                             {t("settings.memoryUnreviewed")}
                           </span>
                         ) : null}
@@ -590,11 +589,11 @@ export function MemoryPanel(props: {
                       <div className="mt-1 text-xs text-muted-foreground">
                         {t("settings.memoryUpdated")} {formatTime(selected.meta.updatedAt)}
                       </div>
-                      <div className="mt-1 truncate font-mono text-[11px] text-muted-foreground/70">
+                      <div className="mt-1 truncate font-mono text-11px text-muted-foreground/70">
                         id: {selected.slug}
                       </div>
                       {selectedEntry?.scope === "project" ? (
-                        <div className="mt-1 truncate font-mono text-[11px] text-muted-foreground/70">
+                        <div className="mt-1 truncate font-mono text-11px text-muted-foreground/70">
                           {selectedEntry.workdirPath || selectedEntry.workdirHash}
                         </div>
                       ) : null}
@@ -624,7 +623,7 @@ export function MemoryPanel(props: {
                   </div>
                 </div>
 
-                <div className="settings-memory-detail-body min-h-0 flex-1 overflow-auto p-4">
+                <div className="min-h-0 flex-1 overflow-auto p-4 web:max-820:min-h-auto web:max-820:flex-none web:max-820:overflow-visible">
                   {selected.memoryType === "daily" ? (
                     <div className="space-y-3">
                       <Textarea
@@ -664,7 +663,7 @@ export function MemoryPanel(props: {
                             body: event.target.value,
                           }))
                         }
-                        className="min-h-[360px] resize-y font-mono text-xs leading-relaxed"
+                        className="min-h-360px resize-y font-mono text-xs leading-relaxed"
                       />
                     </div>
                   )}

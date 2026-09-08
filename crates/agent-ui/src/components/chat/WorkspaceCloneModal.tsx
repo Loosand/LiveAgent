@@ -180,7 +180,7 @@ export function WorkspaceCloneModal({
       }}
     >
       <DialogContent
-        className="flex max-h-[90dvh] max-w-xl flex-col p-0"
+        className="flex max-h-90dvh max-w-xl flex-col p-0"
         closeDisabled={cloning}
         closeLabel={t("settings.cancel")}
         showCloseButton
@@ -310,7 +310,7 @@ export function WorkspaceCloneModal({
                         }
                       />
                     </SelectTrigger>
-                    <SelectContent className="max-h-60 w-72 max-w-[calc(100vw-2rem)]">
+                    <SelectContent className="max-h-60 w-72 max-w-viewport-inset-2rem">
                       {branches.map((value) => (
                         <SelectItem key={value} value={value}>
                           {value}

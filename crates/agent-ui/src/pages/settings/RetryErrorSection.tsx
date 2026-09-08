@@ -114,7 +114,7 @@ export function RetryErrorSection(props: SettingsSectionProps) {
                 >
                   <code
                     className={cn(
-                      "flex shrink-0 items-center rounded px-1 py-0.5 font-mono text-[10px] leading-none tabular-nums transition-colors",
+                      "flex shrink-0 items-center rounded px-1 py-0.5 font-mono text-10px leading-none tabular-nums transition-colors",
                       enabled
                         ? "bg-primary/15 text-primary"
                         : "bg-foreground/[0.06] text-muted-foreground",
@@ -122,7 +122,7 @@ export function RetryErrorSection(props: SettingsSectionProps) {
                   >
                     {code}
                   </code>
-                  <span className="min-w-0 flex-1 truncate text-[11.5px] font-medium">
+                  <span className="min-w-0 flex-1 truncate text-11p5px font-medium">
                     {t(`settings.retryError.presetShort.${code}`)}
                   </span>
                   <Check
@@ -178,7 +178,7 @@ export function RetryErrorSection(props: SettingsSectionProps) {
                   title={t("settings.retryErrorRemovePattern")}
                   aria-label={`${t("settings.retryErrorRemovePattern")} ${pattern}`}
                 >
-                  <span className="font-mono text-[11px] leading-none">{pattern}</span>
+                  <span className="font-mono text-11px leading-none">{pattern}</span>
                   <span className="flex h-4 w-4 items-center justify-center rounded-full text-muted-foreground transition-colors group-hover:text-destructive">
                     <X className="h-3 w-3" />
                   </span>

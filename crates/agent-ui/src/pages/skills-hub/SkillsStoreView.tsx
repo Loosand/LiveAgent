@@ -302,10 +302,10 @@ export function SkillsStoreView(props: {
                 <div className="flex items-center gap-3.5">
                   <FrostSpinner />
                   <div className="min-w-0 flex-1">
-                    <div className="text-[13px] font-medium tracking-tight text-foreground">
+                    <div className="text-13px font-medium tracking-tight text-foreground">
                       {t("settings.skillsStoreLoadingTitle")}
                     </div>
-                    <div className="mt-0.5 truncate text-[11px] text-muted-foreground">
+                    <div className="mt-0.5 truncate text-11px text-muted-foreground">
                       {t("settings.skillsStoreLoadingDesc")}
                     </div>
                   </div>
@@ -320,8 +320,8 @@ export function SkillsStoreView(props: {
                       <div className="flex items-center gap-3">
                         <div className="skills-skeleton-shimmer h-9 w-9 shrink-0 rounded-lg" />
                         <div className="flex-1 space-y-2">
-                          <div className="skills-skeleton-shimmer h-3.5 w-full max-w-[8rem] rounded" />
-                          <div className="skills-skeleton-shimmer h-3 w-full max-w-[11rem] rounded" />
+                          <div className="skills-skeleton-shimmer h-3.5 w-full max-w-8rem rounded" />
+                          <div className="skills-skeleton-shimmer h-3 w-full max-w-11rem rounded" />
                         </div>
                       </div>
                       <div className="skills-skeleton-shimmer h-8 w-full rounded-xl" />
@@ -395,7 +395,7 @@ export function SkillsStoreView(props: {
                             <SearchHighlight
                               text={skill.displayName}
                               query={query}
-                              className="truncate text-[13px] font-semibold leading-tight text-foreground"
+                              className="truncate text-13px font-semibold leading-tight text-foreground"
                             />
                             {link ? (
                               <a
@@ -411,7 +411,7 @@ export function SkillsStoreView(props: {
                               </a>
                             ) : null}
                           </div>
-                          <div className="mt-1 text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
+                          <div className="mt-1 text-10px font-medium uppercase tracking-wider text-muted-foreground">
                             v{skill.latestVersion ?? t("settings.skillsStoreVersionLatest")}
                           </div>
                         </div>
@@ -425,12 +425,12 @@ export function SkillsStoreView(props: {
                       />
 
                       {skill.summary ? (
-                        <p className="line-clamp-3 text-[11.5px] leading-[1.45] text-muted-foreground">
+                        <p className="line-clamp-3 text-11p5px leading-1p45 text-muted-foreground">
                           <SearchHighlight text={skill.summary} query={query} />
                         </p>
                       ) : null}
 
-                      <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1 border-t border-border/60 pt-2 text-[10.5px] text-muted-foreground">
+                      <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1 border-t border-border/60 pt-2 text-10p5px text-muted-foreground">
                         <span
                           className="inline-flex items-center gap-1"
                           title={t("settings.skillsStorePreviewDownloads")}
@@ -461,7 +461,7 @@ export function SkillsStoreView(props: {
 
                       {installing && !done ? (
                         <div className="space-y-1.5">
-                          <div className="flex items-center justify-between gap-3 text-[10.5px] text-muted-foreground">
+                          <div className="flex items-center justify-between gap-3 text-10p5px text-muted-foreground">
                             <span>{installPhaseLabel(pending ? undefined : job, t)}</span>
                             {job && !pending ? (
                               <span className="flex items-center gap-1.5">
@@ -495,7 +495,7 @@ export function SkillsStoreView(props: {
                       ) : null}
 
                       {job?.phase === "error" && job.error && !done && !pending ? (
-                        <div className="rounded-xl border border-destructive/25 bg-destructive/5 px-3 py-2 text-[11px] text-destructive">
+                        <div className="rounded-xl border border-destructive/25 bg-destructive/5 px-3 py-2 text-11px text-destructive">
                           {job.error}
                         </div>
                       ) : null}
@@ -652,7 +652,7 @@ function SkillsStorePreviewPopup(props: {
       side="right"
       variant="inset"
       closeLabel={t("settings.cronViewClose")}
-      className="w-full sm:max-w-[34rem]"
+      className="w-full sm:max-w-34rem"
     >
       <SheetHeader className="flex-row items-start gap-3 border-b border-border px-5 py-4 pr-14">
         <div className="flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-border bg-muted text-foreground">
@@ -668,11 +668,11 @@ function SkillsStorePreviewPopup(props: {
           )}
         </div>
         <div className="min-w-0 flex-1">
-          <div className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
+          <div className="text-11px font-medium uppercase tracking-wider text-muted-foreground">
             {t("settings.skillsStorePreviewTitle")}
           </div>
           <SheetTitle className="mt-1 truncate">{data.displayName}</SheetTitle>
-          <div className="mt-1 flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1 text-[11px] text-muted-foreground">
+          <div className="mt-1 flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1 text-11px text-muted-foreground">
             {owner ? <span className="truncate">@{owner}</span> : null}
             <span>v{version}</span>
             {data.updatedAt ? <span>{formatStoreDate(data.updatedAt)}</span> : null}
@@ -683,7 +683,7 @@ function SkillsStorePreviewPopup(props: {
       <SheetPanel className="px-5 py-5">
         <div className="flex flex-col gap-5">
           {data.summary ? (
-            <p className="text-[13px] leading-6 text-muted-foreground">{data.summary}</p>
+            <p className="text-13px leading-6 text-muted-foreground">{data.summary}</p>
           ) : null}
 
           <div className="grid grid-cols-3 gap-2">
@@ -703,7 +703,7 @@ function SkillsStorePreviewPopup(props: {
 
           {installState.installing && !installState.done ? (
             <div className="rounded-lg border border-border bg-muted p-3">
-              <div className="flex items-center justify-between gap-3 text-[11px] text-foreground">
+              <div className="flex items-center justify-between gap-3 text-11px text-foreground">
                 <span>
                   {installPhaseLabel(installState.pending ? undefined : installState.job, t)}
                 </span>
@@ -861,7 +861,7 @@ function SkillsStorePreviewPopup(props: {
 function StorePreviewMetric(props: { label: string; value: string }) {
   return (
     <div className="rounded-lg border border-border bg-card px-3 py-2.5">
-      <div className="text-[10.5px] text-muted-foreground">{props.label}</div>
+      <div className="text-10p5px text-muted-foreground">{props.label}</div>
       <div className="mt-1 text-sm font-semibold tabular-nums text-foreground">{props.value}</div>
     </div>
   );
@@ -883,10 +883,7 @@ function StorePreviewSkeleton() {
         <div className="skills-skeleton-pulse mb-3 h-2.5 w-12 rounded-full" />
         <div className="divide-y divide-border/30">
           {STORE_PREVIEW_FIELD_WIDTHS.map((width) => (
-            <div
-              key={width}
-              className="grid grid-cols-[7rem_minmax(0,1fr)] items-center gap-3 py-2.5"
-            >
+            <div key={width} className="grid grid-cols-form-label items-center gap-3 py-2.5">
               <div className="skills-skeleton-pulse h-2.5 w-14 rounded-full" />
               <div className={cn("skills-skeleton-pulse h-2.5 rounded-full", width)} />
             </div>
@@ -908,7 +905,7 @@ function StorePreviewSkeleton() {
 function StorePreviewField(props: { label: string; value?: string | null }) {
   if (!props.value) return null;
   return (
-    <div className="grid grid-cols-[7rem_minmax(0,1fr)] gap-3 py-2 text-[12px]">
+    <div className="grid grid-cols-form-label gap-3 py-2 text-12px">
       <div className="text-muted-foreground">{props.label}</div>
       <div className="min-w-0 break-words text-foreground">{props.value}</div>
     </div>

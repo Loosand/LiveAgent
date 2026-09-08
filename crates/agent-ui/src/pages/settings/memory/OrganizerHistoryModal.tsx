@@ -242,7 +242,7 @@ export function OrganizerHistoryModal(props: {
   return (
     <Dialog open onOpenChange={(open) => !open && onClose()}>
       <DialogContent
-        className="flex h-[min(760px,calc(100dvh-2rem))] max-w-6xl flex-col p-0"
+        className="flex h-dialog-760px max-w-6xl flex-col p-0"
         closeLabel={t("settings.memorySettingsClose")}
         showCloseButton
       >
@@ -253,7 +253,7 @@ export function OrganizerHistoryModal(props: {
           </DialogDescription>
         </DialogHeader>
 
-        <DialogBody className="grid grid-cols-[280px_minmax(0,1fr)] overflow-hidden p-0">
+        <DialogBody className="grid grid-cols-memory-navigation overflow-hidden p-0">
           <aside className="flex min-h-0 flex-col border-r border-border/50">
             <div className="space-y-2 border-b border-border/40 p-3">
               <div className="flex items-center gap-2">
@@ -338,13 +338,13 @@ export function OrganizerHistoryModal(props: {
                         <div className="flex items-center justify-between gap-2">
                           <span
                             className={cn(
-                              "rounded border px-1.5 py-0.5 text-[10px]",
+                              "rounded border px-1.5 py-0.5 text-10px",
                               organizerStatusClass(run.status),
                             )}
                           >
                             {organizerStatusLabel(run.status, t)}
                           </span>
-                          <span className="text-[10px] text-muted-foreground">
+                          <span className="text-10px text-muted-foreground">
                             {organizerTriggerLabel(run.trigger, t)}
                           </span>
                         </div>
@@ -353,7 +353,7 @@ export function OrganizerHistoryModal(props: {
                             run.error ||
                             t("settings.memoryOrganizerHistoryPending")}
                         </div>
-                        <div className="mt-1 truncate text-[11px] text-muted-foreground">
+                        <div className="mt-1 truncate text-11px text-muted-foreground">
                           {formatTime(run.startedAt || run.createdAt)} · {modelNameFromRun(run)}
                         </div>
                       </Button>
@@ -395,11 +395,11 @@ export function OrganizerHistoryModal(props: {
                         {selectedRun.scope} / {selectedRun.mode}
                       </span>
                     </div>
-                    <div className="font-mono text-[11px] text-muted-foreground">
+                    <div className="font-mono text-11px text-muted-foreground">
                       {selectedRun.runId}
                     </div>
                   </div>
-                  <div className="grid shrink-0 grid-cols-[auto_minmax(9rem,auto)] gap-x-2 gap-y-1 rounded-md border border-border/50 bg-background/70 px-3 py-2 text-xs text-muted-foreground">
+                  <div className="grid shrink-0 grid-cols-skill-filter gap-x-2 gap-y-1 rounded-md border border-border/50 bg-background/70 px-3 py-2 text-xs text-muted-foreground">
                     <span className="whitespace-nowrap">
                       {t("settings.memoryOrganizerStarted")}
                     </span>
@@ -440,7 +440,7 @@ export function OrganizerHistoryModal(props: {
                       key={key}
                       className="rounded-lg border border-border/50 bg-background/70 p-3"
                     >
-                      <div className="text-[11px] text-muted-foreground">{t(String(key))}</div>
+                      <div className="text-11px text-muted-foreground">{t(String(key))}</div>
                       <div className="mt-1 text-lg font-semibold">{value}</div>
                     </div>
                   ))}
@@ -501,41 +501,41 @@ export function OrganizerHistoryModal(props: {
                               className="min-w-0 flex-1"
                             >
                               <span className="flex flex-wrap items-center gap-2">
-                                <span className="rounded border border-border/60 px-1.5 py-0.5 text-[10px] uppercase text-muted-foreground">
+                                <span className="rounded border border-border/60 px-1.5 py-0.5 text-10px uppercase text-muted-foreground">
                                   {decision.op === "delete"
                                     ? t("settings.memoryOrganizerDecisionDelete")
                                     : t("settings.memoryOrganizerDecisionUpsert")}
                                 </span>
-                                <span className="font-mono text-[11px]">{decision.slug}</span>
+                                <span className="font-mono text-11px">{decision.slug}</span>
                                 {decision.scope ? (
-                                  <span className="text-[11px] text-muted-foreground">
+                                  <span className="text-11px text-muted-foreground">
                                     {decision.scope}
                                     {decision.workdirHash ? `:${decision.workdirHash}` : ""}
                                   </span>
                                 ) : null}
                                 <span
                                   className={cn(
-                                    "rounded border px-1.5 py-0.5 text-[10px]",
+                                    "rounded border px-1.5 py-0.5 text-10px",
                                     organizerRiskClass(decision.riskLevel),
                                   )}
                                 >
                                   {organizerRiskLabel(decision.riskLevel, t)}
                                 </span>
                                 {decision.confidence != null ? (
-                                  <span className="rounded border border-border/60 px-1.5 py-0.5 text-[10px] text-muted-foreground">
+                                  <span className="rounded border border-border/60 px-1.5 py-0.5 text-10px text-muted-foreground">
                                     {t("settings.memoryOrganizerConfidence")}{" "}
                                     {decision.confidence.toFixed(2)}
                                   </span>
                                 ) : null}
                                 {decision.requiresUserAck ? (
-                                  <span className="rounded border border-amber-500/30 bg-amber-500/[0.06] px-1.5 py-0.5 text-[10px] text-amber-700 dark:text-amber-300">
+                                  <span className="rounded border border-amber-500/30 bg-amber-500/[0.06] px-1.5 py-0.5 text-10px text-amber-700 dark:text-amber-300">
                                     {t("settings.memoryOrganizerRequiresAck")}
                                   </span>
                                 ) : null}
                                 {decision.applyStatus ? (
                                   <span
                                     className={cn(
-                                      "rounded border px-1.5 py-0.5 text-[10px]",
+                                      "rounded border px-1.5 py-0.5 text-10px",
                                       organizerApplyStatusClass(decision.applyStatus),
                                     )}
                                   >
@@ -552,7 +552,7 @@ export function OrganizerHistoryModal(props: {
                                 </span>
                               ) : null}
                               {decision.sourceSlugs?.length ? (
-                                <span className="mt-1 block break-words font-mono text-[10px] text-muted-foreground">
+                                <span className="mt-1 block break-words font-mono text-10px text-muted-foreground">
                                   {t("settings.memoryOrganizerSources")}{" "}
                                   {decision.sourceSlugs.join(", ")}
                                 </span>
@@ -576,7 +576,7 @@ export function OrganizerHistoryModal(props: {
                           key={key}
                           className="rounded-md border border-border/50 bg-background/70 px-3 py-2"
                         >
-                          <div className="text-[11px] text-muted-foreground">{t(key)}</div>
+                          <div className="text-11px text-muted-foreground">{t(key)}</div>
                           <div className="mt-1 text-sm font-semibold">{count}</div>
                         </div>
                       ))}
@@ -599,19 +599,19 @@ export function OrganizerHistoryModal(props: {
                           <div className="mb-1 flex flex-wrap items-center gap-2">
                             <span
                               className={cn(
-                                "rounded border px-1.5 py-0.5 text-[10px]",
+                                "rounded border px-1.5 py-0.5 text-10px",
                                 organizerReviewItemClass(item),
                               )}
                             >
                               {organizerReviewItemLabel(item, t)}
                             </span>
                             {item.code ? (
-                              <span className="font-mono text-[10px] text-muted-foreground">
+                              <span className="font-mono text-10px text-muted-foreground">
                                 {item.code}
                               </span>
                             ) : null}
                             {item.slug ? (
-                              <span className="font-mono text-[10px] text-muted-foreground">
+                              <span className="font-mono text-10px text-muted-foreground">
                                 {item.slug}
                               </span>
                             ) : null}
@@ -647,7 +647,7 @@ export function OrganizerHistoryModal(props: {
                     <summary className="cursor-pointer text-xs font-semibold text-muted-foreground">
                       {t("settings.memoryOrganizerTrimmedProtocol")}
                     </summary>
-                    <pre className="mt-3 max-h-80 overflow-auto whitespace-pre-wrap break-words rounded bg-muted/30 p-3 text-[11px]">
+                    <pre className="mt-3 max-h-80 overflow-auto whitespace-pre-wrap break-words rounded bg-muted/30 p-3 text-11px">
                       {JSON.stringify(rawBlocks, null, 2)}
                     </pre>
                   </details>

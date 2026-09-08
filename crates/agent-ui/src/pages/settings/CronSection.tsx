@@ -141,7 +141,7 @@ export function CronSection(props: SettingsSectionProps) {
       <div className="settings-section-heading-row flex items-center justify-between gap-4">
         <div className="settings-section-title-group flex items-center gap-3">
           <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-amber-500/10">
-            <Clock3 className="h-[18px] w-[18px] text-amber-500" />
+            <Clock3 className="h-18px w-18px text-amber-500" />
           </div>
           <div>
             <h3 className="text-sm font-semibold">{t("settings.cronTitle")}</h3>
@@ -238,7 +238,7 @@ export function CronSection(props: SettingsSectionProps) {
                       </span>
                       <span
                         className={cn(
-                          "shrink-0 rounded-full px-1.5 py-0.5 text-[10px] font-medium leading-none",
+                          "shrink-0 rounded-full px-1.5 py-0.5 text-10px font-medium leading-none",
                           tone.bg,
                           tone.text,
                         )}
@@ -248,7 +248,7 @@ export function CronSection(props: SettingsSectionProps) {
                       {task.lastError ? (
                         <span
                           title={task.lastError}
-                          className="flex shrink-0 items-center gap-1 rounded-full bg-red-500/10 px-1.5 py-0.5 text-[10px] font-medium leading-none text-red-600 dark:text-red-400"
+                          className="flex shrink-0 items-center gap-1 rounded-full bg-red-500/10 px-1.5 py-0.5 text-10px font-medium leading-none text-red-600 dark:text-red-400"
                         >
                           <AlertTriangle className="h-2.5 w-2.5" />
                           {t("settings.cronScheduleError")}
@@ -261,13 +261,13 @@ export function CronSection(props: SettingsSectionProps) {
                   </div>
 
                   {/* Cron Expression - fixed width for alignment */}
-                  <div className="hidden w-[140px] shrink-0 items-center justify-center gap-1.5 rounded-full bg-amber-500/10 px-2.5 py-1 text-[11px] font-medium text-amber-600 dark:text-amber-400 md:flex">
+                  <div className="hidden w-140px shrink-0 items-center justify-center gap-1.5 rounded-full bg-amber-500/10 px-2.5 py-1 text-11px font-medium text-amber-600 dark:text-amber-400 md:flex">
                     <Clock3 className="h-3 w-3 shrink-0" />
                     <span className="font-mono">{task.cron}</span>
                   </div>
                   <div
                     className={cn(
-                      "hidden w-[74px] shrink-0 items-center justify-center gap-1 rounded-full px-2 py-1 text-[11px] font-medium md:flex",
+                      "hidden w-74px shrink-0 items-center justify-center gap-1 rounded-full px-2 py-1 text-11px font-medium md:flex",
                       exhausted
                         ? "bg-red-500/10 text-red-600 dark:text-red-400"
                         : task.remainingExecutions == null

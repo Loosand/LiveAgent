@@ -69,7 +69,7 @@ test("the local import shell and card padding stay stable during the initial sca
 
 test("the local import bulk toolbar is bottom-aligned with balanced empty-state spacing", () => {
   assert.match(importViewSource, /pointer-events-none absolute inset-x-0 bottom-1/);
-  assert.match(importViewSource, /max-sm:bottom-\[calc\(0\.25rem\+env\(safe-area-inset-bottom\)\)\]/);
+  assert.match(importViewSource, /max-sm:bottom-safe-bottom-offset-compact/);
   assert.match(importViewSource, /\? "py-2 pl-4 pr-2"\s*: "px-4 py-2\.5"/);
   assert.match(importViewSource, /className="h-7 rounded-full px-3 text-xs"/);
   assert.doesNotMatch(importViewSource, /pointer-events-none sticky bottom-3/);

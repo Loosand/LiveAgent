@@ -539,7 +539,7 @@ export function WorkspaceFilePreviewOverlay(props: WorkspaceFilePreviewOverlayPr
           <div className="truncate text-sm font-semibold leading-tight">
             {t("workspaceFilePreview.title")}
           </div>
-          <div className="truncate text-[11px] text-muted-foreground">{activePath}</div>
+          <div className="truncate text-11px text-muted-foreground">{activePath}</div>
         </div>
         <div className="flex shrink-0 items-center gap-1">
           {canOpenEditor && activePreviewRequest ? (
@@ -630,7 +630,7 @@ export function WorkspaceFilePreviewOverlay(props: WorkspaceFilePreviewOverlayPr
         )}
       </div>
 
-      <div className="flex h-8 shrink-0 items-center justify-between gap-3 border-t border-border bg-muted/35 px-3 text-[11px] text-muted-foreground">
+      <div className="flex h-8 shrink-0 items-center justify-between gap-3 border-t border-border bg-muted/35 px-3 text-11px text-muted-foreground">
         <span className="min-w-0 truncate">{activePath}</span>
         {preview ? (
           <span className="shrink-0">
@@ -813,7 +813,7 @@ function PreviewBody(props: {
           )}
         </div>
         {spreadsheet?.truncatedRows || spreadsheet?.truncatedColumns ? (
-          <div className="shrink-0 border-t border-border bg-muted/35 px-3 py-1.5 text-[11px] text-muted-foreground">
+          <div className="shrink-0 border-t border-border bg-muted/35 px-3 py-1.5 text-11px text-muted-foreground">
             {t("workspaceFilePreview.truncated")}
           </div>
         ) : null}
@@ -1173,7 +1173,7 @@ function WorkspaceImagePreviewBody(props: {
           >
             <ChevronRight className="h-4 w-4" />
           </ImagePreviewToolButton>
-          <span className="ml-1 shrink-0 text-[11px] text-muted-foreground">{counter}</span>
+          <span className="ml-1 shrink-0 text-11px text-muted-foreground">{counter}</span>
         </div>
         <div className="flex shrink-0 items-center gap-1">
           <ImagePreviewToolButton
@@ -1183,7 +1183,7 @@ function WorkspaceImagePreviewBody(props: {
           >
             <Minus className="h-4 w-4" />
           </ImagePreviewToolButton>
-          <span className="w-11 text-center text-[11px] tabular-nums text-muted-foreground">
+          <span className="w-11 text-center text-11px tabular-nums text-muted-foreground">
             {Math.round(viewerState.scale * 100)}%
           </span>
           <ImagePreviewToolButton
@@ -1336,7 +1336,7 @@ function WorkspaceImagePreviewBody(props: {
         <div
           className="absolute inset-0 flex items-center justify-center transition-[opacity,transform,filter] duration-200 ease-out motion-reduce:transition-none"
           style={{
-            filter: isEntering ? "blur(1px)" : "blur(0px)",
+            filter: isEntering ? "blur(var(--spacing-1px))" : "blur(0px)",
             opacity: isEntering ? 0 : 1,
             transform: isEntering
               ? `translateX(${enterTranslateX}px) scale(${enterScale})`

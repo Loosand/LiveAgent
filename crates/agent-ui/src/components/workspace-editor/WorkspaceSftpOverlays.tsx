@@ -69,7 +69,7 @@ export function CreateFolderDialog(props: {
           <DialogHeader>
             <DialogTitle>{title}</DialogTitle>
             {path ? (
-              <DialogDescription className="mt-1 truncate font-mono text-[11px]">
+              <DialogDescription className="mt-1 truncate font-mono text-11px">
                 {path}
               </DialogDescription>
             ) : null}
@@ -203,7 +203,7 @@ export function RenameEntryDialog(props: {
           <DialogHeader>
             <DialogTitle>{title}</DialogTitle>
             {path ? (
-              <DialogDescription className="mt-1 truncate font-mono text-[11px]">
+              <DialogDescription className="mt-1 truncate font-mono text-11px">
                 {path}
               </DialogDescription>
             ) : null}
@@ -264,24 +264,24 @@ export function TransferToast(props: {
       : "text-sky-600 dark:text-sky-300";
 
   return (
-    <div className="pointer-events-auto relative ml-auto flex h-full w-[340px] max-w-[50%] shrink-0 items-center gap-2 pl-3 text-foreground before:absolute before:bottom-2 before:left-0 before:top-2 before:w-px before:bg-border/60">
+    <div className="pointer-events-auto relative ml-auto flex h-full w-340px max-w-[50%] shrink-0 items-center gap-2 pl-3 text-foreground before:absolute before:bottom-2 before:left-0 before:top-2 before:w-px before:bg-border/60">
       <div className="flex h-4 w-4 shrink-0 items-center justify-center">
         <StatusIcon className={cn("h-3.5 w-3.5", iconClass, isRunning && "animate-spin")} />
       </div>
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-1.5">
-          <span className="shrink-0 text-[11px] font-medium leading-none text-foreground">
+          <span className="shrink-0 text-11px font-medium leading-none text-foreground">
             {statusLabel}
           </span>
-          <span className="min-w-0 flex-1 truncate font-mono text-[11px] leading-none text-muted-foreground/90">
+          <span className="min-w-0 flex-1 truncate font-mono text-11px leading-none text-muted-foreground/90">
             {currentPath}
           </span>
-          <span className="shrink-0 font-mono text-[10px] leading-none text-muted-foreground">
+          <span className="shrink-0 font-mono text-10px leading-none text-muted-foreground">
             {progress}%
           </span>
         </div>
         {transfer.error ? (
-          <div className="mt-1.5 truncate text-[11px] leading-none text-destructive">
+          <div className="mt-1.5 truncate text-11px leading-none text-destructive">
             {transfer.error}
           </div>
         ) : (
@@ -295,10 +295,10 @@ export function TransferToast(props: {
                 style={{ width: `${progress}%` }}
               />
             </div>
-            <span className="shrink-0 text-[10px] leading-none text-muted-foreground">
+            <span className="shrink-0 text-10px leading-none text-muted-foreground">
               {transfer.filesDone}/{transfer.filesTotal || queueCount || 1} {filesLabel}
             </span>
-            <span className="shrink-0 font-mono text-[10px] leading-none text-muted-foreground">
+            <span className="shrink-0 font-mono text-10px leading-none text-muted-foreground">
               {formatBytes(transfer.bytesDone)} / {formatBytes(transfer.bytesTotal)}
             </span>
           </div>
@@ -307,7 +307,7 @@ export function TransferToast(props: {
       {onCancel ? (
         <button
           type="button"
-          className="shrink-0 rounded px-1.5 py-0.5 text-[11px] text-destructive hover:bg-destructive/10"
+          className="shrink-0 rounded px-1.5 py-0.5 text-11px text-destructive hover:bg-destructive/10"
           onClick={onCancel}
         >
           {cancelLabel}
@@ -336,7 +336,7 @@ export function DragPreview(props: {
 
   return (
     <div
-      className="layer-toast pointer-events-none fixed flex w-[260px] max-w-[calc(100vw-32px)] items-center gap-2 rounded-md bg-sky-500/90 px-2.5 py-2 text-xs text-white shadow-xl ring-1 ring-sky-200/50 backdrop-blur-sm"
+      className="layer-toast pointer-events-none fixed flex w-260px max-w-viewport-inset-32px items-center gap-2 rounded-md bg-sky-500/90 px-2.5 py-2 text-xs text-white shadow-xl ring-1 ring-sky-200/50 backdrop-blur-sm"
       style={{
         left: x + 18,
         top: y + 14,
@@ -351,17 +351,17 @@ export function DragPreview(props: {
           {previewEntry.name}
           {count > 1 ? ` +${count - 1}` : ""}
         </span>
-        <span className="block truncate text-[10px] leading-3 text-white/75">
+        <span className="block truncate text-10px leading-3 text-white/75">
           {typeLabel(previewEntry)}
           {previewEntry.kind === "directory" ? "" : ` · ${formatBytes(previewEntry.sizeBytes)}`}
         </span>
       </span>
       {count > 1 ? (
-        <span className="shrink-0 rounded bg-white/15 px-1.5 py-0.5 font-mono text-[10px] text-white/90">
+        <span className="shrink-0 rounded bg-white/15 px-1.5 py-0.5 font-mono text-10px text-white/90">
           {count}
         </span>
       ) : previewEntry.kind === "directory" ? null : (
-        <span className="shrink-0 rounded bg-white/15 px-1.5 py-0.5 font-mono text-[10px] text-white/90">
+        <span className="shrink-0 rounded bg-white/15 px-1.5 py-0.5 font-mono text-10px text-white/90">
           {formatBytes(previewEntry.sizeBytes)}
         </span>
       )}

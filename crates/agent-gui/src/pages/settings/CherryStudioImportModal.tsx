@@ -168,7 +168,7 @@ export function CherryStudioImportModal(props: CherryStudioImportModalProps) {
   return (
     <Dialog open onOpenChange={(open) => !open && !importing && onClose()}>
       <DialogContent
-        className="flex h-[min(35rem,88dvh)] max-w-2xl flex-col p-0"
+        className="flex h-dialog-35rem max-w-2xl flex-col p-0"
         closeDisabled={importing}
         closeLabel="关闭"
         showCloseButton
@@ -183,8 +183,8 @@ export function CherryStudioImportModal(props: CherryStudioImportModalProps) {
           <Button
             type="button"
             variant="ghost"
-            size="icon"
-            className="h-8 w-8 shrink-0 text-muted-foreground"
+            size="icon-sm"
+            className="shrink-0 text-muted-foreground"
             onClick={() => setPathDialogOpen(true)}
             disabled={importing}
             title="Cherry Studio 数据目录设置"
@@ -260,12 +260,12 @@ export function CherryStudioImportModal(props: CherryStudioImportModalProps) {
                         <span className="block truncate text-sm font-medium">
                           {PROVIDER_LABELS[group.type]}
                         </span>
-                        <span className="block text-[11px] text-muted-foreground">
+                        <span className="block text-11px text-muted-foreground">
                           {group.items.length} 项配置
                         </span>
                       </span>
                       {groupSelected > 0 ? (
-                        <span className="shrink-0 rounded-full bg-primary/10 px-1.5 py-0.5 text-[10px] font-semibold text-primary">
+                        <span className="shrink-0 rounded-full bg-primary/10 px-1.5 py-0.5 text-10px font-semibold text-primary">
                           {groupSelected}
                         </span>
                       ) : null}
@@ -307,16 +307,16 @@ export function CherryStudioImportModal(props: CherryStudioImportModalProps) {
                         <span className="min-w-0 flex-1">
                           <span className="flex flex-wrap items-center gap-2">
                             <strong className="text-sm font-medium">{item.name}</strong>
-                            <span className="rounded bg-muted px-1.5 py-0.5 text-[10px] text-muted-foreground">
+                            <span className="rounded bg-muted px-1.5 py-0.5 text-10px text-muted-foreground">
                               {itemProtocolLabel(item)}
                             </span>
                             {existing ? (
-                              <span className="rounded bg-blue-500/10 px-1.5 py-0.5 text-[10px] text-blue-600 dark:text-blue-300">
+                              <span className="rounded bg-blue-500/10 px-1.5 py-0.5 text-10px text-blue-600 dark:text-blue-300">
                                 将更新
                               </span>
                             ) : null}
                             {!item.enabled ? (
-                              <span className="rounded bg-amber-500/10 px-1.5 py-0.5 text-[10px] text-amber-700 dark:text-amber-300">
+                              <span className="rounded bg-amber-500/10 px-1.5 py-0.5 text-10px text-amber-700 dark:text-amber-300">
                                 Cherry 中已禁用
                               </span>
                             ) : null}
@@ -395,7 +395,7 @@ export function CherryStudioImportModal(props: CherryStudioImportModalProps) {
                   type="button"
                   variant="outline"
                   size="icon"
-                  className="h-9 w-9 shrink-0"
+                  className="shrink-0"
                   disabled={scanning || importing}
                   onClick={onChooseDataDirectory}
                   title="选择数据目录"

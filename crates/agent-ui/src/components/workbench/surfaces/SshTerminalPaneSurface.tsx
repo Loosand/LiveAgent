@@ -78,7 +78,7 @@ export function SshTerminalPaneSurface(props: SshTerminalPaneSurfaceProps) {
       {session ? (
         <div
           data-terminal-pane-ssh-status={status ?? "unknown"}
-          className="flex h-7 shrink-0 items-center gap-2 border-b border-border/60 bg-muted/40 px-3 text-[11px] text-muted-foreground"
+          className="flex h-7 shrink-0 items-center gap-2 border-b border-border/60 bg-muted/40 px-3 text-11px text-muted-foreground"
         >
           <span
             aria-hidden="true"
@@ -115,7 +115,7 @@ export function SshTerminalPaneSurface(props: SshTerminalPaneSurfaceProps) {
             <Button
               variant="ghost"
               size="sm"
-              className="h-5 gap-1 px-1.5 text-[11px]"
+              className="h-5 gap-1 px-1.5 text-11px"
               title={t("workbench.sshReconnect")}
               aria-label={t("workbench.sshReconnect")}
               disabled={reconnecting}

@@ -35,7 +35,7 @@ export function WorkspaceGeneralSettingsPanel(props: {
           <label htmlFor="workspace-project-name" className="shrink-0 text-sm font-medium">
             {t("chat.workspaceSettingsProjectName")}
           </label>
-          <div className="w-[280px] max-w-full max-[560px]:w-full">
+          <div className="w-280px max-w-full max-[560px]:w-full">
             <Input
               id="workspace-project-name"
               value={projectName}

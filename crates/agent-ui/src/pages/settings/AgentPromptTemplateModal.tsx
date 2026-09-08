@@ -50,7 +50,7 @@ export function AgentPromptTemplateModal({
   return (
     <Dialog open onOpenChange={(open) => !open && onClose()}>
       <DialogContent
-        className="flex max-h-[90dvh] max-w-4xl flex-col p-0"
+        className="flex max-h-90dvh max-w-4xl flex-col p-0"
         closeLabel={t("settings.cancel")}
         showCloseButton
       >
@@ -111,7 +111,7 @@ export function AgentPromptTemplateModal({
               </div>
             </section>
 
-            <section className="flex min-h-0 flex-col rounded-2xl border border-border/60 bg-card p-5 shadow-xs md:min-h-[438px]">
+            <section className="flex min-h-0 flex-col rounded-2xl border border-border/60 bg-card p-5 shadow-xs md:min-h-438px">
               <div className="mb-4 flex flex-wrap items-start justify-between gap-x-4 gap-y-2">
                 <div className="flex items-start gap-3">
                   <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-border/60 bg-muted/40 text-muted-foreground">
@@ -135,7 +135,7 @@ export function AgentPromptTemplateModal({
                 id="agent-template-prompt"
                 value={prompt}
                 placeholder={t("settings.agentsPromptPlaceholder")}
-                className="h-80 min-h-80 flex-1 resize-none overflow-y-auto overscroll-contain p-4 font-mono text-[13px] leading-6 md:h-auto md:min-h-0"
+                className="h-80 min-h-80 flex-1 resize-none overflow-y-auto overscroll-contain p-4 font-mono text-13px leading-6 md:h-auto md:min-h-0"
                 onChange={(e) => setPrompt(e.currentTarget.value)}
               />
             </section>

@@ -136,7 +136,7 @@ export function ContextUsageRing(props: {
     <Meter
       value={clampedPercentage}
       aria-valuetext={usageLabel}
-      className="relative flex h-8 w-8 items-center justify-center text-[8px] font-semibold leading-none tabular-nums text-foreground/75"
+      className="relative flex h-8 w-8 items-center justify-center text-8px font-semibold leading-none tabular-nums text-foreground/75"
     >
       <svg aria-hidden="true" viewBox="0 0 24 24" className="absolute inset-0 h-8 w-8 -rotate-90">
         <circle

@@ -18,7 +18,7 @@ export function createSettingsExtension(props: SettingsPageProps): {
     iconClassName: "h-3.5 w-3.5",
     slots: {
       sidebarLeading: isMacOsTauri() ? (
-        <div data-tauri-drag-region className="h-[38px] shrink-0" />
+        <div data-tauri-drag-region className="h-38px shrink-0" />
       ) : null,
       mainLeading: <MacOsTitleBarSpacer />,
     },

@@ -117,7 +117,7 @@ function RedactionPicker(props: {
         disabled={disabled}
         onClick={() => onChange(true)}
         className={cn(
-          "relative rounded-full px-2.5 py-0.5 text-[calc(11px*var(--zone-font-scale,1))] font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/35 disabled:cursor-not-allowed",
+          "relative rounded-full px-2.5 py-0.5 text-scaled-11px font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/35 disabled:cursor-not-allowed",
           value
             ? "bg-emerald-500 text-white shadow-sm"
             : "text-muted-foreground hover:text-foreground",
@@ -133,7 +133,7 @@ function RedactionPicker(props: {
         disabled={disabled}
         onClick={() => onChange(false)}
         className={cn(
-          "relative rounded-full px-2.5 py-0.5 text-[calc(11px*var(--zone-font-scale,1))] font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500/35 disabled:cursor-not-allowed",
+          "relative rounded-full px-2.5 py-0.5 text-scaled-11px font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500/35 disabled:cursor-not-allowed",
           !value
             ? "bg-background text-foreground shadow-sm"
             : "text-muted-foreground hover:text-foreground",
@@ -153,14 +153,14 @@ function EmptyState(props: { isFiltered: boolean }) {
   const { isFiltered } = props;
   const { t } = useLocale();
   return (
-    <div className="flex min-h-[220px] flex-col items-center justify-center rounded-2xl border border-dashed border-border/70 bg-muted/20 px-6 py-8 text-center">
+    <div className="flex min-h-220px flex-col items-center justify-center rounded-2xl border border-dashed border-border/70 bg-muted/20 px-6 py-8 text-center">
       <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-sky-500/15 bg-sky-500/10 text-sky-500">
         <Share2 className="h-5 w-5" />
       </div>
       <div className="mt-4 text-sm font-semibold text-foreground">
         {isFiltered ? t("sharedHistory.emptyFilteredTitle") : t("sharedHistory.emptyTitle")}
       </div>
-      <div className="mt-1 max-w-[22rem] text-xs leading-5 text-muted-foreground">
+      <div className="mt-1 max-w-22rem text-xs leading-5 text-muted-foreground">
         {isFiltered ? t("sharedHistory.emptyFilteredDesc") : t("sharedHistory.emptyDesc")}
       </div>
     </div>
@@ -229,7 +229,7 @@ export function SharedHistoryManagerModal<Conversation extends SharedHistorySumm
   return (
     <Dialog open onOpenChange={(open) => !open && onClose()}>
       <DialogContent
-        className="flex max-h-[86dvh] max-w-3xl flex-col p-0"
+        className="flex max-h-86dvh max-w-3xl flex-col p-0"
         closeLabel={t("sharedHistory.close")}
         showCloseButton
       >
@@ -252,7 +252,7 @@ export function SharedHistoryManagerModal<Conversation extends SharedHistorySumm
 
           <div className="mt-4 grid grid-cols-3 gap-2">
             <div className="min-w-0 rounded-2xl border border-border/60 bg-muted/25 px-2.5 py-2 sm:px-3">
-              <div className="truncate text-[calc(10px*var(--zone-font-scale,1))] font-medium uppercase leading-4 text-muted-foreground sm:text-[calc(11px*var(--zone-font-scale,1))]">
+              <div className="truncate text-scaled-10px font-medium uppercase leading-4 text-muted-foreground sm:text-scaled-11px">
                 {t("sharedHistory.summaryShared")}
               </div>
               <div className="mt-1 text-lg font-semibold text-foreground">
@@ -260,13 +260,13 @@ export function SharedHistoryManagerModal<Conversation extends SharedHistorySumm
               </div>
             </div>
             <div className="min-w-0 rounded-2xl border border-border/60 bg-muted/25 px-2.5 py-2 sm:px-3">
-              <div className="truncate text-[calc(10px*var(--zone-font-scale,1))] font-medium uppercase leading-4 text-muted-foreground sm:text-[calc(11px*var(--zone-font-scale,1))]">
+              <div className="truncate text-scaled-10px font-medium uppercase leading-4 text-muted-foreground sm:text-scaled-11px">
                 {t("sharedHistory.summaryCopyable")}
               </div>
               <div className="mt-1 text-lg font-semibold text-foreground">{copyableCount}</div>
             </div>
             <div className="min-w-0 rounded-2xl border border-border/60 bg-muted/25 px-2.5 py-2 sm:px-3">
-              <div className="truncate text-[calc(10px*var(--zone-font-scale,1))] font-medium uppercase leading-4 text-muted-foreground sm:text-[calc(11px*var(--zone-font-scale,1))]">
+              <div className="truncate text-scaled-10px font-medium uppercase leading-4 text-muted-foreground sm:text-scaled-11px">
                 {t("sharedHistory.summaryStatus")}
               </div>
               <div className="mt-1 flex min-w-0 items-center gap-1.5 text-sm font-medium text-foreground sm:gap-2">
@@ -313,7 +313,7 @@ export function SharedHistoryManagerModal<Conversation extends SharedHistorySumm
               variant="outline"
               onClick={onRefresh}
               size="icon"
-              className="h-9 w-9 shrink-0 rounded-xl border-border/70"
+              className="shrink-0 rounded-xl border-border/70"
               title={t("sharedHistory.refresh")}
               aria-label={t("sharedHistory.refresh")}
             >
@@ -354,16 +354,16 @@ export function SharedHistoryManagerModal<Conversation extends SharedHistorySumm
                           <span className="min-w-0 truncate text-sm font-semibold text-foreground">
                             {conversation.title}
                           </span>
-                          <span className="shrink-0 rounded-full border border-sky-500/20 bg-sky-500/10 px-2 py-0.5 text-[calc(11px*var(--zone-font-scale,1))] font-medium text-sky-600 dark:text-sky-400">
+                          <span className="shrink-0 rounded-full border border-sky-500/20 bg-sky-500/10 px-2 py-0.5 text-scaled-11px font-medium text-sky-600 dark:text-sky-400">
                             {t("sharedHistory.publicBadge")}
                           </span>
                           {redactToolContent ? (
-                            <span className="shrink-0 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-2 py-0.5 text-[calc(11px*var(--zone-font-scale,1))] font-medium text-emerald-600 dark:text-emerald-400">
+                            <span className="shrink-0 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-2 py-0.5 text-scaled-11px font-medium text-emerald-600 dark:text-emerald-400">
                               {t("sharedHistory.redactedBadge")}
                             </span>
                           ) : null}
                         </div>
-                        <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-[calc(11px*var(--zone-font-scale,1))] text-muted-foreground">
+                        <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-scaled-11px text-muted-foreground">
                           <span>{messageCount}</span>
                           <span>
                             {t("sharedHistory.updatedAt").replace(
@@ -375,7 +375,7 @@ export function SharedHistoryManagerModal<Conversation extends SharedHistorySumm
                               ),
                             )}
                           </span>
-                          <span className="max-w-[18rem] truncate">{conversation.model}</span>
+                          <span className="max-w-18rem truncate">{conversation.model}</span>
                         </div>
                       </div>
                       <div className="flex shrink-0 items-center gap-2">
@@ -477,7 +477,7 @@ export function SharedHistoryManagerModal<Conversation extends SharedHistorySumm
                             {t("sharedHistory.redactionTitle")}
                           </div>
                           <div
-                            className="mt-0.5 truncate text-[calc(11px*var(--zone-font-scale,1))] leading-4 text-muted-foreground"
+                            className="mt-0.5 truncate text-scaled-11px leading-4 text-muted-foreground"
                             title={t("sharedHistory.redactionDescriptionTitle")}
                           >
                             {t("sharedHistory.redactionDescription")}

@@ -534,7 +534,7 @@ export function RemotePathPickerModal(props: RemotePathPickerModalProps) {
       }}
     >
       <DialogContent
-        className="flex h-[min(650px,92vh)] max-h-[92vh] max-w-4xl flex-col p-0"
+        className="flex h-dialog-650px-vh max-h-92vh max-w-4xl flex-col p-0"
         closeLabel={t("settings.cancel")}
         showCloseButton
       >
@@ -549,11 +549,11 @@ export function RemotePathPickerModal(props: RemotePathPickerModalProps) {
         </DialogHeader>
 
         <DialogSubheader className="px-6">
-          <div className="settings-field-row flex items-center gap-3">
+          <div className="flex items-center gap-3 max-820:min-w-0">
             <div className="w-24 shrink-0 text-xs font-medium text-muted-foreground">
               {mode === "file" ? t("settings.pathPickerPathLabel") : t("settings.workdir")}
             </div>
-            <Input value={headerPath} readOnly className="font-mono text-[13px]" />
+            <Input value={headerPath} readOnly className="font-mono text-13px" />
           </div>
         </DialogSubheader>
 

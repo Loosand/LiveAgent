@@ -1416,8 +1416,8 @@ export function SkillsHubPage(props: SkillsHubPageProps) {
             </div>
             <Button
               variant="ghost"
-              size="icon"
-              className="h-7 w-7 shrink-0 text-muted-foreground"
+              size="icon-xs"
+              className="shrink-0 text-muted-foreground"
               onClick={dismissScanFeedback}
               aria-label={t("settings.close")}
               title={t("settings.close")}
@@ -1459,7 +1459,7 @@ export function SkillsHubPage(props: SkillsHubPageProps) {
               <Button
                 variant="outline"
                 size="sm"
-                className="h-8 min-w-[6.5rem] justify-center gap-1.5 px-3"
+                className="h-8 min-w-6p5rem justify-center gap-1.5 px-3"
                 onClick={() => void refresh({ announce: true })}
                 disabled={loading || scanButtonComplete || lockedByChatMode}
                 aria-busy={loading}
@@ -1496,7 +1496,7 @@ export function SkillsHubPage(props: SkillsHubPageProps) {
         />
 
         <div className="hub-scroll min-h-0 flex-1 overflow-hidden px-5 pb-6 sm:px-6 lg:px-8 xl:px-10">
-          <div className="hub-content-stage mx-auto flex h-full min-h-0 w-full max-w-[1320px] flex-col">
+          <div className="hub-content-stage mx-auto flex h-full min-h-0 w-full max-w-1320px flex-col">
             <Tabs
               value={view}
               onValueChange={(nextView) => {
@@ -1574,7 +1574,7 @@ export function SkillsHubPage(props: SkillsHubPageProps) {
                             : t("settings.skillsBulkImportHint")
                         }
                         className={cn(
-                          "h-8 w-[6.25rem] shrink-0 justify-center gap-1.5 whitespace-nowrap px-2.5 text-xs",
+                          "h-8 w-6p25rem shrink-0 justify-center gap-1.5 whitespace-nowrap px-2.5 text-xs",
                           bulkMode ? "text-foreground" : "text-muted-foreground",
                         )}
                       >
@@ -1597,7 +1597,7 @@ export function SkillsHubPage(props: SkillsHubPageProps) {
                         <SelectTrigger
                           aria-label={t("settings.skillsInstalledSortLabel")}
                           title={t("settings.skillsInstalledSortLabel")}
-                          className="h-8 w-auto max-w-[11rem] shrink-0 gap-2 border-0 bg-transparent px-2.5 text-xs font-medium text-foreground shadow-none hover:bg-muted max-sm:max-w-[8rem]"
+                          className="h-8 w-auto max-w-11rem shrink-0 gap-2 border-0 bg-transparent px-2.5 text-xs font-medium text-foreground shadow-none hover:bg-muted max-sm:max-w-8rem"
                         >
                           <SelectValue>
                             {t(
@@ -1644,9 +1644,7 @@ export function SkillsHubPage(props: SkillsHubPageProps) {
                         aria-busy={loading || showInitialInstalledContentLoading}
                         className={cn(
                           "h-full min-h-0 overflow-y-auto px-0.5 pr-1 [overflow-anchor:none]",
-                          bulkMode
-                            ? "pb-[calc(10rem+env(safe-area-inset-bottom))] sm:pb-24"
-                            : "pb-4",
+                          bulkMode ? "pb-safe-bottom-10rem sm:pb-24" : "pb-4",
                         )}
                       >
                         <div className="flex flex-col gap-3">
@@ -1835,11 +1833,11 @@ export function SkillsHubPage(props: SkillsHubPageProps) {
       view === "installed" &&
       !lockedByChatMode &&
       (!bulkUndo || bulkSelection.size > 0) ? (
-        <div className="pointer-events-none absolute inset-x-0 bottom-4 z-20 flex justify-center px-3 max-sm:bottom-[calc(1rem+env(safe-area-inset-bottom))]">
+        <div className="pointer-events-none absolute inset-x-0 bottom-4 z-20 flex justify-center px-3 max-sm:bottom-safe-bottom-offset">
           <div
             role="toolbar"
             aria-label={t("settings.skillsBulkSelect")}
-            className="hub-panel-enter pointer-events-auto flex max-w-full flex-wrap items-center gap-2 rounded-full border border-border/50 bg-background/95 py-2 pl-4 pr-2 text-[12.5px] shadow-[0_8px_24px_-12px_rgba(15,23,42,0.35)] max-sm:justify-center max-sm:rounded-3xl max-sm:whitespace-nowrap dark:border-white/[0.1] dark:bg-popover/95"
+            className="hub-panel-enter pointer-events-auto flex max-w-full flex-wrap items-center gap-2 rounded-full border border-border/50 bg-background/95 py-2 pl-4 pr-2 text-12p5px shadow-ui-skillshubpage-51 max-sm:justify-center max-sm:rounded-3xl max-sm:whitespace-nowrap dark:border-white/[0.1] dark:bg-popover/95"
           >
             {bulkSelection.size > 0 ? (
               <>
@@ -1858,7 +1856,7 @@ export function SkillsHubPage(props: SkillsHubPageProps) {
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="h-7 rounded-full px-2.5 text-[12px]"
+                  className="h-7 rounded-full px-2.5 text-12px"
                   onClick={() => {
                     if (allVisibleBulkSelected) exitBulkMode();
                     else setBulkSelectionRange(filteredSelectableInstalledNames, true);
@@ -1875,7 +1873,7 @@ export function SkillsHubPage(props: SkillsHubPageProps) {
                   variant="ghost"
                   size="sm"
                   disabled={bulkEnableChangeCount === 0}
-                  className="h-7 rounded-full px-2.5 text-[12px]"
+                  className="h-7 rounded-full px-2.5 text-12px"
                   onClick={() => applyBulkEnableState(true)}
                 >
                   {`${t("settings.skillsBulkEnable")}${bulkEnableChangeCount > 0 ? ` (${bulkEnableChangeCount})` : ""}`}
@@ -1884,7 +1882,7 @@ export function SkillsHubPage(props: SkillsHubPageProps) {
                   variant="ghost"
                   size="sm"
                   disabled={bulkDisableChangeCount === 0}
-                  className="h-7 rounded-full px-2.5 text-[12px]"
+                  className="h-7 rounded-full px-2.5 text-12px"
                   onClick={() => applyBulkEnableState(false)}
                 >
                   {`${t("settings.skillsBulkDisable")}${bulkDisableChangeCount > 0 ? ` (${bulkDisableChangeCount})` : ""}`}
@@ -1901,7 +1899,7 @@ export function SkillsHubPage(props: SkillsHubPageProps) {
                       size="sm"
                       disabled={bulkDeleteNames.length === 0 || deletingSkillName !== null}
                       onClick={open}
-                      className="h-7 gap-1 rounded-full px-2.5 text-[12px] text-destructive hover:bg-destructive/10 hover:text-destructive"
+                      className="h-7 gap-1 rounded-full px-2.5 text-12px text-destructive hover:bg-destructive/10 hover:text-destructive"
                     >
                       <Trash2 className="h-3.5 w-3.5" />
                       {`${t("settings.skillsHubBulkDelete")}${bulkDeleteNames.length > 0 ? ` (${bulkDeleteNames.length})` : ""}`}
@@ -1912,7 +1910,7 @@ export function SkillsHubPage(props: SkillsHubPageProps) {
                   variant="secondary"
                   size="sm"
                   onClick={exitBulkMode}
-                  className="h-7 gap-1 rounded-full px-3 text-[12px]"
+                  className="h-7 gap-1 rounded-full px-3 text-12px"
                 >
                   <X className="h-3.5 w-3.5" />
                   {t("settings.skillsBulkDone")}
@@ -1927,7 +1925,7 @@ export function SkillsHubPage(props: SkillsHubPageProps) {
                   variant="secondary"
                   size="sm"
                   onClick={exitBulkMode}
-                  className="h-7 rounded-full px-3 text-[12px]"
+                  className="h-7 rounded-full px-3 text-12px"
                 >
                   {t("settings.skillsBulkDone")}
                 </Button>
@@ -1938,8 +1936,8 @@ export function SkillsHubPage(props: SkillsHubPageProps) {
       ) : null}
 
       {bulkUndo && bulkSelection.size === 0 ? (
-        <div className="pointer-events-none absolute inset-x-0 bottom-4 z-20 flex justify-center px-3 max-sm:bottom-[calc(1rem+env(safe-area-inset-bottom))]">
-          <div className="hub-panel-enter pointer-events-auto flex max-w-full flex-wrap items-center justify-center gap-3 rounded-full border border-border/50 bg-background/95 py-2 pl-4 pr-2 text-[12.5px] shadow-[0_8px_24px_-12px_rgba(15,23,42,0.35)] dark:border-white/[0.1] dark:bg-popover/95">
+        <div className="pointer-events-none absolute inset-x-0 bottom-4 z-20 flex justify-center px-3 max-sm:bottom-safe-bottom-offset">
+          <div className="hub-panel-enter pointer-events-auto flex max-w-full flex-wrap items-center justify-center gap-3 rounded-full border border-border/50 bg-background/95 py-2 pl-4 pr-2 text-12p5px shadow-ui-skillshubpage-51 dark:border-white/[0.1] dark:bg-popover/95">
             <span className="text-foreground">
               {t("settings.skillsBulkUpdated").replace("{count}", String(bulkUndo.count))}
             </span>
@@ -1947,7 +1945,7 @@ export function SkillsHubPage(props: SkillsHubPageProps) {
               variant="secondary"
               size="sm"
               onClick={undoBulkSelection}
-              className="h-7 rounded-full px-3 text-[12px]"
+              className="h-7 rounded-full px-3 text-12px"
             >
               {t("settings.skillsBulkUndo")}
             </Button>

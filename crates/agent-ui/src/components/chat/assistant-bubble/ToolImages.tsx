@@ -300,18 +300,13 @@ function ToolImageStatusCard(props: {
         />
       </div>
       <div className="max-w-full space-y-1">
-        <div
-          className={cn(
-            "text-[calc(12px*var(--zone-font-scale,1))] font-medium",
-            !isError && "shimmer",
-          )}
-        >
+        <div className={cn("text-scaled-12px font-medium", !isError && "shimmer")}>
           {title ?? (isError ? t("chat.image.unavailable") : t("chat.image.loading"))}
         </div>
         {detail ? (
           <div
             className={cn(
-              "max-w-full truncate text-[calc(11px*var(--zone-font-scale,1))]",
+              "max-w-full truncate text-scaled-11px",
               isError ? "text-red-700/75 dark:text-red-200/75" : "text-muted-foreground",
             )}
             title={detail}
@@ -386,13 +381,8 @@ export function ToolResultImagePreview(props: {
           <Eye className="h-4 w-4" />
         </div>
         <div className="max-w-full space-y-1">
-          <div className="text-[calc(12px*var(--zone-font-scale,1))] font-medium">
-            {t("chat.image.clickToLoad")}
-          </div>
-          <div
-            className="max-w-full truncate text-[calc(11px*var(--zone-font-scale,1))]"
-            title={imageDetail}
-          >
+          <div className="text-scaled-12px font-medium">{t("chat.image.clickToLoad")}</div>
+          <div className="max-w-full truncate text-scaled-11px" title={imageDetail}>
             {imageDetail}
           </div>
         </div>
@@ -420,7 +410,7 @@ export function ToolResultImagePreview(props: {
           loading="lazy"
           decoding="async"
           className={cn(
-            "block max-h-[32rem] w-full rounded-md object-contain transition-opacity duration-200",
+            "block max-h-32rem w-full rounded-md object-contain transition-opacity duration-200",
             imageStatus === "loaded"
               ? "opacity-100"
               : "pointer-events-none absolute inset-0 h-full max-h-none opacity-0",
@@ -587,8 +577,8 @@ function NativeDisplayImageTile(props: {
             isGallery
               ? "absolute inset-0 h-full w-full p-1"
               : isSvgImage
-                ? "h-auto max-h-[32rem] w-full max-w-full p-1"
-                : "h-auto max-h-[32rem] max-w-full",
+                ? "h-auto max-h-32rem w-full max-w-full p-1"
+                : "h-auto max-h-32rem max-w-full",
             imageStatus === "loaded"
               ? "opacity-100"
               : "pointer-events-none absolute inset-0 h-full w-full max-h-none opacity-0",

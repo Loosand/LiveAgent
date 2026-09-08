@@ -11,8 +11,8 @@ export {
 export function SettingsGroup({ title, children }: { title: string; children: ReactNode }) {
   return (
     <section className="space-y-2.5">
-      <h2 className="px-1 text-[15px] font-semibold tracking-tight text-foreground">{title}</h2>
-      <div className="overflow-hidden rounded-2xl border border-border/75 bg-card shadow-[0_1px_2px_hsl(var(--foreground)/0.02)]">
+      <h2 className="px-1 text-15px font-semibold tracking-tight text-foreground">{title}</h2>
+      <div className="overflow-hidden rounded-2xl border border-border/75 bg-card shadow-ui-cuadriversection-47">
         {children}
       </div>
     </section>
@@ -23,7 +23,7 @@ export function SettingsRow(props: { title: string; description?: string; contro
   const { title, description, control } = props;
 
   return (
-    <div className="relative flex min-h-[72px] flex-col gap-3 px-5 py-4 after:pointer-events-none after:absolute after:bottom-0 after:left-5 after:right-5 after:h-px after:bg-border/60 after:content-[''] last:after:hidden sm:flex-row sm:items-center sm:justify-between">
+    <div className="relative flex min-h-72px flex-col gap-3 px-5 py-4 after:pointer-events-none after:absolute after:bottom-0 after:left-5 after:right-5 after:h-px after:bg-border/60 after:content-[''] last:after:hidden sm:flex-row sm:items-center sm:justify-between">
       <div className="min-w-0 flex-1 pr-2">
         <div className="text-sm font-medium text-foreground">{title}</div>
         {description ? (
@@ -80,7 +80,7 @@ export function PromptTag({ label, muted = false }: { label: string; muted?: boo
   return (
     <span
       className={cn(
-        "inline-flex shrink-0 items-center whitespace-nowrap rounded-full border px-2 py-0.5 text-[11px] leading-none",
+        "inline-flex shrink-0 items-center whitespace-nowrap rounded-full border px-2 py-0.5 text-11px leading-none",
         muted
           ? "border-border/60 bg-muted/40 text-muted-foreground"
           : "border-border/70 bg-muted/60 text-foreground/80",

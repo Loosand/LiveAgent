@@ -70,7 +70,7 @@ function CloneTaskCard({
             <span className="min-w-0 flex-1 truncate text-sm font-medium">
               {task.repositoryName}
             </span>
-            <span className="shrink-0 text-[11px] tabular-nums text-muted-foreground">
+            <span className="shrink-0 text-11px tabular-nums text-muted-foreground">
               {progress === null || !active ? "" : `${progress}%`}
             </span>
           </div>
@@ -87,8 +87,8 @@ function CloneTaskCard({
           <Button
             type="button"
             variant="ghost"
-            size="icon"
-            className="-mr-1 -mt-1 h-7 w-7 shrink-0 text-muted-foreground"
+            size="icon-xs"
+            className="-mr-1 -mt-1 shrink-0 text-muted-foreground"
             onClick={() => onDismiss(task.id)}
             aria-label={t("settings.cancel")}
           >
@@ -100,7 +100,7 @@ function CloneTaskCard({
         <div className="px-3.5 pb-3">
           <div className="h-1.5 overflow-hidden rounded-full bg-muted">
             {progress === null ? (
-              <div className="h-full w-2/5 animate-[hubLoadingProgress_1.45s_cubic-bezier(0.4,0,0.2,1)_infinite] rounded-full bg-sky-500" />
+              <div className="h-full w-2/5 animate-hub-loading-progress rounded-full bg-sky-500" />
             ) : (
               <div
                 className="h-full rounded-full bg-sky-500 transition-[width] duration-200"
@@ -109,9 +109,7 @@ function CloneTaskCard({
             )}
           </div>
           <div className="mt-2 flex items-center justify-between gap-2">
-            <span className="min-w-0 truncate text-[11px] text-muted-foreground">
-              {task.detail}
-            </span>
+            <span className="min-w-0 truncate text-11px text-muted-foreground">{task.detail}</span>
             {task.status === "running" ? (
               <Button
                 type="button"
@@ -146,7 +144,7 @@ function CloneTaskCard({
 export function WorkspaceCloneTaskOverlay(props: WorkspaceCloneTaskOverlayProps) {
   if (props.tasks.length === 0) return null;
   return (
-    <div className="layer-toast pointer-events-none fixed bottom-4 right-4 flex max-h-[calc(100vh-2rem)] flex-col-reverse gap-2 overflow-y-auto">
+    <div className="layer-toast pointer-events-none fixed bottom-4 right-4 flex max-h-viewport-inset-2rem-vh flex-col-reverse gap-2 overflow-y-auto">
       {props.tasks.map((task) => (
         <CloneTaskCard key={task.id} task={task} {...props} />
       ))}

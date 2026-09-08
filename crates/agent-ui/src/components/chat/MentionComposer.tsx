@@ -2197,7 +2197,7 @@ export const MentionComposer = memo(
               <div
                 ref={composerContextMenuRef}
                 role="menu"
-                className="layer-popover fixed w-max min-w-[9.5rem] max-w-[calc(100vw-1.5rem)] overflow-hidden rounded-lg border border-border/70 bg-popover p-1.5 text-popover-foreground shadow-[0_20px_60px_-20px_rgba(15,23,42,0.35)]"
+                className="layer-popover fixed w-max min-w-9p5rem max-w-viewport-inset-1p5rem overflow-hidden rounded-lg border border-border/70 bg-popover p-1.5 text-popover-foreground shadow-ui-mentioncomposer-8"
                 style={{
                   left: contextMenuPosition.left,
                   top: contextMenuPosition.top,
@@ -2211,7 +2211,7 @@ export const MentionComposer = memo(
                   role="menuitem"
                   disabled={!contextMenuCanMutate || !contextMenuHasSelection}
                   className={cn(
-                    "flex w-full items-center gap-2 rounded-md px-2.5 py-1.5 text-left text-[calc(13px*var(--zone-font-scale,1))] text-foreground/90 transition-colors hover:bg-accent hover:text-accent-foreground",
+                    "flex w-full items-center gap-2 rounded-md px-2.5 py-1.5 text-left text-scaled-13px text-foreground/90 transition-colors hover:bg-accent hover:text-accent-foreground",
                     "disabled:pointer-events-none disabled:opacity-45",
                   )}
                   onMouseDown={(event) => event.preventDefault()}
@@ -2225,7 +2225,7 @@ export const MentionComposer = memo(
                   role="menuitem"
                   disabled={!contextMenuHasSelection}
                   className={cn(
-                    "flex w-full items-center gap-2 rounded-md px-2.5 py-1.5 text-left text-[calc(13px*var(--zone-font-scale,1))] text-foreground/90 transition-colors hover:bg-accent hover:text-accent-foreground",
+                    "flex w-full items-center gap-2 rounded-md px-2.5 py-1.5 text-left text-scaled-13px text-foreground/90 transition-colors hover:bg-accent hover:text-accent-foreground",
                     "disabled:pointer-events-none disabled:opacity-45",
                   )}
                   onMouseDown={(event) => event.preventDefault()}
@@ -2239,7 +2239,7 @@ export const MentionComposer = memo(
                   role="menuitem"
                   disabled={!contextMenuCanMutate}
                   className={cn(
-                    "flex w-full items-center gap-2 rounded-md px-2.5 py-1.5 text-left text-[calc(13px*var(--zone-font-scale,1))] text-foreground/90 transition-colors hover:bg-accent hover:text-accent-foreground",
+                    "flex w-full items-center gap-2 rounded-md px-2.5 py-1.5 text-left text-scaled-13px text-foreground/90 transition-colors hover:bg-accent hover:text-accent-foreground",
                     "disabled:pointer-events-none disabled:opacity-45",
                   )}
                   onMouseDown={(event) => event.preventDefault()}
@@ -2256,7 +2256,7 @@ export const MentionComposer = memo(
                   role="menuitem"
                   disabled={!composerContextMenu.hasContent}
                   className={cn(
-                    "flex w-full items-center gap-2 rounded-md px-2.5 py-1.5 text-left text-[calc(13px*var(--zone-font-scale,1))] text-foreground/90 transition-colors hover:bg-accent hover:text-accent-foreground",
+                    "flex w-full items-center gap-2 rounded-md px-2.5 py-1.5 text-left text-scaled-13px text-foreground/90 transition-colors hover:bg-accent hover:text-accent-foreground",
                     "disabled:pointer-events-none disabled:opacity-45",
                   )}
                   onMouseDown={(event) => event.preventDefault()}
@@ -2294,7 +2294,7 @@ export const MentionComposer = memo(
           onCompositionEnd={handleCompositionEnd}
           onBlur={handleBlur}
           className={cn(
-            "mention-composer min-h-10 max-h-[160px] w-full min-w-0 max-w-full overflow-x-hidden overflow-y-auto whitespace-pre-wrap break-words [overflow-wrap:anywhere] outline-hidden",
+            "mention-composer min-h-10 max-h-160px w-full min-w-0 max-w-full overflow-x-hidden overflow-y-auto whitespace-pre-wrap break-words [overflow-wrap:anywhere] outline-hidden",
             "text-sm",
             isDomEmpty && "is-empty",
             disabled && "cursor-not-allowed opacity-60",

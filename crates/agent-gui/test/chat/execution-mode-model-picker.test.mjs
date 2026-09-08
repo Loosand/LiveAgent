@@ -1,3 +1,4 @@
+import { readStyleSource } from "../../../../scripts/test-style-values.mjs";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import test from "node:test";
@@ -32,10 +33,7 @@ const selectSource = readFileSync(
   new URL("../../../agent-ui/src/components/ui/select.tsx", import.meta.url),
   "utf8",
 );
-const baseStylesSource = readFileSync(
-  new URL("../../../agent-ui/src/styles/base.css", import.meta.url),
-  "utf8",
-);
+const baseStylesSource = readStyleSource(new URL("../../../agent-ui/src/styles/base.css", import.meta.url));
 const iconSetSource = readFileSync(
   new URL("../../../agent-ui/src/components/IconSet.tsx", import.meta.url),
   "utf8",

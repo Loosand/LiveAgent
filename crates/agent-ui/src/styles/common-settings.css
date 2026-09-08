@@ -1,10 +1,10 @@
 @layer components {
   .settings-section-enter {
-    animation: settingsSectionIn 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+    animation: settingsSectionIn var(--ui-duration-280ms) var(--ease-ui-enter);
   }
 
   .settings-section-title-enter {
-    animation: settingsSectionTitleIn 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+    animation: settingsSectionTitleIn var(--ui-duration-220ms) var(--ease-ui-enter);
   }
 
   /*
@@ -21,92 +21,66 @@
   }
 
   .provider-panel-enter {
-    animation: providerPanelIn 0.18s cubic-bezier(0.16, 1, 0.3, 1);
-  }
-
-  .settings-section-shell {
-    position: relative;
-    isolation: isolate;
+    animation: providerPanelIn var(--ui-duration-180ms) var(--ease-ui-enter);
   }
 
   .ssh-auth-panel {
     overflow: hidden;
     transition:
-      max-height 300ms cubic-bezier(0.16, 1, 0.3, 1),
-      opacity 220ms ease,
-      transform 300ms cubic-bezier(0.16, 1, 0.3, 1);
+      max-height var(--ui-duration-300ms) var(--ease-ui-enter),
+      opacity var(--ui-duration-220ms) ease,
+      transform var(--ui-duration-300ms) var(--ease-ui-enter);
     will-change: max-height, opacity, transform;
   }
 
-  .ssh-collapsible {
-    display: grid;
-    grid-template-rows: 0fr;
-    transition: grid-template-rows 280ms cubic-bezier(0.16, 1, 0.3, 1);
-    will-change: grid-template-rows;
-  }
-
-  .ssh-collapsible[data-open="true"] {
-    grid-template-rows: 1fr;
-  }
-
-  .ssh-collapsible-inner {
-    min-height: 0;
-    overflow: hidden;
-  }
-
-  .settings-tools-view-enter {
-    animation: settingsToolsViewIn 0.22s cubic-bezier(0.16, 1, 0.3, 1);
-    will-change: transform, opacity;
-  }
-
   .chat-history-scope-enter {
-    animation: chatHistoryScopeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    animation: chatHistoryScopeIn var(--ui-duration-200ms) var(--ease-ui-enter);
     will-change: transform, opacity;
   }
 
   .sidebar-context-menu {
-    --sidebar-menu-slide-x: -6px;
+    --sidebar-menu-slide-x: var(--spacing-minus-6px);
     --sidebar-menu-slide-y: 0px;
     transform-origin: var(--transform-origin);
   }
 
   .sidebar-context-menu[data-side="left"] {
-    --sidebar-menu-slide-x: 6px;
+    --sidebar-menu-slide-x: var(--spacing-6px);
   }
 
   .sidebar-context-menu[data-side="bottom"] {
     --sidebar-menu-slide-x: 0px;
-    --sidebar-menu-slide-y: -6px;
+    --sidebar-menu-slide-y: var(--spacing-minus-6px);
   }
 
   .sidebar-context-menu[data-side="top"] {
     --sidebar-menu-slide-x: 0px;
-    --sidebar-menu-slide-y: 6px;
+    --sidebar-menu-slide-y: var(--spacing-6px);
   }
 
   .sidebar-context-menu[data-open] [role="menuitem"],
   .sidebar-context-menu[data-state="open"] [role="menuitem"] {
-    animation: sidebarMenuItemIn 0.16s cubic-bezier(0.16, 1, 0.3, 1) both;
+    animation: sidebarMenuItemIn var(--ui-duration-160ms) var(--ease-ui-enter) both;
   }
 
   .sidebar-context-menu[data-open] [role="menuitem"]:nth-child(2),
   .sidebar-context-menu[data-state="open"] [role="menuitem"]:nth-child(2) {
-    animation-delay: 0.02s;
+    animation-delay: var(--ui-duration-20ms);
   }
 
   .sidebar-context-menu[data-open] [role="menuitem"]:nth-child(3),
   .sidebar-context-menu[data-state="open"] [role="menuitem"]:nth-child(3) {
-    animation-delay: 0.04s;
+    animation-delay: var(--ui-duration-40ms);
   }
 
   .sidebar-context-menu[data-open] [role="menuitem"]:nth-child(4),
   .sidebar-context-menu[data-state="open"] [role="menuitem"]:nth-child(4) {
-    animation-delay: 0.06s;
+    animation-delay: var(--ui-duration-60ms);
   }
 
   .sidebar-context-menu[data-open] [role="menuitem"]:nth-child(n + 5),
   .sidebar-context-menu[data-state="open"] [role="menuitem"]:nth-child(n + 5) {
-    animation-delay: 0.08s;
+    animation-delay: var(--ui-duration-80ms);
   }
 
   .mention-composer.is-empty::before {
@@ -118,60 +92,13 @@
 
   .composer-typewriter-char {
     opacity: 0;
-    animation: composerTypeCharIn 0.22s ease-out forwards;
-  }
-
-  .mention-popup-enter {
-    animation: mentionPopupIn 0.15s cubic-bezier(0.16, 1, 0.3, 1);
-    transform-origin: bottom center;
-    min-width: 0;
-  }
-
-  .mention-popup-item {
-    animation: mentionItemIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) both;
-    text-align: left;
-  }
-
-  .mention-popup-item:nth-child(1) {
-    animation-delay: 0ms;
-  }
-
-  .mention-popup-item:nth-child(2) {
-    animation-delay: 18ms;
-  }
-
-  .mention-popup-item:nth-child(3) {
-    animation-delay: 36ms;
-  }
-
-  .mention-popup-item:nth-child(4) {
-    animation-delay: 54ms;
-  }
-
-  .mention-popup-item:nth-child(5) {
-    animation-delay: 72ms;
-  }
-
-  .mention-popup-item:nth-child(6) {
-    animation-delay: 90ms;
-  }
-
-  .mention-popup-item:nth-child(7) {
-    animation-delay: 108ms;
-  }
-
-  .mention-popup-item:nth-child(8) {
-    animation-delay: 126ms;
-  }
-
-  .mention-popup-item:nth-child(n + 9) {
-    animation-delay: 140ms;
+    animation: composerTypeCharIn var(--ui-duration-220ms) ease-out forwards;
   }
 
   @keyframes providerPanelIn {
     from {
       opacity: 0;
-      transform: translateY(4px);
+      transform: translateY(var(--spacing-4px));
     }
     to {
       opacity: 1;
@@ -182,7 +109,7 @@
   @keyframes settingsSectionIn {
     from {
       opacity: 0;
-      transform: translateY(14px) scale(0.985);
+      transform: translateY(var(--spacing-14px)) scale(0.985);
     }
     to {
       opacity: 1;
@@ -193,18 +120,7 @@
   @keyframes settingsSectionTitleIn {
     from {
       opacity: 0;
-      transform: translateY(8px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  @keyframes settingsToolsViewIn {
-    from {
-      opacity: 0;
-      transform: translateY(6px);
+      transform: translateY(var(--spacing-8px));
     }
     to {
       opacity: 1;
@@ -215,7 +131,7 @@
   @keyframes chatHistoryScopeIn {
     from {
       opacity: 0;
-      transform: translateY(6px);
+      transform: translateY(var(--spacing-6px));
     }
     to {
       opacity: 1;
@@ -240,7 +156,7 @@
   @keyframes composerTypeCharIn {
     from {
       opacity: 0;
-      filter: blur(2px);
+      filter: blur(var(--spacing-2px));
     }
     to {
       opacity: 1;
@@ -251,7 +167,7 @@
   @keyframes mentionPopupIn {
     from {
       opacity: 0;
-      transform: translateY(6px) scale(0.98);
+      transform: translateY(var(--spacing-6px)) scale(0.98);
     }
     to {
       opacity: 1;
@@ -262,7 +178,7 @@
   @keyframes mentionItemIn {
     from {
       opacity: 0;
-      transform: translateX(-6px);
+      transform: translateX(var(--spacing-minus-6px));
     }
     to {
       opacity: 1;
@@ -273,22 +189,18 @@
   @media (prefers-reduced-motion: reduce) {
     .settings-section-enter,
     .settings-section-title-enter,
-    .settings-tools-view-enter,
     .provider-panel-enter,
     .chat-history-scope-enter {
       animation: none;
     }
 
-    .ssh-auth-panel,
-    .ssh-collapsible {
-      transition-duration: 1ms;
+    .ssh-auth-panel {
+      transition-duration: var(--ui-duration-1ms);
     }
 
     .composer-typewriter-char,
-    .mention-popup-enter,
-    .mention-popup-item,
     .sidebar-context-menu,
-    /* biome-ignore lint/style/noDescendingSpecificity: This reduced-motion override intentionally follows the more specific open-state animation selectors. */
+    /* biome-ignore lint/style/noDescendingSpecificity: Reduced motion must override the open menu animation. */
       .sidebar-context-menu [role="menuitem"] {
       /* biome-ignore lint/complexity/noImportantStyles: Reduced-motion overrides menu state animations. */
       animation: none !important;
@@ -306,9 +218,6 @@
  * (rounded-md / border / ghost hover) and keep the cluster aligned with the
  * vendor tab track on the same row.
  */
-.settings-provider-tabs-wrap {
-  min-width: 0;
-}
 
 .settings-provider-tabs {
   min-width: 0;
@@ -322,11 +231,11 @@
 
 .settings-provider-action-group {
   display: inline-flex;
-  height: 36px;
+  height: var(--spacing-36px);
   flex-shrink: 0;
   align-items: stretch;
-  gap: 1px;
-  padding: 4px;
+  gap: var(--spacing-1px);
+  padding: var(--spacing-4px);
   border-radius: var(--radius);
   background: hsl(var(--muted));
   color: hsl(var(--muted-foreground));
@@ -349,19 +258,19 @@
   min-width: 0;
   align-items: center;
   justify-content: center;
-  gap: 6px;
-  padding: 0 10px;
+  gap: var(--spacing-6px);
+  padding: 0 var(--spacing-10px);
   border: 0;
-  border-radius: calc(var(--radius) - 4px);
+  border-radius: calc(var(--radius) - var(--radius-4px));
   background: transparent;
   box-shadow: none;
-  font-size: 12.5px;
-  font-weight: 500;
+  font-size: var(--text-12p5px);
+  font-weight: var(--font-weight-500);
   color: hsl(var(--muted-foreground));
   transition:
-    background-color 150ms ease,
-    color 150ms ease,
-    box-shadow 150ms ease;
+    background-color var(--ui-duration-150ms) ease,
+    color var(--ui-duration-150ms) ease,
+    box-shadow var(--ui-duration-150ms) ease;
 }
 
 .settings-provider-action-slot .settings-provider-action {
@@ -385,21 +294,21 @@
 .settings-provider-action-group .settings-provider-action-active {
   background: hsl(var(--background));
   color: hsl(var(--foreground));
-  box-shadow: 0 1px 2px hsl(var(--foreground) / 0.06);
+  box-shadow: 0 var(--spacing-1px) var(--spacing-2px) hsl(var(--foreground) / 0.06);
 }
 
 .settings-provider-action-group .settings-provider-action--primary {
   background: hsl(var(--primary));
   color: hsl(var(--primary-foreground));
-  box-shadow: 0 1px 2px hsl(var(--primary) / 0.28);
+  box-shadow: 0 var(--spacing-1px) var(--spacing-2px) hsl(var(--primary) / 0.28);
 }
 
 .settings-provider-action-group .settings-provider-action:focus-visible {
   z-index: 1;
   outline: none;
   box-shadow:
-    0 0 0 2px hsl(var(--background)),
-    0 0 0 4px hsl(var(--ring));
+    0 0 0 var(--spacing-2px) hsl(var(--background)),
+    0 0 0 var(--spacing-4px) hsl(var(--ring));
 }
 
 @media (max-width: 860px) {
@@ -408,17 +317,12 @@
   }
 
   .settings-provider-action-group .settings-provider-action {
-    min-width: 32px;
-    padding: 0 8px;
+    min-width: var(--spacing-32px);
+    padding: 0 var(--spacing-8px);
   }
 }
 
 @media (max-width: 640px) {
-  .settings-provider-tabs-wrap {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
   .settings-provider-tabs {
     width: 100%;
   }
@@ -446,7 +350,7 @@
 
 /* 供应商卡片用量区:结果替换等高骨架占位时柔和浮现,只动透明度不动高度。 */
 .settings-usage-reveal {
-  animation: settings-usage-reveal 240ms ease-out;
+  animation: settings-usage-reveal var(--ui-duration-240ms) ease-out;
 }
 
 @keyframes settings-usage-reveal {

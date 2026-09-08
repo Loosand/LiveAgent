@@ -27,14 +27,14 @@ export function CompactionBand(props: {
         aria-hidden="true"
         className={cn(
           "compaction-band-icon flex h-5 w-5 shrink-0 items-center justify-center rounded-md bg-violet-500/[0.12] text-violet-600 dark:bg-violet-400/[0.14] dark:text-violet-300",
-          active && "compaction-band-icon-active",
+          active && "animate-compaction-band-icon-active motion-reduce:animate-none",
         )}
       >
         {icon ?? <FoldVertical className="h-3 w-3" />}
       </span>
       <span
         className={cn(
-          "min-w-0 truncate text-[calc(12.5px*var(--zone-font-scale,1))] font-medium text-violet-800 dark:text-violet-200",
+          "min-w-0 truncate text-scaled-12p5px font-medium text-violet-800 dark:text-violet-200",
           active && "shimmer",
         )}
       >
@@ -74,7 +74,7 @@ export function CompactionBand(props: {
 
 export function CompactionMetaChip({ children }: { children: ReactNode }) {
   return (
-    <span className="shrink-0 rounded-md bg-violet-500/[0.08] px-1.5 py-[1px] text-[calc(10.5px*var(--zone-font-scale,1))] font-medium tabular-nums text-violet-700/80 dark:bg-violet-400/[0.1] dark:text-violet-300/80">
+    <span className="shrink-0 rounded-md bg-violet-500/[0.08] px-1.5 py-1px text-scaled-10p5px font-medium tabular-nums text-violet-700/80 dark:bg-violet-400/[0.1] dark:text-violet-300/80">
       {children}
     </span>
   );

@@ -234,7 +234,7 @@ export function DevicesSection({
       <div className="settings-section-heading-row flex items-center justify-between gap-4">
         <div className="settings-section-title-group flex items-center gap-3">
           <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-sky-500/10">
-            <MonitorSmartphone className="h-[18px] w-[18px] text-sky-500" />
+            <MonitorSmartphone className="h-18px w-18px text-sky-500" />
           </div>
           <div>
             <h3 className="text-sm font-semibold">{t("settings.devicesTitle")}</h3>
@@ -660,7 +660,7 @@ function DeviceRow(props: {
 
   return (
     <div className="group rounded-xl border border-border/60 bg-card transition-colors hover:border-border hover:bg-accent/20">
-      <div className="settings-card-row settings-devices-card-row flex items-center gap-3 px-4 py-3">
+      <div className="settings-card-row flex items-center gap-3 px-4 py-3 max-820:grid max-820:grid-cols-settings-devices-card-row max-820:[align-items:start] max-820:gap-y-10px max-820:gap-x-12px">
         <div
           className={
             agent.online
@@ -675,7 +675,7 @@ function DeviceRow(props: {
           )}
         </div>
 
-        <div className="settings-devices-card-main min-w-0 flex-1">
+        <div className="min-w-0 flex-1 max-820:min-w-0">
           <div className="flex flex-wrap items-center gap-2">
             <span
               className={cn(
@@ -689,8 +689,8 @@ function DeviceRow(props: {
             <span
               className={
                 agent.online
-                  ? "rounded-full bg-emerald-500/10 px-2 py-0.5 text-[10px] font-medium text-emerald-600 dark:text-emerald-400"
-                  : "rounded-full bg-muted px-2 py-0.5 text-[10px] font-medium text-muted-foreground"
+                  ? "rounded-full bg-emerald-500/10 px-2 py-0.5 text-10px font-medium text-emerald-600 dark:text-emerald-400"
+                  : "rounded-full bg-muted px-2 py-0.5 text-10px font-medium text-muted-foreground"
               }
             >
               {agent.online
@@ -698,7 +698,7 @@ function DeviceRow(props: {
                 : t("settings.devicesOfflineStatus")}
             </span>
           </div>
-          <div className="settings-devices-card-meta mt-1 flex min-w-0 flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
+          <div className="mt-1 flex min-w-0 flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground max-820:min-w-0">
             {displayName ? (
               <span className="settings-devices-card-agent-id min-w-0 max-w-full truncate font-mono">
                 {agent.agent_id}
@@ -716,7 +716,7 @@ function DeviceRow(props: {
           </div>
         </div>
 
-        <div className="settings-devices-card-actions flex shrink-0 flex-wrap items-center justify-end gap-1">
+        <div className="flex shrink-0 flex-wrap items-center justify-end gap-1 max-820:col-span-full max-820:w-full max-820:justify-stretch max-820:gap-6px max-820:border-t max-820:border-solid max-820:border-t-border/50 max-820:pt-8px max-820:[&_>_button]:min-w-0 max-820:[&_>_button]:flex-[1_1_0] max-820:[&_>_button]:justify-center max-820:[&_>_button]:px-8px">
           {agent.has_token ? (
             <ConfirmActionPopover
               title={t("settings.devicesRotateTitle")}

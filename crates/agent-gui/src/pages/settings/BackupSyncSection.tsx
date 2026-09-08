@@ -208,7 +208,7 @@ function SyncStatusBanner({
         </div>
         {configured ? (
           <span
-            className={`inline-flex shrink-0 items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px] font-medium leading-none ${
+            className={`inline-flex shrink-0 items-center gap-1.5 rounded-full border px-2.5 py-1 text-11px font-medium leading-none ${
               view?.autoSync
                 ? "border-emerald-600/25 bg-emerald-500/10 text-emerald-700 dark:border-emerald-400/25 dark:text-emerald-300"
                 : "border-border/70 bg-muted/45 text-muted-foreground"
@@ -279,7 +279,7 @@ function ScopeItem({
 }) {
   return (
     <span
-      className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-medium leading-none ${
+      className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-11px font-medium leading-none ${
         excluded ? "bg-muted/30 text-muted-foreground/70" : "bg-muted/45 text-foreground/85"
       }`}
     >
@@ -575,11 +575,11 @@ export function BackupSyncSection(props: SettingsSectionProps) {
   const presetOptions: { id: PresetId }[] = [...SYNC_PRESETS, { id: "custom" as const }];
 
   return (
-    <div className="mx-auto w-full max-w-[980px] space-y-5">
+    <div className="mx-auto w-full max-w-980px space-y-5">
       <SyncStatusBanner view={syncView} loading={syncBusy === "load"} t={t} />
 
       {/* 两栏等高拉伸（默认 stretch），保证左右卡片底边始终对齐。 */}
-      <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_300px]">
+      <div className="grid gap-5 lg:grid-cols-gateway-settings-compact">
         {/* 左栏：WebDAV 同步配置。弹性布局把底部操作区钉在底边，撑高时中间留白。 */}
         <section className="flex flex-col rounded-2xl border border-border/60 bg-card">
           <header className="flex flex-wrap items-center justify-between gap-2 border-b border-border/60 px-5 py-4">
@@ -591,7 +591,7 @@ export function BackupSyncSection(props: SettingsSectionProps) {
                 {t("settings.backupSyncTitle")}
               </h3>
             </div>
-            <span className="inline-flex items-center gap-1.5 rounded-full border border-border/70 bg-muted/45 px-2.5 py-1 text-[11px] font-medium leading-none text-muted-foreground">
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-border/70 bg-muted/45 px-2.5 py-1 text-11px font-medium leading-none text-muted-foreground">
               <Lock className="h-3 w-3" />
               {t("settings.backupSyncCredentialNote")}
             </span>
@@ -816,7 +816,7 @@ export function BackupSyncSection(props: SettingsSectionProps) {
               />
             </div>
 
-            <div className="flex items-start gap-2 text-[11px] leading-relaxed text-muted-foreground">
+            <div className="flex items-start gap-2 text-11px leading-relaxed text-muted-foreground">
               <ArchiveRestore className="mt-0.5 h-3.5 w-3.5 shrink-0" />
               <span>{t("settings.backupAutoBackupHint")}</span>
             </div>
@@ -835,7 +835,7 @@ export function BackupSyncSection(props: SettingsSectionProps) {
             </div>
 
             <div className="space-y-1.5">
-              <div className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground/70">
+              <div className="text-11px font-medium uppercase tracking-wide text-muted-foreground/70">
                 {t("settings.backupScopeIncluded")}
               </div>
               <div className="flex flex-wrap gap-1.5">
@@ -867,7 +867,7 @@ export function BackupSyncSection(props: SettingsSectionProps) {
             </div>
 
             <div className="space-y-1.5">
-              <div className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground/70">
+              <div className="text-11px font-medium uppercase tracking-wide text-muted-foreground/70">
                 {t("settings.backupScopeExcluded")}
               </div>
               <div className="flex flex-wrap gap-1.5">

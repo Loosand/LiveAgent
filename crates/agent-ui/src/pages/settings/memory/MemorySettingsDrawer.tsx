@@ -180,7 +180,7 @@ export function MemorySettingsDrawer(props: {
         placeholder={noneLabel}
         noneLabel={noneLabel}
         ariaLabel={ariaLabel}
-        triggerClassName="h-9 rounded-md border-input bg-background text-[13px] hover:bg-accent/40"
+        triggerClassName="h-9 rounded-md border-input bg-background text-13px hover:bg-accent/40"
       />
     );
   }
@@ -294,13 +294,13 @@ export function MemorySettingsDrawer(props: {
     <Sheet open onOpenChange={(open) => !open && onClose()}>
       <SheetContent
         variant="inset"
-        className="max-w-none border-border bg-background sm:max-w-[440px]"
+        className="max-w-none border-border bg-background sm:max-w-440px"
         closeLabel={t("settings.memorySettingsClose")}
         showCloseButton={false}
       >
-        <div className="relative flex items-start gap-3 px-6 pb-4 pt-[22px]">
+        <div className="relative flex items-start gap-3 px-6 pb-4 pt-22px">
           <div className="min-w-0 flex-1">
-            <SheetTitle className="text-[17px] leading-tight tracking-tight text-foreground/95">
+            <SheetTitle className="text-17px leading-tight tracking-tight text-foreground/95">
               {t("settings.memorySettingsTitle")}
             </SheetTitle>
             <SheetDescription className="mt-1 text-xs leading-snug text-muted-foreground/80">
@@ -311,8 +311,8 @@ export function MemorySettingsDrawer(props: {
             render={
               <Button
                 variant="ghost"
-                size="icon"
-                className="h-7 w-7 shrink-0 rounded-full bg-foreground/[0.05] text-muted-foreground/80 hover:bg-foreground/[0.1] hover:text-foreground"
+                size="icon-xs"
+                className="shrink-0 rounded-full bg-foreground/[0.05] text-muted-foreground/80 hover:bg-foreground/[0.1] hover:text-foreground"
               />
             }
             title={t("settings.memorySettingsClose")}
@@ -334,7 +334,7 @@ export function MemorySettingsDrawer(props: {
             quotaLadder.tightestScope ? (
               <div
                 className={cn(
-                  "flex items-start gap-2 rounded-2xl border px-4 py-3 text-[11.5px] leading-relaxed",
+                  "flex items-start gap-2 rounded-2xl border px-4 py-3 text-11p5px leading-relaxed",
                   quotaLadder.level === "critical" || quotaLadder.level === "exhausted"
                     ? "border-red-500/25 bg-red-500/[0.06] text-red-700 dark:text-red-300"
                     : "border-amber-500/25 bg-amber-500/[0.06] text-amber-700 dark:text-amber-300",
@@ -356,7 +356,7 @@ export function MemorySettingsDrawer(props: {
               </div>
               <div>
                 <div className="space-y-1.5">
-                  <span className="text-[11.5px] text-muted-foreground/90">
+                  <span className="text-11p5px text-muted-foreground/90">
                     {t("settings.memoryOrganizerModel")}
                   </span>
                   {renderModelSelect(
@@ -368,7 +368,7 @@ export function MemorySettingsDrawer(props: {
                 </div>
                 <div className="my-3 h-px bg-foreground/[0.05]" />
                 <div className="space-y-1.5">
-                  <span className="text-[11.5px] text-muted-foreground/90">
+                  <span className="text-11p5px text-muted-foreground/90">
                     {t("settings.memorySummaryModel")}
                   </span>
                   {renderModelSelect(
@@ -379,7 +379,7 @@ export function MemorySettingsDrawer(props: {
                   )}
                 </div>
                 {modelOptions.length === 0 ? (
-                  <div className="mt-3 rounded-xl border border-amber-500/20 bg-amber-500/[0.05] px-3 py-2 text-[11.5px] text-amber-700 dark:text-amber-300">
+                  <div className="mt-3 rounded-xl border border-amber-500/20 bg-amber-500/[0.05] px-3 py-2 text-11p5px text-amber-700 dark:text-amber-300">
                     {t("settings.memoryModelEmpty")}
                   </div>
                 ) : null}
@@ -399,9 +399,9 @@ export function MemorySettingsDrawer(props: {
                 />
               </div>
               <div className="space-y-3">
-                <div className="grid grid-cols-[1fr_108px] gap-2.5">
+                <div className="grid grid-cols-memory-field gap-2.5">
                   <div className="space-y-1.5">
-                    <span className="text-[11.5px] text-muted-foreground/90">
+                    <span className="text-11p5px text-muted-foreground/90">
                       {t("settings.memoryOrganizerSchedule")}
                     </span>
                     <DrawerSelect
@@ -420,7 +420,7 @@ export function MemorySettingsDrawer(props: {
                     />
                   </div>
                   <div className="space-y-1.5">
-                    <span className="text-[11.5px] text-muted-foreground/90">
+                    <span className="text-11p5px text-muted-foreground/90">
                       {t("settings.memoryOrganizerTime")}
                     </span>
                     <Input
@@ -430,13 +430,13 @@ export function MemorySettingsDrawer(props: {
                       disabled={organizerTimingDisabled}
                       onChange={(event) => setTimeLocalDraft(event.currentTarget.value)}
                       onBlur={flushOrganizerTimeLocal}
-                      className="text-[13px] leading-none text-foreground/90"
+                      className="text-13px leading-none text-foreground/90"
                     />
                   </div>
                 </div>
                 {settings.memory.organizerSchedule.frequency === "weekly" ? (
                   <div className="space-y-1.5">
-                    <span className="text-[11.5px] text-muted-foreground/90">
+                    <span className="text-11p5px text-muted-foreground/90">
                       {t("settings.memoryOrganizerWeekday")}
                     </span>
                     <DrawerSelect
@@ -453,7 +453,7 @@ export function MemorySettingsDrawer(props: {
                 ) : null}
                 <div className="grid grid-cols-2 gap-2.5">
                   <div className="space-y-1.5">
-                    <span className="text-[11.5px] text-muted-foreground/90">
+                    <span className="text-11p5px text-muted-foreground/90">
                       {t("settings.memoryOrganizerScope")}
                     </span>
                     <DrawerSelect
@@ -470,7 +470,7 @@ export function MemorySettingsDrawer(props: {
                     />
                   </div>
                   <div className="space-y-1.5">
-                    <span className="text-[11.5px] text-muted-foreground/90">
+                    <span className="text-11p5px text-muted-foreground/90">
                       {t("settings.memoryOrganizerMode")}
                     </span>
                     <DrawerSelect
@@ -488,7 +488,7 @@ export function MemorySettingsDrawer(props: {
                   </div>
                 </div>
                 {settings.memory.organizerEnabled && settings.memory.organizerNextRunAt ? (
-                  <div className="flex items-center gap-2 rounded-xl border border-foreground/[0.05] bg-foreground/[0.025] px-3 py-2 text-[11.5px] text-muted-foreground">
+                  <div className="flex items-center gap-2 rounded-xl border border-foreground/[0.05] bg-foreground/[0.025] px-3 py-2 text-11p5px text-muted-foreground">
                     <span className="relative inline-flex h-1.5 w-1.5 shrink-0">
                       <span className="absolute inset-0 animate-ping rounded-full bg-emerald-500/40" />
                       <span className="relative inline-block h-1.5 w-1.5 rounded-full bg-emerald-500" />
@@ -502,7 +502,7 @@ export function MemorySettingsDrawer(props: {
                   </div>
                 ) : null}
                 {organizerFeedback ? (
-                  <div className="whitespace-pre-wrap rounded-xl border border-foreground/[0.05] bg-foreground/[0.025] px-3 py-2 text-[11.5px] text-muted-foreground">
+                  <div className="whitespace-pre-wrap rounded-xl border border-foreground/[0.05] bg-foreground/[0.025] px-3 py-2 text-11p5px text-muted-foreground">
                     {organizerFeedback}
                   </div>
                 ) : null}
@@ -521,7 +521,7 @@ export function MemorySettingsDrawer(props: {
                 <Button
                   type="button"
                   size="sm"
-                  className="flex-1 shadow-[0_1px_2px_rgba(15,23,42,0.08),0_4px_10px_-6px_rgba(15,23,42,0.18)]"
+                  className="flex-1 shadow-ui-memorysettingsdrawer-50"
                   disabled={!settings.memory.organizerModel || organizerSubmitting}
                   onClick={handleRunNow}
                 >
@@ -539,7 +539,7 @@ export function MemorySettingsDrawer(props: {
                 {t("settings.memorySettingsDangerZone")}
               </div>
               <div className="rounded-lg border border-destructive/20 bg-destructive/[0.04] p-4">
-                <div className="text-[11.5px] leading-relaxed text-muted-foreground">
+                <div className="text-11p5px leading-relaxed text-muted-foreground">
                   {t("settings.memorySettingsWipeDescription")}
                 </div>
                 <Button

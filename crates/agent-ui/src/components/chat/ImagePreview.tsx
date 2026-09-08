@@ -693,7 +693,7 @@ export const ImagePreview = memo(function ImagePreview(props: ImagePreviewProps)
       <DialogContent
         ref={dialogRef}
         initialFocus={dialogRef}
-        className="chat-image-preview-dialog flex h-[min(78vh,760px)] w-[min(82vw,1120px)] max-w-none min-h-0 min-w-0 flex-col overflow-hidden rounded-xl border-border bg-background p-0 text-foreground"
+        className="flex h-image-preview-height w-image-preview-width max-w-none min-h-0 min-w-0 flex-col overflow-hidden rounded-xl border-border bg-background p-0 text-foreground [&:fullscreen]:w-100vw [&:fullscreen]:h-100vh [&:fullscreen]:max-w-none [&:fullscreen]:max-h-none [&:fullscreen]:border-0 [&:fullscreen]:border-current [&:fullscreen]:rounded-none"
         onKeyDown={(event) => {
           if (
             (event.ctrlKey || event.metaKey) &&
@@ -730,7 +730,7 @@ export const ImagePreview = memo(function ImagePreview(props: ImagePreviewProps)
                 >
                   <ChevronRight className="h-4 w-4" />
                 </ImagePreviewToolButton>
-                <span className="ml-1 shrink-0 text-[11px] tabular-nums text-muted-foreground">
+                <span className="ml-1 shrink-0 text-11px tabular-nums text-muted-foreground">
                   {clampedIndex + 1} / {imageCount}
                 </span>
               </>
@@ -744,7 +744,7 @@ export const ImagePreview = memo(function ImagePreview(props: ImagePreviewProps)
             >
               <Minus className="h-4 w-4" />
             </ImagePreviewToolButton>
-            <span className="w-11 text-center text-[11px] tabular-nums text-muted-foreground">
+            <span className="w-11 text-center text-11px tabular-nums text-muted-foreground">
               {Math.round(viewerState.scale * 100)}%
             </span>
             <ImagePreviewToolButton
@@ -934,7 +934,7 @@ export const ImagePreview = memo(function ImagePreview(props: ImagePreviewProps)
           {actionError ? (
             <div
               role="alert"
-              className="absolute left-3 top-3 z-10 max-w-[min(28rem,calc(100%-1.5rem))] rounded-md border border-destructive/30 bg-background/95 px-3 py-2 text-xs text-destructive shadow-lg backdrop-blur"
+              className="absolute left-3 top-3 z-10 max-w-panel-28rem rounded-md border border-destructive/30 bg-background/95 px-3 py-2 text-xs text-destructive shadow-lg backdrop-blur"
             >
               {actionError}
             </div>

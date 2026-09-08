@@ -154,13 +154,13 @@ export function ComposerAttachmentCard(props: {
   return (
     <div
       title={pathTitle}
-      className="group flex h-9 w-36 max-w-[calc(100vw-5rem)] shrink-0 items-center gap-1 rounded-lg border border-black/[0.075] bg-black/[0.035] p-1 pr-1.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.64)] transition-[border-color,background-color] hover:border-black/[0.11] hover:bg-black/[0.05] dark:border-white/[0.11] dark:bg-white/[0.065] dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.055)] dark:hover:border-white/[0.16] dark:hover:bg-white/[0.09]"
+      className="group flex h-9 w-36 max-w-viewport-inset-5rem shrink-0 items-center gap-1 rounded-lg border border-black/[0.075] bg-black/[0.035] p-1 pr-1.5 shadow-ui-composerattachmentcard-1 transition-[border-color,background-color] hover:border-black/[0.11] hover:bg-black/[0.05] dark:border-white/[0.11] dark:bg-white/[0.065] dark:shadow-ui-composerattachmentcard-2 dark:hover:border-white/[0.16] dark:hover:bg-white/[0.09]"
     >
       <span className="flex h-7 w-7 shrink-0 items-center justify-center overflow-hidden rounded-md bg-black/[0.045] text-muted-foreground dark:bg-white/[0.08]">
         {fallbackIcon}
       </span>
 
-      <span className="min-w-0 flex-1 truncate text-[calc(11px*var(--zone-font-scale,1))] font-medium leading-4 tracking-tight text-foreground/90">
+      <span className="min-w-0 flex-1 truncate text-scaled-11px font-medium leading-4 tracking-tight text-foreground/90">
         {fileName}
       </span>
 

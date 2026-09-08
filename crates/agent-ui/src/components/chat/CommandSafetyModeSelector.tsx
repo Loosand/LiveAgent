@@ -103,7 +103,7 @@ export function CommandSafetyModeSelector(props: {
             disabled={disabled}
             className={cn(
               COMPOSER_CONTROL_TRIGGER_CLASS,
-              "composer-safety-trigger w-8 justify-center gap-0 px-0 data-[popup-open]:bg-muted/60",
+              "w-8 justify-center gap-0 px-0 data-[popup-open]:bg-muted/60 web:max-480:flex-none web:max-480:w-2rem web:max-480:min-w-2rem web:max-480:justify-center web:max-480:gap-0 web:max-480:px-0",
             )}
           />
         }
@@ -139,7 +139,7 @@ export function CommandSafetyModeSelector(props: {
               {modeIcon(mode, "mt-0.5 h-3.5 w-3.5 shrink-0 text-muted-foreground")}
               <span className="flex min-w-0 flex-1 flex-col">
                 <span className="font-medium leading-5">{t(MODE_I18N_KEYS[mode])}</span>
-                <span className="text-[11px] font-normal leading-4 text-muted-foreground">
+                <span className="text-11px font-normal leading-4 text-muted-foreground">
                   {entryDisabled ? disabledHint : t(modeDescKey(mode))}
                 </span>
               </span>

@@ -15,7 +15,7 @@ const FROST_SPINNER_SEGMENTS = [
 
 export function ScanActivityDots() {
   return (
-    <span className="ml-0.5 inline-flex gap-[2px]" aria-hidden="true">
+    <span className="ml-0.5 inline-flex gap-2px" aria-hidden="true">
       <span className="skills-scan-dot h-1 w-1 rounded-full bg-foreground/55" />
       <span className="skills-scan-dot h-1 w-1 rounded-full bg-foreground/55" />
       <span className="skills-scan-dot h-1 w-1 rounded-full bg-foreground/55" />
@@ -41,10 +41,8 @@ export function SkillsContentLoadingState(props: { title: string; description: s
         <div className="flex items-center gap-3.5">
           <FrostSpinner />
           <div className="min-w-0 flex-1">
-            <div className="text-[13px] font-medium tracking-tight text-foreground">{title}</div>
-            <div className="mt-0.5 truncate text-[11px] text-muted-foreground/80">
-              {description}
-            </div>
+            <div className="text-13px font-medium tracking-tight text-foreground">{title}</div>
+            <div className="mt-0.5 truncate text-11px text-muted-foreground/80">{description}</div>
           </div>
         </div>
         <div className="hub-frost-track mt-3.5" />
@@ -57,7 +55,7 @@ export function SkillsContentLoadingState(props: { title: string; description: s
               <div className="skills-skeleton-shimmer h-9 w-9 shrink-0 rounded-lg" />
               <div className="flex-1 space-y-2">
                 <div className="skills-skeleton-shimmer h-3.5 w-28 rounded" />
-                <div className="skills-skeleton-shimmer h-3 w-full max-w-[12rem] rounded" />
+                <div className="skills-skeleton-shimmer h-3 w-full max-w-12rem rounded" />
               </div>
             </div>
           </div>

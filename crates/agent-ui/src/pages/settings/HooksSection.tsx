@@ -194,8 +194,8 @@ export function HooksSection(_props: SettingsSectionProps) {
   }
 
   return (
-    <div className="settings-hooks-section flex h-full flex-col gap-5">
-      <div className="settings-section-hero shrink-0 flex flex-col gap-4 rounded-2xl border border-border/60 bg-card p-5 lg:flex-row lg:items-center lg:justify-between">
+    <div className="flex h-full flex-col gap-5 web:max-820:h-auto web:max-820:min-h-0 web:max-820:gap-12px web:max-820:overflow-visible web:max-820:pb-settings-hooks-section-pb">
+      <div className="shrink-0 flex flex-col gap-4 rounded-2xl border border-border/60 bg-card p-5 lg:flex-row lg:items-center lg:justify-between web:max-820:p-14px web:max-820:gap-12px">
         <div className="settings-section-title-group flex items-start gap-3">
           <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-500/10 text-amber-500">
             <Zap className="h-5 w-5" />
@@ -207,7 +207,7 @@ export function HooksSection(_props: SettingsSectionProps) {
             </p>
           </div>
         </div>
-        <div className="settings-section-actions settings-hooks-stats flex flex-wrap items-center gap-3">
+        <div className="settings-section-actions flex flex-wrap items-center gap-3 web:max-820:gap-8px web:max-520:w-full">
           <div className="settings-hooks-stat flex items-center gap-1.5 rounded-lg border border-border/60 bg-background/80 px-3 py-1.5">
             <Zap className="h-3.5 w-3.5 text-muted-foreground" />
             <span className="settings-hooks-stat-label text-xs font-medium text-muted-foreground">
@@ -247,15 +247,15 @@ export function HooksSection(_props: SettingsSectionProps) {
         </div>
       ) : null}
 
-      <div className="settings-hooks-grid grid min-h-0 flex-1 gap-5 xl:grid-cols-[300px_minmax(0,1fr)]">
-        <aside className="settings-hooks-lifecycle flex flex-col overflow-hidden rounded-2xl border border-border/60 bg-card">
-          <div className="settings-hooks-lifecycle-header shrink-0 border-b border-border/40 px-4 py-3">
+      <div className="grid min-h-0 flex-1 gap-5 xl:grid-cols-settings-navigation web:max-820:flex web:max-820:flex-none web:max-820:flex-col web:max-820:min-h-0 web:max-820:grid-cols-settings-cron-type-grid web:max-820:gap-12px web:max-820:overflow-visible">
+        <aside className="flex flex-col overflow-hidden rounded-2xl border border-border/60 bg-card web:max-820:flex-none web:max-820:max-h-none web:max-820:overflow-visible web:max-640:max-h-none">
+          <div className="shrink-0 border-b border-border/40 px-4 py-3 web:max-820:px-12px web:max-820:py-8px">
             <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
               <Play className="h-4 w-4 text-muted-foreground" />
               {t("settings.hooksLifecycle")}
             </div>
           </div>
-          <div className="settings-hooks-lifecycle-body min-h-0 flex-1 overflow-y-auto p-2">
+          <div className="min-h-0 flex-1 overflow-y-auto p-2 web:max-820:flex-none web:max-820:overflow-visible web:max-820:p-6px">
             {phaseGroups.map((group, groupIndex) => {
               const phaseHookCount = group.items.reduce(
                 (sum, { event }) => sum + hooks.filter((hook) => hook.event === event).length,
@@ -270,7 +270,7 @@ export function HooksSection(_props: SettingsSectionProps) {
                     type="button"
                     onClick={() => togglePhase(groupKey)}
                     className={cn(
-                      "settings-hooks-phase-button flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-left transition-colors hover:bg-muted/40",
+                      "flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-left transition-colors hover:bg-muted/40 web:max-820:px-8px web:max-820:py-6px web:max-820:rounded-10px",
                       group.phase.color,
                     )}
                   >
@@ -290,7 +290,7 @@ export function HooksSection(_props: SettingsSectionProps) {
                         {phaseHookCount > 0 ? (
                           <span
                             className={cn(
-                              "rounded-full px-1.5 py-0.5 text-[10px] font-semibold leading-none",
+                              "rounded-full px-1.5 py-0.5 text-10px font-semibold leading-none",
                               group.phase.bgColor,
                             )}
                           >
@@ -308,10 +308,10 @@ export function HooksSection(_props: SettingsSectionProps) {
                   </button>
 
                   {!isCollapsed ? (
-                    <div className="settings-hooks-event-tree relative ml-3 mt-0.5">
+                    <div className="relative ml-3 mt-0.5 web:max-820:ml-16px web:max-820:pb-2px web:max-820:pt-2px">
                       <span
                         aria-hidden
-                        className="settings-hooks-event-rail pointer-events-none absolute left-3 top-2 bottom-2 w-[2px] -translate-x-1/2 rounded-full bg-border/40"
+                        className="settings-hooks-event-rail pointer-events-none absolute left-3 top-2 bottom-2 w-2px -translate-x-1/2 rounded-full bg-border/40"
                       />
                       <ul className="space-y-0.5">
                         {group.items.map(({ event }) => {
@@ -325,7 +325,7 @@ export function HooksSection(_props: SettingsSectionProps) {
                                 type="button"
                                 onClick={() => setActiveEvent(event)}
                                 className={cn(
-                                  "settings-hooks-event-button group relative flex w-full items-center gap-2.5 rounded-lg py-2 pl-7 pr-2.5 text-left transition-all",
+                                  "group relative flex w-full items-center gap-2.5 rounded-lg py-2 pl-7 pr-2.5 text-left transition-all web:max-820:min-h-32px web:max-820:pl-30px web:max-820:pr-10px web:max-820:py-7px",
                                   selected ? "bg-primary/10 shadow-sm" : "hover:bg-muted/30",
                                 )}
                               >
@@ -359,7 +359,7 @@ export function HooksSection(_props: SettingsSectionProps) {
                                   <div className="flex items-center gap-1.5">
                                     <span
                                       className={cn(
-                                        "settings-hooks-event-label text-[13px] font-medium transition-colors",
+                                        "text-13px font-medium transition-colors web:max-820:min-w-0",
                                         selected
                                           ? "text-foreground"
                                           : "text-muted-foreground group-hover:text-foreground",
@@ -370,7 +370,7 @@ export function HooksSection(_props: SettingsSectionProps) {
                                     {hasHooks ? (
                                       <span
                                         className={cn(
-                                          "rounded-full px-1.5 py-0.5 text-[10px] font-semibold leading-none",
+                                          "rounded-full px-1.5 py-0.5 text-10px font-semibold leading-none",
                                           selected
                                             ? "bg-primary/15 text-primary"
                                             : "bg-muted/60 text-muted-foreground",
@@ -394,9 +394,9 @@ export function HooksSection(_props: SettingsSectionProps) {
           </div>
         </aside>
 
-        <section className="settings-hooks-detail flex flex-col overflow-hidden rounded-2xl border border-border/60 bg-card">
-          <div className="settings-hooks-detail-header shrink-0 border-b border-border/40 px-5 py-4">
-            <div className="settings-section-heading-row settings-hooks-detail-heading flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+        <section className="flex flex-col overflow-hidden rounded-2xl border border-border/60 bg-card web:max-820:flex-none web:max-820:min-h-0 web:max-820:overflow-visible">
+          <div className="shrink-0 border-b border-border/40 px-5 py-4 web:max-820:px-14px web:max-820:py-12px web:max-640:px-12px web:max-640:py-11px">
+            <div className="settings-section-heading-row flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between web:max-820:flex-row! web:max-820:items-start! web:max-820:gap-10px! web:max-820:[&_.settings-section-title-group]:min-w-0 web:max-380:flex-col! web:max-380:items-stretch!">
               <div className="settings-section-title-group flex items-center gap-3">
                 {(() => {
                   const phase = orderedEvents.find((item) => item.event === activeEvent)?.phase;
@@ -404,7 +404,7 @@ export function HooksSection(_props: SettingsSectionProps) {
                   return (
                     <div
                       className={cn(
-                        "settings-hooks-detail-icon flex h-9 w-9 items-center justify-center rounded-xl",
+                        "flex h-9 w-9 items-center justify-center rounded-xl web:max-820:w-32px web:max-820:h-32px web:max-820:rounded-10px",
                         phase.bgColor,
                         phase.color,
                       )}
@@ -415,18 +415,18 @@ export function HooksSection(_props: SettingsSectionProps) {
                 })()}
                 <div className="min-w-0 flex-1">
                   <div className="flex flex-wrap items-center gap-2">
-                    <h3 className="settings-hooks-detail-title text-base font-semibold">
+                    <h3 className="text-base font-semibold web:max-820:text-15px">
                       {getHookEventLabel(t, activeEvent)}
                     </h3>
                   </div>
-                  <p className="settings-hooks-detail-desc mt-0.5 text-sm text-muted-foreground">
+                  <p className="mt-0.5 text-sm text-muted-foreground web:max-820:text-12p5px web:max-820:leading-1p5">
                     {t(HOOK_EVENT_DESCRIPTION_TRANSLATION_KEYS[activeEvent])}
                   </p>
                 </div>
               </div>
               {activeHooks.length > 0 ? (
                 <Button
-                  className="settings-section-action settings-hooks-detail-add gap-1.5 self-start"
+                  className="settings-section-action gap-1.5 self-start web:max-820:flex-none web:max-820:self-start web:max-380:self-start"
                   onClick={openAdd}
                 >
                   <Plus className="h-3.5 w-3.5" />
@@ -436,7 +436,7 @@ export function HooksSection(_props: SettingsSectionProps) {
             </div>
           </div>
 
-          <div className="settings-hooks-detail-body min-h-0 flex-1 overflow-y-auto p-5">
+          <div className="min-h-0 flex-1 overflow-y-auto p-5 web:max-820:flex-none web:max-820:overflow-visible web:max-820:p-12px web:max-640:p-10px">
             {activeHooks.length === 0 ? (
               <div className="rounded-xl border border-dashed border-border/60 bg-muted/5 px-6 py-12 text-center">
                 <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-muted/30">
@@ -462,16 +462,16 @@ export function HooksSection(_props: SettingsSectionProps) {
                     <div
                       key={hook.id}
                       className={cn(
-                        "settings-hooks-card group rounded-xl border bg-background/80 p-4 transition-all hover:shadow-sm",
+                        "group rounded-xl border bg-background/80 p-4 transition-all hover:shadow-sm web:max-820:p-12px web:max-820:rounded-12px web:max-640:p-11px",
                         hook.enabled
                           ? "border-border/60 hover:border-border"
                           : "border-border/40 opacity-60",
                       )}
                     >
-                      <div className="settings-card-row settings-hooks-card-row flex items-start gap-3">
+                      <div className="settings-card-row flex items-start gap-3 web:max-820:grid web:max-820:grid-cols-settings-hooks-card-row web:max-820:items-center web:max-820:gap-10px web:max-520:grid-cols-settings-hooks-card-row-2">
                         <div
                           className={cn(
-                            "settings-hooks-card-icon flex h-10 w-10 shrink-0 items-center justify-center rounded-xl",
+                            "flex h-10 w-10 shrink-0 items-center justify-center rounded-xl web:max-820:w-36px web:max-820:h-36px web:max-820:rounded-10px web:max-640:w-32px web:max-640:h-32px web:max-640:rounded-9px web:max-640:[&_svg]:h-16px web:max-640:[&_svg]:w-16px",
                             getHookTypeTone(hook.type),
                           )}
                         >
@@ -482,19 +482,19 @@ export function HooksSection(_props: SettingsSectionProps) {
                           )}
                         </div>
 
-                        <div className="settings-hooks-card-main min-w-0 flex-1">
+                        <div className="min-w-0 flex-1 web:max-520:min-w-0">
                           <div className="settings-hooks-card-meta flex flex-wrap items-center gap-2">
-                            <span className="settings-hooks-card-name truncate text-sm font-semibold">
+                            <span className="truncate text-sm font-semibold web:max-820:text-13p5px">
                               {hook.name}
                             </span>
-                            <span className="settings-hooks-card-badge rounded-md bg-muted/50 px-1.5 py-0.5 text-[10px] font-medium tabular-nums text-muted-foreground">
+                            <span className="settings-hooks-card-badge rounded-md bg-muted/50 px-1.5 py-0.5 text-10px font-medium tabular-nums text-muted-foreground">
                               {stepCount}{" "}
                               {hook.type === "command"
                                 ? t("settings.hooksScriptLinesCount")
                                 : t("settings.hooksRequestsCount")}
                             </span>
                           </div>
-                          <p className="settings-hooks-card-desc mt-1 text-sm leading-relaxed text-muted-foreground">
+                          <p className="mt-1 text-sm leading-relaxed text-muted-foreground web:max-820:text-12p5px web:max-820:leading-1p5">
                             {hook.description || t("settings.hooksNoDescription")}
                           </p>
                         </div>
@@ -508,8 +508,8 @@ export function HooksSection(_props: SettingsSectionProps) {
                           <Button
                             type="button"
                             variant="ghost"
-                            size="icon"
-                            className="h-8 w-8 text-muted-foreground hover:text-foreground"
+                            size="icon-sm"
+                            className="text-muted-foreground hover:text-foreground"
                             title={t("settings.edit")}
                             onClick={() => openEdit(hook)}
                           >
@@ -523,8 +523,8 @@ export function HooksSection(_props: SettingsSectionProps) {
                               <Button
                                 type="button"
                                 variant="ghost"
-                                size="icon"
-                                className="h-8 w-8 text-muted-foreground hover:text-destructive"
+                                size="icon-sm"
+                                className="text-muted-foreground hover:text-destructive"
                                 title={t("settings.delete")}
                                 onClick={open}
                               >

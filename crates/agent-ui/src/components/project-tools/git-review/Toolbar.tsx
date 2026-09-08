@@ -154,7 +154,7 @@ export function GitRemoteSetupModal(props: {
                 id={remoteUrlId}
                 value={remoteUrl}
                 onChange={(event) => onRemoteUrlChange(event.target.value)}
-                className="h-9 text-[calc(11px*var(--zone-font-scale,1))] placeholder:text-[calc(11px*var(--zone-font-scale,1))]"
+                className="h-9 text-scaled-11px placeholder:text-scaled-11px"
                 placeholder={t("projectTools.gitReview.remoteUrlPlaceholder")}
                 autoFocus
                 disabled={loading}
@@ -300,7 +300,7 @@ export function GitBranchFromCommitModal(props: {
           </DialogHeader>
           <DialogBody className="space-y-4">
             <div className="rounded-lg border border-border/70 bg-muted/35 px-3 py-2 text-xs">
-              <div className="font-mono text-[calc(11px*var(--zone-font-scale,1))] text-muted-foreground">
+              <div className="font-mono text-scaled-11px text-muted-foreground">
                 {target.shortSha}
               </div>
               <div className="mt-1 truncate font-medium" title={target.subject}>
@@ -315,7 +315,7 @@ export function GitBranchFromCommitModal(props: {
                 id={branchNameId}
                 value={branchName}
                 onChange={(event) => onBranchNameChange(event.target.value)}
-                className="h-9 text-[calc(11px*var(--zone-font-scale,1))] placeholder:text-[calc(11px*var(--zone-font-scale,1))]"
+                className="h-9 text-scaled-11px placeholder:text-scaled-11px"
                 placeholder={t("projectTools.gitReview.branchNamePlaceholder")}
                 autoFocus
                 disabled={loading}
@@ -365,7 +365,7 @@ export function GitOperationNoticeToast({
 
   const isSuccess = notice.kind === "success";
   return (
-    <div className="pointer-events-none absolute bottom-3 right-3 z-50 flex max-w-[calc(100%-1.5rem)] justify-end">
+    <div className="pointer-events-none absolute bottom-3 right-3 z-50 flex max-w-inset-1p5rem justify-end">
       <div
         role={isSuccess ? "status" : "alert"}
         aria-live={isSuccess ? "polite" : "assertive"}
@@ -504,7 +504,7 @@ function GitReviewBranchMenu(props: { data: GitReviewData; writeDisabled: boolea
   const title = state.head || t("projectTools.gitReviewTitle");
   if (state.status !== "ready") {
     return (
-      <div className="flex min-w-0 flex-1 items-center px-2 text-[calc(12px*var(--zone-font-scale,1))] font-medium text-muted-foreground">
+      <div className="flex min-w-0 flex-1 items-center px-2 text-scaled-12px font-medium text-muted-foreground">
         <span className="min-w-0 truncate">{title}</span>
       </div>
     );
@@ -543,7 +543,7 @@ function GitReviewBranchMenu(props: { data: GitReviewData; writeDisabled: boolea
     >
       <DropdownMenuTrigger
         disabled={operationBusy}
-        className="flex min-w-0 flex-1 items-center gap-1.5 px-2 text-[calc(12px*var(--zone-font-scale,1))] font-medium outline-hidden transition-colors hover:bg-muted/70 focus-visible:bg-muted/70 disabled:pointer-events-none disabled:opacity-60"
+        className="flex min-w-0 flex-1 items-center gap-1.5 px-2 text-scaled-12px font-medium outline-hidden transition-colors hover:bg-muted/70 focus-visible:bg-muted/70 disabled:pointer-events-none disabled:opacity-60"
         title={t("projectTools.gitReview.switchBranch")}
         aria-label={t("projectTools.gitReview.switchBranch")}
       >
@@ -551,7 +551,7 @@ function GitReviewBranchMenu(props: { data: GitReviewData; writeDisabled: boolea
         <ChevronDown className="h-3 w-3 shrink-0 text-muted-foreground opacity-70" />
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start" className="min-w-56 max-w-72">
-        <DropdownMenuLabel className="px-2 py-1 text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+        <DropdownMenuLabel className="px-2 py-1 text-11px font-medium uppercase tracking-wide text-muted-foreground">
           {t("projectTools.gitReview.switchBranch")}
         </DropdownMenuLabel>
         {branchesLoading ? (
@@ -563,13 +563,13 @@ function GitReviewBranchMenu(props: { data: GitReviewData; writeDisabled: boolea
         ) : (
           <>
             {localBranches.length > 0 ? (
-              <DropdownMenuLabel className="px-2 py-1 text-[11px] uppercase tracking-wide text-muted-foreground/70">
+              <DropdownMenuLabel className="px-2 py-1 text-11px uppercase tracking-wide text-muted-foreground/70">
                 {t("git.branchSelector.localBranches")}
               </DropdownMenuLabel>
             ) : null}
             {localBranches.map((branch) => renderBranchRow(branch, branch.current, branch.name))}
             {remoteBranches.length > 0 ? (
-              <DropdownMenuLabel className="px-2 py-1 text-[11px] uppercase tracking-wide text-muted-foreground/70">
+              <DropdownMenuLabel className="px-2 py-1 text-11px uppercase tracking-wide text-muted-foreground/70">
                 {t("git.branchSelector.remoteBranches")}
               </DropdownMenuLabel>
             ) : null}
@@ -618,7 +618,7 @@ function GitReviewScopeDial(props: {
     },
   ];
   return (
-    <div className="relative h-7 w-[52px] shrink-0">
+    <div className="relative h-7 w-52px shrink-0">
       {items.map((item) => {
         const isActive = item.key === value;
         return (
@@ -638,7 +638,7 @@ function GitReviewScopeDial(props: {
           >
             <item.Icon
               className={cn(
-                "h-[18px] w-[18px] transition-all duration-200 ease-out motion-reduce:transition-none",
+                "h-18px w-18px transition-all duration-200 ease-out motion-reduce:transition-none",
                 isActive
                   ? cn("scale-100", item.activeTone)
                   : "scale-[0.7] text-muted-foreground/50 group-hover:text-muted-foreground group-focus-visible:text-muted-foreground",
@@ -724,7 +724,7 @@ export function GitReviewToolbar(props: {
             className="flex h-7 w-7 shrink-0 items-center justify-center"
             title={t("projectTools.gitReview.switchBranch")}
           >
-            <GitBranch className="h-[18px] w-[18px] text-emerald-600 dark:text-emerald-300" />
+            <GitBranch className="h-18px w-18px text-emerald-600 dark:text-emerald-300" />
           </div>
         )}
         <div className="flex h-7 min-w-0 flex-1 items-stretch overflow-hidden rounded-md border border-border bg-muted/25">
@@ -732,7 +732,7 @@ export function GitReviewToolbar(props: {
             <DropdownMenu>
               <DropdownMenuTrigger
                 disabled={operationBusy}
-                className="flex min-w-0 flex-1 items-center gap-1.5 px-2 text-[calc(12px*var(--zone-font-scale,1))] font-medium outline-hidden transition-colors hover:bg-muted/70 focus-visible:bg-muted/70 disabled:pointer-events-none disabled:opacity-60"
+                className="flex min-w-0 flex-1 items-center gap-1.5 px-2 text-scaled-12px font-medium outline-hidden transition-colors hover:bg-muted/70 focus-visible:bg-muted/70 disabled:pointer-events-none disabled:opacity-60"
                 title={t("projectTools.gitReview.repositoryPicker")}
                 aria-label={t("projectTools.gitReview.repositoryPicker")}
               >
@@ -744,7 +744,7 @@ export function GitReviewToolbar(props: {
                 <ChevronDown className="h-3 w-3 shrink-0 text-muted-foreground opacity-70" />
               </DropdownMenuTrigger>
               <DropdownMenuContent align="start" className="min-w-56 max-w-72">
-                <DropdownMenuLabel className="px-2 py-1 text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+                <DropdownMenuLabel className="px-2 py-1 text-11px font-medium uppercase tracking-wide text-muted-foreground">
                   {t("projectTools.gitReview.repositoryPicker")}
                 </DropdownMenuLabel>
                 {repositories.map((repo) => {
@@ -870,12 +870,12 @@ export function GitReviewToolbar(props: {
       {state.status === "ready" ? (
         <div className="mt-1.5 overflow-hidden rounded-xl border border-white/20 bg-white/50 shadow-sm backdrop-blur-xl dark:border-white/[0.08] dark:bg-white/[0.03]">
           <div className="flex items-center gap-1.5 border-b border-black/[0.04] px-3 py-2 dark:border-white/[0.06]">
-            <span className="shrink-0 rounded bg-muted/70 px-1.5 py-0.5 text-[calc(10px*var(--zone-font-scale,1))] font-medium leading-none text-muted-foreground">
+            <span className="shrink-0 rounded bg-muted/70 px-1.5 py-0.5 text-scaled-10px font-medium leading-none text-muted-foreground">
               {t("projectTools.gitReview.labelBase")}
             </span>
             <Cloud className="h-3 w-3 shrink-0 text-muted-foreground/60" />
             <span
-              className="min-w-0 truncate font-mono text-[calc(11px*var(--zone-font-scale,1))] text-foreground/75"
+              className="min-w-0 truncate font-mono text-scaled-11px text-foreground/75"
               title={
                 branchDiff?.baseRef || state.upstream || t("projectTools.gitReview.unresolved")
               }
@@ -926,7 +926,7 @@ export function GitReviewToolbar(props: {
                 >
                   {item.count}
                 </span>
-                <span className="text-[calc(9px*var(--zone-font-scale,1))] leading-none text-muted-foreground/60">
+                <span className="text-scaled-9px leading-none text-muted-foreground/60">
                   {item.label}
                 </span>
               </div>

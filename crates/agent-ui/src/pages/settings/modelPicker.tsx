@@ -183,12 +183,12 @@ export function ModelPicker({
               />
             </div>
           </div>
-          <div className="max-h-[min(14rem,var(--available-height,14rem))] overflow-y-auto overscroll-contain px-1 pb-1 [scrollbar-gutter:stable]">
+          <div className="max-h-popover-14rem overflow-y-auto overscroll-contain px-1 pb-1 [scrollbar-gutter:stable]">
             {noneLabel && !normalizedSearch ? (
               <DropdownMenuItem
                 onSelect={() => onChange("")}
                 className={cn(
-                  "h-[30px] max-w-full shrink-0 justify-between gap-3 overflow-hidden rounded-md py-0 text-xs font-normal leading-5 text-foreground transition-none data-[highlighted]:bg-foreground/[0.05]",
+                  "h-30px max-w-full shrink-0 justify-between gap-3 overflow-hidden rounded-md py-0 text-xs font-normal leading-5 text-foreground transition-none data-[highlighted]:bg-foreground/[0.05]",
                   value === "" &&
                     "bg-foreground/[0.07] font-medium data-[highlighted]:bg-foreground/[0.09]",
                 )}
@@ -220,14 +220,14 @@ export function ModelPicker({
                         onSelect={() => toggleGroup(group.id)}
                         aria-expanded={expanded}
                         title={expanded ? t("chat.collapseProvider") : t("chat.expandProvider")}
-                        className="sticky top-0 z-10 flex h-[30px] shrink-0 cursor-pointer items-center gap-1.5 rounded-md bg-popover/60 px-2 py-0 text-xs font-medium text-muted-foreground/80 backdrop-blur-xl transition-colors data-[highlighted]:bg-muted/40 supports-[backdrop-filter]:bg-popover/40"
+                        className="sticky top-0 z-10 flex h-30px shrink-0 cursor-pointer items-center gap-1.5 rounded-md bg-popover/60 px-2 py-0 text-xs font-medium text-muted-foreground/80 backdrop-blur-xl transition-colors data-[highlighted]:bg-muted/40 supports-[backdrop-filter]:bg-popover/40"
                       >
                         <ProviderBrandIcon
                           type={group.providerType}
                           className="h-3.5 w-3.5 opacity-90"
                         />
                         <span className="min-w-0 flex-1 truncate">{group.name}</span>
-                        <span className="inline-flex h-4 min-w-[1.1rem] shrink-0 items-center justify-center rounded-full bg-muted/70 px-1 text-[10px] tabular-nums">
+                        <span className="inline-flex h-4 min-w-1p1rem shrink-0 items-center justify-center rounded-full bg-muted/70 px-1 text-10px tabular-nums">
                           {group.opts.length}
                         </span>
                         <ChevronDown
@@ -246,7 +246,7 @@ export function ModelPicker({
                               key={option.value}
                               onSelect={() => onChange(option.value)}
                               className={cn(
-                                "h-[30px] max-w-full shrink-0 justify-between gap-3 overflow-hidden rounded-md py-0 text-xs font-normal leading-5 text-foreground transition-none data-[highlighted]:bg-foreground/[0.05]",
+                                "h-30px max-w-full shrink-0 justify-between gap-3 overflow-hidden rounded-md py-0 text-xs font-normal leading-5 text-foreground transition-none data-[highlighted]:bg-foreground/[0.05]",
                                 isSelected &&
                                   "bg-foreground/[0.07] font-medium data-[highlighted]:bg-foreground/[0.09]",
                               )}
@@ -258,7 +258,7 @@ export function ModelPicker({
                                 />
                                 <span className="min-w-0 truncate">{option.label}</span>
                                 {option.description ? (
-                                  <span className="min-w-0 truncate text-[11px] text-muted-foreground/70">
+                                  <span className="min-w-0 truncate text-11px text-muted-foreground/70">
                                     {option.description}
                                   </span>
                                 ) : null}

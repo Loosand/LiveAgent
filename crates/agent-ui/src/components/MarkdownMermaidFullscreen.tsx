@@ -227,7 +227,7 @@ function MermaidFullscreenDialog({ chart, onClose }: { chart: string; onClose: (
           {error ? (
             <div
               role="alert"
-              className="absolute left-1/2 top-1/2 max-w-[min(36rem,calc(100%-2rem))] -translate-x-1/2 -translate-y-1/2 rounded-md border border-destructive/30 bg-background px-4 py-3 text-sm text-destructive shadow-lg"
+              className="absolute left-1/2 top-1/2 max-w-dialog-36rem -translate-x-1/2 -translate-y-1/2 rounded-md border border-destructive/30 bg-background px-4 py-3 text-sm text-destructive shadow-lg"
             >
               {error}
             </div>
@@ -240,7 +240,7 @@ function MermaidFullscreenDialog({ chart, onClose }: { chart: string; onClose: (
             >
               <Minus className="h-4 w-4" />
             </MermaidControlButton>
-            <span className="w-12 text-center text-[11px] tabular-nums text-muted-foreground">
+            <span className="w-12 text-center text-11px tabular-nums text-muted-foreground">
               {Math.round((viewportState?.zoom ?? 1) * 100)}%
             </span>
             <MermaidControlButton

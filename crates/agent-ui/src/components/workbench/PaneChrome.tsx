@@ -81,8 +81,8 @@ export function PaneChrome(props: PaneChromeProps) {
             isCompact ? "w-6" : "w-9",
             isFocused ? "bg-muted-foreground/45" : "bg-muted-foreground/25",
             isCompact
-              ? "group-hover/pane-grip:h-[6px] group-hover/pane-grip:w-7 group-hover/pane-grip:bg-muted-foreground/60"
-              : "group-hover/pane-grip:h-[6px] group-hover/pane-grip:w-11 group-hover/pane-grip:bg-muted-foreground/60",
+              ? "group-hover/pane-grip:h-6px group-hover/pane-grip:w-7 group-hover/pane-grip:bg-muted-foreground/60"
+              : "group-hover/pane-grip:h-6px group-hover/pane-grip:w-11 group-hover/pane-grip:bg-muted-foreground/60",
             "group-focus-visible/pane-grip:bg-ring",
             // The pill is the drag handle's only focus indicator (the button
             // suppresses its outline), so it needs a system colour to survive

@@ -365,7 +365,7 @@ export function WorktreeCreateModal(props: {
                     type="button"
                     variant="outline"
                     size="icon"
-                    className="h-9 w-9 shrink-0"
+                    className="shrink-0"
                     onClick={() => onParentDirectoryChange("")}
                     disabled={loading}
                     title={t("git.branchSelector.worktreeUseDefaultLocation")}

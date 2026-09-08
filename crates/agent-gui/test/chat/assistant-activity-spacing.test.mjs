@@ -1,3 +1,4 @@
+import { readStyleSource } from "../../../../scripts/test-style-values.mjs";
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import test from "node:test";
@@ -35,10 +36,7 @@ const markdownSource = fs.readFileSync(
   new URL("../../../agent-ui/src/components/Markdown.tsx", import.meta.url),
   "utf8",
 );
-const chatStylesSource = fs.readFileSync(
-  new URL("../../../agent-ui/src/styles/common-components.css", import.meta.url),
-  "utf8",
-);
+const chatStylesSource = readStyleSource(new URL("../../../agent-ui/src/styles/common-components.css", import.meta.url));
 
 test("tool and operation blocks share the same compact rhythm as prose", () => {
   assert.match(roundContentSource, /const isOperationBlock = block\.kind !== "text";/);

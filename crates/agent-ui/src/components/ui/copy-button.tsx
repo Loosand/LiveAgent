@@ -86,12 +86,12 @@ export function CopyButton(props: {
           render={
             <Button
               variant="ghost"
-              size="icon"
+              size="icon-xs"
               disabled={disabled}
               aria-label={activeLabel}
               title={activeLabel}
               className={cn(
-                "h-7 w-7 shrink-0 text-muted-foreground hover:bg-muted hover:text-foreground",
+                "shrink-0 text-muted-foreground hover:bg-muted hover:text-foreground",
                 className,
               )}
               onClick={() => void handleCopy()}

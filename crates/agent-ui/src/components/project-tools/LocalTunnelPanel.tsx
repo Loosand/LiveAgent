@@ -77,7 +77,7 @@ const TUNNEL_SCOPE_OPTIONS: Array<{
 ];
 
 const TUNNEL_INPUT_CLASS =
-  "h-8 min-w-0 rounded-lg border-border/60 bg-background/80 text-[calc(11px*var(--zone-font-scale,1))] placeholder:text-[calc(11px*var(--zone-font-scale,1))] transition-[border-color,box-shadow,background-color] focus-visible:border-muted-foreground/30 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-muted-foreground/15 focus-visible:ring-offset-0";
+  "h-8 min-w-0 rounded-lg border-border/60 bg-background/80 text-scaled-11px placeholder:text-scaled-11px transition-[border-color,box-shadow,background-color] focus-visible:border-muted-foreground/30 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-muted-foreground/15 focus-visible:ring-offset-0";
 
 function ttlLabelKey(value: TunnelTtlSeconds) {
   if (value === 900) return "projectTools.tunnelTtl15m";
@@ -139,7 +139,7 @@ function HealthBadge({
     <span
       title={title}
       className={cn(
-        "inline-flex min-w-0 items-center gap-1.5 rounded-full border px-2 py-0.5 text-[calc(11px*var(--zone-font-scale,1))] font-medium",
+        "inline-flex min-w-0 items-center gap-1.5 rounded-full border px-2 py-0.5 text-scaled-11px font-medium",
         status === "ok"
           ? "border-emerald-500/20 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
           : status === "failed"
@@ -336,14 +336,14 @@ const TunnelRow = memo(function TunnelRow(props: TunnelRowProps) {
     }
   };
   return (
-    <div className="min-w-0 overflow-hidden rounded-xl border border-border/60 bg-background/70 shadow-[0_1px_2px_hsl(0_0%_0%_/_0.04)] backdrop-blur-xl transition-shadow duration-200 hover:shadow-[0_3px_10px_hsl(0_0%_0%_/_0.07)]">
+    <div className="min-w-0 overflow-hidden rounded-xl border border-border/60 bg-background/70 shadow-ui-localtunnelpanel-26 backdrop-blur-xl transition-shadow duration-200 hover:shadow-ui-localtunnelpanel-27">
       <div className="flex min-w-0 items-center gap-2 px-3 pt-2.5">
         <div className="min-w-0 flex-1 truncate text-sm font-medium text-foreground">
           {displayTunnelName(tunnel)}
         </div>
         <span
           className={cn(
-            "inline-flex shrink-0 items-center gap-1.5 rounded-full border px-2 py-0.5 text-[calc(11px*var(--zone-font-scale,1))] font-medium",
+            "inline-flex shrink-0 items-center gap-1.5 rounded-full border px-2 py-0.5 text-scaled-11px font-medium",
             offline
               ? "border-amber-500/20 bg-amber-500/10 text-amber-600 dark:text-amber-400"
               : expired
@@ -393,7 +393,7 @@ const TunnelRow = memo(function TunnelRow(props: TunnelRowProps) {
                 className={cn(TUNNEL_INPUT_CLASS, "font-mono")}
               />
               {editTargetValidationKey ? (
-                <div className="flex items-start gap-1 text-[calc(11px*var(--zone-font-scale,1))] leading-relaxed text-amber-600 dark:text-amber-400">
+                <div className="flex items-start gap-1 text-scaled-11px leading-relaxed text-amber-600 dark:text-amber-400">
                   <AlertTriangle className="mt-0.5 h-3 w-3 shrink-0" />
                   <span className="min-w-0">{t(editTargetValidationKey)}</span>
                 </div>
@@ -477,10 +477,10 @@ const TunnelRow = memo(function TunnelRow(props: TunnelRowProps) {
             disabled={!publicUrl}
             title={copied ? t("projectTools.tunnelCopied") : t("projectTools.tunnelCopyLink")}
             aria-label={copied ? t("projectTools.tunnelCopied") : t("projectTools.tunnelCopyLink")}
-            className="mx-3 mt-2 flex w-[calc(100%-1.5rem)] min-w-0 items-center gap-1.5 rounded-lg border border-border/50 bg-muted/40 px-2 py-1.5 text-left transition-colors duration-150 hover:border-border hover:bg-muted/70 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
+            className="mx-3 mt-2 flex w-inset-1p5rem min-w-0 items-center gap-1.5 rounded-lg border border-border/50 bg-muted/40 px-2 py-1.5 text-left transition-colors duration-150 hover:border-border hover:bg-muted/70 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
           >
             <Globe className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
-            <span className="min-w-0 flex-1 truncate font-mono text-[calc(11px*var(--zone-font-scale,1))] text-foreground/85">
+            <span className="min-w-0 flex-1 truncate font-mono text-scaled-11px text-foreground/85">
               {publicUrl}
             </span>
             {copied ? (
@@ -490,7 +490,7 @@ const TunnelRow = memo(function TunnelRow(props: TunnelRowProps) {
             )}
           </button>
           <div
-            className="mt-1.5 flex min-w-0 items-center gap-1 px-3 text-[calc(11px*var(--zone-font-scale,1))] text-muted-foreground"
+            className="mt-1.5 flex min-w-0 items-center gap-1 px-3 text-scaled-11px text-muted-foreground"
             title={tunnel.targetUrl}
           >
             <Link2 className="h-3 w-3 shrink-0" />
@@ -501,7 +501,7 @@ const TunnelRow = memo(function TunnelRow(props: TunnelRowProps) {
             <div
               title={`${t("projectTools.tunnelServiceLabel")} · ${healthTitle(localHealth)}`}
               className={cn(
-                "flex h-6 min-w-0 items-center gap-1 rounded-md border px-1.5 text-[calc(10px*var(--zone-font-scale,1))] font-medium",
+                "flex h-6 min-w-0 items-center gap-1 rounded-md border px-1.5 text-scaled-10px font-medium",
                 localStatus === "ok"
                   ? "border-emerald-500/20 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
                   : localStatus === "failed"
@@ -528,12 +528,12 @@ const TunnelRow = memo(function TunnelRow(props: TunnelRowProps) {
             </div>
           </div>
           {rowError ? (
-            <div className="mx-3 mt-2 rounded-lg border border-destructive/25 bg-destructive/10 px-2 py-1.5 text-[calc(11px*var(--zone-font-scale,1))] leading-relaxed text-destructive">
+            <div className="mx-3 mt-2 rounded-lg border border-destructive/25 bg-destructive/10 px-2 py-1.5 text-scaled-11px leading-relaxed text-destructive">
               {rowError}
             </div>
           ) : null}
           <div className="mt-2 flex items-center justify-between gap-2 border-t border-border/40 py-1 pl-3 pr-1.5">
-            <div className="flex min-w-0 items-center gap-2 text-[calc(11px*var(--zone-font-scale,1))] text-muted-foreground">
+            <div className="flex min-w-0 items-center gap-2 text-scaled-11px text-muted-foreground">
               <span
                 className="inline-flex min-w-0 items-center gap-1"
                 title={hasExpiry ? formatDateTime(tunnel.expiresAt) : undefined}
@@ -551,13 +551,13 @@ const TunnelRow = memo(function TunnelRow(props: TunnelRowProps) {
                 tunnelProjectPathKey ? (
                   <span
                     title={tunnelProjectPathKey}
-                    className="min-w-0 max-w-[120px] truncate rounded-full bg-muted/80 px-1.5 py-px text-[calc(10px*var(--zone-font-scale,1))]"
+                    className="min-w-0 max-w-120px truncate rounded-full bg-muted/80 px-1.5 py-px text-scaled-10px"
                   >
                     {projectNameFromPathKey(tunnelProjectPathKey) ||
                       t("projectTools.tunnelScopeProjectBadge")}
                   </span>
                 ) : (
-                  <span className="shrink-0 rounded-full bg-muted/80 px-1.5 py-px text-[calc(10px*var(--zone-font-scale,1))]">
+                  <span className="shrink-0 rounded-full bg-muted/80 px-1.5 py-px text-scaled-10px">
                     {t("projectTools.tunnelScopeGlobalBadge")}
                   </span>
                 )
@@ -567,8 +567,8 @@ const TunnelRow = memo(function TunnelRow(props: TunnelRowProps) {
               <Button
                 type="button"
                 variant="ghost"
-                size="icon"
-                className="h-7 w-7 rounded-lg text-muted-foreground hover:text-foreground"
+                size="icon-xs"
+                className="rounded-lg text-muted-foreground hover:text-foreground"
                 disabled={!mutationsEnabled || expired || Boolean(pendingAction)}
                 onClick={() => onCheck(tunnel.id)}
                 title={!enabled ? disabledMessage : t("projectTools.tunnelCheckAction")}
@@ -583,8 +583,8 @@ const TunnelRow = memo(function TunnelRow(props: TunnelRowProps) {
               <Button
                 type="button"
                 variant="ghost"
-                size="icon"
-                className="h-7 w-7 rounded-lg text-muted-foreground hover:text-foreground"
+                size="icon-xs"
+                className="rounded-lg text-muted-foreground hover:text-foreground"
                 disabled={!mutationsEnabled || expired}
                 onClick={() => onBeginEdit(tunnel)}
                 title={!enabled ? disabledMessage : t("projectTools.tunnelEdit")}
@@ -595,8 +595,8 @@ const TunnelRow = memo(function TunnelRow(props: TunnelRowProps) {
               <Button
                 type="button"
                 variant="ghost"
-                size="icon"
-                className="h-7 w-7 rounded-lg text-muted-foreground hover:text-foreground"
+                size="icon-xs"
+                className="rounded-lg text-muted-foreground hover:text-foreground"
                 disabled={!publicUrl || expired}
                 onClick={() => onOpenLink(tunnel)}
                 title={t("projectTools.tunnelOpenLink")}
@@ -607,8 +607,8 @@ const TunnelRow = memo(function TunnelRow(props: TunnelRowProps) {
               <Button
                 type="button"
                 variant="ghost"
-                size="icon"
-                className="h-7 w-7 rounded-lg text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
+                size="icon-xs"
+                className="rounded-lg text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
                 disabled={!mutationsEnabled || Boolean(pendingAction)}
                 onClick={() => onClose(tunnel.id)}
                 title={!enabled ? disabledMessage : t("projectTools.tunnelClose")}
@@ -947,7 +947,7 @@ export function LocalTunnelPanel({
     <div className="flex min-h-0 flex-1 flex-col bg-gradient-to-b from-muted/40 via-muted/15 to-background">
       <div className="shrink-0 border-b border-border/60 bg-background/70 px-4 pb-3 pt-3.5 backdrop-blur-xl">
         <div className="flex items-center gap-2.5">
-          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-border/60 bg-background/80 text-foreground/70 shadow-[inset_0_1px_0_hsl(0_0%_100%_/_0.6),0_1px_2px_hsl(0_0%_0%_/_0.05)] dark:shadow-none">
+          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-border/60 bg-background/80 text-foreground/70 shadow-ui-localtunnelpanel-28 dark:shadow-none">
             <Globe className="h-4 w-4" />
           </div>
           <div className="min-w-0 flex-1">
@@ -975,7 +975,7 @@ export function LocalTunnelPanel({
             type="button"
             variant="ghost"
             size="sm"
-            className="h-6 shrink-0 gap-1 rounded-lg px-2 text-[calc(11px*var(--zone-font-scale,1))] text-muted-foreground hover:text-foreground"
+            className="h-6 shrink-0 gap-1 rounded-lg px-2 text-scaled-11px text-muted-foreground hover:text-foreground"
             disabled={!mutationsEnabled || checkingAll}
             onClick={checkAllTunnels}
             title={!enabled ? disabledMessage : t("projectTools.tunnelCheckAction")}
@@ -1055,7 +1055,7 @@ export function LocalTunnelPanel({
               <section
                 aria-hidden={!showCreateForm}
                 className={cn(
-                  "overflow-hidden rounded-xl border border-border/60 bg-background/70 shadow-[0_1px_2px_hsl(0_0%_0%_/_0.04)] backdrop-blur-xl transition-[border-color,background-color,box-shadow] duration-200 ease-out motion-reduce:transition-none",
+                  "overflow-hidden rounded-xl border border-border/60 bg-background/70 shadow-ui-localtunnelpanel-26 backdrop-blur-xl transition-[border-color,background-color,box-shadow] duration-200 ease-out motion-reduce:transition-none",
                   !showCreateForm && "pointer-events-none",
                 )}
               >
@@ -1120,7 +1120,7 @@ export function LocalTunnelPanel({
                           className={cn(TUNNEL_INPUT_CLASS, "font-mono")}
                         />
                         {targetValidationKey ? (
-                          <div className="flex items-start gap-1 text-[calc(11px*var(--zone-font-scale,1))] leading-relaxed text-amber-600 dark:text-amber-400">
+                          <div className="flex items-start gap-1 text-scaled-11px leading-relaxed text-amber-600 dark:text-amber-400">
                             <AlertTriangle className="mt-0.5 h-3 w-3 shrink-0" />
                             <span className="min-w-0">{t(targetValidationKey)}</span>
                           </div>
@@ -1185,11 +1185,11 @@ export function LocalTunnelPanel({
 
         <div>
           <div className="flex items-center justify-between px-1 pb-2">
-            <span className="text-[calc(11px*var(--zone-font-scale,1))] font-medium uppercase tracking-wider text-muted-foreground">
+            <span className="text-scaled-11px font-medium uppercase tracking-wider text-muted-foreground">
               {t("projectTools.tunnelListSection")}
             </span>
             {sortedTunnels.length > 0 ? (
-              <span className="rounded-full bg-muted/80 px-1.5 py-px text-[calc(11px*var(--zone-font-scale,1))] tabular-nums text-muted-foreground">
+              <span className="rounded-full bg-muted/80 px-1.5 py-px text-scaled-11px tabular-nums text-muted-foreground">
                 {sortedTunnels.length}
               </span>
             ) : null}
@@ -1207,18 +1207,18 @@ export function LocalTunnelPanel({
             </div>
           ) : sortedTunnels.length === 0 ? (
             <div className="flex flex-col items-center justify-center gap-1.5 rounded-xl border border-dashed border-border/70 bg-background/40 px-4 py-10 text-center">
-              <div className="mb-1.5 flex h-12 w-12 items-center justify-center rounded-2xl border border-border/50 bg-background/80 text-muted-foreground/70 shadow-[inset_0_1px_0_hsl(0_0%_100%_/_0.6),0_1px_3px_hsl(0_0%_0%_/_0.05)] dark:shadow-none">
+              <div className="mb-1.5 flex h-12 w-12 items-center justify-center rounded-2xl border border-border/50 bg-background/80 text-muted-foreground/70 shadow-ui-localtunnelpanel-29 dark:shadow-none">
                 <Globe className="h-5 w-5" />
               </div>
               <div className="text-xs font-medium text-foreground/80">
                 {t("projectTools.tunnelEmpty")}
               </div>
               {showCreateForm ? (
-                <div className="text-[calc(11px*var(--zone-font-scale,1))] text-muted-foreground">
+                <div className="text-scaled-11px text-muted-foreground">
                   {t("projectTools.tunnelEmptyHintCreate")}
                 </div>
               ) : normalizedProjectPathKey ? (
-                <div className="text-[calc(11px*var(--zone-font-scale,1))] text-muted-foreground">
+                <div className="text-scaled-11px text-muted-foreground">
                   {t("projectTools.tunnelEmptyHintProject")}
                 </div>
               ) : null}

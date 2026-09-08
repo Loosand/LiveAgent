@@ -120,7 +120,7 @@ export function AgentsSection(props: SettingsSectionProps) {
         <div className="settings-section-heading-row flex items-center justify-between gap-4">
           <div className="settings-section-title-group flex items-center gap-3">
             <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-sky-500/10">
-              <BookOpen className="h-[18px] w-[18px] text-sky-500" />
+              <BookOpen className="h-18px w-18px text-sky-500" />
             </div>
             <div>
               <h3 className="text-sm font-semibold">{t("settings.agentsTitle")}</h3>
@@ -212,7 +212,7 @@ export function AgentsSection(props: SettingsSectionProps) {
                             {template.name}
                           </span>
                           {template.enabled ? (
-                            <span className="shrink-0 rounded-full bg-emerald-500/10 px-1.5 py-0.5 text-[10px] font-medium leading-none text-emerald-600 dark:text-emerald-400">
+                            <span className="shrink-0 rounded-full bg-emerald-500/10 px-1.5 py-0.5 text-10px font-medium leading-none text-emerald-600 dark:text-emerald-400">
                               {t("settings.agentsGlobalDefault")}
                             </span>
                           ) : null}
@@ -236,8 +236,8 @@ export function AgentsSection(props: SettingsSectionProps) {
                         <div className="settings-hover-actions ml-1 flex items-center gap-0.5 opacity-0 transition-opacity focus-within:opacity-100 group-hover:opacity-100">
                           <Button
                             variant="ghost"
-                            size="icon"
-                            className="h-7 w-7 text-muted-foreground hover:text-foreground"
+                            size="icon-xs"
+                            className="text-muted-foreground hover:text-foreground"
                             onClick={() => setViewingTemplate(template)}
                             title={t("settings.agentsShowPrompt")}
                             aria-label={t("settings.agentsShowPrompt")}
@@ -246,8 +246,8 @@ export function AgentsSection(props: SettingsSectionProps) {
                           </Button>
                           <Button
                             variant="ghost"
-                            size="icon"
-                            className="h-7 w-7 text-muted-foreground hover:text-foreground"
+                            size="icon-xs"
+                            className="text-muted-foreground hover:text-foreground"
                             onClick={() => openEdit(template)}
                             title={t("settings.edit")}
                           >
@@ -260,8 +260,8 @@ export function AgentsSection(props: SettingsSectionProps) {
                             {(open) => (
                               <Button
                                 variant="ghost"
-                                size="icon"
-                                className="h-7 w-7 text-muted-foreground hover:text-destructive"
+                                size="icon-xs"
+                                className="text-muted-foreground hover:text-destructive"
                                 onClick={open}
                                 title={t("settings.delete")}
                               >
@@ -335,7 +335,7 @@ export function AgentsSection(props: SettingsSectionProps) {
                           </span>
                           <span
                             className={cn(
-                              "shrink-0 rounded-full px-1.5 py-0.5 text-[10px] font-medium leading-none",
+                              "shrink-0 rounded-full px-1.5 py-0.5 text-10px font-medium leading-none",
                               configured
                                 ? "bg-violet-500/10 text-violet-600 dark:text-violet-300"
                                 : "bg-muted text-muted-foreground",
@@ -358,7 +358,7 @@ export function AgentsSection(props: SettingsSectionProps) {
 
                       <div className="settings-card-actions flex items-center gap-1.5">
                         {configured ? (
-                          <span className="shrink-0 rounded-full border border-border/60 bg-muted/40 px-2 py-1 text-[10px] font-medium text-muted-foreground">
+                          <span className="shrink-0 rounded-full border border-border/60 bg-muted/40 px-2 py-1 text-10px font-medium text-muted-foreground">
                             {t(
                               entry?.projectPromptStrategy === "replace"
                                 ? "settings.agentsProjectReplace"
@@ -369,8 +369,8 @@ export function AgentsSection(props: SettingsSectionProps) {
                         <div className="settings-hover-actions ml-1 flex items-center gap-0.5 opacity-0 transition-opacity focus-within:opacity-100 group-hover:opacity-100">
                           <Button
                             variant="ghost"
-                            size="icon"
-                            className="h-7 w-7 text-muted-foreground hover:text-foreground"
+                            size="icon-xs"
+                            className="text-muted-foreground hover:text-foreground"
                             disabled={!configured}
                             onClick={() => setViewingProject(project)}
                             title={t("settings.agentsShowPrompt")}
@@ -380,8 +380,8 @@ export function AgentsSection(props: SettingsSectionProps) {
                           </Button>
                           <Button
                             variant="ghost"
-                            size="icon"
-                            className="h-7 w-7 text-muted-foreground hover:text-foreground"
+                            size="icon-xs"
+                            className="text-muted-foreground hover:text-foreground"
                             onClick={() => setEditingProject(project)}
                             title={t("settings.agentsProjectEdit")}
                             aria-label={t("settings.agentsProjectEdit")}
@@ -521,7 +521,7 @@ function AgentPromptViewModal({
   return (
     <Dialog open onOpenChange={(open) => !open && onClose()}>
       <DialogContent
-        className="flex max-h-[90dvh] max-w-4xl flex-col p-0"
+        className="flex max-h-90dvh max-w-4xl flex-col p-0"
         closeLabel={t("settings.cancel")}
         showCloseButton
       >
@@ -537,7 +537,7 @@ function AgentPromptViewModal({
           </div>
           <span
             className={cn(
-              "hidden shrink-0 items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px] font-medium sm:inline-flex",
+              "hidden shrink-0 items-center gap-1.5 rounded-full border px-2.5 py-1 text-11px font-medium sm:inline-flex",
               statusBadgeClass,
             )}
           >
@@ -547,7 +547,7 @@ function AgentPromptViewModal({
         </DialogHeader>
 
         <DialogBody>
-          <div className="grid min-h-0 gap-4 md:grid-cols-[minmax(0,16rem)_minmax(0,1fr)]">
+          <div className="grid min-h-0 gap-4 md:grid-cols-model-picker">
             <aside className="min-w-0 overflow-hidden rounded-2xl border border-border/60 bg-card p-5 shadow-xs">
               <div className="flex items-center gap-2.5">
                 <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border border-border/60 bg-muted/40 text-muted-foreground">
@@ -586,7 +586,7 @@ function AgentPromptViewModal({
               </div>
             </aside>
 
-            <section className="flex flex-col overflow-hidden rounded-2xl border border-border/60 bg-card shadow-xs md:min-h-[420px]">
+            <section className="flex flex-col overflow-hidden rounded-2xl border border-border/60 bg-card shadow-xs md:min-h-420px">
               {!hidePromptHeader ? (
                 <div className="flex items-center justify-between gap-3 border-b border-border/60 bg-muted/30 px-4 py-3">
                   <div className="flex items-center gap-2.5">
@@ -606,13 +606,13 @@ function AgentPromptViewModal({
                     <div key={segment.tone}>
                       {index > 0 ? <div className="my-5 h-px w-full bg-border/70" /> : null}
                       <PromptScopeLabel label={segment.label} tone={segment.tone} />
-                      <pre className="mt-4 whitespace-pre-wrap break-words font-mono text-[13px] leading-6 text-foreground/90">
+                      <pre className="mt-4 whitespace-pre-wrap break-words font-mono text-13px leading-6 text-foreground/90">
                         {segment.prompt}
                       </pre>
                     </div>
                   ))
                 ) : (
-                  <pre className="whitespace-pre-wrap break-words font-mono text-[13px] leading-6 text-foreground/90">
+                  <pre className="whitespace-pre-wrap break-words font-mono text-13px leading-6 text-foreground/90">
                     {template.prompt}
                   </pre>
                 )}
@@ -630,7 +630,7 @@ function PromptScopeLabel(props: { label: string; tone: "global" | "project" }) 
   return (
     <span
       className={cn(
-        "inline-flex shrink-0 items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px] font-medium",
+        "inline-flex shrink-0 items-center gap-1.5 rounded-full border px-2.5 py-1 text-11px font-medium",
         tone === "global"
           ? "border-sky-500/20 bg-sky-500/10 text-sky-600 dark:text-sky-300"
           : "border-violet-500/20 bg-violet-500/10 text-violet-600 dark:text-violet-300",

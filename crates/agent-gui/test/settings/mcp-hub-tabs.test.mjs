@@ -114,7 +114,7 @@ test("installed MCP resources use a compact settings list while Store keeps its 
   assert.match(serverCardSource, /label=\{t\("mcpHub\.previewArgs"\)\}/);
   assert.match(serverCardSource, /label=\{t\("mcpHub\.previewEnv"\)\}/);
   assert.match(serverCardSource, /label=\{t\("mcpHub\.previewHeaders"\)\}/);
-  assert.match(serverCardSource, /grid-cols-\[auto_2rem_2rem\]/);
+  assert.match(serverCardSource, /grid-cols-mcp-actions/);
   assert.match(serverCardSource, /aria-hidden="true"/);
   assert.ok(
     serverCardSource.indexOf("<ResourceActivationSwitch") <
@@ -126,7 +126,7 @@ test("installed MCP resources use a compact settings list while Store keeps its 
   );
   assert.match(
     serverCardSource,
-    /className="h-8 w-8 text-muted-foreground transition-colors hover:bg-destructive\/10 hover:text-destructive"/,
+    /size="icon-sm"\s+onClick=\{open\}\s+className="text-muted-foreground transition-colors hover:bg-destructive\/10 hover:text-destructive"/,
   );
   assert.doesNotMatch(serverCardSource, /border-emerald/);
   assert.doesNotMatch(serverCardSource, /hover:-translate-y/);
@@ -153,7 +153,7 @@ test("MCP Store automatically appends pages in multiples of four at the scroll b
 test("MCP Store cards center connection previews and use working external and add actions", () => {
   assert.match(registryBrowserSource, /shims\/tauriOpener/);
   assert.match(registryBrowserSource, /void openUrl\(link\)/);
-  assert.match(registryBrowserSource, /flex min-h-\[40px\] items-center/);
+  assert.match(registryBrowserSource, /flex min-h-40px items-center/);
   assert.match(registryBrowserSource, /<Plus className="h-3\.5 w-3\.5"/);
   assert.doesNotMatch(registryBrowserSource, /<Sparkles/);
 });
